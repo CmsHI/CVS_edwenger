@@ -1,4 +1,4 @@
-eimport FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("RECO")
 
