@@ -46,5 +46,5 @@ FEVTDEBUGEventContent.outputCommands.extend(RecoHIFEVT.outputCommands)
 FEVTDEBUGHLTEventContent.outputCommands.extend(HiMixRAW.outputCommands)
 FEVTDEBUGHLTEventContent.outputCommands.extend(RecoHIFEVT.outputCommands)
 
-RECODEBUGEventContent.outputCommands.extend(HiMixRECO.outputCommands)
+RECODEBUGEventContent.outputCommands.extend(HiMixRAW.outputCommands)
 RECODEBUGEventContent.outputCommands.extend(RecoHIRECO.outputCommands)
