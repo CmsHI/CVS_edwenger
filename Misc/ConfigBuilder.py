@@ -322,6 +322,7 @@ class ConfigBuilder(object):
 	self.GENDefaultCFF="Configuration/StandardSequences/Generator_cff"
 	self.SIMDefaultCFF="Configuration/StandardSequences/Sim_cff"
 	self.DIGIDefaultCFF="Configuration/StandardSequences/Digi_cff"
+	self.HISIGNALDefaultCFF="Configuration/StandardSequences/MixingHiSignal_cff" ###HI
 	self.DIGI2RAWDefaultCFF="Configuration/StandardSequences/DigiToRaw_cff"
 	self.L1EMDefaultCFF='Configuration/StandardSequences/SimL1Emulator_cff'
 	self.L1MENUDefaultCFF="Configuration/StandardSequences/L1TriggerDefaultMenu_cff"
@@ -346,6 +347,7 @@ class ConfigBuilder(object):
 	self.ALCADefaultSeq=None
 	self.SIMDefaultSeq=None
 	self.GENDefaultSeq=None
+	self.HISIGNALDefaultSeq=None ###HI
 	self.DIGIDefaultSeq=None
 	self.DATAMIXDefaultSeq=None
 	self.DIGI2RAWDefaultSeq=None
@@ -395,7 +397,7 @@ class ConfigBuilder(object):
 	    self.DQMDefaultSeq='DQMOfflineCosmics'
 	    self.eventcontent='FEVT'
 
-        if self._options.scenario=='HeavyIons':
+        if self._options.scenario=='HeavyIons': ###HI
 		self.RECODefaultCFF="Configuration/StandardSequences/ReconstructionHeavyIons_cff"
 		self.EVTCONTDefaultCFF="Configuration/EventContent/EventContentHeavyIons_cff"
 		self.RECODefaultSeq='reconstructionHeavyIons'
@@ -413,7 +415,7 @@ class ConfigBuilder(object):
         else:
                 self.GeometryCFF='Configuration/StandardSequences/Geometry'+self._options.geometry+'_cff'
                 
-	if self._options.isMC==True:
+	if (self._options.isMC==True) and ("HISIGNAL" not in self._options.step): ###HI
  	    self.PileupCFF='Configuration/StandardSequences/Mixing'+self._options.pileup+'_cff'
         else:
 	    self.PileupCFF=''
@@ -531,9 +533,27 @@ class ConfigBuilder(object):
         self.schedule.append(self.process.simulation_step)
         return     
 
+    def prepare_HISIGNAL(self, sequence = None):   ###HI
+        """ Enrich the schedule with the digitisation step"""
+	self.loadAndRemember(self.HISIGNALDefaultCFF)
+        self.process.signal_step = cms.Path(self.process.hiSignalSequence)    
+        self.schedule.append(self.process.signal_step)
+
+        if sequence:
+	   self.loadAndRemember("Configuration/Generator/Pyquen_"+sequence+"_4TeV_cfi")
+        else:
+	   raise AttributeError("The HISIGNAL step requires a generator sequence defined in Configuration/Generator (e.g. HISIGNAL:GammaJet_pt20")
+
+        self.process.source.inputCommands = cms.untracked.vstring('drop *','keep *_generator_*_*','keep *_g4SimHits_*_*')
+	
+        return
+
     def prepare_DIGI(self, sequence = None):
         """ Enrich the schedule with the digitisation step"""
-	self.loadAndRemember(self.DIGIDefaultCFF)
+	if "HISIGNAL" not in self._options.step: ###HI
+		self.loadAndRemember(self.DIGIDefaultCFF)
+	else:
+		self.loadAndRemember("Configuration/StandardSequences/DigiHiMix_cff")
         if self._options.gflash==True:
                 self.loadAndRemember("Configuration/StandardSequences/GFlashDIGI_cff")
                 
