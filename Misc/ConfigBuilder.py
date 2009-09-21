@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 
-__version__ = "$Revision: 1.140 $"
-__source__ = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v $"
+__version__ = "$Revision: 1.3 $"
+__source__ = "$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Misc/ConfigBuilder.py,v $"
 
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.Modules import _Module 
@@ -322,7 +322,7 @@ class ConfigBuilder(object):
 	self.GENDefaultCFF="Configuration/StandardSequences/Generator_cff"
 	self.SIMDefaultCFF="Configuration/StandardSequences/Sim_cff"
 	self.DIGIDefaultCFF="Configuration/StandardSequences/Digi_cff"
-	self.HISIGNALDefaultCFF="Configuration/StandardSequences/MixingHiSignal_cff" ###HI
+	self.HISIGNALDefaultCFF="Configuration/StandardSequences/HiSignal_cff" ###HI
 	self.DIGI2RAWDefaultCFF="Configuration/StandardSequences/DigiToRaw_cff"
 	self.L1EMDefaultCFF='Configuration/StandardSequences/SimL1Emulator_cff'
 	self.L1MENUDefaultCFF="Configuration/StandardSequences/L1TriggerDefaultMenu_cff"
@@ -536,7 +536,7 @@ class ConfigBuilder(object):
     def prepare_HISIGNAL(self, sequence = None):   ###HI
         """ Enrich the schedule with the digitisation step"""
 	self.loadAndRemember(self.HISIGNALDefaultCFF)
-        self.process.signal_step = cms.Path(self.process.hiSignalSequence)    
+        self.process.signal_step = cms.Path(self.process.phisignal)    
         self.schedule.append(self.process.signal_step)
 
         if sequence:
@@ -794,7 +794,7 @@ class ConfigBuilder(object):
     def build_production_info(self, evt_type, evtnumber):
         """ Add useful info for the production. """
         prod_info=cms.untracked.PSet\
-              (version=cms.untracked.string("$Revision: 1.140 $"),
+              (version=cms.untracked.string("$Revision: 1.3 $"),
                name=cms.untracked.string("PyReleaseValidation"),
                annotation=cms.untracked.string(evt_type+ " nevts:"+str(evtnumber))
               )
