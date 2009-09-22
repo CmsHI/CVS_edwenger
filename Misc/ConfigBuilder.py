@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 
-__version__ = "$Revision: 1.3 $"
-__source__ = "$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Misc/ConfigBuilder.py,v $"
+__version__ = "$Revision: 1.146 $"
+__source__ = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v $"
 
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.Modules import _Module 
@@ -15,7 +15,8 @@ class Options:
 defaultOptions = Options()
 defaultOptions.datamix = 'DataOnSim'
 defaultOptions.pileup = 'NoPileUp'
-defaultOptions.geometry = 'Ideal'
+defaultOptions.geometry = 'Extended'
+defaultOptions.geometryExtendedOptions = ['ExtendedGFlash','Extended','NoCastor']
 defaultOptions.magField = 'Default'
 defaultOptions.conditions = 'FrontierConditions_GlobalTag,STARTUP_V5::All'
 defaultOptions.scenarioOptions=['pp','cosmics','nocoll','HeavyIons']
@@ -274,11 +275,13 @@ class ConfigBuilder(object):
 	        self.additionalCommands.append("process.horeco.doMiscalib = True")
 	        self.additionalCommands.append("process.hfreco.doMiscalib = True")
 
-            # Apply Tracker misalignment
-            self.additionalCommands.append("# Apply Tracker misalignment")
+            # Apply Tracker and Muon misalignment
+            self.additionalCommands.append("# Apply Tracker and Muon misalignment")
             self.additionalCommands.append("process.famosSimHits.ApplyAlignment = True")
 	    self.additionalCommands.append("process.misalignedTrackerGeometry.applyAlignment = True\n")
-                                       
+	    self.additionalCommands.append("process.misalignedDTGeometry.applyAlignment = True")
+	    self.additionalCommands.append("process.misalignedCSCGeometry.applyAlignment = True\n")
+	    
         else:
             self.loadAndRemember(self.ConditionsDefaultCFF)
 
@@ -322,7 +325,6 @@ class ConfigBuilder(object):
 	self.GENDefaultCFF="Configuration/StandardSequences/Generator_cff"
 	self.SIMDefaultCFF="Configuration/StandardSequences/Sim_cff"
 	self.DIGIDefaultCFF="Configuration/StandardSequences/Digi_cff"
-	self.HISIGNALDefaultCFF="Configuration/StandardSequences/HiSignal_cff" ###HI
 	self.DIGI2RAWDefaultCFF="Configuration/StandardSequences/DigiToRaw_cff"
 	self.L1EMDefaultCFF='Configuration/StandardSequences/SimL1Emulator_cff'
 	self.L1MENUDefaultCFF="Configuration/StandardSequences/L1TriggerDefaultMenu_cff"
@@ -337,6 +339,12 @@ class ConfigBuilder(object):
 	self.ENDJOBDefaultCFF="Configuration/StandardSequences/EndOfProcess_cff"
 	self.ConditionsDefaultCFF = "Configuration/StandardSequences/FrontierConditions_GlobalTag_cff"
 	self.CFWRITERDefaultCFF = "Configuration/StandardSequences/CrossingFrameWriter_cff"
+        self.HISIGNALDefaultCFF = "Configuration/StandardSequences/HiSignalExtended_cff"
+
+        # synchronize the geometry configuration and the FullSimulation sequence to be used
+        if ( self._options.geometry not in defaultOptions.geometryExtendedOptions):
+            self.SIMDefaultCFF="Configuration/StandardSequences/SimIdeal_cff"
+            self.HISIGNALDefaultCFF = "Configuration/StandardSequences/HiSignal_cff"
 	
 	if "DATAMIX" in self._options.step:
 	    self.DATAMIXDefaultCFF="Configuration/StandardSequences/DataMixer"+self._options.datamix+"_cff"
@@ -347,7 +355,6 @@ class ConfigBuilder(object):
 	self.ALCADefaultSeq=None
 	self.SIMDefaultSeq=None
 	self.GENDefaultSeq=None
-	self.HISIGNALDefaultSeq=None ###HI
 	self.DIGIDefaultSeq=None
 	self.DATAMIXDefaultSeq=None
 	self.DIGI2RAWDefaultSeq=None
@@ -355,6 +362,7 @@ class ConfigBuilder(object):
 	self.L1DefaultSeq=None
 	self.HARVESTINGDefaultSeq=None
         self.CFWRITERDefaultSeq=None
+        self.HISIGNALDefaultSeq=None        
 	self.RAW2DIGIDefaultSeq='RawToDigi'
 	self.L1RecoDefaultSeq='L1Reco'
 	self.RECODefaultSeq='reconstruction'
@@ -397,12 +405,10 @@ class ConfigBuilder(object):
 	    self.DQMDefaultSeq='DQMOfflineCosmics'
 	    self.eventcontent='FEVT'
 
-        if self._options.scenario=='HeavyIons': ###HI
-		self.RECODefaultCFF="Configuration/StandardSequences/ReconstructionHeavyIons_cff"
-		self.EVTCONTDefaultCFF="Configuration/EventContent/EventContentHeavyIons_cff"
-		self.RECODefaultSeq='reconstructionHeavyIons'
-		self.eventcontent='FEVT'
-
+        if self._options.scenario=='HeavyIons':
+            self.EVTCONTDefaultCFF="Configuration/EventContent/EventContentHeavyIons_cff"
+            self.RECODefaultCFF="Configuration/StandardSequences/ReconstructionHeavyIons_cff"
+   	    self.RECODefaultSeq='reconstructionHeavyIons'
 
 	    
         # the magnetic field
@@ -415,7 +421,7 @@ class ConfigBuilder(object):
         else:
                 self.GeometryCFF='Configuration/StandardSequences/Geometry'+self._options.geometry+'_cff'
                 
-	if (self._options.isMC==True) and ("HISIGNAL" not in self._options.step): ###HI
+	if self._options.isMC==True and "HISIGNAL" not in self._options.step:  ### for Fabio (2)
  	    self.PileupCFF='Configuration/StandardSequences/Mixing'+self._options.pileup+'_cff'
         else:
 	    self.PileupCFF=''
@@ -528,32 +534,42 @@ class ConfigBuilder(object):
 
 	if self._options.magField=='0T':
 	    self.additionalCommands.append("process.g4SimHits.UseMagneticField = cms.bool(False)")
-				
+
         self.process.simulation_step = cms.Path( self.process.psim )
         self.schedule.append(self.process.simulation_step)
         return     
 
-    def prepare_HISIGNAL(self, sequence = None):   ###HI
-        """ Enrich the schedule with the digitisation step"""
-	self.loadAndRemember(self.HISIGNALDefaultCFF)
-        self.process.signal_step = cms.Path(self.process.phisignal)    
-        self.schedule.append(self.process.signal_step)
+    def prepare_HISIGNAL(self, sequence = None):
+        """ Enrich the schedule with the HeavyIons signal mixing step"""
+        self.loadAndRemember(self.HISIGNALDefaultCFF)
+        if self._options.gflash==True:
+                             self.loadAndRemember("Configuration/StandardSequences/GFlashSIM_cff")
 
-        if sequence:
-	   self.loadAndRemember("Configuration/Generator/Pyquen_"+sequence+"_4TeV_cfi")
-        else:
-	   raise AttributeError("The HISIGNAL step requires a generator sequence defined in Configuration/Generator (e.g. HISIGNAL:GammaJet_pt20")
+	if self._options.magField=='0T':
+	    self.additionalCommands.append("process.g4SimHits.UseMagneticField = cms.bool(False)")
 
-        self.process.source.inputCommands = cms.untracked.vstring('drop *','keep *_generator_*_*','keep *_g4SimHits_*_*')
-	
-        return
+###begin Fabio (1)
+	if sequence:
+		self.loadAndRemember("Configuration/Generator/Pyquen_"+sequence+"_4TeV_cfi")
+	else:
+		raise AttributeError("The HISIGNAL step requires a generator sequence defined in Configuration/Generator (e.g. HISIGNAL:GammaJet_pt20")
+
+	self.process.source.inputCommands = cms.untracked.vstring('drop *','keep *_generator_*_*','keep *_g4SimHits_*_*')
+
+###end Fabio (1)
+
+        self.process.hisignal_step = cms.Path( self.process.phisignal )
+        self.schedule.append(self.process.hisignal_step)
+        return    
 
     def prepare_DIGI(self, sequence = None):
         """ Enrich the schedule with the digitisation step"""
-	if "HISIGNAL" not in self._options.step: ###HI
-		self.loadAndRemember(self.DIGIDefaultCFF)
+###begin Fabio (4)
+	if "HISIGNAL" not in self._options.step:
+	    self.loadAndRemember(self.DIGIDefaultCFF)
 	else:
-		self.loadAndRemember("Configuration/StandardSequences/DigiHiMix_cff")
+	    self.loadAndRemember("Configuration/StandardSequences/DigiHiMix_cff")
+###end Fabio (4)
         if self._options.gflash==True:
                 self.loadAndRemember("Configuration/StandardSequences/GFlashDIGI_cff")
                 
@@ -794,7 +810,7 @@ class ConfigBuilder(object):
     def build_production_info(self, evt_type, evtnumber):
         """ Add useful info for the production. """
         prod_info=cms.untracked.PSet\
-              (version=cms.untracked.string("$Revision: 1.3 $"),
+              (version=cms.untracked.string("$Revision: 1.146 $"),
                name=cms.untracked.string("PyReleaseValidation"),
                annotation=cms.untracked.string(evt_type+ " nevts:"+str(evtnumber))
               )
