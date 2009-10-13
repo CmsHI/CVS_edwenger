@@ -30,7 +30,6 @@
 using namespace pixeltrackfitting;
 using namespace ctfseeding;
 using edm::ParameterSet;
-using namespace std;
 
 PixelTrackReconstruction::PixelTrackReconstruction(const ParameterSet& cfg)
   : theConfig(cfg), theFitter(0), theFilter(0), theCleaner(0), theGenerator(0), theRegionProducer(0)
@@ -81,8 +80,6 @@ void PixelTrackReconstruction::init(const edm::EventSetup& es)
 
 void PixelTrackReconstruction::run(TracksWithTTRHs& tracks, edm::Event& ev, const edm::EventSetup& es)
 {
-  theFilter->updateEvent(ev);
-
   typedef std::vector<TrackingRegion* > Regions;
   typedef Regions::const_iterator IR;
   Regions regions = theRegionProducer->regions(ev,es);
@@ -106,7 +103,7 @@ void PixelTrackReconstruction::run(TracksWithTTRHs& tracks, edm::Event& ev, cons
       reco::Track* track = theFitter->run(es, hits, region);
 
       // decide if track should be skipped according to filter
-      if (theFilter && !(*theFilter)(track, hits) ) {
+      if (theFilter && !(*theFilter)(track, hits, ev) ) {
         delete track;
         continue;
       }
