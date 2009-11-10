@@ -55,8 +55,10 @@ process.load("Validation.RecoTrack.cuts_cff")
 #process.cutsRecoTracks.tip = cms.double(0.2)
 #process.cutsRecoTracks.minHit = cms.int32(8)
 
-# Track association
-process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAssociation_cfi")
+# Track associator
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
+process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
 
 # Jet energy corrections
 process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_cff")
@@ -64,13 +66,13 @@ process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_cff")
 # Analyzer: fake tracks
 process.load("edwenger.FakeTrkAnalyzer.faketrkanalyzer_cfi")
 process.fakeTrkAnalyzer.ptMin=30.0
-process.fakeTrkAnalyzer.tracks=cms.untracked.InputTag('cutsRecoTracks')
+#process.fakeTrkAnalyzer.tracks=cms.untracked.InputTag('cutsRecoTracks')
 process.fakeTrkAnalyzer.jets=cms.untracked.InputTag('L2L3CorJetIC5Calo')
 
 # output file service
 process.TFileService = cms.Service( "TFileService", fileName = cms.string(options.output) )
 
 process.ana = cms.Path(process.cutsRecoTracks
-                       * process.trackingParticleRecoTrackAsssociation
                        * process.L2L3CorJetIC5Calo
+                       * process.trackingParticleRecoTrackAsssociation
                        * process.fakeTrkAnalyzer)
