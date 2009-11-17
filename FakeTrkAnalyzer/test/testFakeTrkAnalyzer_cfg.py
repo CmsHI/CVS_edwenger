@@ -51,7 +51,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Track quality cuts
 process.load("Validation.RecoTrack.cuts_cff")
-#process.cutsRecoTracks.quality = cms.vstring('highPurity')
+process.cutsRecoTracks.quality = cms.vstring('highPurity')
 #process.cutsRecoTracks.tip = cms.double(0.2)
 #process.cutsRecoTracks.minHit = cms.int32(8)
 
@@ -59,6 +59,7 @@ process.load("Validation.RecoTrack.cuts_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
 process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
+process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("cutsRecoTracks")
 
 # Jet energy corrections
 process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_cff")
@@ -66,7 +67,7 @@ process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_cff")
 # Analyzer: fake tracks
 process.load("edwenger.FakeTrkAnalyzer.faketrkanalyzer_cfi")
 process.fakeTrkAnalyzer.ptMin=30.0
-#process.fakeTrkAnalyzer.tracks=cms.untracked.InputTag('cutsRecoTracks')
+process.fakeTrkAnalyzer.tracks=cms.untracked.InputTag('cutsRecoTracks')
 process.fakeTrkAnalyzer.jets=cms.untracked.InputTag('L2L3CorJetIC5Calo')
 
 # output file service

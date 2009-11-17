@@ -13,7 +13,7 @@
 //
 // Original Author:  Edward Allen WENGER
 //         Created:  Fri Nov  6 10:15:22 CET 2009
-// $Id: FakeTrkAnalyzer.cc,v 1.1 2009/11/10 11:20:57 edwenger Exp $
+// $Id: FakeTrkAnalyzer.cc,v 1.2 2009/11/10 17:27:37 edwenger Exp $
 //
 //
 
@@ -140,21 +140,27 @@ FakeTrkAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     double pt_trk = track->pt();
     if(pt_trk < thePtMin_)
       continue;
-    cout << "The track pt = " << pt_trk << endl;
+    double pt_err = track->ptError();
+    cout << "The track pt = " << pt_trk << " (pt error = " << pt_err  << ")" << endl;
     
     // determine whether track can be matched to tracking truth
     bool isFake = false;
+    double pt_tp = 0.0;
     std::vector<std::pair<TrackingParticleRef, double> > tp;
     if(p.find(track) != p.end()){
       tp = p[track];
       if (tp.size()!=0) {
 	TrackingParticleRef tpr = tp.begin()->first;
+	pt_tp = sqrt(tpr->momentum().Perp2());
 	double associationQuality = tp.begin()->second;
 	cout << "associated with quality = " << associationQuality << endl;
+	cout << "reco (true) pt = " << pt_trk << " (" << pt_tp << ")" << endl;
       }
-      else 
-	isFake=true;
+    } else {
+      cout << "FAKE track" << endl;
+      isFake=true;
     }
+
     
     // get calo jet collection
     Handle<CaloJetCollection> jets;
@@ -184,7 +190,7 @@ FakeTrkAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     
     cout << "The nearest jet with et > " << pt_trk*0.7 << "GeV: \n\t dr= " << mindr << "\t et=" << et_nj << endl;
     
-    nt->Fill(pt_trk,mindr,et_nj,isFake);
+    nt->Fill(pt_trk,pt_tp,pt_err,mindr,et_nj,isFake);
     
     
   } // end loop over tracks
@@ -197,7 +203,7 @@ void
 FakeTrkAnalyzer::beginJob()
 {
 
-  nt = f->make<TNtuple>("nt","Fake Track Testing","pt:dr:et:fake");
+  nt = f->make<TNtuple>("nt","Fake Track Testing","pt:ptr:err:dr:et:fake");
 
 
 }
