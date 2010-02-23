@@ -62,7 +62,7 @@ void analyzeTracks(){
   
   //----- input files (900 GeV data) -----
   vector<string> fileNames;
-  string fileDir = ".";
+  string fileDir = "../python";
   fileNames.push_back(fileDir + "/trkAnaSkimAOD.root");
   fwlite::ChainEvent event(fileNames);
 
@@ -107,7 +107,7 @@ void analyzeTracks(){
 
     // select on requirement of valid vertex
     fwlite::Handle<std::vector<reco::Vertex> > vertices;
-    vertices.getByLabel(event, "pixelVertices");
+    vertices.getByLabel(event, "pixel3Vertices");
     hVtxSize->Fill(vertices->size());
     if(!vertices->size()) continue;
     size_t maxtracks=0; double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9, bestNchi2=999.9;
