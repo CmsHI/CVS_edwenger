@@ -1,3 +1,7 @@
+// Usage:
+// .x rootlogon.C
+// .x analyzeTracks.C++
+
 #include <memory>
 #include <string>
 #include <vector>
