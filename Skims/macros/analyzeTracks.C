@@ -56,42 +56,10 @@ void analyzeTracks(){
   TH1D *hTrkEta     = new TH1D("hTrkEta","track #eta; #eta", 30, -3.0, 3.0);
   TH1D *hTrkPhi     = new TH1D("hTrkPhi","track #phi; #phi [radians]", 28, -3.5, 3.5);
   
-  //----- input files (run 124023) -----
+  //----- input files (900 GeV data) -----
   vector<string> fileNames;
-  string fileDir = "rfio:/castor/cern.ch/cms/store/data/BeamCommissioning09/MinimumBias/RECO/Feb9ReReco_v2/0025";
-  fileNames.push_back(fileDir + "/F68A5ABB-E515-DF11-8A77-0026189437F0.root");
-  fileNames.push_back(fileDir + "/F67155E0-E815-DF11-B478-003048678B30.root");
-  fileNames.push_back(fileDir + "/F4893FBB-E515-DF11-883A-0030486792B4.root");
-  /*fileNames.push_back(fileDir + "/D8FC2BFE-E615-DF11-9533-003048678B5E.root");
-  fileNames.push_back(fileDir + "/D0C1373B-EB15-DF11-8BF7-0026189438CF.root");
-  fileNames.push_back(fileDir + "/CE78C9FD-E615-DF11-A6F5-00261894394F.root");
-  fileNames.push_back(fileDir + "/C8283EFD-E615-DF11-A603-00261894383B.root");
-  fileNames.push_back(fileDir + "/C69943C1-E515-DF11-B659-00304867920C.root");
-  fileNames.push_back(fileDir + "/C0DB53DA-E915-DF11-9252-002618943921.root");
-  fileNames.push_back(fileDir + "/C022BEB9-E515-DF11-8A2B-003048679168.root");
-  fileNames.push_back(fileDir + "/AE991602-EA15-DF11-BD87-003048B95B30.root");
-  fileNames.push_back(fileDir + "/A08741B4-E615-DF11-A7AA-002618943977.root");
-  fileNames.push_back(fileDir + "/9CAF22B4-E615-DF11-9374-0026189438B3.root");
-  fileNames.push_back(fileDir + "/90A835B4-E615-DF11-8A69-00261894395A.root");
-  fileNames.push_back(fileDir + "/864065D7-E715-DF11-A278-0026189438DA.root");
-  fileNames.push_back(fileDir + "/804FF8B4-E615-DF11-BCD2-00261894392B.root");
-  fileNames.push_back(fileDir + "/765C2490-E115-DF11-853E-003048679168.root");
-  fileNames.push_back(fileDir + "/6AE396F0-ED15-DF11-8B1E-0026189438AD.root");
-  fileNames.push_back(fileDir + "/66CB14B4-E615-DF11-9786-0026189438CC.root");
-  fileNames.push_back(fileDir + "/643DB5B2-E615-DF11-8D6B-003048D42D92.root");
-  fileNames.push_back(fileDir + "/62E0C7B9-E515-DF11-82C2-002618943866.root");
-  fileNames.push_back(fileDir + "/5E0C3B3C-EB15-DF11-A99B-003048678BAA.root");
-  fileNames.push_back(fileDir + "/58F48BF9-EB15-DF11-B1E2-00261894389E.root");
-  fileNames.push_back(fileDir + "/3C3A7DF6-EC15-DF11-A34B-003048678EE2.root");
-  fileNames.push_back(fileDir + "/3C0E0491-E315-DF11-B3C2-0026189437F0.root");
-  fileNames.push_back(fileDir + "/3A991163-DA15-DF11-A28B-0026189438D6.root");
-  fileNames.push_back(fileDir + "/2E9847BB-E515-DF11-AE34-0026189438E1.root");
-  fileNames.push_back(fileDir + "/287BF4FD-E615-DF11-9013-00248C0BE005.root");
-  fileNames.push_back(fileDir + "/26DAA4BA-E515-DF11-961B-002618943977.root");
-  fileNames.push_back(fileDir + "/226244B4-E615-DF11-AA1F-00248C0BE005.root");
-  fileNames.push_back(fileDir + "/124B7EBB-E515-DF11-BFF8-003048678B5E.root");
-  fileNames.push_back(fileDir + "/0CFA07DC-E715-DF11-A51D-002618943845.root");
-  fileNames.push_back(fileDir + "/0A76F1E0-E815-DF11-9023-002618943921.root");*/
+  string fileDir = ".";
+  fileNames.push_back(fileDir + "/trkAnaSkimAOD.root");
   fwlite::ChainEvent event(fileNames);
 
   //----- loop over events -----
