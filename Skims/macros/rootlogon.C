@@ -5,7 +5,7 @@
   AutoLibraryLoader::enable();
  
   //open dummy file to for automatic loading of necessary libraries
-  new TFile("../python/trkAnaSkimAOD.root");
+  new TFile("./trkAnaSkimAOD.root");
 
 }
 
