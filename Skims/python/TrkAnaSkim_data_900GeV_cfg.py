@@ -4,9 +4,18 @@
 #   * UserCode/SavedFMa/pp/jet/ana/MinBias2009Winter/skim
 
 import FWCore.ParameterSet.Config as cms
-
 process = cms.Process("ANASKIM")
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
+
+process.load('Configuration/StandardSequences/Services_cff')
+process.load('FWCore.MessageLogger.MessageLogger_cfi')
+process.load('Configuration/StandardSequences/GeometryExtended_cff')
+process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration/EventContent/EventContent_cff')
+
+# Global tags for data re-processing: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideFrontierConditions#Global_tags_for_2009_collisi_AN1
+process.GlobalTag.globaltag = 'GR09_R_34X_V5::All'
+
 # activate the following lines to get some output
 #process.MessageLogger.destinations = cms.untracked.vstring("cout")
 #process.MessageLogger.cout = cms.untracked.PSet(threshold = cms.untracked.string("INFO"))
@@ -26,11 +35,11 @@ process.source = cms.Source("PoolSource",
 
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.1 $'),
-    name = cms.untracked.string('$Source: /local/projects/CMSSW/rep/UserCode/edwenger/Skims/python/TrkAnaSkim_data_900GeV_cfg.py,v $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 
@@ -72,11 +81,17 @@ process.monsterVeto = cms.EDFilter("FilterOutScraping",
 #    maxd0 = cms.double(2)	
 #    )
 
+
+# =============== Extra Vertex Step =====================
+process.load("edwenger.Skims.ExtraVertex_cff")
+
+
 # =============== Final Filter Path =====================
 process.trkAnaSkim_step = cms.Path(process.physDeclFilter *
                                    process.bptxAnd *
                                    process.bscOr *
-                                   process.monsterVeto)
+                                   process.monsterVeto *
+                                   process.extraVertex)
 
 
 # =============== Output ================================
@@ -85,6 +100,7 @@ process.output = cms.OutputModule("PoolOutputModule",
       # event
       'keep *_offlinePrimaryVertices_*_*',
       'keep *_pixelVertices_*_*',
+      'keep *_pixel3Vertices_*_*',                                     
       'keep *_offlineBeamSpot_*_*',
       'keep *_TriggerResults_*_HLT',
       'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*RECO',
