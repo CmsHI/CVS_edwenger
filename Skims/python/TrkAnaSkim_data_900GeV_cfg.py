@@ -22,19 +22,18 @@ process.GlobalTag.globaltag = 'GR09_R_34X_V5::All'
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    "/store/data/BeamCommissioning09/MinimumBias/RECO/Feb9ReReco_v2/0025/F68A5ABB-E515-DF11-8A77-0026189437F0.root"
-     ),
-    eventsToProcess = cms.untracked.VEventRange(
+    '/store/data/BeamCommissioning09/MinimumBias/RECO/Feb9ReReco_v2/0026/EC7E2A81-0116-DF11-BD52-002618943867.root',
+    '/store/data/BeamCommissioning09/MinimumBias/RECO/Feb9ReReco_v2/0025/FCD920B9-E515-DF11-9983-003048678FE4.root'),                        
+    lumisToProcess = cms.untracked.VLuminosityBlockRange(
     '123596:2-123596:max','123615:70-123615:max','123732:62-123732:109',
-    '123815:8- 123815:max','123818:2-123818:42','123908:2-123908:12',
-    '124008:1-124008:1','124009:1- 124009:68','124020:12-124020:94',
-    '124022:66-124022:179','124023:38-124023:max','1240 24:2- 124024:83',
-    '124025:5-124025:13','124027:24-124027:max','124030:2-124030:max'
-     )
-    )
+    '123815:8-123815:max','123818:2-123818:42','123908:2-123908:12',
+    '124008:1-124008:1','124009:1-124009:68','124020:12-124020:94',
+    '124022:66-124022:179','124023:38-124023:max','124024:2-124024:83',
+    '124025:5-124025:13','124027:24-124027:max','124030:2-124030:max')
+)
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
