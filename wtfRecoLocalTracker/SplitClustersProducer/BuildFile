@@ -1,0 +1,68 @@
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/SiStripCluster>
+<use name=DataFormats/SiStripDetId>
+<use name=CondFormats/DataRecord>
+<use name=CondFormats/SiStripObjects>
+<use name=CalibFormats/SiStripObjects>
+<use name=CalibTracker/Records>
+
+<use name=Geometry/TrackerGeometryBuilder>
+<use name=AnalysisDataFormats/SiStripClusterInfo>
+
+<use name=boost>
+<use name=root>
+<use name=FWCore/MessageLogger>
+<use name=Geometry/Records>
+<use name=AnalysisDataFormats/TrackInfo>
+<use name=DataFormats/Common>
+<use name=DataFormats/SiStripDigi>
+<use name=DataFormats/TrackReco>
+<use name=DataFormats/TrackerRecHit2D>
+<use name=SimDataFormats/TrackingHit>
+<use name=SimDataFormats/Track>
+<use name=SimDataFormats/TrackerDigiSimLink>
+<use name=SimTracker/TrackAssociation>
+<use name=SimTracker/TrackerHitAssociation>
+
+#<flags EDM_PLUGIN=1>
+
+<export>
+  <lib name=wtfRecoLocalTrackerSplitClustersProducer>
+
+  <use name=FWCore/Framework>
+  <use name=FWCore/PluginManager>
+  <use name=FWCore/ParameterSet>
+  <use name=DataFormats/SiStripCluster>
+  <use name=DataFormats/SiStripDetId>
+  <use name=CondFormats/DataRecord>
+  <use name=CondFormats/SiStripObjects>
+  <use name=CalibFormats/SiStripObjects>
+  <use name=CalibTracker/Records>
+
+  <use name=Geometry/TrackerGeometryBuilder>
+  <use name=AnalysisDataFormats/SiStripClusterInfo>
+
+  <use name=boost>
+  <use name=root>
+  <use name=FWCore/MessageLogger>
+  <use name=Geometry/Records>
+#  <use name=Geometry/TrackerGeometryBuilder>
+#  <use name=AnalysisDataFormats/SiStripClusterInfo>
+  <use name=AnalysisDataFormats/TrackInfo>
+  <use name=DataFormats/Common>
+  <use name=DataFormats/SiStripDigi>
+  <use name=DataFormats/TrackReco>
+  <use name=DataFormats/TrackerRecHit2D>
+  <use name=SimDataFormats/TrackingHit>
+  <use name=SimDataFormats/Track>
+  <use name=SimDataFormats/TrackerDigiSimLink>
+  <use name=SimTracker/TrackAssociation>
+  <use name=SimTracker/TrackerHitAssociation>
+#  <use name=CalibTracker/SiStripConnectivity>
+#  <use name=CommonTools/SiStripZeroSuppression>
+#  <use name=SimDataFormats/HepMCProduct>
+
+</export>
+

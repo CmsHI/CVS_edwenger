@@ -1,0 +1,52 @@
+24 Oct 2009  wtford -- V01-01-02
+ClusterAnalyzer:  change calls to leftStripCount to match new signature
+in V01-01-03 of SplitClustersProducer.  At present only the split byHits
+option is supported; this needs to be fixed.
+
+4 Oct 2009  wtford -- V01-01-01
+Requires wtfRecoLocalTracker/SplitClustersProducer V01-01-01 (or later)
+ClusterAnalyzer:  Add inheritance from
+wtfRecoLocalTracker/SplitClustersAlgos to replace local copy of 
+leftStripCount().  Add a parameter to control the output root file
+name. 
+Buildfile:  Add <use name=wtfRecoLocalTracker/SplitClustersProducer> to
+point the builder to library needed for the addition above.
+SplitHitsAnalysis_cfg.py:  Point newTrajectoryBuilder to the split
+clusters 
+
+29 Sep 2009  wtford -- Commit V01-01-00
+
+21 Sept 2009  wtford -- 
+The SplitHitsAnalysis job was leaking about 3MB per event.
+25 Sept., 2009
+The leaky module is the trackInfo.  I learn from e-mail from Chiara
+Genta that in fact trackInfo is obsolete and unsupported.  Rewrote the
+loop over tracks and recHits in the analyzer to use the persistent
+tracks instead, and eliminated the trackInfo module from the path.
+
+Add member function SplitClustersProducer::leftStripCount, since this
+code is repeated 5 times in the analyzer.
+ 
+-------------------------------------------------------------------------
+7 Aug 2009  wtford -- Migration from (Marco Cardaci's) CMSSW_2_1_9 to
+CMSSW_3_1_2.
+1.  Some complaints about the build file.  I just commented out the
+offending lines.
+2.  After much struggle, found the access to hits collection had to be
+modified (here and in the stereo collection loop): 
+210c210,214
+<    for(SiStripRecHit2DCollection::const_iterator rechitsrphiIter = rechitsrphi->begin(); rechitsrphiIter != rechitsrphi->end(); ++rechitsrphiIter) {
+---
+>    const SiStripRecHit2DCollection::DataContainer& rechitsrphiColl = rechitsrphi->data();
+>    for(SiStripRecHit2DCollection::DataContainer::const_iterator rechitsrphiIter = rechitsrphiColl.begin(); rechitsrphiIter != rechitsrphiColl.end(); ++rechitsrphiIter) {
+>     const SiStripRecHit2D *aHit = &*(rechitsrphiIter);
+> //     DetId mydet1 = aHit->geographicalId();
+> //     if (idet.rawId() != mydet1.rawId()) continue;
+212c216
+<     if(rechitsrphiIter->cluster().isNonnull()){clust=&(*rechitsrphiIter->cluster());}
+---
+>     if(aHit->cluster().isNonnull()) {clust=&(*rechitsrphiIter->cluster());}
+This is based on an example in 
+CMSSW/Alignment/CommonAlignmentProducer/src/AlignmentTrackSelector.cc
+
+---------------------------------------------------------------------

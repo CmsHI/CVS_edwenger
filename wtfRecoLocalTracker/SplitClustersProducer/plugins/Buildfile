@@ -1,0 +1,3 @@
+<library file="*.cc" name=wtfRecoLocalTrackerSplitClustersProducerPlugins>
+  <flags EDM_PLUGIN=1>
+</library>

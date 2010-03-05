@@ -1,0 +1,116 @@
+13 Jan 2010  wtford -- V01-01-11
+SplitClustersProducer:  Use the associateSimpleRecHitCluster signature
+that's in CMSSW_3_4_X, so we won't need to check out the later version,
+since the additional argument is no longer needed. 
+
+25 Nov 2009  wtford -- V01-01-10
+SplitClustersProducer:  Back out "Replace calls to hitAssociator with
+inline code (should be faster)."  We now have reverted to V01-01-08 but
+with function dumpDigiSimLinks.
+
+20 Nov 2009  wtford -- V01-01-09
+SplitClustersProducer:  Cosmetic changes only (consistent indentation);
+printOut -> false.
+
+20 Nov 2009  wtford
+SplitClustersProducer:  Add a function to dump information to a flat
+file for analysis.  Replace calls to hitAssociator with inline code
+(should be faster).
+
+10 Nov 2009  wtford -- V01-01-08
+SplitClustersProducer:  Add code for splitBy:  byTracks, using the
+fraction() method.  Also supports an unlimited number of clusters after
+splitting. 
+
+9 Nov 2009  wtford -- V01-01-07
+SplitClustersProducer:  Change logic to fill all elements of amp arrays,
+preserve special amp values 254, 255.  Debug printout is active in this
+version. 
+
+8 Nov 2009  wtford -- V01-01-06
+SplitClustersProducer:  Split (byHits) by inserting the simHits in
+cluster form, obtained by use of the fraction() method of the
+DigiSimLinks. 
+
+3 Nov 2009  wtford -- V01-01-05
+Use new interface to TrackerHitAssociator::associateSimpleRecHitCluster,
+which avoids calling it twice.
+(needs SimTracker/TrackerHitAssociation V01-04-07)
+
+27 Oct 2009  wtford -- V01-01-04
+SplitClustersProducer:  Change call to
+TrackerHitAssociator::associateSimpleRecHitCluster to match modified
+interface in V01-04-06 of SimTracker/TrackerHitAssociation.
+
+24 Oct 2009  wtford -- V01-01-03
+SplitClustersProducer:  Remove loops on RecHits, since we now have
+access to hit association directly from the cluster.  (Needs
+SimTracker/TrackerHitAssociation V01-04-05.)
+SplitClustersProducer, SplitClustersAlgos:  Add option to split clusters
+associated with 2 SimTrackracks, as alternative to splitting when there
+are 2 associated SimHits.  In the config one can now set
+process.siStripSplitClusters = cms.EDProducer("SplitClustersProducer",
+                                              splitBy = cms.string('byHits'))
+or                                                                 'byTracks'
+
+11 Oct 2009  wtford -- V01-01-02
+SplitClustersProducer:  add method SplitClustersProducer::dumpSimTracks
+to inspect the original and split clusters.  This requires also the tags
+V06-01-08      DataFormats/TrackerRecHit2D                      
+V01-04-04      SimTracker/TrackerHitAssociation                 
+with a private modification to TrackerHitAssociator: new function
+overload 
+std::vector<PSimHit> associateSimpleRecHitCluster(const SiStripCluster*);
+
+4 Oct 2009  wtford -- V01-01-01
+Add new base class SplitClustersAlgos to provide leftStripCount() either
+to this package or to ClusterAnalyzer.
+SplitClustersProducer:  Add inheritance from SplitClustersAlgos and
+remove leftStripCount() to SplitClustersAlgos.
+Add plugins/SealModule.cc and plugins/Buildfile to create the library
+needed by the Analyzer.
+
+29 Sep 2009  wtford -- Commit V01-01-00
+
+21 Sept 2009  wtford --
+The producer job was leaking about 3MB per event.  This is true even if
+the SplitClustersProducer::produce() method returns at the top.
+The job crashes at event 649.
+25 Sept., 2009
+The leaky module is the trackInfo.  I learn from e-mail from Chiara
+Genta that in fact trackInfo is obsolete and unsupported.  It suffices
+just to eliminate the trackInfo module from the path.
+
+Fixed a small bug in split cluster producer:  2nd cluster's left edge
+was being placed at the center of the original cluster, rather than
+adjacent to the new first cluster.
+
+Add member function SplitClustersProducer::leftStripCount, since this
+code is repeated twice in the producer.  Separate the producer
+declaration into a header file (the idea was to make leftStripCount
+accessible to the analyzer as well, but I've not succeeded with this so
+far). 
+ 
+-------------------------------------------------------------------------
+7 Aug 2009  wtford -- Migration from (Marco Cardaci's) CMSSW_2_1_9 to
+CMSSW_3_1_2.
+1.  Some complaints about the build file.  I just commented out the
+offending lines.
+2.  After much struggle, found the access to hits collection had to be
+modified (here and in the stereo collection loop): 
+210c210,214
+<    for(SiStripRecHit2DCollection::const_iterator rechitsrphiIter = rechitsrphi->begin(); rechitsrphiIter != rechitsrphi->end(); ++rechitsrphiIter) {
+---
+>    const SiStripRecHit2DCollection::DataContainer& rechitsrphiColl = rechitsrphi->data();
+>    for(SiStripRecHit2DCollection::DataContainer::const_iterator rechitsrphiIter = rechitsrphiColl.begin(); rechitsrphiIter != rechitsrphiColl.end(); ++rechitsrphiIter) {
+>     const SiStripRecHit2D *aHit = &*(rechitsrphiIter);
+> //     DetId mydet1 = aHit->geographicalId();
+> //     if (idet.rawId() != mydet1.rawId()) continue;
+212c216
+<     if(rechitsrphiIter->cluster().isNonnull()){clust=&(*rechitsrphiIter->cluster());}
+---
+>     if(aHit->cluster().isNonnull()) {clust=&(*rechitsrphiIter->cluster());}
+This is based on an example in 
+CMSSW/Alignment/CommonAlignmentProducer/src/AlignmentTrackSelector.cc
+
+---------------------------------------------------------------------
