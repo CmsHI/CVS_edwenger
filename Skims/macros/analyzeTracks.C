@@ -34,8 +34,8 @@
 
 void analyzeTracks(bool debug=false){
 
-   // is gen track needed
-   const bool isGEN = false;
+  // is gen track needed
+  const bool isGEN = false;
 
   // event cuts
   const unsigned int maxEvents = -1;
@@ -53,8 +53,8 @@ void analyzeTracks(bool debug=false){
 
   //----- input files (900 GeV data) -----
   vector<string> fileNames;
-  //string fileDir = "rfio:/castor/cern.ch/user/e/edwenger/trkAnaSkim/MB_BC09-Feb9ReReco_v2_pptrkana_skim/v4";
-  string fileDir = "/d101/edwenger/data/v4";
+  string fileDir = "/d101/edwenger/data/v4";       // data skim
+  //string fileDir = "/d101/y_alive/mc/crab/v3";   // mc skim
   cout << "directory: '" << fileDir << "'" << endl;
   for(int ifile=1; ifile<=31; ifile++) {
     TString name = Form("trkAnaSkimAOD_%d.root",ifile);
@@ -173,6 +173,8 @@ void analyzeTracks(bool debug=false){
     hBeamYRun->Fill(event.id().run(),beamspot->y0());
     hBeamZRun->Fill(event.id().run(),beamspot->z0());
 
+    // TO DO: get hlt bits
+
     //----- loop over tracks -----
     for(unsigned it=0; it<tracks->size(); ++it){
       
@@ -199,7 +201,7 @@ void analyzeTracks(bool debug=false){
       hTrkPtErrNhits->Fill(nhits,pterr);
       hTrkPtErrEta->Fill(trk.eta(),pterr);
       if(debug && trk.pt() > ptDebug) // fill debug ntuple for selection of tracks
-	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),nhits,pterr,dxybeam,trk.d0Error(),dzvtx,trk.dzError());
+	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError());
       if(pterr > ptErrCut) continue;
 
       // select tracks based on number of valid rechits
@@ -222,8 +224,8 @@ void analyzeTracks(bool debug=false){
        const reco::GenParticle & p = (*genTracks)[ip];
        if(p.status() != 1) continue;
        if(p.collisionId() != 0) continue;
-       if(p.charge() != 0) continue;
-       if(abs(p.eta())>2.5) continue;
+       if(p.charge() == 0) continue;
+       if(fabs(p.eta())>2.5) continue;
        // fill selected GEN track histograms
        hGenTrkPt->Fill(p.pt());
     }
