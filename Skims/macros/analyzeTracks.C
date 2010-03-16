@@ -28,10 +28,14 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #endif
 
 void analyzeTracks(bool debug=false){
+
+   // is gen track needed
+   const bool isGEN = false;
 
   // event cuts
   const unsigned int maxEvents = -1;
@@ -90,6 +94,9 @@ void analyzeTracks(bool debug=false){
   TH1D *hTrkPt      = new TH1D("hTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
   TH1D *hTrkEta     = new TH1D("hTrkEta","track #eta; #eta", 60, -3.0, 3.0);
   TH1D *hTrkPhi     = new TH1D("hTrkPhi","track #phi; #phi [radians]", 56, -3.5, 3.5);
+
+  // gen track hists
+  TH1D *hGenTrkPt      = new TH1D("hGenTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
 
   // debug ntuple
   outFile->cd();
@@ -205,6 +212,23 @@ void analyzeTracks(bool debug=false){
       hTrkPhi->Fill(trk.phi());
 
     }
+
+    //---- loop over MC gen level track ---- 
+    if(!isGEN) continue;
+    fwlite::Handle<std::vector<reco::GenParticle> > genTracks;
+    genTracks.getByLabel(event, "genParticles");
+    
+    for(unsigned ip=0; ip<genTracks->size(); ++ip){
+       const reco::GenParticle & p = (*genTracks)[ip];
+       if(p.status() != 1) continue;
+       if(p.collisionId() != 0) continue;
+       if(p.charge() != 0) continue;
+       if(abs(p.eta())>2.5) continue;
+       // fill selected GEN track histograms
+       hGenTrkPt->Fill(p.pt());
+    }
+    
+
     
   }
   
