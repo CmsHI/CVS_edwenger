@@ -10,6 +10,7 @@
 
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TNtuple.h>
 #include <TFile.h>
 #include <TROOT.h>
 #include <TSystem.h>
@@ -30,9 +31,10 @@
 
 #endif
 
-void analyzeTracks(){
-  
+void analyzeTracks(bool debug=false){
+
   // event cuts
+  const unsigned int maxEvents = -1;
   const float hpFracCut = 0.25;
   const unsigned nTrackCut = 10;
   const double hfEThreshold = 3.0;
@@ -43,29 +45,8 @@ void analyzeTracks(){
   const double normDZCut = 3.0;
   const double ptErrCut = 0.1;
   const unsigned nHitsCut = 1; // at least this many hits on track
+  const double ptDebug = 3.0;  // fill debug ntuple for this selection
 
-  //----- histograms -----
-  TH2D *hRunLumi    = new TH2D("hRunLumi","Event information; run number; luminosity block",500,123549.5,124049.5,200,-0.5,199.5);
-  TH1D *hL1TechBits = new TH1D("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
-  TH2D *hHPFracNtrk = new TH2D("hHPFracNtrk","High purity fraction vs. # of tracks; number of tracks; highPurity fraction",50,0,500,50,0,1);
-  TH2D *hHfTowers   = new TH2D("hHfTowers","Number of HF tower above threshold; positive side; negative side",80,-0.5,79.5,80,-0.5,79.5);
-
-  TH1D *hVtxSize    = new TH1D("hVtxSize","number of reconstructed pixel vertices",10,-0.5,9.5);
-  TH1D *hVtxTrks    = new TH1D("hVtxTrks","number of tracks used to fit pixel vertex",50,-0.5,49.5);
-  TH1D *hVtxZ       = new TH1D("hVtxZ","z position of best reconstructed pixel vertex", 80,-20,20);
-  TH2D *hBeamXRun   = new TH2D("hBeamXRun","x position of beamspot; run number",500,123549.5,124049.5,80,-0.2,0.2);
-  TH2D *hBeamYRun   = new TH2D("hBeamYRun","y position of beamspot; run number",500,123549.5,124049.5,80,-0.2,0.2);
-  TH2D *hBeamZRun   = new TH2D("hBeamZRun","z position of beamspot; run number",500,123549.5,124049.5,80,-2,2);
-
-  TH1D *hTrkQual    = new TH1D("hTrkQual","track quality", 20, -0.5, 19.5);
-  TH1D *hTrkDxyBeam = new TH1D("hTrkDxyBeam","track dxy from beamspot; dxy [cm]", 80, -2.0, 2.0);
-  TH1D *hTrkDzVtx   = new TH1D("hTrkDzVtx","track dz from vertex; dz [cm]", 80, -2.0, 2.0);
-  TH2D *hTrkPtErrNhits = new TH2D("hTrkPtErrNhits","track relative pt-error vs. nhits; number of valid hits on track; #sigma(p_{T})/p_{T}",30,-0.5,29.5,40,0.0,0.5);
-  TH1D *hTrkNhits   = new TH1D("hTrkNhits", "number of valid hits on track", 30,-0.5,29.5);
-  TH1D *hTrkPt      = new TH1D("hTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
-  TH1D *hTrkEta     = new TH1D("hTrkEta","track #eta; #eta", 60, -3.0, 3.0);
-  TH1D *hTrkPhi     = new TH1D("hTrkPhi","track #phi; #phi [radians]", 56, -3.5, 3.5);
-  
   //----- input files (900 GeV data) -----
   vector<string> fileNames;
   //string fileDir = "rfio:/castor/cern.ch/user/e/edwenger/trkAnaSkim/MB_BC09-Feb9ReReco_v2_pptrkana_skim/v4";
@@ -78,11 +59,48 @@ void analyzeTracks(){
   }
   fwlite::ChainEvent event(fileNames);
 
+  //----- define output hists/trees in directories of output file -----
+  TFile *outFile = new TFile("trackHists.root", "recreate" );
+  TH1D::SetDefaultSumw2();
+
+  // evt hists
+  outFile->cd(); outFile->mkdir("evt"); outFile->cd("evt");
+  TH2D *hRunLumi    = new TH2D("hRunLumi","Event information; run number; luminosity block",500,123549.5,124049.5,200,-0.5,199.5);
+  TH1D *hL1TechBits = new TH1D("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
+  TH2D *hHPFracNtrk = new TH2D("hHPFracNtrk","High purity fraction vs. # of tracks; number of tracks; highPurity fraction",50,0,500,50,0,1);
+  TH2D *hHfTowers   = new TH2D("hHfTowers","Number of HF tower above threshold; positive side; negative side",80,-0.5,79.5,80,-0.5,79.5);
+
+  // vtx hists
+  outFile->cd(); outFile->mkdir("vtx"); outFile->cd("vtx");
+  TH1D *hVtxSize    = new TH1D("hVtxSize","number of reconstructed pixel vertices",10,-0.5,9.5);
+  TH1D *hVtxTrks    = new TH1D("hVtxTrks","number of tracks used to fit pixel vertex",50,-0.5,49.5);
+  TH1D *hVtxZ       = new TH1D("hVtxZ","z position of best reconstructed pixel vertex", 80,-20,20);
+  TH2D *hBeamXRun   = new TH2D("hBeamXRun","x position of beamspot; run number",500,123549.5,124049.5,80,-0.2,0.2);
+  TH2D *hBeamYRun   = new TH2D("hBeamYRun","y position of beamspot; run number",500,123549.5,124049.5,80,-0.2,0.2);
+  TH2D *hBeamZRun   = new TH2D("hBeamZRun","z position of beamspot; run number",500,123549.5,124049.5,80,-2,2);
+
+  // track hists
+  outFile->cd(); outFile->mkdir("trk"); outFile->cd("trk");
+  TH1D *hTrkQual    = new TH1D("hTrkQual","track quality", 20, -0.5, 19.5);
+  TH1D *hTrkDxyBeam = new TH1D("hTrkDxyBeam","track dxy from beamspot; dxy [cm]", 80, -2.0, 2.0);
+  TH1D *hTrkDzVtx   = new TH1D("hTrkDzVtx","track dz from vertex; dz [cm]", 80, -2.0, 2.0);
+  TH2D *hTrkPtErrNhits = new TH2D("hTrkPtErrNhits","track relative pt-error vs. nhits; number of valid hits on track; #sigma(p_{T})/p_{T}",30,-0.5,29.5,80,0.0,0.5);
+  TH2D *hTrkPtErrEta = new TH2D("hTrkPtErrEta","track relative pt-error vs. #eta; #eta; #sigma(p_{T})/p_{T}",60,-3,3,80,0.0,0.5);
+  TH1D *hTrkNhits   = new TH1D("hTrkNhits", "number of valid hits on track", 30,-0.5,29.5);
+  TH1D *hTrkPt      = new TH1D("hTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
+  TH1D *hTrkEta     = new TH1D("hTrkEta","track #eta; #eta", 60, -3.0, 3.0);
+  TH1D *hTrkPhi     = new TH1D("hTrkPhi","track #phi; #phi [radians]", 56, -3.5, 3.5);
+
+  // debug ntuple
+  outFile->cd();
+  TNtuple *nt=0;
+  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:algo:hits:pterr:d0:d0err:dz:dzerr");
+
   //----- loop over events -----
   unsigned int iEvent=0;
   for(event.toBegin(); !event.atEnd(); ++event, ++iEvent){
 
-    //if( iEvent == 1000 ) break;
+    if( iEvent == maxEvents ) break;
     if( iEvent % 1000 == 0 ) cout << "Processing " << iEvent<< "th event: "
 				  << "run " << event.id().run() 
 				  << ", lumi " << event.luminosityBlock() 
@@ -172,6 +190,9 @@ void analyzeTracks(){
       double pterr = trk.ptError()/trk.pt();
       unsigned nhits = trk.numberOfValidHits();
       hTrkPtErrNhits->Fill(nhits,pterr);
+      hTrkPtErrEta->Fill(trk.eta(),pterr);
+      if(debug && trk.pt() > ptDebug) // fill debug ntuple for selection of tracks
+	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),nhits,pterr,dxybeam,trk.d0Error(),dzvtx,trk.dzError());
       if(pterr > ptErrCut) continue;
 
       // select tracks based on number of valid rechits
@@ -187,57 +208,12 @@ void analyzeTracks(){
     
   }
   
-  cout<<"Number of events processed : "<<iEvent<<endl;
+  cout << "Number of events processed : " << iEvent << endl;
+  cout << "Number passing all event selection cuts: " << hVtxZ->GetEntries() << endl;
 
   // write to output file
-  TFile outFile("trackHists.root", "recreate" );
-  outFile.cd(); outFile.mkdir("evt"); outFile.cd("evt");
-  hRunLumi->Write();
-  hL1TechBits->Write();
-  hHPFracNtrk->Write();
-  hHfTowers->Write();
-
-  outFile.cd(); outFile.mkdir("vtx"); outFile.cd("vtx");
-  hVtxSize->Write();
-  hVtxTrks->Write();
-  hVtxZ->Write();
-  hBeamXRun->Write();
-  hBeamYRun->Write();
-  hBeamZRun->Write();
-
-  outFile.cd(); outFile.mkdir("trk"); outFile.cd("trk");
-  hTrkQual->Write();
-  hTrkDxyBeam->Write();
-  hTrkDzVtx->Write();
-  hTrkPtErrNhits->Write();
-  hTrkNhits->Write();
-  hTrkPt->Write();
-  hTrkEta->Write();
-  hTrkPhi->Write();
-  
-  outFile.ls();
-  outFile.Close();
-
-  // free allocated space
-  delete hRunLumi;
-  delete hL1TechBits; 
-  delete hHPFracNtrk;
-  delete hHfTowers;
-
-  delete hVtxSize;
-  delete hVtxTrks;
-  delete hVtxZ;
-  delete hBeamXRun;
-  delete hBeamYRun;
-  delete hBeamZRun;
-
-  delete hTrkQual; 
-  delete hTrkDxyBeam;
-  delete hTrkDzVtx;
-  delete hTrkPtErrNhits; 
-  delete hTrkNhits;
-  delete hTrkPt;
-  delete hTrkEta;
-  delete hTrkPhi;
+  outFile->Write();
+  outFile->ls();
+  outFile->Close();
 
 }
