@@ -33,7 +33,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -61,6 +61,13 @@ process.bscOr = hltLevel1GTSeed.clone(
     L1TechTriggerSeeding = cms.bool(True),
     L1SeedsLogicalExpression = cms.string('(34) AND NOT (36 OR 37 OR 38 OR 39)')
     )
+
+# ================ HLT Filter =====================
+#from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
+#process.hltJets = hltHighLevel.clone(
+#   HLTPaths = cms.vstring('HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U'),
+#   andOr = cms.bool(True)  #true (OR) any trigger fired, false (AND) all triggers fired
+#   )
 
 
 # ================ Monster Event Rejection ==============
