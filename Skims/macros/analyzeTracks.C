@@ -96,7 +96,8 @@ void analyzeTracks(bool debug=false){
   TH1D *hTrkPhi     = new TH1D("hTrkPhi","track #phi; #phi [radians]", 56, -3.5, 3.5);
 
   // gen track hists
-  TH1D *hGenTrkPt      = new TH1D("hGenTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
+  TH1D *hGenTrkPt=0;      
+  if(isGEN) hGenTrkPt = new TH1D("hGenTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
 
   // debug ntuple
   outFile->cd();
