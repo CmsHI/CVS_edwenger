@@ -16,12 +16,10 @@
 #include <TSystem.h>
 #include <TString.h>
 
+#if !defined(__CINT__) && !defined(__MAKECINT__)
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
-
-#if !defined(__CINT__) && !defined(__MAKECINT__)
-
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerFwd.h"
@@ -29,7 +27,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 #endif
 
 void analyzeTracks(bool debug=false){
@@ -51,7 +50,10 @@ void analyzeTracks(bool debug=false){
   const unsigned nHitsCut = 1; // at least this many hits on track
   const double ptDebug = 3.0;  // fill debug ntuple for this selection
   // kinematic cuts
-  const double etaCut = 2.0; 
+  const double etaCut = 2.0;
+  // trigger names
+  const int nTrigs = 4;
+  char *hltNames[nTrigs] = {"HLT_MinBiasBSC","HLT_L1Jet6U","HLT_Jet15U","HLT_Jet30U"};
 
   //----- input files (900 GeV data) -----
   vector<string> fileNames;
@@ -78,6 +80,8 @@ void analyzeTracks(bool debug=false){
   TH1D *hL1TechBits = new TH1D("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
   TH2D *hHPFracNtrk = new TH2D("hHPFracNtrk","High purity fraction vs. # of tracks; number of tracks; highPurity fraction",50,0,500,50,0,1);
   TH2D *hHfTowers   = new TH2D("hHfTowers","Number of HF tower above threshold; positive side; negative side",80,-0.5,79.5,80,-0.5,79.5);
+  TH1D *hHLTPaths   = new TH1D("hHLTPaths","HLT Paths",3,0,3);
+  hHLTPaths->SetBit(TH1::kCanRebin);
 
   // vtx hists
   outFile->cd(); outFile->mkdir("vtx"); outFile->cd("vtx");
@@ -107,7 +111,7 @@ void analyzeTracks(bool debug=false){
   // debug ntuple
   outFile->cd();
   TNtuple *nt=0;
-  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:algo:hits:pterr:d0:d0err:dz:dzerr");
+  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:algo:hits:pterr:d0:d0err:dz:dzerr:jet6:jet15:jet30");
 
   //----- loop over events -----
   unsigned int iEvent=0;
@@ -155,6 +159,16 @@ void analyzeTracks(bool debug=false){
     hHPFracNtrk->Fill(tracks->size(),fraction);
     if(fraction<hpFracCut && tracks->size()>nTrackCut) continue;
 
+    // get hlt bits
+    fwlite::Handle<edm::TriggerResults> triggerResults;
+    triggerResults.getByLabel(event, "TriggerResults");
+    const edm::TriggerNames triggerNames = event.triggerNames(*triggerResults);
+    bool accept[nTrigs];
+    for(int i=0; i<nTrigs; i++) {
+      accept[i] = triggerResults->accept(triggerNames.triggerIndex(hltNames[i]));
+      if(accept[i]) hHLTPaths->Fill(hltNames[i],1);
+    }
+
     // select on requirement of valid vertex
     fwlite::Handle<std::vector<reco::Vertex> > vertices;
     //vertices.getByLabel(event, "pixel3Vertices");        //agglomerative pixel vertex
@@ -185,8 +199,6 @@ void analyzeTracks(bool debug=false){
     hBeamYRun->Fill(event.id().run(),beamspot->y0());
     hBeamZRun->Fill(event.id().run(),beamspot->z0());
 
-    // TO DO: get hlt bits
-
     //----- loop over tracks -----
     for(unsigned it=0; it<tracks->size(); ++it){
       
@@ -213,7 +225,9 @@ void analyzeTracks(bool debug=false){
       hTrkPtErrNhits->Fill(nhits,pterr);
       hTrkPtErrEta->Fill(trk.eta(),pterr);
       if(debug && trk.pt() > ptDebug) // fill debug ntuple for selection of tracks
-	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError());
+	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),
+		 nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError(),
+		 accept[1],accept[2],accept[3]);
       if(pterr > ptErrCut) continue;
 
       // select tracks based on number of valid rechits
@@ -251,6 +265,7 @@ void analyzeTracks(bool debug=false){
   cout << "Number passing all event selection cuts: " << hVtxZ->GetEntries() << endl;
 
   // write to output file
+  hHLTPaths->LabelsDeflate();
   outFile->Write();
   outFile->ls();
   outFile->Close();
