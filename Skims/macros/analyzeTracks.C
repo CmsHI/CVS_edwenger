@@ -55,14 +55,8 @@ void analyzeTracks(bool debug=false){
 
   //----- input files (900 GeV data) -----
   vector<string> fileNames;
-<<<<<<< analyzeTracks.C
-  //string fileDir = "rfio:/castor/cern.ch/user/e/edwenger/trkAnaSkim/MB_BC09-Feb9ReReco_v2_pptrkana_skim/v4";
-  //string fileDir = "d101/y_alive/mc/crab/v3";
-  string fileDir = "/d101/edwenger/data/v4";
-=======
   string fileDir = "/d101/edwenger/data/v4";       // data skim
   //string fileDir = "/d101/y_alive/mc/crab/v3";   // mc skim
->>>>>>> 1.10
   cout << "directory: '" << fileDir << "'" << endl;
   for(int ifile=1; ifile<=30; ifile++) {
     TString name = Form("trkAnaSkimAOD_%d.root",ifile);
@@ -70,12 +64,11 @@ void analyzeTracks(bool debug=false){
     fileNames.push_back(fileDir + "/" + name.Data());
   }
   fwlite::ChainEvent event(fileNames);
-
+  
   //----- define output hists/trees in directories of output file -----
   char fName[100];
   sprintf(fName,"output_%s_etaMax%1.1f_D0%1.1f_DZ%1.1f_pTerr%1.1f_nHits%u.root","trkAnaSkimAOD",
 	  etaCut,normD0Cut,normDZCut,ptErrCut,nHitsCut);
-  //TFile *outFile = new TFile("trackHists.root", "recreate" );
   TFile *outFile = new TFile(fName,"recreate");
   TH1D::SetDefaultSumw2();
 
@@ -136,7 +129,7 @@ void analyzeTracks(bool debug=false){
     for(int bit=0; bit<64; bit++) hL1TechBits->Fill(bit,word.at(bit));
     if(!word.at(0)) continue;  // BPTX coincidence
     //if(!word.at(34)) continue; // BSC single-side
-    if(!(word.at(40) || word.at(41))) continue; //
+    if(!(word.at(40) || word.at(41))) continue; // BSC coincidence
     if(word.at(36) || word.at(37) || word.at(38) || word.at(39)) continue; // BSC halo
     
     // select on coincidence of HF towers above threshold
@@ -164,8 +157,8 @@ void analyzeTracks(bool debug=false){
 
     // select on requirement of valid vertex
     fwlite::Handle<std::vector<reco::Vertex> > vertices;
-    //vertices.getByLabel(event, "pixel3Vertices");
-    vertices.getByLabel(event, "offlinePrimaryVertices");
+    //vertices.getByLabel(event, "pixel3Vertices");        //agglomerative pixel vertex
+    vertices.getByLabel(event, "offlinePrimaryVertices");  //full-track primary vertex
     hVtxSize->Fill(vertices->size());
     if(!vertices->size()) continue;
     if(vertices->size()!=1) continue;
@@ -246,18 +239,11 @@ void analyzeTracks(bool debug=false){
        const reco::GenParticle & p = (*genTracks)[ip];
        if(p.status() != 1) continue;
        if(p.collisionId() != 0) continue;
-<<<<<<< analyzeTracks.C
        if(p.charge() == 0) continue;
-       if(abs(p.eta())>etaCut) continue;
-=======
-       if(p.charge() == 0) continue;
-       if(fabs(p.eta())>2.5) continue;
->>>>>>> 1.10
+       if(fabs(p.eta())>etaCut) continue;
        // fill selected GEN track histograms
        hGenTrkPt->Fill(p.pt());
     }
-    
-
     
   }
   
