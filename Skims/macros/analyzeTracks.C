@@ -35,6 +35,7 @@ void analyzeTracks(bool debug=false){
 
   // is gen track needed
   const bool isGEN = false;
+  //debug = true;
 
   // event cuts
   const unsigned int maxEvents = -1;
@@ -42,7 +43,11 @@ void analyzeTracks(bool debug=false){
   const unsigned nTrackCut = 10;
   const double hfEThreshold = 3.0;
   const int nTowerThreshold = 1;
+  // vertex cuts 
+  const double nVtxTrackCut = 3.0;
   // track cuts
+  const char srcTrack[50] = "generalTracks";
+  //sprintf(srcTrack,"generalTracks"); // or "TrackRefitter"
   const string qualityString = "highPurity";
   const double normD0Cut = 3.0;
   const double normDZCut = 3.0;
@@ -59,8 +64,9 @@ void analyzeTracks(bool debug=false){
   vector<string> fileNames;
   string fileDir = "/d101/edwenger/data/v4";       // data skim
   //string fileDir = "/d101/y_alive/mc/crab/v3";   // mc skim
+  //string fileDir = "/d101/sungho/data/crab/v3_refit";
   cout << "directory: '" << fileDir << "'" << endl;
-  for(int ifile=1; ifile<=30; ifile++) {
+  for(int ifile=1; ifile<=3; ifile++) {
     TString name = Form("trkAnaSkimAOD_%d.root",ifile);
     cout << "  adding file: " << name.Data() << endl;
     fileNames.push_back(fileDir + "/" + name.Data());
@@ -68,9 +74,9 @@ void analyzeTracks(bool debug=false){
   fwlite::ChainEvent event(fileNames);
   
   //----- define output hists/trees in directories of output file -----
-  char fName[100];
-  sprintf(fName,"output_%s_etaMax%1.1f_D0%1.1f_DZ%1.1f_pTerr%1.1f_nHits%u.root","trkAnaSkimAOD",
-	  etaCut,normD0Cut,normDZCut,ptErrCut,nHitsCut);
+  char fName[200];
+  sprintf(fName,"output_%s_etaMax%1.1f_D0%1.1f_DZ%1.1f_pTerr%1.1f_nHits%u_nVtxTrk%1.1f_%s.root","trkAnaSkimAOD",
+	  etaCut,normD0Cut,normDZCut,ptErrCut,nHitsCut,nVtxTrackCut,srcTrack);
   TFile *outFile = new TFile(fName,"recreate");
   TH1D::SetDefaultSumw2();
 
@@ -111,7 +117,10 @@ void analyzeTracks(bool debug=false){
   // debug ntuple
   outFile->cd();
   TNtuple *nt=0;
-  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:algo:hits:pterr:d0:d0err:dz:dzerr:jet6:jet15:jet30");
+  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:algo:hits:pterr:d0:d0err:dz:dzerr:nchi2:jet6:jet15:jet30");
+
+  
+
 
   //----- loop over events -----
   unsigned int iEvent=0;
@@ -150,7 +159,7 @@ void analyzeTracks(bool debug=false){
 
     // select on high-purity track fraction
     fwlite::Handle<std::vector<reco::Track> > tracks;
-    tracks.getByLabel(event, "generalTracks");
+    tracks.getByLabel(event, srcTrack);
     int numhighpurity = 0;
     float fraction = 0;
     for(unsigned it=0; it<tracks->size(); ++it)
@@ -177,10 +186,11 @@ void analyzeTracks(bool debug=false){
     if(!vertices->size()) continue;
     if(vertices->size()!=1) continue;
     size_t maxtracks=0; double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9, bestNchi2=999.9;
-    int numFake=0;
+    int numFake=0, numVtxTrk=0;
     for(unsigned it=0; it<vertices->size(); ++it) {
       const reco::Vertex & vtx = (*vertices)[it];
       if(vtx.isFake()) numFake++;
+      numVtxTrk = vtx.tracksSize();
       if(vtx.tracksSize() > maxtracks
 	 || (vtx.tracksSize() == maxtracks && vtx.normalizedChi2() < bestNchi2) ) {
 	maxtracks = vtx.tracksSize();
@@ -188,6 +198,7 @@ void analyzeTracks(bool debug=false){
 	bestNchi2 = vtx.normalizedChi2();
       }	
     }
+    if(numVtxTrk<nVtxTrackCut) continue;
     if(numFake>=1) continue;
     hVtxTrks->Fill(maxtracks);
     hVtxZ->Fill(bestvz);
@@ -226,8 +237,10 @@ void analyzeTracks(bool debug=false){
       hTrkPtErrEta->Fill(trk.eta(),pterr);
       if(debug && trk.pt() > ptDebug) // fill debug ntuple for selection of tracks
 	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),
-		 nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError(),
+		 nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError(),trk.normalizedChi2(),
 		 accept[1],accept[2],accept[3]);
+      //trk.chi2(),trk.normalizedChi2(),
+      //accept[1],accept[2],accept[3]);
       if(pterr > ptErrCut) continue;
 
       // select tracks based on number of valid rechits
