@@ -43,7 +43,7 @@ hltJets = hltHighLevel.clone(
 # ================ Monster Event Rejection ==============
 purityFractionFilter = cms.EDFilter("FilterOutScraping",
     applyfilter = cms.untracked.bool(True),
-    debugOn = cms.untracked.bool(True),
+    debugOn = cms.untracked.bool(False),
     numtrack = cms.untracked.uint32(10),
     thresh = cms.untracked.double(0.25)
     )
