@@ -36,8 +36,8 @@ process.source = cms.Source("PoolSource",
 )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_900GeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
@@ -45,8 +45,10 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 
-# =============== Extra Vertex Step =====================
-process.load("edwenger.Skims.ExtraVertex_cff")
+# =============== Extra Reco Steps =====================
+process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel vertexing
+process.load("MitQcd.Production.BeamSpotExtra_cff")  # to introduce custom beamspot source
+
 
 
 # =============== Final Filter Path =====================
@@ -56,6 +58,7 @@ process.trkAnaSkim_step = cms.Path(process.physDeclFilter *
                                    process.minBiasBscFilter *
                                    process.hfCoincFilter *
                                    process.purityFractionFilter *
+                                   process.offlineBeamSpot *
                                    process.extraVertex)
 
 
