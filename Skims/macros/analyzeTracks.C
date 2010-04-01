@@ -47,7 +47,6 @@ void analyzeTracks(bool debug=false){
   const double nVtxTrackCut = 3.0;
   // track cuts
   const char srcTrack[50] = "generalTracks";
-  //sprintf(srcTrack,"generalTracks"); // or "TrackRefitter"
   const string qualityString = "highPurity";
   const double normD0Cut = 3.0;
   const double normDZCut = 3.0;
@@ -64,7 +63,6 @@ void analyzeTracks(bool debug=false){
   vector<string> fileNames;
   string fileDir = "/d101/edwenger/data/v4";       // data skim
   //string fileDir = "/d101/y_alive/mc/crab/v3";   // mc skim
-  //string fileDir = "/d101/sungho/data/crab/v3_refit";
   cout << "directory: '" << fileDir << "'" << endl;
   for(int ifile=1; ifile<=3; ifile++) {
     TString name = Form("trkAnaSkimAOD_%d.root",ifile);
@@ -239,8 +237,6 @@ void analyzeTracks(bool debug=false){
 	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),
 		 nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError(),trk.normalizedChi2(),
 		 accept[1],accept[2],accept[3]);
-      //trk.chi2(),trk.normalizedChi2(),
-      //accept[1],accept[2],accept[3]);
       if(pterr > ptErrCut) continue;
 
       // select tracks based on number of valid rechits
