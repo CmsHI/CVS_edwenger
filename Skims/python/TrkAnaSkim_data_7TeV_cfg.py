@@ -8,7 +8,7 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
-process.GlobalTag.globaltag = 'GR10_P_V4A::All'
+# =============== 7 TeV Collisions =====================
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -35,20 +35,21 @@ process.source = cms.Source("PoolSource",
     '132440:140-132440:375','132741:132-132741:361')
 )
 
+# =============== Other Statements =====================
+
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+process.GlobalTag.globaltag = 'GR10_P_V4A::All'
+
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-
-
 # =============== Extra Reco Steps =====================
 process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel vertexing
 process.load("MitQcd.Production.BeamSpotExtra_cff")  # to introduce custom beamspot source
-
 
 
 # =============== Final Filter Path =====================
@@ -65,7 +66,7 @@ process.trkAnaSkim_step = cms.Path(process.physDeclFilter *
 # =============== Output ================================
 process.load("edwenger.Skims.analysisSkimContent_cff")
 process.output = cms.OutputModule("PoolOutputModule",
-    analysisSkimContent,
+    process.analysisSkimContent,
     SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('trkAnaSkim_step')),
     dataset = cms.untracked.PSet(
       dataTier = cms.untracked.string('AOD'),
