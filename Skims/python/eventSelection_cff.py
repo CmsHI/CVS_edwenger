@@ -57,4 +57,5 @@ primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
     maxd0 = cms.double(2)	
     )
 
-minBiasBscFilter = cms.Sequence(bscOrBptxOr * bptxAnd * bscOr * bscNoHalo)
+minBiasBscFilter = cms.Sequence(physDeclFilter * bscOrBptxOr * bptxAnd * bscOr * bscNoHalo)
+minBiasBscFilterMC = cms.Sequence(bscOrBptxOr * bscOr * bscNoHalo)

@@ -24,7 +24,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -37,7 +37,7 @@ process.load("edwenger.Skims.TrackRefit_cff")        # refit constrained to prim
 # =============== Final Filter Path =====================
 process.load("edwenger.Skims.eventSelection_cff")
 process.load("edwenger.Skims.hfCoincFilter_cff")
-process.trkAnaSkim_step = cms.Path(process.minBiasBscFilter *
+process.trkAnaSkim_step = cms.Path(process.minBiasBscFilterMC *
                                    process.hfCoincFilter *
                                    process.purityFractionFilter *
                                    #process.offlineBeamSpot *
