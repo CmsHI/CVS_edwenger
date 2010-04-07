@@ -28,14 +28,14 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.6 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
 # =============== Extra Reco Steps =====================
 process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel vertexing
-process.load("edwenger.Skims.BeamSpot7TeV_cff")      # custom beamspot db source
+#process.load("edwenger.Skims.BeamSpot7TeV_cff")      # custom beamspot db source
 process.load("edwenger.Skims.TrackRefit_cff")        # refit constrained to primary vertex
 
 # =============== Final Filter Path =====================
@@ -45,7 +45,7 @@ process.trkAnaSkim_step = cms.Path(#process.physDeclFilter *
                                    process.minBiasBscFilter *
                                    process.hfCoincFilter *
                                    process.purityFractionFilter *
-                                   process.offlineBeamSpot *
+                                   #process.offlineBeamSpot *
                                    process.extraVertex *
                                    process.trackRefit)
 
@@ -58,7 +58,7 @@ process.output = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
       dataTier = cms.untracked.string('AOD'),
       filterName = cms.untracked.string('TrkAnaFilter')),
-    fileName = cms.untracked.string('trkAnaSkimAOD_mc.root')
+    fileName = cms.untracked.string('trkAnaSkimAODSIM.root')
     )
 
 process.outpath = cms.EndPath(process.output)
