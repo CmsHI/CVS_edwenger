@@ -50,7 +50,12 @@ PromptReco7TeV = cms.PSet(
       "/store/data/Commissioning10/MinimumBias/RECO/v7/000/132/471/FE37E14D-183D-DF11-8EF5-001D09F24DA8.root"
       ),
     lumisToProcess = cms.untracked.VLuminosityBlockRange(
-      '132440:140-132440:375',
-      '132471:132-132471:361'
+      '132440:140-132440:375',   # beamspot movement between 123 and 140
+      '132471:132-132471:361',   # pixel/tracker HV turned on at LS 132
+      '132474:1-132474:max',     # lumi scan about 30-60 minutes into run
+      #'132569:17-132569:max',   # ECAL and CSC timing scans
+      #'132599:1-132599:max',    # pixel HV scan throughout
+      '132601:300-132601:max',   # pixel HV scan finished LS 300, lumi scan after 6am sometime
+      '132605:1-132605:max'      # lumi scan around 5 hours into run, then CSC timing scan 
     )
 )
