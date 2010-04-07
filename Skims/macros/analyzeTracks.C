@@ -25,18 +25,21 @@
 #include "DataFormats/CaloTowers/interface/CaloTowerFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #endif
 
-void analyzeTracks(bool debug=false){
+void analyzeTracksAndJets(bool debug=false){
 
   // is gen track needed
   const bool isGEN = false;
-  //debug = true;
-
+  debug = true;
+  const bool jet = true;
+  
   // event cuts
   const unsigned int maxEvents = -1;
   const float hpFracCut = 0.25;
@@ -46,34 +49,35 @@ void analyzeTracks(bool debug=false){
   // vertex cuts 
   const double nVtxTrackCut = 3.0;
   // track cuts
-  const char srcTrack[50] = "generalTracks";
+  //const char srcTrack[50] = "generalTracks";
+  const char srcTrack[50] = "refitTracks";
   const string qualityString = "highPurity";
-  const double normD0Cut = 3.0;
-  const double normDZCut = 3.0;
+  const double normD0Cut = 999.0;
+  const double normDZCut = 999.0;
   const double ptErrCut = 0.1;
-  const unsigned nHitsCut = 1; // at least this many hits on track
+  const unsigned nHitsCut = 8; // at least this many hits on track
   const double ptDebug = 3.0;  // fill debug ntuple for this selection
   // kinematic cuts
-  const double etaCut = 2.0;
+  const double etaCut = 2.5;
   // trigger names
-  const int nTrigs = 4;
-  char *hltNames[nTrigs] = {"HLT_MinBiasBSC","HLT_L1Jet6U","HLT_Jet15U","HLT_Jet30U"};
+  const int nTrigs = 5;
+  char *hltNames[nTrigs] = {"HLT_MinBiasBSC","HLT_L1Jet6U","HLT_Jet15U","HLT_Jet30U","HLT_Jet50U"};
 
   //----- input files (900 GeV data) -----
   vector<string> fileNames;
-  string fileDir = "/d101/edwenger/data/v4";       // data skim
-  //string fileDir = "/d101/y_alive/mc/crab/v3";   // mc skim
+  string fileDir = "/d101/edwenger/data7TeV/v3";       // data skim
+  //string fileDir = "/d101/y_alive/mc/crab/v3";   // mc skim 53
   cout << "directory: '" << fileDir << "'" << endl;
-  for(int ifile=1; ifile<=3; ifile++) {
-    TString name = Form("trkAnaSkimAOD_%d.root",ifile);
-    cout << "  adding file: " << name.Data() << endl;
-    fileNames.push_back(fileDir + "/" + name.Data());
+  for(int ifile=1; ifile<=53; ifile++) {
+     TString name = Form("trkAnaSkimAOD_%d_1.root",ifile);
+     cout << "  adding file: " << name.Data() << endl;
+     fileNames.push_back(fileDir + "/" + name.Data());
   }
   fwlite::ChainEvent event(fileNames);
   
   //----- define output hists/trees in directories of output file -----
   char fName[200];
-  sprintf(fName,"output_%s_etaMax%1.1f_D0%1.1f_DZ%1.1f_pTerr%1.1f_nHits%u_nVtxTrk%1.1f_%s.root","trkAnaSkimAOD",
+  sprintf(fName,"output_%s_etaMax%1.1f_D0%1.1f_DZ%1.1f_pTerr%1.1f_nHits%u_nVtxTrk%1.1f_%s.root","trkAnaSkimAOD_7TeV_Jets",
 	  etaCut,normD0Cut,normDZCut,ptErrCut,nHitsCut,nVtxTrackCut,srcTrack);
   TFile *outFile = new TFile(fName,"recreate");
   TH1D::SetDefaultSumw2();
@@ -104,7 +108,7 @@ void analyzeTracks(bool debug=false){
   TH2D *hTrkPtErrNhits = new TH2D("hTrkPtErrNhits","track relative pt-error vs. nhits; number of valid hits on track; #sigma(p_{T})/p_{T}",30,-0.5,29.5,80,0.0,0.5);
   TH2D *hTrkPtErrEta = new TH2D("hTrkPtErrEta","track relative pt-error vs. #eta; #eta; #sigma(p_{T})/p_{T}",60,-3,3,80,0.0,0.5);
   TH1D *hTrkNhits   = new TH1D("hTrkNhits", "number of valid hits on track", 30,-0.5,29.5);
-  TH1D *hTrkPt      = new TH1D("hTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
+  TH1D *hTrkPt      = new TH1D("hTrkPt","track p_{T}; p_{T} [GeV/c]", 100, 0.0, 50.0);
   TH1D *hTrkEta     = new TH1D("hTrkEta","track #eta; #eta", 60, -3.0, 3.0);
   TH1D *hTrkPhi     = new TH1D("hTrkPhi","track #phi; #phi [radians]", 56, -3.5, 3.5);
 
@@ -115,10 +119,13 @@ void analyzeTracks(bool debug=false){
   // debug ntuple
   outFile->cd();
   TNtuple *nt=0;
-  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:algo:hits:pterr:d0:d0err:dz:dzerr:nchi2:jet6:jet15:jet30");
+  if(debug) nt = new TNtuple("nt","track debug ntuple","pt:eta:phi:qual:hits:pterr:d0:d0err:dz:dzerr:nchi2:jet6:jet15:jet30:jet50");  
 
-  
-
+  // ntuple for jet
+  TNtuple *ntjet=0;
+  TNtuple *ntjettrack=0;
+  if(jet) ntjet = new TNtuple("ntjet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50"); 
+  if(jet) ntjettrack = new TNtuple("ntjettrack","jet tracks correlation ntuple","ntrks:pt:eta:phi:jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
 
   //----- loop over events -----
   unsigned int iEvent=0;
@@ -207,8 +214,27 @@ void analyzeTracks(bool debug=false){
     hBeamXRun->Fill(event.id().run(),beamspot->x0());
     hBeamYRun->Fill(event.id().run(),beamspot->y0());
     hBeamZRun->Fill(event.id().run(),beamspot->z0());
+    
+    //----- loop over jets and store in a vector for a later use-----
+    fwlite::Handle<std::vector<reco::CaloJet> > jets;
+    jets.getByLabel(event, "iterativeCone5CaloJets");        
+
+    std::vector<const reco::CaloJet *> sortedJets;
+
+    for(unsigned it=0; it<jets->size(); ++it){
+       const reco::CaloJet* jts = &((*jets)[it]);
+       sortedJets.push_back( & *jts);
+       sortByEtRef (&sortedJets);
+    }
+    
+    for(unsigned it=0; sortedJets.size(); ++it){
+       ntjet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
+		   accept[0],accept[1],accept[2],accept[3],accept[4]);
+       break;
+    }
 
     //----- loop over tracks -----
+    unsigned nfinalTracks = 0;
     for(unsigned it=0; it<tracks->size(); ++it){
       
       const reco::Track & trk = (*tracks)[it];
@@ -234,9 +260,9 @@ void analyzeTracks(bool debug=false){
       hTrkPtErrNhits->Fill(nhits,pterr);
       hTrkPtErrEta->Fill(trk.eta(),pterr);
       if(debug && trk.pt() > ptDebug) // fill debug ntuple for selection of tracks
-	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),trk.algo(),
+	nt->Fill(trk.pt(),trk.eta(),trk.phi(),trk.qualityMask(),
 		 nhits,trk.ptError(),dxybeam,trk.d0Error(),dzvtx,trk.dzError(),trk.normalizedChi2(),
-		 accept[1],accept[2],accept[3]);
+		 accept[1],accept[2],accept[3],accept[4]);
       if(pterr > ptErrCut) continue;
 
       // select tracks based on number of valid rechits
@@ -245,12 +271,20 @@ void analyzeTracks(bool debug=false){
 
       // select tracks based on kinematic cuts
       if(abs(trk.eta())>etaCut) continue;
+      nfinalTracks++;
 
       // fill selected track histograms
       hTrkPt->Fill(trk.pt());
       hTrkEta->Fill(trk.eta());
       hTrkPhi->Fill(trk.phi());
 
+      //---loop over jet in track loop---
+      for(unsigned it=0; sortedJets.size(); ++it){
+	 ntjettrack->Fill(nfinalTracks,trk.pt(),trk.eta(),trk.phi(),
+			  sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
+			  accept[0],accept[1],accept[2],accept[3],accept[4]);       
+	 break;
+      }
     }
 
     //---- loop over MC gen level track ---- 
@@ -280,3 +314,4 @@ void analyzeTracks(bool debug=false){
   outFile->Close();
 
 }
+
