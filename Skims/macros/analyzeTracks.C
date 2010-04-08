@@ -226,11 +226,14 @@ void analyzeTracks(bool debug=false){
        sortedJets.push_back( & *jts);
        sortByEtRef (&sortedJets);
     }
-    
-    for(unsigned it=0; sortedJets.size(); ++it){
-       ntjet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
-		   accept[0],accept[1],accept[2],accept[3],accept[4]);
-       break;
+
+    //----- fill ntjet --------
+    if(jet){
+       for(unsigned it=0; sortedJets.size(); ++it){
+	  ntjet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
+		      accept[0],accept[1],accept[2],accept[3],accept[4]);
+	  break;
+       }
     }
 
     //----- loop over tracks -----
@@ -279,14 +282,16 @@ void analyzeTracks(bool debug=false){
       hTrkPhi->Fill(trk.phi());
 
       //---loop over jet in track loop---
-      for(unsigned it=0; sortedJets.size(); ++it){
-	 ntjettrack->Fill(nfinalTracks,trk.pt(),trk.eta(),trk.phi(),
-			  sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
-			  accept[0],accept[1],accept[2],accept[3],accept[4]);       
-	 break;
+      if(jet){
+	 for(unsigned it=0; sortedJets.size(); ++it){
+	    ntjettrack->Fill(nfinalTracks,trk.pt(),trk.eta(),trk.phi(),
+			     sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
+			     accept[0],accept[1],accept[2],accept[3],accept[4]);       
+	    break;
+	 }
       }
     }
-
+    
     //---- loop over MC gen level track ---- 
     if(!isGEN) continue;
     fwlite::Handle<std::vector<reco::GenParticle> > genTracks;
