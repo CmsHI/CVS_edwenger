@@ -21,17 +21,10 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V6::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.11 $'),
+    version = cms.untracked.string('$Revision: 1.12 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
-
-# =============== Filter Path =====================
-process.load("edwenger.Skims.eventSelection_cff")
-process.load("edwenger.Skims.hfCoincFilter_cff")
-process.trkAnaSkim_step = cms.Path(process.minBiasBscFilter *
-                                   process.hfCoincFilter *
-                                   process.purityFractionFilter)
 
 # =============== Extra Reco Steps =====================
 #process.load("edwenger.Skims.BeamSpot7TeV_cff")     # custom beamspot db source
@@ -46,12 +39,19 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string('ROOTuple_HighPurity.root')
                                    )
 
-process.extraReco_step = cms.Path(#process.offlineBeamspot *
+process.extraReco = cms.Sequence(#process.offlineBeamspot *
                                   process.chargedCandidates *
-                                  (process.primaryVertexFilter * process.rootpleProducer) +
+                                  cms.ignore(process.primaryVertexFilter * process.rootpleProducer) *
                                   process.extraVertex *
                                   process.trackRefit)
 
+# =============== Final Filter Path =====================
+process.load("edwenger.Skims.eventSelection_cff")
+process.load("edwenger.Skims.hfCoincFilter_cff")
+process.trkAnaSkim_step = cms.Path(process.minBiasBscFilter *
+                                   process.hfCoincFilter *
+                                   process.purityFractionFilter *
+                                   process.extraReco)
 
 # =============== Output ================================
 process.load("edwenger.Skims.analysisSkimContent_cff")
@@ -64,8 +64,5 @@ process.output = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('trkAnaSkimAOD.root')
     )
 
-process.output_step = cms.EndPath(process.output)
+process.outpath = cms.EndPath(process.output)
 
-process.schedule = cms.Schedule(process.trkAnaSkim_step,
-                                process.extraReco_step,
-                                process.output_step)
