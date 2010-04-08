@@ -16,12 +16,12 @@ process.source = cms.Source("PoolSource",process.PromptReco7TeV)
 
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(200))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V6::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.9 $'),
+    version = cms.untracked.string('$Revision: 1.10 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -45,10 +45,10 @@ process.trkAnaSkim_step = cms.Path(process.minBiasBscFilter *
                                    process.hfCoincFilter *
                                    process.purityFractionFilter *
                                    #process.offlineBeamSpot *
+                                   process.chargedCandidates +
+                                   (process.primaryVertexFilter * process.rootpleProducer) +
                                    process.extraVertex *
-                                   process.chargedCandidates *
-                                   process.rootpleProducer *
-                                   process.trackRefit)
+                                   process.trackRefit * process.highMultFilter)
 
 
 # =============== Output ================================

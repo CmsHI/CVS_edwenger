@@ -45,4 +45,9 @@ goodTracks = cms.EDFilter("PtMinCandViewSelector",
     ptMin = cms.double(0.0)
 )
 
+highMultFilter = cms.EDFilter("CandViewCountFilter",
+    src = cms.InputTag("allTracks"),
+    minNumber = cms.uint32(80)
+)
+
 chargedCandidates = cms.Sequence(highPurityTracks*selectTracks*allTracks*goodTracks)
