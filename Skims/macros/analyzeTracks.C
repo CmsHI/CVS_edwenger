@@ -33,7 +33,7 @@
 #include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #endif
 
-void analyzeTracksAndJets(bool debug=false){
+void analyzeTracks(bool debug=false){
 
   // is gen track needed
   const bool isGEN = false;
