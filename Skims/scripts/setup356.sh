@@ -13,3 +13,7 @@ cvs co UserCode/FerencSiklerVertexing
 cvs co -r V04-00-02-01 TrackingTools/TrackFitters
 cvs update -r CMSSW_3_5_6 TrackingTools/TrackFitters/BuildFile 
 cvs update -r CMSSW_3_5_6 TrackingTools/TrackFitters/plugins/BuildFile  
+
+# wei's rootuple producers
+cvs co UserCode/davidlw/ROOTupleAnalyzer
+mv UserCode/davidlw .

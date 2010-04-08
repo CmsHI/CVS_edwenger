@@ -7,9 +7,8 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
+
+#include <fstream>
 
 #include <TH1D.h>
 #include <TH2D.h>
@@ -47,23 +46,12 @@ void makeVtxNtuple(){
   //string fileDir = "/d101/y_alive/mc/crab/v3";       // mc skim 53
   cout << "directory: '" << fileDir << "'" << endl;
 
-  //for(int ifile=1; ifile<=53; ifile++) {
-  //   TString name = Form("trkAnaSkimAOD_%d_1.root",ifile);
-  //   cout << "  adding file: " << name.Data() << endl;
-  //   fileNames.push_back(fileDir + "/" + name.Data());
-  //}
-
-  DIR *dp;
-  struct dirent *dirp;
-  if((dp = opendir(fileDir.c_str())) == NULL) {
-    cout << "Error(" << errno << ") opening " << fileDir << endl;
-    return errno;
-  }
-  while ((dirp = readdir(dp)) != NULL) {
-    fileNames.push_back(string(dirp->d_name));
-    cout << "Adding file: " << string(dirp->d_name) << endl;
-  }
-  closedir(dp);
+  ifstream inf("filelist.txt");
+  string word;
+  while (inf >> word)
+    {
+      fileNames.push_back( fileDir + "/" + word );
+    }
 
   fwlite::ChainEvent event(fileNames);
   
@@ -79,7 +67,7 @@ void makeVtxNtuple(){
 
   // debug ntuple
   outFile->cd();
-  TNtuple *nt = new TNtuple("nt","vtx debug ntuple","run:lumi:nvtx:vx:vy:vz:vz2:bx:by:bz");  
+  TNtuple *nt = new TNtuple("nt","vtx debug ntuple","run:lumi:npvtx:nvtx:nptrk:pvx:pvy:pvz:nptrk2:pvz2:ntrk:vx:vy:vz");  
 
   //----- loop over events -----
   unsigned int iEvent=0;
@@ -92,20 +80,18 @@ void makeVtxNtuple(){
 				  << ", evt " << event.id().event() << endl;
 
     //------------Vertex loop------------------
-    fwlite::Handle<std::vector<reco::Vertex> > vertices;
+    fwlite::Handle<std::vector<reco::Vertex> > pxlvertices;
+    pxlvertices.getByLabel(event, "pixel3Vertices");        //agglomerative pixel vertex
     
-    //vertices.getByLabel(event, "pixel3Vertices");        //agglomerative pixel vertex
-    vertices.getByLabel(event, "offlinePrimaryVertices");  //full-track primary vertex
+    hVtxSize->Fill(pxlvertices->size());
     
-    hVtxSize->Fill(vertices->size());
-    
-    if(!vertices->size()) continue;
+    if(!pxlvertices->size()) continue;
     
     size_t maxtracks=0; double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9, bestNchi2=999.9;
     size_t nexttracks=0; double nextvz=-999.9, nextNchi2=999.9;
  
-    for(unsigned it=0; it<vertices->size(); ++it) {
-      const reco::Vertex & vtx = (*vertices)[it];
+    for(unsigned it=0; it<pxlvertices->size(); ++it) {
+      const reco::Vertex & vtx = (*pxlvertices)[it];
       // if this is the new best vertex...
       if(vtx.tracksSize() > maxtracks
 	 || (vtx.tracksSize() == maxtracks && vtx.normalizedChi2() < bestNchi2) ) {
@@ -129,12 +115,45 @@ void makeVtxNtuple(){
     hVtxTrks->Fill(maxtracks);
     hVtxZ->Fill(bestvz);
 
+    // offline primary vertices
+    fwlite::Handle<std::vector<reco::Vertex> > vertices;
+    vertices.getByLabel(event, "offlinePrimaryVertices");  //full-track primary vertex
+
+    size_t maxofflinetracks=0;
+    double offlineVx = -999.9, offlineVy = -999.9, offlineVz = -999.9, offlineNchi2=999.9;
+
+    for(unsigned it=0; it<vertices->size(); ++it) {
+      offlineVx = -999.9; offlineVy = -999.9; offlineVz = -999.9;
+      const reco::Vertex & vtx2 = (*vertices)[it];
+      if(!vtx2.isFake() && (vtx2.tracksSize()>maxofflinetracks || (vtx2.tracksSize() == maxofflinetracks && vtx2.normalizedChi2() < offlineNchi2)) )
+	offlineVx = vtx2.x(); offlineVy = vtx2.y(); offlineVz = vtx2.z(); maxofflinetracks = vtx2.tracksSize();
+    
+    }
+  
     //-----------Beamspot-------------------
     fwlite::Handle<reco::BeamSpot> beamspot;
     beamspot.getByLabel(event, "offlineBeamSpot");
-
+    
     // Fill run, lumi, vtx, beamspot ntuple
-    nt->Fill(event.id().run(),event.luminosityBlock(),vertices->size(),bestvx,bestvy,bestvz,nextvz,beamspot->x0(),beamspot->y0(),beamspot->z0(),beamspot->sigmaZ());
+    nt->Fill(event.id().run(),
+	     event.luminosityBlock(),
+	     pxlvertices->size(),
+	     vertices->size(),
+	     maxtracks,
+	     bestvx,
+	     bestvy,
+	     bestvz,
+	     nexttracks,
+	     nextvz,
+	     maxofflinetracks,
+	     offlineVx,
+	     offlineVy,
+	     offlineVz//,
+	     //beamspot->x0(),
+	     //beamspot->y0(),
+	     //beamspot->z0(),
+	     //beamspot->sigmaZ()
+	     );
 
   }
   
