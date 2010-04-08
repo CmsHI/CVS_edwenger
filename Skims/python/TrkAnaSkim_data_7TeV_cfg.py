@@ -21,12 +21,22 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V6::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.12 $'),
+    version = cms.untracked.string('$Revision: 1.13 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
+# =============== Event Filter =====================
+
+process.load("edwenger.Skims.eventSelection_cff")
+process.load("edwenger.Skims.hfCoincFilter_cff")
+
+process.eventFilter = cms.Sequence(process.minBiasBscFilter *
+                                   process.hfCoincFilter *
+                                   process.purityFractionFilter)
+
 # =============== Extra Reco Steps =====================
+
 #process.load("edwenger.Skims.BeamSpot7TeV_cff")     # custom beamspot db source
 process.load("edwenger.Skims.ChargedCandidates_cff") # make charged candidates from selected tracks
 process.load("edwenger.Skims.RootpleProducer_cfi")   # make wei's rootples
@@ -46,14 +56,12 @@ process.extraReco = cms.Sequence(#process.offlineBeamspot *
                                   process.trackRefit)
 
 # =============== Final Filter Path =====================
-process.load("edwenger.Skims.eventSelection_cff")
-process.load("edwenger.Skims.hfCoincFilter_cff")
-process.trkAnaSkim_step = cms.Path(process.minBiasBscFilter *
-                                   process.hfCoincFilter *
-                                   process.purityFractionFilter *
+
+process.trkAnaSkim_step = cms.Path(process.eventFilter *
                                    process.extraReco)
 
 # =============== Output ================================
+
 process.load("edwenger.Skims.analysisSkimContent_cff")
 process.output = cms.OutputModule("PoolOutputModule",
     process.analysisSkimContent,
