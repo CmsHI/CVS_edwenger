@@ -21,7 +21,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V6::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -29,12 +29,8 @@ process.configurationMetadata = cms.untracked.PSet(
 # =============== Extra Reco Steps =====================
 process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel vertexing
 #process.load("edwenger.Skims.BeamSpot7TeV_cff")     # custom beamspot db source
+process.load("edwenger.Skims.ChargedCandidates_cff") # make charged candidates from selected tracks
 process.load("edwenger.Skims.TrackRefit_cff")        # refit constrained to primary vertex
-
-process.allTracks = cms.EDProducer("ConcreteChargedCandidateProducer",
-                           src = cms.InputTag("generalTracks"),
-                           particleType = cms.string('pi+')
-                           )
 
 # =============== Final Filter Path =====================
 process.load("edwenger.Skims.eventSelection_cff")
@@ -44,7 +40,7 @@ process.trkAnaSkim_step = cms.Path(process.minBiasBscFilter *
                                    process.purityFractionFilter *
                                    #process.offlineBeamSpot *
                                    process.extraVertex *
-                                   process.allTracks *
+                                   process.chargedCandidates *
                                    process.trackRefit)
 
 
