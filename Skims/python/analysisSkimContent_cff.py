@@ -18,6 +18,7 @@ analysisSkimContent = cms.PSet(
       # tracks
       'keep recoTracks_generalTracks_*_*RECO',
       'keep recoTracks_refitTracks_*_*',
+      'keep recoRecoChargedCandidates_allTracks_*_*'  ,                                   
       # mc (if present)
       'keep *_*GenJet*_*_*',
       'keep reco*_genParticles_*_*',
