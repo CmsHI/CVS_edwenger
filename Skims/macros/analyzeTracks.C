@@ -114,7 +114,7 @@ void analyzeTracks(bool debug=false){
 
   // gen track hists
   TH1D *hGenTrkPt=0;      
-  if(isGEN) hGenTrkPt = new TH1D("hGenTrkPt","track p_{T}; p_{T} [GeV/c]", 80, 0.0, 20.0);
+  if(isGEN) hGenTrkPt = new TH1D("hGenTrkPt","track p_{T}; p_{T} [GeV/c]", 100, 0.0, 50.0);
 
   // debug ntuple
   outFile->cd();
