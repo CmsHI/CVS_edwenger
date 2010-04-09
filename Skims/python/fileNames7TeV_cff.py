@@ -8,7 +8,9 @@ PromptReco7TeV = cms.PSet(
     lumisToProcess = cms.untracked.VLuminosityBlockRange(
       '132440:123-132440:max',   # 
       '132471:132-132471:max',   # pixel/tracker HV turned on at LS 132
-      '132474:1-132474:max',     # lumi scan about 30-60 minutes into run
+      '132474:1-132474:64',      # lumi scan in x (77-92) and in y (115-132).
+      '132474:93-132474:108',    # after scan in x ?
+      '132474:133-132474:152',   # after scan in y ?
       #'132569:17-132569:max',   # ECAL and CSC timing scans
       #'132599:1-132599:max',    # pixel HV scan throughout
       '132601:301-132601:max',   # pixel HV scan finished LS 300, lumi scan after 6am sometime
