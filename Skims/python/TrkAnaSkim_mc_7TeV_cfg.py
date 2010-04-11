@@ -24,7 +24,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.4 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -34,6 +34,13 @@ process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel verte
 #process.load("edwenger.Skims.BeamSpot7TeV_cff")      # custom beamspot db source
 process.load("edwenger.Skims.TrackRefit_cff")        # refit constrained to primary vertex
 
+#================ Track Association =====================
+process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
+process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
+process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("refitTracks")
+process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
+
+
 # =============== Final Filter Path =====================
 process.load("edwenger.Skims.eventSelection_cff")
 process.load("edwenger.Skims.hfCoincFilter_cff")
@@ -42,7 +49,8 @@ process.trkAnaSkim_step = cms.Path(process.minBiasBscFilterMC *
                                    process.purityFractionFilter *
                                    #process.offlineBeamSpot *
                                    process.extraVertex *
-                                   process.trackRefit)
+                                   process.trackRefit *
+                                   process.trackingParticleRecoTrackAsssociation)
 
 
 # =============== Output ================================
