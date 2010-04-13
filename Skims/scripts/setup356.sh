@@ -18,6 +18,6 @@ cvs update -r CMSSW_3_5_6 TrackingTools/TrackFitters/plugins/BuildFile
 cvs co UserCode/davidlw/ROOTupleAnalyzer
 mv UserCode/davidlw .
 
-# fare and real selector
+# fake and real selector
 cvs co UserCode/ASYoon/PPTrackingTools/FakeAndRealTrackSelector
 mv UserCode/ASYoon/PPTrackingTools/ .
