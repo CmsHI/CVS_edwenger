@@ -24,7 +24,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.5 $'),
+    version = cms.untracked.string('$Revision: 1.6 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -43,7 +43,21 @@ process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 #================ Fake and Real track producer ==========
 process.load("PPTrackingTools.FakeAndRealTrackSelector.selectFakeAndReal_cff")
 
-# =============== Final Filter Path =====================
+# =============== PAT ===========================
+process.load("PhysicsTools.PatAlgos.patSequences_cff")
+process.load("PhysicsTools.PatAlgos.producersLayer1.jetProducer_cff")
+process.load("PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi")
+# turn off btagging related
+process.patJets.addBTagInfo = cms.bool(False)
+process.patJets.addDiscriminators = cms.bool(False)
+# get the 7 TeV jet corrections
+from PhysicsTools.PatAlgos.tools.jetTools import *
+switchJECSet( process, "Summer09_7TeV_ReReco332")
+# Select jets
+process.selectedPatJets.cut = cms.string('pt > 2 & abs(eta) < 3.0')
+
+
+# =============== Final Paths =====================
 process.load("edwenger.Skims.eventSelection_cff")
 process.load("edwenger.Skims.hfCoincFilter_cff")
 process.trkAnaSkim_step = cms.Path(process.minBiasBscFilterMC *
@@ -55,6 +69,7 @@ process.trkAnaSkim_step = cms.Path(process.minBiasBscFilterMC *
                                    process.trackingParticleRecoTrackAsssociation*
                                    process.selectFakeAndReal *
                                    process.selectFakeAndRealLoose)
+process.pat_step = cms.Path(process.makePatJets * process.selectedPatJets)
 
 
 
@@ -69,5 +84,8 @@ process.output = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('trkAnaSkimAODSIM.root')
     )
 
-process.outpath = cms.EndPath(process.output)
+process.output_step = cms.EndPath(process.output)
 
+process.schedule = cms.Schedule(process.trkAnaSkim_step,
+				process.pat_step,
+                                process.output_step)
