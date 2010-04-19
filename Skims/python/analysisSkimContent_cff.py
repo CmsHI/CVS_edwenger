@@ -10,11 +10,8 @@ analysisSkimContent = cms.PSet(
       'keep *_TriggerResults_*_HLT',
       'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*RECO',
       # jet
-      'keep *Jet*_*CaloJet*_*_*',
-      'keep *_*JetID*_*_*',
-      'keep *Jet*_*JetExtender*_*_*',
       'keep *_towerMaker_*_*',
-      'keep *_hcalnoise_*_*',
+      'keep *_selectedPatJets*_*_*',
       # tracks
       'keep recoTracks_generalTracks_*_*RECO',
       'keep recoTracks_refitTracks_*_*',
@@ -26,6 +23,7 @@ analysisSkimContent = cms.PSet(
       # mc (if present)
       'keep *_*GenJet*_*_*',
       'keep reco*_genParticles_*_*',
+      'keep GenEventInfoProduct_*_*_*',
       # clean up unwanted collections
       'drop *_*BJetTags*_*_*',
       'drop *_kt*Jet*_*_*',
