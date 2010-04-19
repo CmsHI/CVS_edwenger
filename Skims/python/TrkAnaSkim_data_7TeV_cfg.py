@@ -21,7 +21,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V6::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.16 $'),
+    version = cms.untracked.string('$Revision: 1.17 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -70,7 +70,7 @@ removeMCMatching(process, ['All'])
 # =============== Final Paths =====================
 process.eventFilter_step = cms.Path(process.eventFilter)
 process.extraReco_step = cms.Path(process.eventFilter * process.extraReco)
-process.pat_step = cms.Path(process.patAnaSequence)
+process.pat_step = cms.Path(process.eventFilter * process.patAnaSequence)
 
 
 # =============== Output ================================

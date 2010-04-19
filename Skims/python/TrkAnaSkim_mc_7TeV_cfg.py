@@ -24,7 +24,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -53,16 +53,17 @@ switchJECSet( process, "Summer09_7TeV_ReReco332")
 # =============== Final Paths =====================
 process.load("edwenger.Skims.eventSelection_cff")
 process.load("edwenger.Skims.hfCoincFilter_cff")
-process.trkAnaSkim_step = cms.Path(process.minBiasBscFilterMC *
+process.eventFilter = cms.Sequence(process.minBiasBscFilterMC *
                                    process.hfCoincFilter *
-                                   process.purityFractionFilter *
+                                   process.purityFractionFilter)
+process.trkAnaSkim_step = cms.Path(process.eventFilter *
                                    #process.offlineBeamSpot *
                                    process.extraVertex *
                                    process.trackRefit *
                                    process.trackingParticleRecoTrackAsssociation*
                                    process.selectFakeAndReal *
                                    process.selectFakeAndRealLoose)
-process.pat_step = cms.Path(process.patAnaSequence)
+process.pat_step = cms.Path(process.eventFilter * process.patAnaSequence)
 
 
 # =============== Output ================================
