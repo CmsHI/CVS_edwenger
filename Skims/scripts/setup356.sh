@@ -21,3 +21,8 @@ mv UserCode/davidlw .
 # fake and real selector
 cvs co UserCode/ASYoon/PPTrackingTools/FakeAndRealTrackSelector
 mv UserCode/ASYoon/PPTrackingTools/ .
+
+# to run MTV with HitPixelLayersTPSelector.cc
+cvs co UserCode/CmsHi/TrackAnalysis
+mv UserCode/CmsHi/ .
+
