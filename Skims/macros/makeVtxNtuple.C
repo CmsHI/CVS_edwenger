@@ -40,17 +40,19 @@ void makeVtxNtuple(){
   // event cuts
   const unsigned int maxEvents = -1;
  
-  //----- input files (900 GeV data) -----
+  //----- input files (7 TeV data) -----
   vector<string> fileNames;
-  string fileDir = "/d101/edwenger/data7TeV/v3";       // data skim
+  //string fileDir = "/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/trkAnaSkim/MB_C10-Apr1ReReco_v2_pptrkana_skim/v3";       // data skim
+  string fileDir = "/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/trkAnaSkim/MB_C10-PromptReco_v8_pptrkana_skim/v4";       // data skim
   //string fileDir = "/d101/y_alive/mc/crab/v3";       // mc skim 53
   cout << "directory: '" << fileDir << "'" << endl;
+
 
   ifstream inf("filelist.txt");
   string word;
   while (inf >> word)
     {
-      fileNames.push_back( fileDir + "/" + word );
+      fileNames.push_back( "dcache:" + fileDir + "/" + word );
     }
 
   fwlite::ChainEvent event(fileNames);
