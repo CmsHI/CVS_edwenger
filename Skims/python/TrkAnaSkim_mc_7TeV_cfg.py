@@ -24,7 +24,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.9 $'),
+    version = cms.untracked.string('$Revision: 1.10 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -106,7 +106,8 @@ process.trkAnaSkim_step = cms.Path(process.eventFilter *
                                    process.trackRefit *
                                    process.trackingParticleRecoTrackAsssociation*
                                    process.selectFakeAndReal *
-                                   process.selectFakeAndRealLoose)
+                                   #process.selectFakeAndRealLoose *
+                                   process.mtv)
 
 process.pat_step = cms.Path(process.eventFilter * process.patAnaSequence)
 
