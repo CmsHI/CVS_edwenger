@@ -12,4 +12,5 @@ rootpleProducer = cms.EDProducer("AnalysisRootpleProducer",
                                  GenJetCollectionName      = cms.InputTag("ak7GenJets"),
                                  OnlyRECO                  = cms.bool(True),
                                  triggerResults            = cms.InputTag("TriggerResults","","HLT"),
+                                 genEventScale             = cms.InputTag("generator")
                                  )

@@ -10,9 +10,7 @@ mv UserCode/edwenger .
 cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
 
 # track fitters recipe from Giuseppe
-cvs co -r CMSSW_3_5_7 TrackingTools/TrackFitters
-#cvs update -r CMSSW_3_5_7 TrackingTools/TrackFitters/BuildFile 
-#cvs update -r CMSSW_3_5_7 TrackingTools/TrackFitters/plugins/BuildFile  
+#cvs co -r CMSSW_3_5_7 TrackingTools/TrackFitters 
 
 # wei's rootuple producers
 cvs co UserCode/davidlw/ROOTupleAnalyzer

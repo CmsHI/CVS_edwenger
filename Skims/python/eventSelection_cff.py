@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 # ================ Physics Declared Bit ================
 physDeclFilter = cms.EDFilter("PhysDecl",
-    applyfilter = cms.untracked.bool(True)
+    applyfilter = cms.untracked.bool(True),
+    HLTriggerResults = cms.InputTag("TriggerResults","","HLT")
     )
 
 
