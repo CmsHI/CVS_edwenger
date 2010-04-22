@@ -18,10 +18,10 @@ selectTracks = cms.EDFilter("TrackWithVertexSelector",
     dzMax = cms.double(35.),
     # quality cuts (valid hits, normalized chi2)
     normalizedChi2 = cms.double(999999.),
-    numberOfValidHits = cms.uint32(0),
+    numberOfValidHits = cms.uint32(8),
     numberOfLostHits = cms.uint32(999), ## at most 999 lost hits
     numberOfValidPixelHits = cms.uint32(0), ## at least <n> hits in the pixels
-    ptErrorCut = cms.double(999.), ## [pTError/pT]*max(1,normChi2) <= ptErrorCut
+    ptErrorCut = cms.double(0.1), ## [pTError/pT]*max(1,normChi2) <= ptErrorCut
     # compatibility with a vertex ?
     useVtx = cms.bool(True),
     vertexTag = cms.InputTag('offlinePrimaryVertices'),
