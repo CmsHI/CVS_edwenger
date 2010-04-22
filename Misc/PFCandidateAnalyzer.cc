@@ -5,6 +5,8 @@
 //EAW
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 #include "DataFormats/ParticleFlowReco/interface/PFClusterFwd.h"
+//
+
 
 #include "FWCore/Framework/interface/ESHandle.h"
 
@@ -16,6 +18,7 @@
 using namespace std;
 using namespace edm;
 using namespace reco;
+
 
 PFCandidateAnalyzer::PFCandidateAnalyzer(const edm::ParameterSet& iConfig) {
   
@@ -30,10 +33,15 @@ PFCandidateAnalyzer::PFCandidateAnalyzer(const edm::ParameterSet& iConfig) {
   printBlocks_ = 
     iConfig.getUntrackedParameter<bool>("printBlocks",false);
 
+  thePtMin_ = 
+    iConfig.getUntrackedParameter<double>("ptMin",3.0);
 
 
   LogDebug("PFCandidateAnalyzer")
     <<" input collection : "<<inputTagPFCandidates_ ;
+
+
+
    
 }
 
@@ -45,7 +53,14 @@ PFCandidateAnalyzer::~PFCandidateAnalyzer() { }
 
 void 
 PFCandidateAnalyzer::beginRun(const edm::Run& run, 
-			      const edm::EventSetup & es) { }
+			      const edm::EventSetup & es) {}
+
+void 
+PFCandidateAnalyzer::beginJob() {
+
+  nt = f->make<TNtuple>("nt","PF Testing","type:pt:tkptmax:tkptsum:eetmax:eetsum:hetmax:hetsum");
+
+}
 
 
 void 
@@ -67,57 +82,72 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
     
     const reco::PFCandidate& cand = (*pfCandidates)[i];
     
+    cand_type = cand.particleId();
+    cand_pt = cand.pt();
+
     //--------- EDIT: Apr 21, 2010 (EAW)
-    if(cand.pt() < 5) continue;
+    if(cand_pt < thePtMin_) continue;
+    
+    if(cand_type != PFCandidate::h && //type1
+       cand_type != PFCandidate::e && //type2
+       cand_type != PFCandidate::mu   //type3
+       ) continue;
 
     if( verbose_ ) {
       cout<<cand<<endl;
       if (printBlocks_) printElementsInBlocks(cand);
-    }    
-
-    //--------- EDIT: Apr 19, 2010 (EAW)
-    //if(cand.pt() < 5) continue;
-    cout << "\ncandidate pt=" << cand.pt() << endl;
-    
-    if(cand.particleId() != PFCandidate::h && //type1
-       cand.particleId() != PFCandidate::e && //type2
-       cand.particleId() != PFCandidate::mu   //type3
-       ) continue;
-    cout << "candidate type=" << cand.particleId() << endl;
+    }   
 
     for(unsigned i=0; i<cand.elementsInBlocks().size(); i++) {
       PFBlockRef blockRef = cand.elementsInBlocks()[i].first;
      
-      if(i) cout << "WARNING: more than one block in this candidate" << endl;
+      if(i) {
+	cout << "WARNING: more than one block in this candidate" << endl; 
+	continue;
+      }
 
       const edm::OwnVector< reco::PFBlockElement >& elements = (*blockRef).elements();
       
+      max_trk=0.0, sum_trk=0.0, max_ecal=0.0, sum_ecal=0.0, max_hcal=0.0, sum_hcal=0.0;
+
       for(unsigned ie=0; ie<elements.size(); ie++) {
 
 	PFBlockElement::Type type = elements[ie].type();
 	if(type==PFBlockElement::TRACK) {
-	  cout << "TRK:" << endl;
+	  cout << "TRK:";
 	  reco::TrackRef trackRef = elements[ie].trackRef();
-	  cout << "pt=" << trackRef->pt() << endl;
+	  double trkpt = trackRef->pt();
+	  cout << "pt=" << trkpt << endl;
+	  sum_trk+=trkpt;
+	  if(trkpt>max_trk) max_trk=trkpt;
 	} 
 	else if(type==PFBlockElement::ECAL) {
-	  cout << "ECAL:" << endl;
+	  cout << "ECAL:";
 	  PFClusterRef ecalRef = elements[ie].clusterRef();
-	  cout << "energy=" << ecalRef->energy() << endl;
+	  double eet = ecalRef->energy()/cosh(ecalRef->eta());
+	  cout << "et=" << eet << endl;
+	  sum_ecal+=eet;
+	  if(eet>max_ecal) max_ecal=eet;
 	} 
 	else if(type==PFBlockElement::HCAL) {
-	  cout << "HCAL:" << endl;
+	  cout << "HCAL:";
 	  PFClusterRef hcalRef = elements[ie].clusterRef();
-	  cout << "energy=" << hcalRef->energy() << endl;	  
+	  double het = hcalRef->energy()/cosh(hcalRef->eta());
+	  cout << "et=" << het << endl;
+	  sum_hcal+=het;
+	  if(het>max_hcal) max_hcal=het;
 	}
 
       } //end loop over elements
  
     } //end loop over blocks
 
+    nt->Fill(cand_type,cand_pt,max_trk,sum_trk,max_ecal,sum_ecal,max_hcal,sum_hcal);
+
     //---------
   }
-    
+   
+ 
   LogDebug("PFCandidateAnalyzer")<<"STOP event: "<<iEvent.id().event()
 			 <<" in run "<<iEvent.id().run()<<endl;
 }

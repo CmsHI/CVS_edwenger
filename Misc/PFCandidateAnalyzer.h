@@ -16,6 +16,14 @@
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
+//EAW
+#include "TFile.h"
+#include "TNtuple.h"
+#include "TH1.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+//
+
 /**\class PFCandidateAnalyzer 
 \brief produces IsolatedPFCandidates from PFCandidates
 
@@ -37,6 +45,8 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
 
   virtual void beginRun(const edm::Run & r, const edm::EventSetup & c);
 
+  virtual void beginJob();
+
  private:
   
 
@@ -53,6 +63,22 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
 
   /// print the blocks associated to a given candidate ?
   bool   printBlocks_;
+
+  double thePtMin_;
+
+  TNtuple *nt;
+  edm::Service<TFileService> f;
+
+  float cand_type;
+  float cand_pt;
+  float max_trk;
+  float sum_trk;
+  float max_ecal;
+  float sum_ecal;
+  float max_hcal;
+  float sum_hcal;
+
+  //vector<pair<float,float>> elements; // type, pt 
 
 };
 
