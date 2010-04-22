@@ -15,6 +15,7 @@ pixel3ProtoTracks.RegionFactoryPSet.ptMin = cms.double(0.2)
 import UserCode.FerencSiklerVertexing.NewVertexProducer_cfi
 pixel3Vertices = UserCode.FerencSiklerVertexing.NewVertexProducer_cfi.newVertices.clone()
 pixel3Vertices.TrackCollection = 'pixel3ProtoTracks'
+pixel3Vertices.dMax = cms.double(12.0)
 
 extraVertex = cms.Sequence(
     siPixelRecHits *
