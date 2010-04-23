@@ -3,6 +3,7 @@ process = cms.Process("ANALYSIS")
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery=100
+process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -11,18 +12,23 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source (
     "PoolSource",    
     fileNames = cms.untracked.vstring(
-      '/store/data/Commissioning10/MinimumBias/RECO/Apr1ReReco-v2/0139/3ADE63D6-923E-DF11-B92A-001A92971BD8.root'
-      #'file:aod.root'
+      '/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'
+      #'file:aodtest.root'
       ),
     secondaryFileNames = cms.untracked.vstring(),
     noEventSort = cms.untracked.bool(True),
-    duplicateCheckMode = cms.untracked.string('noDuplicateCheck')
-    )
+    duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
+)
 
+process.clones = cms.EDFilter("PtMinCandViewCloneSelector",
+    src=cms.InputTag("particleFlow",""),
+    ptMin=cms.double(5.0),
+    filter=cms.bool(True)
+)
 
 process.pfCandidateAnalyzer = cms.EDAnalyzer("PFCandidateAnalyzer",
-    PFCandidates = cms.InputTag("particleFlow"),
-    verbose = cms.untracked.bool(True), ## print candidate info
+    PFCandidates = cms.InputTag("particleFlow",""),
+    verbose = cms.untracked.bool(False), ## print candidate info
     printBlocks = cms.untracked.bool(False), ## print block/element info
     ptMin = cms.untracked.double(5.0)                                         
 )
@@ -33,15 +39,19 @@ process.TFileService = cms.Service("TFileService",
 
 process.aod = cms.OutputModule("PoolOutputModule",
     outputCommands=cms.untracked.vstring('drop *',
-                                         'keep recoPFClusters_*_*_*',
+                                         'keep recoPFClusters_*CAL_*_*',
                                          'keep recoPFBlocks_*_*_*', 
-                                         'keep recoPFCandidates_*_*_*',
+                                         'keep recoPFCandidates_*__*',
                                          'keep recoTracks_generalTracks_*_*'),
-    fileName = cms.untracked.string('aod.root')
+    fileName = cms.untracked.string('aod.root'),
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('filter'))
 )
 
+process.filter = cms.Path(process.clones)
+process.p = cms.Path(process.clones*process.pfCandidateAnalyzer)
 process.outpath = cms.EndPath(process.aod)
-
-process.p = cms.Path(process.pfCandidateAnalyzer)
+process.schedule = cms.Schedule(process.filter,
+                                process.p,
+                                process.outpath)
 
 

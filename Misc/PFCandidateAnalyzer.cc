@@ -77,7 +77,6 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
   Handle<PFCandidateCollection> pfCandidates;
   iEvent.getByLabel(inputTagPFCandidates_, pfCandidates);
 
-  
   for( unsigned i=0; i<pfCandidates->size(); i++ ) {
     
     const reco::PFCandidate& cand = (*pfCandidates)[i];
@@ -88,9 +87,11 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
     //--------- EDIT: Apr 21, 2010 (EAW)
     if(cand_pt < thePtMin_) continue;
     
-    if(cand_type != PFCandidate::h && //type1
-       cand_type != PFCandidate::e && //type2
-       cand_type != PFCandidate::mu   //type3
+    if(!(cand_type == PFCandidate::h ||     //type1
+	 cand_type == PFCandidate::e ||     //type2
+	 cand_type == PFCandidate::mu ||    //type3
+	 cand_type == PFCandidate::gamma || //type4
+	 cand_type == PFCandidate::h0)      //type5
        ) continue;
 
     if( verbose_ ) {
@@ -99,6 +100,7 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
     }   
 
     for(unsigned i=0; i<cand.elementsInBlocks().size(); i++) {
+
       PFBlockRef blockRef = cand.elementsInBlocks()[i].first;
      
       if(i) {
