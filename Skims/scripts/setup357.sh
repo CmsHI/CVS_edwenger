@@ -4,6 +4,7 @@ cd $CMSSW_BASE/src
 
 # skiming code
 cvs co UserCode/edwenger/Skims
+cvs co UserCode/edwener/Misc
 mv UserCode/edwenger .
 
 # agglomerative vertex
