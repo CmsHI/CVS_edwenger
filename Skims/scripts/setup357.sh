@@ -17,8 +17,9 @@ cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
 cvs co UserCode/davidlw/ROOTupleAnalyzer
 mv UserCode/davidlw .
 
-# fake and real selector
+# fake and real selector, vertex constraint producer
 cvs co UserCode/ASYoon/PPTrackingTools/FakeAndRealTrackSelector
+cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
 mv UserCode/ASYoon/PPTrackingTools/ .
 
 # to run MTV with HitPixelLayersTPSelector.cc
