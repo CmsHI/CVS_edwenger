@@ -14,7 +14,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id$
+// $Id: TrkEffAnalyzer.cc,v 1.1 2010/05/03 08:55:02 edwenger Exp $
 //
 //
 
@@ -146,12 +146,24 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     TrackingParticleRef tpr(TPCollectionHeff, i);
     TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
 
-    double pt=0.0, eta=0.0, phi=0.0;
-    double ptr=0.0, etar=0.0, phir=0.0;
+    double pt=0.0, eta=0.0, phi=0.0, tip=0.0, lip=0.0;
+    int pdgId=0, nsimhits=0, status=0, charge=0;
+    double ptr=0.0, etar=0.0, phir=0.0, d0=0.0, dz=0.0, d0err=0.0, dzerr=0.0, pterr=0.0;
+    int nrechits=0;
 
-    if(tp->status()<0) continue; //only primaries
-    std::cout << "primary simtrack pt = " << tp->pt() << std::endl;
-    pt=tp->pt(); eta=tp->eta(); phi=tp->phi();
+    pt=tp->pt(); eta=tp->eta(); phi=tp->phi(); charge=tp->charge();
+    tip=sqrt(tp->vertex().perp2()); lip=tp->vertex().z();
+    pdgId=tp->pdgId(); nsimhits=tp->matchedHit(); status=tp->status();
+
+    if(status<0 || charge==0) continue; //only charged primaries
+
+    std::cout << "primary simtrack pt = " << pt 
+	      << " eta = " << eta
+	      << " phi = " << phi
+	      << " hits = " << nsimhits
+	      << " pdgId = " << pdgId
+	      << " status = " << status
+	      << std::endl;
 
     const reco::Track* matchedTrackPointer=0;
     std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
@@ -183,7 +195,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     double pt=0.0, eta=0.0, phi=0.0;
     double ptr=0.0, etar=0.0, phir=0.0;
 
-    std::cout << "reco track pt = " << track->pt() << std::endl;
+    //std::cout << "reco track pt = " << track->pt() << std::endl;
     ptr=track->pt(); etar=track->eta(); phir=track->phi();
  
     std::vector<std::pair<TrackingParticleRef, double> > tp;
@@ -191,8 +203,8 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       tp = recSimColl[track];
       if (tp.size()==0) continue;
 
-      std::cout << "reco::Track #" << i << " with pt=" << track->pt() 
-		<< " associated with quality:" << tp.begin()->second << std::endl;
+      //std::cout << "reco::Track #" << i << " with pt=" << track->pt() 
+      // 	  << " associated with quality:" << tp.begin()->second << std::endl;
       
       TrackingParticleRef tpr = tp.begin()->first;
       pt=tpr->pt(); eta=tpr->eta(); phi=tpr->phi();
