@@ -14,74 +14,13 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.1 2010/05/03 08:55:02 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.2 2010/05/03 10:24:17 edwenger Exp $
 //
 //
 
-
-// system include files
-#include <memory>
-
-// user include files
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Utilities/interface/InputTag.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
-#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
-#include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
-
-#include "TFile.h"  
-#include "TNtuple.h"
-#include "TH1.h"
-
-//
-// class declaration
-//
-
-class TrkEffAnalyzer : public edm::EDAnalyzer {
-   public:
-      explicit TrkEffAnalyzer(const edm::ParameterSet&);
-      ~TrkEffAnalyzer();
+#include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
 
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-
-      // ----------member data ---------------------------
-      edm::InputTag trackTags_; 
-      edm::InputTag label_tp_effic_;
-      edm::InputTag label_tp_fake_;
-      edm::InputTag associatorMap_;
-
-      TNtuple *ntSim;
-      TNtuple *ntReco;
-      edm::Service<TFileService> f;
-};
-
-//
-// constants, enums and typedefs
-//
-
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
 :
   trackTags_(iConfig.getUntrackedParameter<edm::InputTag>("tracks")),
@@ -90,25 +29,16 @@ TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
   associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap"))
 
 {
-   //now do whatever initialization is needed
 
 }
 
 
 TrkEffAnalyzer::~TrkEffAnalyzer()
 {
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
 
 }
 
-
-//
-// member functions
-//
-
-// ------------ method called to for each event  ------------
+// ------------ method called for each event  ------------
 void
 TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
