@@ -1,23 +1,17 @@
-// -*- C++ -*-
-//
-// Package:    TrkEffAnalyzer
-// Class:      TrkEffAnalyzer
-// 
-/**\class TrkEffAnalyzer TrkEffAnalyzer.cc edwenger/TrkEffAnalyzer/src/TrkEffAnalyzer.cc
-
- Description: Generate ntuples for tracking efficiency and fake rate studies 
-              from tracking particles, tracks, and association maps 
-
- Implementation: Simplified code based on MultiTrackValidator.cc
-
-*/
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.2 2010/05/03 10:24:17 edwenger Exp $
-//
+// $Id: TrkEffAnalyzer.cc,v 1.3 2010/05/03 10:29:41 edwenger Exp $
 //
 
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
+#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
+#include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
 
@@ -26,17 +20,15 @@ TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
   trackTags_(iConfig.getUntrackedParameter<edm::InputTag>("tracks")),
   label_tp_effic_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_effic")),
   label_tp_fake_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_fake")),
-  associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap"))
+  associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap")),
+  vtxTags_(iConfig.getUntrackedParameter<edm::InputTag>("vertices"))
 
 {
 
-}
-
-
-TrkEffAnalyzer::~TrkEffAnalyzer()
-{
+  histograms = new TrkEffHistograms(iConfig);
 
 }
+
 
 // ------------ method called for each event  ------------
 void
@@ -63,10 +55,13 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
   const TrackingParticleCollection tPCfake = *(TPCollectionHfake.product());
 
-  // reco track collection
+  // reco track and vertex collections
 
   edm::Handle<edm::View<reco::Track> >  trackCollection;
   iEvent.getByLabel(trackTags_,trackCollection);
+
+  edm::Handle<reco::VertexCollection> vertexCollection;
+  iEvent.getByLabel(vtxTags_,vertexCollection);
 
 
   // SIM loop
@@ -76,73 +71,48 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     TrackingParticleRef tpr(TPCollectionHeff, i);
     TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
 
-    double pt=0.0, eta=0.0, phi=0.0, tip=0.0, lip=0.0;
-    int pdgId=0, nsimhits=0, status=0, charge=0;
-    double ptr=0.0, etar=0.0, phir=0.0, d0=0.0, dz=0.0, d0err=0.0, dzerr=0.0, pterr=0.0;
-    int nrechits=0;
+    if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
 
-    pt=tp->pt(); eta=tp->eta(); phi=tp->phi(); charge=tp->charge();
-    tip=sqrt(tp->vertex().perp2()); lip=tp->vertex().z();
-    pdgId=tp->pdgId(); nsimhits=tp->matchedHit(); status=tp->status();
-
-    if(status<0 || charge==0) continue; //only charged primaries
-
-    std::cout << "primary simtrack pt = " << pt 
-	      << " eta = " << eta
-	      << " phi = " << phi
-	      << " hits = " << nsimhits
-	      << " pdgId = " << pdgId
-	      << " status = " << status
-	      << std::endl;
-
-    const reco::Track* matchedTrackPointer=0;
     std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
+    const reco::Track* mtr=0;
+    size_t nrec=0;
+
     if(simRecColl.find(tpr) != simRecColl.end()){
       rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
-      
-      if (rt.size()==0) continue;
-      matchedTrackPointer = rt.begin()->first.get();
-      std::cout << "TrackingParticle #" << i 
-		<< " with pt=" << sqrt(tp->momentum().perp2()) 
-		<< " associated with quality:" << rt.begin()->second << std::endl;
-
-      ptr=matchedTrackPointer->pt(); 
-      etar=matchedTrackPointer->eta(); 
-      phir=matchedTrackPointer->phi();      
-      
+      nrec=rt.size();   
+      if(nrec) mtr = rt.begin()->first.get();      
     }
-  
-    ntSim->Fill(pt,eta,phi,ptr,etar,phir);
-    
+     
+    SimTrack_t s = setSimTrack(*tp, *mtr, nrec);
+    histograms->fillSimHistograms(s);  
+
+    if(nrec) std::cout << "TrackingParticle #" << i << " with pt=" << tp->pt()
+		       << " associated with quality:" << rt.begin()->second << std::endl;
   }
-  
+
 
   // RECO loop
 
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i){
+    
     edm::RefToBase<reco::Track> track(trackCollection, i);
-
-    double pt=0.0, eta=0.0, phi=0.0;
-    double ptr=0.0, etar=0.0, phir=0.0;
-
-    //std::cout << "reco track pt = " << track->pt() << std::endl;
-    ptr=track->pt(); etar=track->eta(); phir=track->phi();
- 
+    reco::Track* tr=const_cast<reco::Track*>(track.get());
+    
     std::vector<std::pair<TrackingParticleRef, double> > tp;
+    const TrackingParticle *mtp=0;
+    size_t nsim=0;
+
     if(recSimColl.find(track) != recSimColl.end()){
       tp = recSimColl[track];
-      if (tp.size()==0) continue;
-
-      //std::cout << "reco::Track #" << i << " with pt=" << track->pt() 
-      // 	  << " associated with quality:" << tp.begin()->second << std::endl;
-      
-      TrackingParticleRef tpr = tp.begin()->first;
-      pt=tpr->pt(); eta=tpr->eta(); phi=tpr->phi();
-      
+      nsim=tp.size();
+      if(nsim) mtp = tp.begin()->first.get();       
     }
-    
-    ntReco->Fill(ptr,etar,phir,pt,eta,phi);
 
+    RecTrack_t r = setRecTrack(*tr, *mtp, nsim);
+    histograms->fillRecHistograms(r); 
+
+    if(nsim) std::cout << "reco::Track #" << i << " with pt=" << track->pt() 
+		       << " associated with quality:" << tp.begin()->second << std::endl;
   }
 
 }
@@ -152,13 +122,82 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 TrkEffAnalyzer::beginJob()
 {
-  ntSim = f->make<TNtuple>("ntSim","SimToReco","pt:eta:phi:ptr:etar:phir");
-  ntReco = f->make<TNtuple>("ntReco","RecoToSim","ptr:etar:phir:pt:eta:phi");
+
+  histograms->declareHistograms();
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-TrkEffAnalyzer::endJob() {
+TrkEffAnalyzer::endJob()
+{
+
+  histograms->writeHistograms();
+
+}
+
+
+SimTrack_t 
+TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec)
+{
+
+  SimTrack_t s;
+  s.ids = tp.pdgId();
+  s.etas = tp.eta();
+  s.pts = tp.pt();
+  s.hits = tp.matchedHit();
+  s.status = tp.status();
+
+  std::cout << "primary simtrack pt=" << s.pts 
+	    << " eta=" << s.etas
+	    << " hits=" << s.hits
+	    << " pdgId=" << s.ids
+	    << std::endl;
+
+  s.nrec = nrec;
+
+  return s;
+
+}
+
+
+RecTrack_t 
+TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim)
+{
+
+  RecTrack_t r;
+  r.charge = tr.charge();
+  r.etar = tr.eta();
+  r.ptr = tr.pt();
+  r.phir = tr.phi();
+  r.dz = tr.dz(); // FIX ME (USE VTX)
+  r.d0 = tr.d0(); // FIX ME
+  r.pterr = tr.ptError();
+  r.d0err = tr.d0Error();
+  r.dzerr = tr.dzError();
+  r.hitr = tr.numberOfValidHits();
+
+  std::cout << "reco track pt=" << r.ptr
+	    << " eta=" << r.etar
+	    << " hits=" << r.hitr
+	    << std::endl;
+
+  r.nsim = nsim;
+
+  if(nsim>0) {
+    r.ids = tp.pdgId();
+    r.parids = 0; // FIX ME
+    r.etas = tp.eta();
+    r.pts = tp.pt();
+  } else {
+    r.ids = 0;
+    r.parids = 0;
+    r.etas = 0.0;
+    r.pts = 0.0;
+  }
+  
+  return r;
+
 }
 
 //define this as a plug-in

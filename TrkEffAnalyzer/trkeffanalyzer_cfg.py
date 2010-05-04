@@ -23,12 +23,12 @@ process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
 process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10)
 )
 process.options = cms.untracked.PSet(
     #wantSummary = cms.untracked.bool(True)
@@ -48,7 +48,12 @@ process.ana = cms.EDAnalyzer('TrkEffAnalyzer',
     tracks = cms.untracked.InputTag('generalTracks'),
     label_tp_effic = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),
     label_tp_fake = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),                 
-    associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation')
+    associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
+    vertices = cms.untracked.InputTag('offlinePrimaryVertices',''),
+    fillHistograms = cms.bool(True),
+    fillNtuples = cms.bool(True),
+    histoFile = cms.string("hists.root"),
+    ntupleFile = cms.string("trees.root")                         
 )
 
 # Output definition
