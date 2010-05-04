@@ -14,6 +14,8 @@ void plot() {
   tsim->Draw("pts:etas>>hEff","nrec>0","goff");
 
   hEff->Divide(hEff,hSim,1,1,"B");
+  hEff->SetStats(0);
+  hEff->SetMaximum(1.0); hEff->SetMinimum(0.0);
 
   TCanvas *c1 = new TCanvas("c1","c1",600,500);
   gPad->SetRightMargin(0.15);

@@ -5,7 +5,7 @@
 namespace edm { class ParameterSet ; }
 class TFile;
 class TTree;
-class TH1F;
+class TH2F;
 
 // define matched track structs
 
@@ -61,8 +61,15 @@ class TrkEffHistograms
    bool fillHistograms;
    bool fillNtuples;
 
+   std::vector<double> etaBins, ptBins;
+
    // SimTrack
-   TH1F* htest;
+   TH2F* hsim;
+   TH2F* heff;
+
+   // RecTrack
+   TH2F* hrec;
+   TH2F* hfak;
 
 };
 

@@ -25,12 +25,12 @@ process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_
 process.MessageLogger.debugModules = ['ana']
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.4 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(1000)
 )
 process.options = cms.untracked.PSet(
     #wantSummary = cms.untracked.bool(True)
