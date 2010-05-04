@@ -1,27 +1,21 @@
+//
+// Original Author:  Edward Wenger
+//         Created:  Thu Apr 29 14:31:47 CEST 2010
+// $Id: TrkEffAnalyzer.cc,v 1.4 2010/05/04 08:36:24 edwenger Exp $
+//
+
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
-#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
-#include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
-
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffHistograms.h"
 
-
+// define track efficiency analyzer class
 class TrkEffAnalyzer : public edm::EDAnalyzer {
    public:
       explicit TrkEffAnalyzer(const edm::ParameterSet&);

@@ -1,9 +1,10 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.3 2010/05/03 10:29:41 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.4 2010/05/04 08:36:24 edwenger Exp $
 //
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -14,6 +15,7 @@
 #include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
+//#define DEBUG
 
 TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
 :
@@ -86,8 +88,11 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     SimTrack_t s = setSimTrack(*tp, *mtr, nrec);
     histograms->fillSimHistograms(s);  
 
-    if(nrec) std::cout << "TrackingParticle #" << i << " with pt=" << tp->pt()
-		       << " associated with quality:" << rt.begin()->second << std::endl;
+#ifdef DEBUG
+    if(nrec) edm::LogTrace("TrkEffAnalyzer") 
+      << "TrackingParticle #" << i << " with pt=" << tp->pt() 
+      << " associated with quality:" << rt.begin()->second;
+#endif
   }
 
 
@@ -111,8 +116,11 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     RecTrack_t r = setRecTrack(*tr, *mtp, nsim);
     histograms->fillRecHistograms(r); 
 
-    if(nsim) std::cout << "reco::Track #" << i << " with pt=" << track->pt() 
-		       << " associated with quality:" << tp.begin()->second << std::endl;
+#ifdef DEBUG
+    if(nsim) edm::LogTrace("TrkEffAnalyzer") 
+      << "reco::Track #" << i << " with pt=" << track->pt() 
+      << " associated with quality:" << tp.begin()->second;
+#endif
   }
 
 }
@@ -148,11 +156,13 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
   s.hits = tp.matchedHit();
   s.status = tp.status();
 
-  std::cout << "primary simtrack pt=" << s.pts 
-	    << " eta=" << s.etas
-	    << " hits=" << s.hits
-	    << " pdgId=" << s.ids
-	    << std::endl;
+#ifdef DEBUG
+  edm::LogTrace("TrkEffAnalyzer")  
+    << "primary simtrack pt=" << s.pts 
+    << " eta=" << s.etas
+    << " hits=" << s.hits
+    << " pdgId=" << s.ids;
+#endif
 
   s.nrec = nrec;
 
@@ -177,10 +187,12 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.dzerr = tr.dzError();
   r.hitr = tr.numberOfValidHits();
 
-  std::cout << "reco track pt=" << r.ptr
-	    << " eta=" << r.etar
-	    << " hits=" << r.hitr
-	    << std::endl;
+#ifdef DEBUG
+  edm::LogTrace("TrkEffAnalyzer")  
+    << "reco track pt=" << r.ptr
+    << " eta=" << r.etar
+    << " hits=" << r.hitr;
+#endif
 
   r.nsim = nsim;
 
