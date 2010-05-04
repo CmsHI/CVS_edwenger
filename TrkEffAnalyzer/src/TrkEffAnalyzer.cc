@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.5 2010/05/04 09:33:28 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.6 2010/05/04 14:26:18 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -11,6 +11,7 @@
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
 #include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
+#include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
 //#define DEBUG
@@ -22,8 +23,8 @@ TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
   label_tp_fake_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_fake")),
   associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap")),
   vtxTags_(iConfig.getUntrackedParameter<edm::InputTag>("vertices")),
-  bsTags_(iConfig.getUntrackedParameter<edm::InputTag>("beamspot"))
-
+  bsTags_(iConfig.getUntrackedParameter<edm::InputTag>("beamspot")),
+  doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true))
 {
 
   histograms = new TrkEffHistograms(iConfig);
@@ -36,15 +37,7 @@ void
 TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
-  // association maps
-
-  edm::Handle<reco::SimToRecoCollection > simtorecoCollectionH;
-  iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
-  reco::SimToRecoCollection simRecColl= *(simtorecoCollectionH.product()); 
-  
-  edm::Handle<reco::RecoToSimCollection > recotosimCollectionH;
-  iEvent.getByLabel(associatorMap_,recotosimCollectionH);
-  reco::RecoToSimCollection recSimColl= *(recotosimCollectionH.product()); 
+  const TrackAssociatorByHits * theAssociatorByHits;
 
   // sim track collections
 
@@ -63,6 +56,29 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   iEvent.getByLabel(vtxTags_,vertexCollectionH);
   iEvent.getByLabel(bsTags_,beamSpotH);
+
+  // association map
+
+  reco::RecoToSimCollection recSimColl;
+  reco::SimToRecoCollection simRecColl;
+
+  if(doAssociation_){
+     edm::ESHandle<TrackAssociatorBase> theAssociator;
+     iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
+     theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();
+
+     //how to choose "SimToRecoDenominator"                                                                                                                                
+     simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
+     recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
+  }else{
+     edm::Handle<reco::SimToRecoCollection > simtorecoCollectionH;
+     iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
+     simRecColl= *(simtorecoCollectionH.product());
+
+     edm::Handle<reco::RecoToSimCollection > recotosimCollectionH;
+     iEvent.getByLabel(associatorMap_,recotosimCollectionH);
+     recSimColl= *(recotosimCollectionH.product());
+  }
 
 
   // SIM loop

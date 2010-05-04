@@ -6,6 +6,7 @@
 <use name=CommonTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
 <use name=SimTracker/Records>
+<use name=SimTracker/TrackAssociation>
 <use name=DataFormats/RecoCandidate>
 <flags EDM_PLUGIN=1>
 <export>
@@ -18,5 +19,6 @@
    <use name=CommonTools/UtilAlgos>
    <use name=FWCore/ServiceRegistry>
    <use name=SimTracker/Records>
+   <use name=SimTracker/TrackAssociation>
    <use name=DataFormats/RecoCandidate>
 </export>
