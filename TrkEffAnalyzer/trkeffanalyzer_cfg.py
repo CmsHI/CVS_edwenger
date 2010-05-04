@@ -25,12 +25,12 @@ process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_
 process.MessageLogger.debugModules = ['ana']
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10)
 )
 process.options = cms.untracked.PSet(
     #wantSummary = cms.untracked.bool(True)
@@ -52,6 +52,7 @@ process.ana = cms.EDAnalyzer('TrkEffAnalyzer',
     label_tp_fake = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),                 
     associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
     vertices = cms.untracked.InputTag('offlinePrimaryVertices',''),
+    beamspot = cms.untracked.InputTag('offlineBeamSpot'),                         
     fillHistograms = cms.bool(True),
     fillNtuples = cms.bool(True),
     histoFile = cms.string("hists.root"),

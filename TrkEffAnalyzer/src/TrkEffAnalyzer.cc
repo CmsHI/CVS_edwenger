@@ -1,14 +1,12 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.4 2010/05/04 08:36:24 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.5 2010/05/04 09:33:28 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
@@ -23,7 +21,8 @@ TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
   label_tp_effic_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_effic")),
   label_tp_fake_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_fake")),
   associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap")),
-  vtxTags_(iConfig.getUntrackedParameter<edm::InputTag>("vertices"))
+  vtxTags_(iConfig.getUntrackedParameter<edm::InputTag>("vertices")),
+  bsTags_(iConfig.getUntrackedParameter<edm::InputTag>("beamspot"))
 
 {
 
@@ -57,13 +56,13 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
   const TrackingParticleCollection tPCfake = *(TPCollectionHfake.product());
 
-  // reco track and vertex collections
+  // reco track, vertex, beamspot collections
 
   edm::Handle<edm::View<reco::Track> >  trackCollection;
   iEvent.getByLabel(trackTags_,trackCollection);
 
-  edm::Handle<reco::VertexCollection> vertexCollection;
-  iEvent.getByLabel(vtxTags_,vertexCollection);
+  iEvent.getByLabel(vtxTags_,vertexCollectionH);
+  iEvent.getByLabel(bsTags_,beamSpotH);
 
 
   // SIM loop
@@ -180,8 +179,12 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.etar = tr.eta();
   r.ptr = tr.pt();
   r.phir = tr.phi();
-  r.dz = tr.dz(); // FIX ME (USE VTX)
-  r.d0 = tr.d0(); // FIX ME
+
+  double dxy=0.0, dz=0.0;
+  if(!testVertex(tr,dxy,dz)) std::cout << "used the beamspot as there is no vertex" << std::endl;
+  r.d0 = dxy;
+  r.dz = dz;
+  
   r.pterr = tr.ptError();
   r.d0err = tr.d0Error();
   r.dzerr = tr.dzError();
@@ -198,7 +201,7 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 
   if(nsim>0) {
     r.ids = tp.pdgId();
-    r.parids = 0; // FIX ME
+    r.parids = 0; // FIX ME (ADD PARENT ID)
     r.etas = tp.eta();
     r.pts = tp.pt();
   } else {
@@ -209,6 +212,24 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   }
   
   return r;
+
+}
+
+bool
+TrkEffAnalyzer::testVertex(reco::Track& tr, double &dxy, double &dz)
+{
+
+  const reco::VertexCollection *vtxs = vertexCollectionH.product();
+
+  if(vtxs->size() == 0 || vtxs->begin()->isFake()) {
+    dxy = tr.dxy(beamSpotH->position());
+    dz  = 0.0;
+    return false;
+  } else {
+    dxy = tr.dxy(vtxs->begin()->position());
+    dz  = tr.dz(vtxs->begin()->position());
+    return true;
+  }
 
 }
 

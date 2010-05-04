@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.4 2010/05/04 08:36:24 edwenger Exp $
+// $Id: TrkEffAnalyzer.h,v 1.3 2010/05/04 09:33:28 edwenger Exp $
 //
 
 // user include files
@@ -13,6 +13,9 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffHistograms.h"
 
 // define track efficiency analyzer class
@@ -29,6 +32,7 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
       
       SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t);
       RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t);
+      bool testVertex(reco::Track&, double&, double&);
 
       // ----------member data ---------------------------
       edm::InputTag trackTags_; 
@@ -36,6 +40,10 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
       edm::InputTag label_tp_fake_;
       edm::InputTag associatorMap_;
       edm::InputTag vtxTags_;
+      edm::InputTag bsTags_;
+  
+      edm::Handle<reco::VertexCollection> vertexCollectionH;
+      edm::Handle<reco::BeamSpot> beamSpotH;
 
       TrkEffHistograms *histograms;
       edm::Service<TFileService> f;
