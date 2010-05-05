@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.7 2010/05/04 16:21:27 sungho Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.8 2010/05/05 10:35:01 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -73,7 +73,6 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
      theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();
 
-     //how to choose "SimToRecoDenominator"                                                                                                                                
      simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
      recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
   }else{
@@ -189,8 +188,6 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
   s.hits = tp.matchedHit();
   s.status = tp.status();
   std::pair<bool,bool> acc = isAccepted(tp);
-  std::cout << "canBeTriplet=" << acc.first
-	    << " canBePair=" << acc.second << std::endl;
   s.acc = acc.first || acc.second;
 
 #ifdef DEBUG
@@ -213,7 +210,6 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
     s.dzerr = mtr.dzError();
     s.hitr = mtr.numberOfValidHits();
     s.algo = mtr.algo();
-    std::cout << "algo=" << mtr.algo() << std::endl;
   } else {
     s.dz = 0.0;
     s.d0 = 0.0;
@@ -240,7 +236,8 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.phir = tr.phi();
 
   double dxy=0.0, dz=0.0;
-  if(!testVertex(tr,dxy,dz)) std::cout << "used the beamspot as there is no vertex" << std::endl;
+  if(!testVertex(tr,dxy,dz)) 
+    std::cout << "used the beamspot as there is no vertex" << std::endl;
   r.d0 = dxy;
   r.dz = dz;
   

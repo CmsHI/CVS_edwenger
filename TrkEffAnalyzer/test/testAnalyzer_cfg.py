@@ -25,7 +25,7 @@ process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_
 process.MessageLogger.debugModules = ['ana']
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.6 $'),
+    version = cms.untracked.string('$Revision: 1.7 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -46,18 +46,7 @@ process.source = cms.Source("PoolSource",
 process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 
 # Track efficiency analyzer
-process.ana = cms.EDAnalyzer('TrkEffAnalyzer',
-    tracks = cms.untracked.InputTag('generalTracks'),
-    label_tp_effic = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),
-    label_tp_fake = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),                 
-    associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
-    vertices = cms.untracked.InputTag('offlinePrimaryVertices',''),
-    beamspot = cms.untracked.InputTag('offlineBeamSpot'),                         
-    fillHistograms = cms.bool(True),
-    fillNtuples = cms.bool(True),
-    histoFile = cms.string("hists.root"),
-    ntupleFile = cms.string("trees.root")                         
-)
+process.load("edwenger.TrkEffAnalyzer.trkEffAnalyzer_cfi")
 
 # Output definition
 process.RECODEBUGEventContent.outputCommands.extend(
@@ -85,7 +74,7 @@ process.GlobalTag.globaltag = 'MC_36Y_V4::All'   #360
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
 process.assoc_step = cms.Path(process.trackingParticleRecoTrackAsssociation)
-process.ana_step = cms.Path(process.ana)
+process.ana_step = cms.Path(process.trkEffAnalyzer)
 process.endjob_step = cms.Path(process.endOfProcess)
 process.out_step = cms.EndPath(process.output)
 
