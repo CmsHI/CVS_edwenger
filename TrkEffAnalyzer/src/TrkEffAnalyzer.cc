@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.6 2010/05/04 14:26:18 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.7 2010/05/04 16:21:27 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -11,6 +11,12 @@
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
 #include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
@@ -150,6 +156,18 @@ TrkEffAnalyzer::beginJob()
 
 }
 
+// ------------ method called at the beginning of each new run  ------------
+void
+TrkEffAnalyzer::beginRun(const edm::Run& r, const edm::EventSetup& es)
+{
+
+  // Get tracker geometry
+  edm::ESHandle<TrackerGeometry> tracker;
+  es.get<TrackerDigiGeometryRecord>().get(tracker);
+  theTracker = tracker.product();
+
+}
+
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 TrkEffAnalyzer::endJob()
@@ -159,7 +177,7 @@ TrkEffAnalyzer::endJob()
 
 }
 
-
+// ------------
 SimTrack_t 
 TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec)
 {
@@ -170,6 +188,10 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
   s.pts = tp.pt();
   s.hits = tp.matchedHit();
   s.status = tp.status();
+  std::pair<bool,bool> acc = isAccepted(tp);
+  std::cout << "canBeTriplet=" << acc.first
+	    << " canBePair=" << acc.second << std::endl;
+  s.acc = acc.first || acc.second;
 
 #ifdef DEBUG
   edm::LogTrace("TrkEffAnalyzer")  
@@ -180,12 +202,33 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
 #endif
 
   s.nrec = nrec;
+  
+  if(nrec > 0) {
+    double dxy=0.0, dz=0.0;
+    testVertex(*const_cast<reco::Track*>(&mtr),dxy,dz);
+    s.d0 = dxy;
+    s.dz = dz;
+    s.pterr = mtr.ptError();
+    s.d0err = mtr.d0Error();
+    s.dzerr = mtr.dzError();
+    s.hitr = mtr.numberOfValidHits();
+    s.algo = mtr.algo();
+    std::cout << "algo=" << mtr.algo() << std::endl;
+  } else {
+    s.dz = 0.0;
+    s.d0 = 0.0;
+    s.pterr = 0.0;
+    s.d0err = 0.0;
+    s.dzerr = 0.0;
+    s.hitr = 0;
+    s.algo = 0;
+  }
 
   return s;
 
 }
 
-
+// ------------
 RecTrack_t 
 TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim)
 {
@@ -202,9 +245,10 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.dz = dz;
   
   r.pterr = tr.ptError();
-  r.d0err = tr.d0Error();
-  r.dzerr = tr.dzError();
+  r.d0err = tr.d0Error(); // FIX ME (include vtx error in quadrature?)
+  r.dzerr = tr.dzError(); // FIX ME 
   r.hitr = tr.numberOfValidHits();
+  r.algo = tr.algo();
 
 #ifdef DEBUG
   edm::LogTrace("TrkEffAnalyzer")  
@@ -217,7 +261,7 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 
   if(nsim>0) {
     r.ids = tp.pdgId();
-    r.parids = 0; // FIX ME (ADD PARENT ID)
+    r.parids = 0; // FIX ME (add parent id)
     r.etas = tp.eta();
     r.pts = tp.pt();
   } else {
@@ -231,6 +275,7 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 
 }
 
+// ------------
 bool
 TrkEffAnalyzer::testVertex(reco::Track& tr, double &dxy, double &dz)
 {
@@ -242,11 +287,75 @@ TrkEffAnalyzer::testVertex(reco::Track& tr, double &dxy, double &dz)
     dz  = 0.0;
     return false;
   } else {
-    dxy = tr.dxy(vtxs->begin()->position());
-    dz  = tr.dz(vtxs->begin()->position());
+    dxy = tr.dxy(vtxs->begin()->position()); // FIX ME (use most populated vertex?)
+    dz  = tr.dz(vtxs->begin()->position());  // FIX ME (or closest vertex to track?)
     return true;
   }
 
+}
+
+// ------------
+std::pair<bool,bool> 
+TrkEffAnalyzer::isAccepted(TrackingParticle & tp)
+{
+  std::vector<bool> f(nLayers, false);
+
+  const std::vector<PSimHit> & simHits = tp.trackPSimHit(DetId::Tracker);
+  
+  for(std::vector<PSimHit>::const_iterator simHit = simHits.begin();
+                                      simHit!= simHits.end(); simHit++)
+  {
+    int id = getLayerId(*simHit);
+
+    if(id != -1)
+      f[id] = true;
+  }
+
+  bool canBeTriplet =
+    ( (f[BPix1] && f[BPix2]     && f[BPix3]) ||
+      (f[BPix1] && f[BPix2]     && f[FPix1_pos]) ||
+      (f[BPix1] && f[BPix2]     && f[FPix1_neg]) ||
+      (f[BPix1] && f[FPix1_pos] && f[FPix2_pos]) ||
+      (f[BPix1] && f[FPix1_neg] && f[FPix2_neg]) );
+
+  bool canBePair =
+    ( (f[BPix1] && f[BPix2]) ||
+      (f[BPix1] && f[BPix3]) ||
+      (f[BPix2] && f[BPix3]) ||
+      (f[BPix1] && f[FPix1_pos]) ||
+      (f[BPix1] && f[FPix1_neg]) ||
+      (f[BPix1] && f[FPix2_pos]) ||
+      (f[BPix1] && f[FPix2_neg]) ||
+      (f[BPix2] && f[FPix1_pos]) ||
+      (f[BPix2] && f[FPix1_neg]) ||
+      (f[BPix2] && f[FPix2_pos]) ||
+      (f[BPix2] && f[FPix2_neg]) );
+
+  return std::pair<bool,bool>(canBeTriplet, canBePair);
+}
+
+// ------------
+int 
+TrkEffAnalyzer::getLayerId(const PSimHit & simHit)
+{
+  unsigned int id = simHit.detUnitId();
+
+  if(theTracker->idToDetUnit(id)->subDetector() ==
+       GeomDetEnumerators::PixelBarrel)
+  {
+    PXBDetId pid(id);
+    return pid.layer() - 1; // 0, 1, 2
+  }
+
+  if(theTracker->idToDetUnit(id)->subDetector() ==
+       GeomDetEnumerators::PixelEndcap)
+  {
+    PXFDetId pid(id);
+    return BPix3 + ((pid.side()-1) << 1) + pid.disk(); // 3 -
+  }
+
+  // strip
+  return -1;
 }
 
 //define this as a plug-in

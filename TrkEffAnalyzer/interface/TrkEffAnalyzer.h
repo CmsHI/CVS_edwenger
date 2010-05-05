@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.h,v 1.4 2010/05/04 14:26:17 edwenger Exp $
+// $Id: TrkEffAnalyzer.h,v 1.5 2010/05/04 16:21:18 sungho Exp $
 //
 
 // user include files
@@ -16,6 +16,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffHistograms.h"
 
 // define track efficiency analyzer class
@@ -27,12 +28,15 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
 
    private:
       virtual void beginJob();
+      virtual void beginRun(const edm::Run&, const edm::EventSetup&);
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob();
       
       SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t);
       RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t);
       bool testVertex(reco::Track&, double&, double&);
+      std::pair<bool,bool> isAccepted(TrackingParticle&);
+      int getLayerId(const PSimHit&);
 
       // ----------member data ---------------------------
       edm::InputTag trackTags_; 
@@ -42,11 +46,18 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
       edm::InputTag vtxTags_;
       edm::InputTag bsTags_;
   
+      const TrackerGeometry * theTracker;
       edm::Handle<reco::VertexCollection> vertexCollectionH;
       edm::Handle<reco::BeamSpot> beamSpotH;
       bool doAssociation_;
 
       TrkEffHistograms *histograms;
       edm::Service<TFileService> f;
+
+      enum { BPix1=0, BPix2=1, BPix3=2,
+	     FPix1_neg=3, FPix2_neg=4,
+	     FPix1_pos=5, FPix2_pos=6,
+	     nLayers=7};
+
 };
 

@@ -38,11 +38,11 @@ TrkEffHistograms::declareHistograms()
     TString leafStr;
     
     trackTrees.push_back(new TTree("simTrackTree","simTrackTree"));
-    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:nrec/I";
+    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I";
     trackTrees[0]->Branch("simTrackValues", &simTrackValues, leafStr.Data());
     
     trackTrees.push_back(new TTree("recTrackTree","recTrackTree"));
-    leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:nsim/I:ids/I:parids/I:etas/F:pts/F";
+    leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:ids/I:parids/I:etas/F:pts/F";
     trackTrees[1]->Branch("recTrackValues", &recTrackValues, leafStr.Data());
     
   }
@@ -76,8 +76,18 @@ TrkEffHistograms::declareHistograms()
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
+    // accepted
+    hacc = new TH2F("hacc","Accepted Tracks;#eta;p_{T} (GeV/c)",
+		    etaBins.size()-1, &etaBins[0],
+		    ptBins.size()-1, &ptBins[0]);
+
     // efficiency
     heff = new TH2F("heff","Effic Rec Tracks;#eta;p_{T} (GeV/c)",
+		    etaBins.size()-1, &etaBins[0],
+		    ptBins.size()-1, &ptBins[0]);
+
+    // multiply reconstructed
+    hmul = new TH2F("hmul","Mult Rec Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
@@ -106,7 +116,9 @@ TrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
 
   if(fillHistograms) {
     hsim->Fill(s.etas, s.pts);
-    if(s.nrec) heff->Fill(s.etas, s.pts);
+    if(s.acc)    hacc->Fill(s.etas, s.pts);
+    if(s.nrec>0) heff->Fill(s.etas, s.pts);
+    if(s.nrec>1) hmul->Fill(s.etas, s.pts);
   }
 
 }
@@ -141,7 +153,9 @@ TrkEffHistograms::writeHistograms()
   if(fillHistograms) {
     histoFile->cd();
     hsim->Write();
+    hacc->Write();
     heff->Write();
+    hmul->Write();
     hrec->Write();
     hfak->Write();
     histoFile->Close();

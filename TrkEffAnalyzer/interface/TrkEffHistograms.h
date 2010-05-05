@@ -16,7 +16,15 @@ typedef struct
   float pts;
   int hits;
   int status;
+  int acc;
   int nrec;
+  float dz;
+  float d0;
+  float pterr;
+  float d0err;
+  float dzerr;
+  int hitr;
+  int algo;
 } SimTrack_t;
 
 typedef struct
@@ -31,6 +39,7 @@ typedef struct
   float d0err;
   float dzerr;
   int hitr; 
+  int algo;
   int nsim;
   int ids;
   int parids;
@@ -65,7 +74,9 @@ class TrkEffHistograms
 
    // SimTrack
    TH2F* hsim;
+   TH2F* hacc;
    TH2F* heff;
+   TH2F* hmul;
 
    // RecTrack
    TH2F* hrec;
