@@ -18,6 +18,7 @@ typedef struct
   int status;
   int acc;
   int nrec;
+  float ptr;
   float dz;
   float d0;
   float pterr;
@@ -41,6 +42,7 @@ typedef struct
   int hitr; 
   int algo;
   int nsim;
+  int status;
   int ids;
   int parids;
   float etas;

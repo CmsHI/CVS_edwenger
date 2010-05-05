@@ -22,10 +22,24 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
 process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
 
-process.MessageLogger.debugModules = ['ana']
+# message logger
+process.MessageLogger.categories = ['TrkEffAnalyzer']
+process.MessageLogger.debugModules = ['*']
+process.MessageLogger.cerr = cms.untracked.PSet(
+    threshold = cms.untracked.string('DEBUG'),
+    DEBUG = cms.untracked.PSet(
+        limit = cms.untracked.int32(0)
+    ),
+    INFO = cms.untracked.PSet(
+        limit = cms.untracked.int32(0)
+    ),
+    TrkEffAnalyzer = cms.untracked.PSet(
+        limit = cms.untracked.int32(-1)
+    )
+)
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -42,11 +56,20 @@ process.source = cms.Source("PoolSource",
     )
 )
 
+# Track selection
+process.highPurityTracks = cms.EDFilter("TrackSelector",
+    src = cms.InputTag("generalTracks"),
+    cut = cms.string('quality("highPurity")')
+)
+process.reconstruction *= process.highPurityTracks
+
 # Track association
 process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
+process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag('highPurityTracks')
 
 # Track efficiency analyzer
 process.load("edwenger.TrkEffAnalyzer.trkEffAnalyzer_cfi")
+process.trkEffAnalyzer.tracks = cms.untracked.InputTag('highPurityTracks')
 
 # Output definition
 process.RECODEBUGEventContent.outputCommands.extend(

@@ -38,11 +38,11 @@ TrkEffHistograms::declareHistograms()
     TString leafStr;
     
     trackTrees.push_back(new TTree("simTrackTree","simTrackTree"));
-    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I";
+    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I";
     trackTrees[0]->Branch("simTrackValues", &simTrackValues, leafStr.Data());
     
     trackTrees.push_back(new TTree("recTrackTree","recTrackTree"));
-    leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:ids/I:parids/I:etas/F:pts/F";
+    leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:status/I:ids/I:parids/I:etas/F:pts/F";
     trackTrees[1]->Branch("recTrackValues", &recTrackValues, leafStr.Data());
     
   }

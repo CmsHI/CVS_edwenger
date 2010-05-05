@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.8 2010/05/05 10:35:01 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.9 2010/05/05 10:47:22 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -109,7 +109,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     histograms->fillSimHistograms(s);  
 
 #ifdef DEBUG
-    if(nrec) edm::LogTrace("TrkEffAnalyzer") 
+    if(nrec) edm::LogVerbatim("TrkEffAnalyzer") 
       << "TrackingParticle #" << i << " with pt=" << tp->pt() 
       << " associated with quality:" << rt.begin()->second;
 #endif
@@ -137,7 +137,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     histograms->fillRecHistograms(r); 
 
 #ifdef DEBUG
-    if(nsim) edm::LogTrace("TrkEffAnalyzer") 
+    if(nsim) edm::LogVerbatim("TrkEffAnalyzer") 
       << "reco::Track #" << i << " with pt=" << track->pt() 
       << " associated with quality:" << tp.begin()->second;
 #endif
@@ -191,7 +191,7 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
   s.acc = acc.first || acc.second;
 
 #ifdef DEBUG
-  edm::LogTrace("TrkEffAnalyzer")  
+  edm::LogVerbatim("TrkEffAnalyzer")  
     << "primary simtrack pt=" << s.pts 
     << " eta=" << s.etas
     << " hits=" << s.hits
@@ -203,6 +203,7 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
   if(nrec > 0) {
     double dxy=0.0, dz=0.0;
     testVertex(*const_cast<reco::Track*>(&mtr),dxy,dz);
+    s.ptr = mtr.pt();
     s.d0 = dxy;
     s.dz = dz;
     s.pterr = mtr.ptError();
@@ -211,6 +212,7 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
     s.hitr = mtr.numberOfValidHits();
     s.algo = mtr.algo();
   } else {
+    s.ptr = 0.0;
     s.dz = 0.0;
     s.d0 = 0.0;
     s.pterr = 0.0;
@@ -237,7 +239,7 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 
   double dxy=0.0, dz=0.0;
   if(!testVertex(tr,dxy,dz)) 
-    std::cout << "used the beamspot as there is no vertex" << std::endl;
+    edm::LogWarning("TrkEffAnalyzer") << "used the beamspot as there is no reco::Vertex";
   r.d0 = dxy;
   r.dz = dz;
   
@@ -248,7 +250,7 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.algo = tr.algo();
 
 #ifdef DEBUG
-  edm::LogTrace("TrkEffAnalyzer")  
+  edm::LogVerbatim("TrkEffAnalyzer")  
     << "reco track pt=" << r.ptr
     << " eta=" << r.etar
     << " hits=" << r.hitr;
@@ -257,11 +259,22 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.nsim = nsim;
 
   if(nsim>0) {
+    r.status = tp.status();
     r.ids = tp.pdgId();
-    r.parids = 0; // FIX ME (add parent id)
+
+    int parentId=0;
+    if(tp.parentVertex()->nSourceTracks() > 0) {
+      parentId = (*(tp.parentVertex()->sourceTracks_begin()))->pdgId();
+      edm::LogVerbatim("TrkEffAnalyzer") 
+	<< "pdg Id = " << tp.pdgId()
+	<< " parent Id = " << parentId;
+    }
+    r.parids = parentId;
+
     r.etas = tp.eta();
     r.pts = tp.pt();
   } else {
+    r.status = 0;
     r.ids = 0;
     r.parids = 0;
     r.etas = 0.0;
