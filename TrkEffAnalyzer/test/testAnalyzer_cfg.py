@@ -39,7 +39,7 @@ process.MessageLogger.cerr = cms.untracked.PSet(
 )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -90,8 +90,8 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 # Other statements
-#process.GlobalTag.globaltag = 'MC_3XY_V26::All' #357
-process.GlobalTag.globaltag = 'MC_36Y_V4::All'   #360
+process.GlobalTag.globaltag = 'MC_3XY_V27::All' #357
+#process.GlobalTag.globaltag = 'MC_36Y_V6::All'   #360
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
