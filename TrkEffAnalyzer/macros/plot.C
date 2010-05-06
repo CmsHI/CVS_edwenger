@@ -1,5 +1,7 @@
 void plot() {
 
+  gStyle->SetOptStat(0);
+
   set_plot_style();
 
   TFile *f = new TFile("../trees.root");
@@ -9,8 +11,9 @@ void plot() {
   TString trksel = "1";
   trksel += " && abs(d0/d0err)<3.0 && abs(dz/dzerr)<3.0";
   trksel += " && (pterr/ptr)<0.05";
-  //trksel += " && algo<=7";
-  //trksel += " && hitr>7";
+  trksel += " && algo<=7";
+  trksel += " && hitr>=5";
+  trksel += " && abs(dz)<0.2 && abs(d0)<0.2";
 
   // sim-to-reco hists
   TH2F *hSim = new TH2F("hSim","Primary Charged Sim Tracks; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
@@ -18,9 +21,9 @@ void plot() {
   TH2F *hAcc = new TH2F("hAcc","Tracking Acceptance; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
   tsim->Draw("pts:etas>>hAcc","acc","goff");
   TH2F *hEff = new TH2F("hEff","Tracking Efficiency; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
-  tsim->Draw("pts:etas>>hEff",Form("nrec>0 && %s",trksel.Data()),"goff");
+  tsim->Draw("pts:etas>>hEff",Form("acc && nrec>0 && %s",trksel.Data()),"goff");
   TH2F *hMul = new TH2F("hMul","Multiple Reconstruction; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
-  tsim->Draw("pts:etas>>hMul",Form("nrec>1 && %s",trksel.Data()),"goff");
+  tsim->Draw("pts:etas>>hMul",Form("acc && nrec>1 && %s",trksel.Data()),"goff");
 
   // reco-to-sim hists
   TH2F *hRec = new TH2F("hRec","Reconstructed Tracks; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
@@ -28,7 +31,7 @@ void plot() {
   TH2F *hFak = new TH2F("hFak","Fake Tracks; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
   trec->Draw("ptr:etar>>hFak",Form("nsim==0 && %s",trksel.Data()),"goff");
   TH2F *hSec = new TH2F("hSec","Secondary Tracks; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
-  trec->Draw("ptr:etar>>hSec",Form("nsim && status<1 && %s",trksel.Data()),"goff");
+  trec->Draw("ptr:etar>>hSec",Form("nsim==1 && status<1 && %s",trksel.Data()),"goff");
   //TH2F *hDec = new TH2F("hDec","Weak-decay Tracks; #eta;p_{T} [GeV/c]",60,-3.,3.,80,0.,10.);
   //trec->Draw("ptr:etar>>hDec",Form("parids!=0 && %s",trksel.Data()),"goff");
 
@@ -43,7 +46,7 @@ void plot() {
   //---------------------------------------------
 
   // acceptance fraction
-  TCanvas *c1 = new TCanvas("c1","c1",600,500);
+  TCanvas *c1 = new TCanvas("c1","Acceptance Fraction",600,500);
   gPad->SetRightMargin(0.15);
   rAcc->Divide(hAcc,hSim,1,1,"B");
   rAcc->SetStats(0);
@@ -51,7 +54,7 @@ void plot() {
   rAcc->Draw("colz");
 
   // reco efficiency fraction
-  TCanvas *c2 = new TCanvas("c2","c2",600,500);
+  TCanvas *c2 = new TCanvas("c2","Reco Efficiency Fraction",600,500);
   gPad->SetRightMargin(0.15);
   rEff->Divide(hEff,hAcc,1,1,"B");
   rEff->SetStats(0);
@@ -59,7 +62,7 @@ void plot() {
   rEff->Draw("colz");
 
   // multiple reco fraction
-  TCanvas *c3 = new TCanvas("c3","c3",600,500);
+  TCanvas *c3 = new TCanvas("c3","Multiple Reco Fraction",600,500);
   gPad->SetRightMargin(0.15);
   rMul->Divide(hMul,hAcc,1,1,"B");
   rMul->SetStats(0);
@@ -67,7 +70,7 @@ void plot() {
   rMul->Draw("colz");
 
   // fake reco fraction
-  TCanvas *c4 = new TCanvas("c4","c4",600,500);
+  TCanvas *c4 = new TCanvas("c4","Fake Reco Fraction",600,500);
   gPad->SetRightMargin(0.15);
   rFak->Divide(hFak,hRec,1,1,"B");
   rFak->SetStats(0);
@@ -75,12 +78,106 @@ void plot() {
   rFak->Draw("colz");
 
   // secondary reco fraction
-  TCanvas *c5 = new TCanvas("c5","c5",600,500);
+  TCanvas *c5 = new TCanvas("c5","Secondary Fraction",600,500);  
   gPad->SetRightMargin(0.15);
   rSec->Divide(hSec,hRec,1,1,"B");
   rSec->SetStats(0);
   rSec->SetMaximum(1.0); rSec->SetMinimum(0.0);
   rSec->Draw("colz");
+
+  //---------------------------------------------
+
+  // projected hists: pt > 0.5 GeV/c
+  TH1D* hSimEta = (TH1D*) hSim->ProjectionX("hSimEta",5,80,"e");
+  TH1D* hAccEta = (TH1D*) hAcc->ProjectionX("hAccEta",5,80,"e");
+  TH1D* hEffEta = (TH1D*) hEff->ProjectionX("hEffEta",5,80,"e");
+  TH1D* hMulEta = (TH1D*) hMul->ProjectionX("hMulEta",5,80,"e");
+  TH1D* hRecEta = (TH1D*) hRec->ProjectionX("hRecEta",5,80,"e");
+  TH1D* hFakEta = (TH1D*) hFak->ProjectionX("hFakEta",5,80,"e");
+  TH1D* hSecEta = (TH1D*) hSec->ProjectionX("hSecEta",5,80,"e");
+  TH1D* hDumEta = new TH1D("hDumEta","p_{T} > 500 MeV/c;#eta",60,-3.0,3.0); hDumEta->SetMaximum(1.0);
+  TH1D* hDumEta2 = (TH1D*) hDumEta->Clone("hDumEta2"); hDumEta2->SetMaximum(0.05); 
+
+  // projected hists: abs(eta) < 2.4
+  TH1D* hSimPt  = (TH1D*) hSim->ProjectionY("hSimPt",7,54,"e");
+  TH1D* hAccPt  = (TH1D*) hAcc->ProjectionY("hAccPt",7,54,"e");
+  TH1D* hEffPt  = (TH1D*) hEff->ProjectionY("hEffPt",7,54,"e");
+  TH1D* hMulPt  = (TH1D*) hMul->ProjectionY("hMulPt",7,54,"e");
+  TH1D* hRecPt  = (TH1D*) hRec->ProjectionY("hRecPt",7,54,"e");
+  TH1D* hFakPt  = (TH1D*) hFak->ProjectionY("hFakPt",7,54,"e");
+  TH1D* hSecPt  = (TH1D*) hSec->ProjectionY("hSecPt",7,54,"e");
+  TH1D* hDumPt = new TH1D("hDumPt","|#eta| < 2.4;p_{T}",80,0.0,10.0); hDumPt->SetMaximum(1.0);
+  TH1D* hDumPt2 = (TH1D*) hDumPt->Clone("hDumPt2"); hDumPt2->SetMaximum(0.05); 
+
+  // Acceptance
+  TGraphAsymmErrors *gAccEta = new TGraphAsymmErrors();
+  gAccEta->BayesDivide(hAccEta,hSimEta);
+  gAccEta->SetMarkerStyle(20);
+
+  TGraphAsymmErrors *gAccPt = new TGraphAsymmErrors();
+  gAccPt->BayesDivide(hAccPt,hSimPt);
+  gAccPt->SetMarkerStyle(20);
+
+  TCanvas *c6 = new TCanvas("c6","Acceptance Fraction",900,500);
+  c6->Divide(2,1);
+  c6->cd(1); hDumEta->Draw(); gAccEta->Draw("pz");
+  c6->cd(2); hDumPt->Draw(); gAccPt->Draw("pz");
+
+  // Efficiency
+  TGraphAsymmErrors *gEffEta = new TGraphAsymmErrors();
+  gEffEta->BayesDivide(hEffEta,hAccEta);
+  gEffEta->SetMarkerStyle(20);
+
+  TGraphAsymmErrors *gEffPt = new TGraphAsymmErrors();
+  gEffPt->BayesDivide(hEffPt,hAccPt);
+  gEffPt->SetMarkerStyle(20);
+
+  TCanvas *c7 = new TCanvas("c7","Efficiency Fraction",900,500);
+  c7->Divide(2,1);
+  c7->cd(1); hDumEta->Draw(); gEffEta->Draw("pz");
+  c7->cd(2); hDumPt->Draw(); gEffPt->Draw("pz");
+
+  // Multiple Reco
+  TGraphAsymmErrors *gMulEta = new TGraphAsymmErrors();
+  gMulEta->BayesDivide(hMulEta,hAccEta);
+  gMulEta->SetMarkerStyle(20);
+
+  TGraphAsymmErrors *gMulPt = new TGraphAsymmErrors();
+  gMulPt->BayesDivide(hMulPt,hAccPt);
+  gMulPt->SetMarkerStyle(20);
+
+  TCanvas *c8 = new TCanvas("c8","Multiple Fraction",900,500);
+  c8->Divide(2,1);
+  c8->cd(1); hDumEta2->Draw(); gMulEta->Draw("pz");
+  c8->cd(2); hDumPt2->Draw(); gMulPt->Draw("pz");
+
+  // Fakes
+  TGraphAsymmErrors *gFakEta = new TGraphAsymmErrors();
+  gFakEta->BayesDivide(hFakEta,hRecEta);
+  gFakEta->SetMarkerStyle(20);
+
+  TGraphAsymmErrors *gFakPt = new TGraphAsymmErrors();
+  gFakPt->BayesDivide(hFakPt,hRecPt);
+  gFakPt->SetMarkerStyle(20);
+
+  TCanvas *c9 = new TCanvas("c9","Fake Fraction",900,500);
+  c9->Divide(2,1);
+  c9->cd(1); hDumEta2->Draw(); gFakEta->Draw("pz");
+  c9->cd(2); hDumPt2->Draw(); gFakPt->Draw("pz");
+
+  // Secondaries
+  TGraphAsymmErrors *gSecEta = new TGraphAsymmErrors();
+  gSecEta->BayesDivide(hSecEta,hRecEta);
+  gSecEta->SetMarkerStyle(20);
+
+  TGraphAsymmErrors *gSecPt = new TGraphAsymmErrors();
+  gSecPt->BayesDivide(hSecPt,hRecPt);
+  gSecPt->SetMarkerStyle(20);
+
+  TCanvas *c10 = new TCanvas("c10","Secondary Fraction",900,500);
+  c10->Divide(2,1);
+  c10->cd(1); hDumEta2->Draw(); gSecEta->Draw("pz");
+  c10->cd(2); hDumPt2->Draw(); gSecPt->Draw("pz");
 
 }
 
