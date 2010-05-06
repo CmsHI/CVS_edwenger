@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.9 2010/05/05 10:47:22 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.10 2010/05/05 13:15:43 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -19,6 +19,9 @@
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
+
+#include <stdio.h>
+#include <math.h>
 
 //#define DEBUG
 
@@ -201,14 +204,14 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
   s.nrec = nrec;
   
   if(nrec > 0) {
-    double dxy=0.0, dz=0.0;
-    testVertex(*const_cast<reco::Track*>(&mtr),dxy,dz);
+    double dxy=0.0, dz=0.0, d0err=0.0, dzerr=0.0;
+    testVertex(*const_cast<reco::Track*>(&mtr),dxy,dz,d0err,dzerr);
     s.ptr = mtr.pt();
     s.d0 = dxy;
     s.dz = dz;
+    s.d0err = d0err;
+    s.dzerr = dzerr;
     s.pterr = mtr.ptError();
-    s.d0err = mtr.d0Error();
-    s.dzerr = mtr.dzError();
     s.hitr = mtr.numberOfValidHits();
     s.algo = mtr.algo();
   } else {
@@ -237,15 +240,15 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
   r.ptr = tr.pt();
   r.phir = tr.phi();
 
-  double dxy=0.0, dz=0.0;
-  if(!testVertex(tr,dxy,dz)) 
+  double dxy=0.0, dz=0.0, d0err=0.0, dzerr=0.0;
+  if(!testVertex(tr,dxy,dz,d0err,dzerr)) 
     edm::LogWarning("TrkEffAnalyzer") << "used the beamspot as there is no reco::Vertex";
   r.d0 = dxy;
   r.dz = dz;
+  r.d0err = d0err;
+  r.dzerr = dzerr;
   
   r.pterr = tr.ptError();
-  r.d0err = tr.d0Error(); // FIX ME (include vtx error in quadrature?)
-  r.dzerr = tr.dzError(); // FIX ME 
   r.hitr = tr.numberOfValidHits();
   r.algo = tr.algo();
 
@@ -257,20 +260,20 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 #endif
 
   r.nsim = nsim;
-
+  
   if(nsim>0) {
     r.status = tp.status();
     r.ids = tp.pdgId();
-
+    
     int parentId=0;
     if(tp.parentVertex()->nSourceTracks() > 0) {
       parentId = (*(tp.parentVertex()->sourceTracks_begin()))->pdgId();
       edm::LogVerbatim("TrkEffAnalyzer") 
-	<< "pdg Id = " << tp.pdgId()
-	<< " parent Id = " << parentId;
+    	<< "pdg Id = " << tp.pdgId()
+    	<< " parent Id = " << parentId;
     }
     r.parids = parentId;
-
+    
     r.etas = tp.eta();
     r.pts = tp.pt();
   } else {
@@ -287,18 +290,25 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 
 // ------------
 bool
-TrkEffAnalyzer::testVertex(reco::Track& tr, double &dxy, double &dz)
+TrkEffAnalyzer::testVertex(reco::Track& tr, double &dxy, double &dz, double &d0err, double &dzerr)
 {
+
+  d0err = tr.d0Error();
+  dzerr = tr.dzError();
 
   const reco::VertexCollection *vtxs = vertexCollectionH.product();
 
   if(vtxs->size() == 0 || vtxs->begin()->isFake()) {
     dxy = tr.dxy(beamSpotH->position());
     dz  = 0.0;
+    d0err = sqrt ( (d0err*d0err) + (beamSpotH->BeamWidthX()*beamSpotH->BeamWidthY()) );
+    dzerr = 0.0;
     return false;
   } else {
     dxy = tr.dxy(vtxs->begin()->position()); // FIX ME (use most populated vertex?)
     dz  = tr.dz(vtxs->begin()->position());  // FIX ME (or closest vertex to track?)
+    d0err = sqrt ( (d0err*d0err) + (vtxs->begin()->xError()*vtxs->begin()->yError()) );
+    dzerr = sqrt ( (dzerr*dzerr) + (vtxs->begin()->zError()*vtxs->begin()->zError()) );
     return true;
   }
 
