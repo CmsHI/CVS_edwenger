@@ -24,8 +24,8 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.11 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
@@ -40,8 +40,9 @@ process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_
 process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("generalTracks")
 process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 
-#================ Fake and Real track producer ==========
 process.load("PPTrackingTools.FakeAndRealTrackSelector.selectFakeAndReal_cff")
+
+process.load("edwenger.Skims.MTVConfiguration_cff")
 
 # =============== PAT ===========================
 process.load("edwenger.Skims.patAna_cff")
@@ -49,49 +50,6 @@ process.load("edwenger.Skims.patAna_cff")
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJECSet( process, "Summer09_7TeV_ReReco332")
 
-#================= MTV for eff/fake rate ================
-process.load("Validation.RecoTrack.MultiTrackValidator_cff")
-process.load("Validation.RecoTrack.cuts_cff")
-process.load("CmsHi.TrackAnalysis.findableSimTracks_cfi")
-
-# cuts
-process.cutsTPEffic.minRapidity  = cms.double(-2.5)
-process.cutsTPEffic.maxRapidity  = cms.double(2.5)
-
-process.findableSimTracks.ptMin = 0.9
-process.findableSimTracks.minHit = 8
-process.findableSimTracks.minRapidity = cms.double(-2.5)
-process.findableSimTracks.maxRapidity = cms.double(2.5)
-process.findableSimTracks.tip = cms.double(30)
-process.findableSimTracks.lip = cms.double(30)
-#process.findableSimTracks.tpStatusBased = cms.bool(True)
-
-process.cutsRecoTracks.quality = ['highPurity']
-process.cutsRecoTracks.minHit   = cms.int32(8)
-process.cutsRecoTracks.minRapidity  = cms.double(-2.5)
-process.cutsRecoTracks.maxRapidity  = cms.double(2.5)
-
-# mtv config
-process.multiTrackValidator.outputFile = 'multitrackvalidator.root'
-process.multiTrackValidator.associators = ['TrackAssociatorByHits']
-process.multiTrackValidator.skipHistoFit=cms.untracked.bool(False)
-#process.multiTrackValidator.label_tp_effic = cms.InputTag("cutsTPEff") # selection on mergedtruth
-process.multiTrackValidator.label_tp_effic = cms.InputTag("findableSimTracks")
-process.multiTrackValidator.label_tp_fake  = cms.InputTag("cutsTPFake")
-process.multiTrackValidator.label = ['cutsRecoTracks']
-process.multiTrackValidator.useLogPt=cms.untracked.bool(True)
-process.multiTrackValidator.minpT = cms.double(0.1)
-process.multiTrackValidator.maxpT = cms.double(3000.0)
-process.multiTrackValidator.nintpT = cms.int32(40)
-process.multiTrackValidator.UseAssociators = cms.bool(True)
-
-process.mtv = cms.Sequence(
-    process.findableSimTracks *
-    #process.cutsTPEffic *
-    process.cutsTPFake  *
-    process.cutsRecoTracks *
-    process.multiTrackValidator
-)
 
 # =============== Final Paths =====================
 process.load("edwenger.Skims.eventSelection_cff")
