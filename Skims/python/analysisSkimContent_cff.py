@@ -23,14 +23,13 @@ analysisSkimContent = cms.PSet(
       # tracks
       'keep recoTracks_generalTracks_*_*RECO',
       'keep recoTracks_refitTracks_*_*',
-      'keep recoRecoChargedCandidates_allTracks_*_*',                                   
-      'keep recoTracks_refitTracks_*_*',
+      'keep recoRecoChargedCandidates_allTracks_*_*',
       'keep recoTracks_selectFake*_*_*',
       'keep recoTracks_selectReal*_*_*',
-      'keep *_selectTracks_*_*'                                     
+                                           
       # sim track matching
-      #'keep *_trackingParticleRecoTrackAsssociation_*_*',
-      #'keep TrackingParticles_mergedtruth_MergedTrackTruth_*'
+      'keep *_trackingParticleRecoTrackAsssociation_*_*',
+      'keep TrackingParticles_mergedtruth_MergedTrackTruth_*'
                                            
       )
     )
