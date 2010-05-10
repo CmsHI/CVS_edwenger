@@ -5,6 +5,7 @@
 <use name=CommonTools/UtilAlgos>
 <use name=DataFormats/L1GlobalTrigger>
 <use name=DataFormats/TrackReco>
+<use name=SimDataFormats/GeneratorProducts>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerEvtSelAnalyzer>
@@ -15,4 +16,5 @@
    <use name=CommonTools/UtilAlgos>
    <use name=DataFormats/L1GlobalTrigger>
    <use name=DataFormats/TrackReco>
+   <use name=SimDataFormats/GeneratorProducts>
 </export>

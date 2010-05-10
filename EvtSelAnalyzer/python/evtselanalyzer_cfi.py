@@ -11,5 +11,6 @@ evtselanalyzer = cms.EDAnalyzer('EvtSelAnalyzer',
                                       'HLT_L1Jet6U',
                                       'HLT_Jet15U',
                                       'HLT_Jet30U',
-                                      'HLT_Jet50U')
+                                      'HLT_Jet50U'),
+      isGEN=cms.untracked.bool(False)
 )

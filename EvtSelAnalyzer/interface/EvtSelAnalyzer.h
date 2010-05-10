@@ -37,6 +37,7 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       std::string qualityString_;
       edm::InputTag triglabel_;
       std::vector<std::string> trignames_;
+      bool isGEN_;
 
       edm::Service<TFileService> f;
       TH1D *hL1TechBits;
@@ -45,5 +46,10 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       TH2D *hHfTowers;
       TH1D *hHLTPaths;
 
-      // TO DO: add histogram of event multiplicity and isGEN flag
+      TH1D *hGenMultInel;
+      TH1D *hGenMultNSD;
+      TH1D *hGenMultSD;
+      TH1D *hGenMultDD;
+      TH1D *hGenMultND;
+
 };
