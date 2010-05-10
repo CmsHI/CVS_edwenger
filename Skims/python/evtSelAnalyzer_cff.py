@@ -1,7 +1,28 @@
 import FWCore.ParameterSet.Config as cms
 
-from edwenger.EvtSelAnalyzer.evtselanalyzer_cfi import evtselanalyzer
-
-preTriggerAna = evtselanalyzer.clone()
-postTriggerAna = evtselanalyzer.clone()
+# clone event selection analyzer to run after successive steps
+from edwenger.EvtSelAnalyzer.evtselanalyzer_cfi import *
+preTrgAna = evtselanalyzer.clone()
+postTrgAna = evtselanalyzer.clone()
 postEvtSelAna = evtselanalyzer.clone()
+postVtxAna = evtselanalyzer.clone()
+postTrkVtxAna = evtselanalyzer.clone()
+
+# clone vertex analyzer to run with various inputs
+from edwenger.VertexAnalyzer.SelectedVertex_cfi import *
+from edwenger.VertexAnalyzer.vertexanalyzer_cfi import *
+preVtxSel = vertexanalyzer.clone()
+postVtxSel = vertexanalyzer.clone(
+    vtxlabel=cms.untracked.InputTag("selectedVertex"))
+preTrkVtxSel = vertexanalyzer.clone(
+    vtxlabel=cms.untracked.InputTag("offlinePrimaryVertices"))
+postTrkVtxSel = vertexanalyzer.clone(
+    vtxlabel=cms.untracked.InputTag("offlinePrimaryVertices"))
+
+# sequences
+preTrgTest = cms.Sequence(preTrgAna)
+postTrgTest = cms.Sequence(postTrgAna)
+postEvtSelTest = cms.Sequence(postEvtSelAna * preVtxSel)
+postVtxTest = cms.Sequence(postVtxAna * postVtxSel)
+preTrkVtxTest = cms.Sequence(preTrkVtxSel)
+postTrkVtxTest = cms.Sequence(postTrkVtxAna * postTrkVtxSel)
