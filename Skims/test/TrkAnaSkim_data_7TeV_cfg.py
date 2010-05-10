@@ -21,55 +21,64 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.19 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/python/TrkAnaSkim_data_7TeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
+
+process.TFileService = cms.Service("TFileService", 
+                                   fileName = cms.string('ROOTuple_HighPurity.root')
+                                   )
 
 # =============== Event Filter =====================
 
 process.load("edwenger.Skims.eventSelection_cff")
 process.load("edwenger.Skims.hfCoincFilter_cff")
+process.load("edwenger.Skims.evtSelAnalyzer_cff")
 
-process.eventFilter = cms.Sequence(process.minBiasBscFilter *
-                                   process.hfCoincFilter *
+process.eventFilter = cms.Sequence(process.preTrgTest *
+                                   process.minBiasBscFilter *  ## BSC OR, BPTX AND, !BSCHALO
+                                   process.postTrgTest *
+                                   process.hfCoincFilter *     ## E=3 GeV calotower threshold
                                    process.purityFractionFilter)
 
 # =============== Extra Reco Steps =====================
 
-#process.load("edwenger.Skims.BeamSpot7TeV_cff")     # custom beamspot db source
-process.load("edwenger.Skims.ChargedCandidates_cff") # make charged candidates from selected tracks
-process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel vertexing
-process.load("edwenger.Skims.TrackRefit_cff")        # refit constrained to primary vertex
-process.load("edwenger.Skims.RootpleProducer_cfi")   # make wei's rootples
+process.load("edwenger.Skims.ChargedCandidates_cff") 
+process.load("edwenger.Skims.ExtraVertex_cff")       
+#process.load("edwenger.Skims.TrackRefit_cff")      
+process.load("edwenger.Skims.RootpleProducer_cfi")   
 
-# rootuple output file
-process.TFileService = cms.Service("TFileService", 
-                                   fileName = cms.string('ROOTuple_HighPurity.root')
-                                   )
+process.extraVtx = cms.Sequence(process.extraVertex *          ## agglomerative pixel vertexing
+                                process.postEvtSelTest *
+                                process.selectedVertex *       ## most-populated (filters)
+                                process.postVtxTest)
 
-
-process.extraReco = cms.Sequence(#process.offlineBeamspot *
-                                 process.chargedCandidates *
-                                 process.extraVertex *
-                                 process.trackRefit *
-                                 process.primaryVertexFilter *
-                                 process.rootpleProducer)
+process.extraReco = cms.Sequence(process.chargedCandidates *   ## selected tracks -> charged candidates
+                                 #process.trackRefit *         ## refit constrained to PV
+                                 process.preTrkVtxTest *
+                                 process.primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
+                                 process.postTrkVtxTest *
+                                 process.rootpleProducer)      ## make wei's rootples
 
 
 # =============== PAT ===========================
+
 process.load("edwenger.Skims.patAna_cff")
+
 # get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJECSet( process, "Summer09_7TeV_ReReco332")
+
 # turn off MC matching for data
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All'])
 
 
 # =============== Final Paths =====================
+
 process.eventFilter_step = cms.Path(process.eventFilter)
-process.extraReco_step = cms.Path(process.eventFilter * process.extraReco)
+process.extraReco_step = cms.Path(process.eventFilter * process.extraVtx * process.extraReco)
 process.pat_step = cms.Path(process.eventFilter * process.patAnaSequence)
 
 
@@ -86,6 +95,8 @@ process.output = cms.OutputModule("PoolOutputModule",
     )
 
 process.output_step = cms.EndPath(process.output)
+
+# =============== Schedule =====================
 
 process.schedule = cms.Schedule(process.eventFilter_step,
                                 process.extraReco_step,
