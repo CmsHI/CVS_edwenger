@@ -6,6 +6,22 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("edwenger.VertexAnalyzer.vertexanalyzer_cfi")
 process.load("edwenger.VertexAnalyzer.SelectedVertex_cfi")
 
+# message logger
+process.MessageLogger.categories = ['VertexAnalyzer']
+process.MessageLogger.debugModules = ['*']
+process.MessageLogger.cerr = cms.untracked.PSet(
+    threshold = cms.untracked.string('DEBUG'),
+    DEBUG = cms.untracked.PSet(
+        limit = cms.untracked.int32(0)
+    ),
+    INFO = cms.untracked.PSet(
+        limit = cms.untracked.int32(0)
+    ),
+    VertexAnalyzer = cms.untracked.PSet(
+        limit = cms.untracked.int32(-1)
+    )
+)
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
