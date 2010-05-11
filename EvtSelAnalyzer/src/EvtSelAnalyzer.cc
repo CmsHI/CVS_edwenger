@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.1 2010/05/07 10:14:19 edwenger Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.2 2010/05/10 14:56:00 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -48,19 +48,24 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   for(int bit=0; bit<128; bit++) hL1AlgoBits->Fill(bit,word.at(bit));
 
   //------- HLT -------------------------------
-  if(!isGEN_) { 
-    // FIX ME: why does this crash in MC?
-    // "vector::_M_range_check"
-    // (i=0, name=HLT_L1Jet6U, index=122)
+
     edm::Handle<edm::TriggerResults> trigH;
     iEvent.getByLabel(triglabel_,trigH);
     
     // jet triggers
     const edm::TriggerNames names = iEvent.triggerNames(*trigH);
-    for(unsigned i=0; i<trignames_.size(); i++) 
-      if(trigH->accept(names.triggerIndex(trignames_[i]))) 
-	hHLTPaths->Fill(trignames_[i].c_str(),1);
-  }  
+    for(unsigned i=0; i<trignames_.size(); i++) {
+      unsigned index = names.triggerIndex(trignames_[i]);
+      if(index < trigH->size()) {
+	if(trigH->accept(index)) hHLTPaths->Fill(trignames_[i].c_str(),1);  
+      } else {
+	edm::LogWarning("EvtSelAnalyzer") 
+	  << "Index returned by TriggerNames object for trigger '"
+	  << trignames_[i]
+	  << "' is out of range (" 
+	  << index << " >= " << trigH->size() << ")";
+      }
+    }
 
   //------- Calotowers ------------------------
   edm::Handle<CaloTowerCollection> towersH;

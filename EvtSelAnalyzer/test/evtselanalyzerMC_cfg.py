@@ -7,7 +7,9 @@ process.load("edwenger.EvtSelAnalyzer.evtselanalyzer_cfi")
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
-process.GlobalTag.globaltag = 'MC_3XY_V26::All'
+#process.GlobalTag.globaltag = 'MC_3XY_V26::All'
+process.GlobalTag.globaltag = 'START3X_V26A::All'
+
 
 # message logger
 process.MessageLogger.categories = ['EvtSelAnalyzer']
@@ -29,7 +31,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    '/store/relval/CMSSW_3_5_7/RelValMinBias/GEN-SIM-RECO/MC_3XY_V26-v1/0013/98E230F5-7F49-DF11-BE20-001A928116FA.root'
+    #'/store/relval/CMSSW_3_5_7/RelValMinBias/GEN-SIM-RECO/MC_3XY_V26-v1/0013/98E230F5-7F49-DF11-BE20-001A928116FA.root'
+    '/store/relval/CMSSW_3_5_7/RelValMinBias/GEN-SIM-RECO/START3X_V26-v1/0012/B8D5AE61-6949-DF11-879B-00261894393F.root'    
     )
 )
 
