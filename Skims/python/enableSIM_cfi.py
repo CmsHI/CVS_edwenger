@@ -5,5 +5,6 @@ def enableSIM(process):
     process.postVtxAna.isGEN=True
     process.postTrkVtxAna.isGEN=True
     process.trackAna.isGEN=True
+    process.rootpleProducer.OnlyRECO=False
     
     return process
