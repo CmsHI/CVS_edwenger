@@ -18,71 +18,98 @@ process.source = cms.Source("PoolSource",
 
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
+process.TFileService = cms.Service("TFileService", 
+                                   fileName = cms.string('ROOTupleMC_HighPurity.root')
+                                   )
+
+# =============== Event Filter =====================
+
+process.load("edwenger.Skims.eventSelection_cff")
+process.load("edwenger.Skims.hfCoincFilter_cff")
+process.load("edwenger.Skims.evtSelAnalyzer_cff")
+
+process.eventFilter = cms.Sequence(process.preTrgTest *
+                                   process.minBiasBscFilterMC *  ## BSC OR, !BSCHALO
+                                   process.postTrgTest *
+                                   process.hfCoincFilter *       ## E=3 GeV calotower threshold
+                                   process.purityFractionFilter)
+
 # =============== Extra Reco Steps =====================
-process.load("edwenger.Skims.ExtraVertex_cff")       # agglomerative pixel vertexing
-#process.load("edwenger.Skims.BeamSpot7TeV_cff")      # custom beamspot db source
-process.load("edwenger.Skims.TrackRefit_cff")        # refit constrained to primary Vertex
 
-#================ Track Association =====================
-process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
-process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
-process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("generalTracks")
-process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
+process.load("edwenger.Skims.ChargedCandidates_cff") 
+process.load("edwenger.Skims.ExtraVertex_cff")
+#process.load("edwenger.Skims.TrackRefit_cff")
 
-process.load("PPTrackingTools.FakeAndRealTrackSelector.selectFakeAndReal_cff")
+process.extraVtx = cms.Sequence(process.extraVertex *          ## agglomerative pixel vertexing
+                                process.postEvtSelTest *
+                                process.selectedVertex *       ## most-populated (filters)
+                                process.postVtxTest)
 
-process.load("edwenger.Skims.MTVConfiguration_cff")
+process.extraReco = cms.Sequence(process.chargedCandidates *   ## selected tracks -> charged candidates
+                                 #process.trackRefit *         ## refit constrained to PV
+                                 process.preTrkVtxTest *
+                                 process.primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
+                                 process.postTrkVtxTest)
 
 # =============== PAT ===========================
+
 process.load("edwenger.Skims.patAna_cff")
 # get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJECSet( process, "Summer09_7TeV_ReReco332")
 
+#================ Track Association =============
+
+#process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
+#process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
+#process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("generalTracks")
+#process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 
 # =============== Final Paths =====================
-process.load("edwenger.Skims.eventSelection_cff")
-process.load("edwenger.Skims.hfCoincFilter_cff")
-process.eventFilter = cms.Sequence(process.minBiasBscFilterMC *
-                                   process.hfCoincFilter *
-                                   process.purityFractionFilter)
 
-process.trkAnaSkim_step = cms.Path(process.eventFilter *
-                                   #process.offlineBeamSpot *
-                                   process.extraVertex *
-                                   process.trackRefit *
-                                   process.trackingParticleRecoTrackAsssociation*
-                                   process.selectFakeAndReal *
-                                   #process.selectFakeAndRealLoose *
-                                   process.mtv)
+process.eventFilter_step = cms.Path(process.eventFilter)
 
-process.pat_step = cms.Path(process.eventFilter * process.patAnaSequence)
+process.extraReco_step   = cms.Path(process.eventFilter *
+                                    process.extraVtx *
+                                    process.extraReco)
 
+process.pat_step         = cms.Path(process.eventFilter *
+                                    process.patAnaSequence)
+
+process.ana_step         = cms.Path(process.eventFilter *
+                                    process.primaryVertexFilter *
+                                    process.trackAna)
 
 # =============== Output ================================
 process.load("edwenger.Skims.analysisSkimContent_cff")
 process.output = cms.OutputModule("PoolOutputModule",
     process.analysisSkimContent,
-    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('trkAnaSkim_step')),
+    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('eventFilter_step')),
     dataset = cms.untracked.PSet(
-      dataTier = cms.untracked.string('AOD'),
+      dataTier = cms.untracked.string('AODSIM'),
       filterName = cms.untracked.string('TrkAnaFilter')),
     fileName = cms.untracked.string('trkAnaSkimAODSIM.root')
     )
 
 process.output_step = cms.EndPath(process.output)
 
-process.schedule = cms.Schedule(process.trkAnaSkim_step,
+# =============== Schedule =====================
+
+from edwenger.Skims.enableSIM_cfi import *
+process = enableSIM(process) #activate isGEN in analyzers
+
+process.schedule = cms.Schedule(process.eventFilter_step,
+                                process.extraReco_step,
 				process.pat_step,
+                                process.ana_step,
                                 process.output_step)
