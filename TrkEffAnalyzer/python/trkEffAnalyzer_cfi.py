@@ -10,7 +10,5 @@ trkEffAnalyzer = cms.EDAnalyzer('TrkEffAnalyzer',
     beamspot = cms.untracked.InputTag('offlineBeamSpot'),                         
     fillHistograms = cms.bool(True),
     fillNtuples = cms.bool(True),
-    histoFile = cms.string("hists.root"),
-    ntupleFile = cms.string("trees.root"),
     doAssociation = cms.untracked.bool(True)
 )

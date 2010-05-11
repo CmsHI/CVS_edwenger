@@ -2,6 +2,9 @@
 #define TrkEffAnalyzer_TrkEffHistograms
 
 #include <vector>
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
 namespace edm { class ParameterSet ; }
 class TFile;
 class TTree;
@@ -67,10 +70,9 @@ class TrkEffHistograms
    std::vector<TTree*> trackTrees;
    SimTrack_t simTrackValues;
    RecTrack_t recTrackValues;
-   TFile * histoFile;
-   TFile * ntupleFile;
    bool fillHistograms;
    bool fillNtuples;
+   edm::Service<TFileService> f;
 
    std::vector<double> etaBins, ptBins;
 

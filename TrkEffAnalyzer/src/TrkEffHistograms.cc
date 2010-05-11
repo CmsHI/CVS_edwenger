@@ -13,16 +13,6 @@ TrkEffHistograms::TrkEffHistograms(const edm::ParameterSet& pset)
 {
   fillHistograms         = pset.getParameter<bool>("fillHistograms");
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
-
-  string histoFileLabel = pset.getParameter<string>("histoFile");
-
-  if(fillHistograms)
-    histoFile = new TFile(histoFileLabel.c_str(),"recreate");
-
-  string ntupleFileLabel = pset.getParameter<string>("ntupleFile");
-
-  if(fillNtuples)
-    ntupleFile = new TFile(ntupleFileLabel.c_str(),"recreate");
 }
 
 
@@ -37,11 +27,11 @@ TrkEffHistograms::declareHistograms()
     
     TString leafStr;
     
-    trackTrees.push_back(new TTree("simTrackTree","simTrackTree"));
+    trackTrees.push_back(f->make<TTree>("simTrackTree","simTrackTree"));
     leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I";
     trackTrees[0]->Branch("simTrackValues", &simTrackValues, leafStr.Data());
     
-    trackTrees.push_back(new TTree("recTrackTree","recTrackTree"));
+    trackTrees.push_back(f->make<TTree>("recTrackTree","recTrackTree"));
     leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:status/I:ids/I:parids/I:etas/F:pts/F";
     trackTrees[1]->Branch("recTrackValues", &recTrackValues, leafStr.Data());
     
@@ -72,32 +62,32 @@ TrkEffHistograms::declareHistograms()
       etaBins.push_back(eta);
 
     // simulated
-    hsim = new TH2F("hsim","Sim Tracks;#eta;p_{T} (GeV/c)",
+    hsim = f->make<TH2F>("hsim","Sim Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
     // accepted
-    hacc = new TH2F("hacc","Accepted Tracks;#eta;p_{T} (GeV/c)",
+    hacc = f->make<TH2F>("hacc","Accepted Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
     // efficiency
-    heff = new TH2F("heff","Effic Rec Tracks;#eta;p_{T} (GeV/c)",
+    heff = f->make<TH2F>("heff","Effic Rec Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
     // multiply reconstructed
-    hmul = new TH2F("hmul","Mult Rec Tracks;#eta;p_{T} (GeV/c)",
+    hmul = f->make<TH2F>("hmul","Mult Rec Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
     // reconstructed
-    hrec = new TH2F("hrec","Rec Tracks;#eta;p_{T} (GeV/c)",
+    hrec = f->make<TH2F>("hrec","Rec Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
     // fakes
-    hfak = new TH2F("hfak","Fake Tracks;#eta;p_{T} (GeV/c)",
+    hfak = f->make<TH2F>("hfak","Fake Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
@@ -142,23 +132,5 @@ TrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
 void 
 TrkEffHistograms::writeHistograms()
 {
-
-  typedef vector<TTree *>::const_iterator TI;
-  if(fillNtuples) {
-    ntupleFile->cd();
-    for(TI t = trackTrees.begin(); t!= trackTrees.end(); t++) (*t)->Write();
-    ntupleFile->Close();
-  }
-
-  if(fillHistograms) {
-    histoFile->cd();
-    hsim->Write();
-    hacc->Write();
-    heff->Write();
-    hmul->Write();
-    hrec->Write();
-    hfak->Write();
-    histoFile->Close();
-  }
 
 }
