@@ -4,9 +4,9 @@ void plot() {
 
   set_plot_style();
 
-  TFile *f = new TFile("../trees.root");
-  TTree *tsim = (TTree*) f->Get("simTrackTree");
-  TTree *trec = (TTree*) f->Get("recTrackTree");
+  TFile *f = new TFile("../test/hists.root");
+  TTree *tsim = (TTree*) f->Get("trkEffAnalyzer/simTrackTree");
+  TTree *trec = (TTree*) f->Get("trkEffAnalyzer/recTrackTree");
 
   TString trksel = "1";
   trksel += " && abs(d0/d0err)<3.0 && abs(dz/dzerr)<3.0";
