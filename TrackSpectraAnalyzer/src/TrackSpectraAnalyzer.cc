@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.7 2010/05/01 15:24:36 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.1 2010/05/06 14:51:54 edwenger Exp $
 //
 
 #include "edwenger/TrackSpectraAnalyzer/interface/TrackSpectraAnalyzer.h"
@@ -11,14 +11,13 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
-   src_ = iConfig.getUntrackedParameter<edm::InputTag>("src",edm::InputTag("selectTracks"));
+   src_ = iConfig.getUntrackedParameter<edm::InputTag>("src",edm::InputTag("generalTracks"));
    vsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("vsrc",edm::InputTag("offlinePrimaryVertices"));
    jsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("jsrc",edm::InputTag("ak5CaloJets"));
    doOutput_ = iConfig.getUntrackedParameter<bool>("doOutput", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
-   nVtxTrkCut_ = iConfig.getUntrackedParameter<int>("nVtxTrkCut", 3);
 
 }
 
@@ -31,31 +30,11 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    using namespace reco;
 
    const int nTrigs = 5;
-
    const string qualityString = "highPurity";
-
-   //-----------------------   (This part will be in an EDFilter later)  
-   // get vtx collection 
-   Handle<vector<Vertex> > vertices;
-   iEvent.getByLabel(vsrc_, vertices);
-   if(vertices->size()!=1) return; // one and only one vertex
-   int numFake=0, numVtxTrk=0;
-   double bestvz=-999.9;
-   for(unsigned it=0; it<vertices->size(); ++it) {
-      const reco::Vertex & vtx = (*vertices)[it];
-      if(vtx.isFake()) numFake++;
-      numVtxTrk = vtx.tracksSize();
-      bestvz = vtx.z();
-   }
-   if(numVtxTrk<nVtxTrkCut_) return;
-   if(numFake>=1) return;
-   hVtxZ->Fill(bestvz);
-   //-----------------------   (This part will be in an EDFilter later)    
    
    // get hlt bit
    Handle<edm::TriggerResults> triggerResults;
    iEvent.getByLabel(edm::InputTag("TriggerResults","","HLT"), triggerResults);
-   //iEvent.getByLabel("TriggerResults","","HLT",triggerResults);
    const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
    bool accept[nTrigs];
    accept[0]=false; accept[1]=false; accept[2]=false; accept[3]=false; accept[4]=false;
@@ -76,7 +55,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    
    //----- loop over pat jets and store in a vector -----
    Handle<std::vector<pat::Jet> > pjets;
-   iEvent.getByLabel("selectedPatJets", pjets);
+   iEvent.getByLabel(jsrc_, pjets);
 
    vector<const pat::Jet *> sortedpJets;
 
@@ -134,15 +113,6 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       }
    }
 
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
-#endif
-   
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
-#endif
 }
 
 

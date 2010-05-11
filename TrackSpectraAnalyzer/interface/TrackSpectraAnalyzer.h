@@ -60,7 +60,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool doOutput_;
    bool isGEN_, doJet_;
    double  etaMax_;
-   int32_t nVtxTrkCut_;
    edm::InputTag src_;
    edm::InputTag vsrc_;
    edm::InputTag jsrc_;
