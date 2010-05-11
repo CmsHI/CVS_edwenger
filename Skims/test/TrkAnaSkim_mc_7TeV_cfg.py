@@ -23,7 +23,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -88,7 +88,9 @@ process.pat_step         = cms.Path(process.eventFilter *
 
 process.ana_step         = cms.Path(process.eventFilter *
                                     process.primaryVertexFilter *
-                                    process.trackAna)
+                                    process.trackAna *
+                                    #process.trackingParticleRecoTrackAsssociation *
+                                    process.trkEffAnalyzer)
 
 # =============== Output ================================
 process.load("edwenger.Skims.analysisSkimContent_cff")

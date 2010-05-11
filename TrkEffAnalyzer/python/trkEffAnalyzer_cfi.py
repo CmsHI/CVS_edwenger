@@ -11,5 +11,6 @@ trkEffAnalyzer = cms.EDAnalyzer('TrkEffAnalyzer',
     fillHistograms = cms.bool(True),
     fillNtuples = cms.bool(True),
     histoFile = cms.string("hists.root"),
-    ntupleFile = cms.string("trees.root")                         
+    ntupleFile = cms.string("trees.root"),
+    doAssociation = cms.untracked.bool(True)
 )

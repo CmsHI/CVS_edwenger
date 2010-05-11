@@ -11,16 +11,23 @@ postTrkVtxAna = evtselanalyzer.clone()
 # clone vertex analyzer to run with various inputs
 from edwenger.VertexAnalyzer.SelectedVertex_cfi import *
 from edwenger.VertexAnalyzer.vertexanalyzer_cfi import *
-preVtxSel = vertexanalyzer.clone()
+preVtxSel = vertexanalyzer.clone(
+    vtxlabel = cms.untracked.InputTag("pixel3Vertices"))
 postVtxSel = vertexanalyzer.clone(
-    vtxlabel=cms.untracked.InputTag("selectedVertex"))
+    vtxlabel = cms.untracked.InputTag("selectedVertex"))
 preTrkVtxSel = vertexanalyzer.clone(
-    vtxlabel=cms.untracked.InputTag("offlinePrimaryVertices"))
+    vtxlabel = cms.untracked.InputTag("offlinePrimaryVertices"))
 postTrkVtxSel = vertexanalyzer.clone(
-    vtxlabel=cms.untracked.InputTag("offlinePrimaryVertices"))
+    vtxlabel = cms.untracked.InputTag("offlinePrimaryVertices"))
 
 # track and jet spectra analyzer
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
+trackAna.src = cms.untracked.InputTag("selectTracks")
+trackAna.vsrc = cms.untracked.InputTag("selectedPatJets")
+
+# tracking efficiency analyzer
+from edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff import *
+trkEffAnalyzer.tracks = cms.untracked.InputTag("selectTracks")
 
 # sequences
 preTrgTest = cms.Sequence(preTrgAna)
