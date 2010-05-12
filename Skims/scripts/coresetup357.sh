@@ -17,5 +17,12 @@ cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
 # wei's rootuple producers
 cvs co UserCode/davidlw/ROOTupleAnalyzer
 
+# hacked AnalyticalTrackSelector
+addpkg RecoTracker/FinalTrackSelectors
+cvs co UserCode/edwenger/Misc
+mv UserCode/edwenger/Misc/AnalyticalTrackSelector.cc RecoTracker/FinalTrackSelectors/src
+mv UserCode/edwenger/Misc/AnalyticalTrackSelector.h RecoTracker/FinalTrackSelectors/interface
+rm -r UserCode/edwenger/Misc
+
 mv UserCode/edwenger .
 mv UserCode/davidlw .
