@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
         src = cms.untracked.InputTag("generalTracks"),
         vsrc = cms.untracked.InputTag("offlinePrimaryVertices"),
-        jsrc = cms.untracked.InputTag("patJets"),
+        jsrc = cms.untracked.InputTag("selectedPatJets"),
         doOutput = cms.untracked.bool(True),
         isGEN = cms.untracked.bool(False),
         doJet = cms.untracked.bool(True),
