@@ -21,7 +21,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -87,6 +87,7 @@ process.pat_step         = cms.Path(process.eventFilter *
                                     process.patAnaSequence)
 
 process.ana_step         = cms.Path(process.eventFilter *
+                                    process.selectedVertex *
                                     process.primaryVertexFilter *
                                     process.trackAna)
 
