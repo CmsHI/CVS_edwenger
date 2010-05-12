@@ -53,6 +53,12 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TNtuple *nt_jettrack;
 
    TH1D *hTrkPtMB;
+   // Jets
+   TH1D *hJet0Pt_HltMB;
+   TH1D *hJet0Pt_HltJet6U;
+   TH1D *hJet0Pt_HltJet15U;
+   TH1D *hJet0Pt_HltJet30U;
+   TH1D *hJet0Pt_HltJet50U;
 
    edm::Service<TFileService> fs;
    

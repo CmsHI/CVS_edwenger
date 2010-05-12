@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.2 2010/05/11 10:44:38 edwenger Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.3 2010/05/12 12:35:49 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -70,6 +70,11 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       for(unsigned it=0; it<sortedpJets.size(); ++it){
 	 nt_jet->Fill(sortedpJets[it]->et(),sortedpJets[it]->eta(),sortedpJets[it]->phi(),
 		      accept[0],accept[1],accept[2],accept[3],accept[4]); 
+	 if (accept[0]) hJet0Pt_HltMB->Fill(sortedpJets[it]->et());
+	 if (accept[1]) hJet0Pt_HltJet6U->Fill(sortedpJets[it]->et());
+	 if (accept[2]) hJet0Pt_HltJet15U->Fill(sortedpJets[it]->et());
+	 if (accept[3]) hJet0Pt_HltJet30U->Fill(sortedpJets[it]->et());
+	 if (accept[4]) hJet0Pt_HltJet50U->Fill(sortedpJets[it]->et());
 	 break;             
       }                     
    }
@@ -128,6 +133,12 @@ TrackSpectraAnalyzer::beginJob()
       if(doJet_) {
 	 nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
 	 nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
+	 // jet histograms
+	 hJet0Pt_HltMB = fs->make<TH1D>("hJet0Pt_HltMB","jet p_{T}; p_{T}^{uncorr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet6U = fs->make<TH1D>("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{uncorr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet15U = fs->make<TH1D>("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{uncorr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet30U = fs->make<TH1D>("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{uncorr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet50U = fs->make<TH1D>("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{uncorr jet} [GeV/c]", 600, 0.0, 300.0);
       }
    }
 }
