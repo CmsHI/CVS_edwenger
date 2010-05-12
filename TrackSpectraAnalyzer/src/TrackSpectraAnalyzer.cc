@@ -1,9 +1,10 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.1 2010/05/06 14:51:54 edwenger Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.2 2010/05/11 10:44:38 edwenger Exp $
 //
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "edwenger/TrackSpectraAnalyzer/interface/TrackSpectraAnalyzer.h"
 
 
@@ -18,6 +19,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
+   hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
 
 }
 
@@ -29,29 +31,28 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    using namespace std;
    using namespace reco;
 
-   const int nTrigs = 5;
    const string qualityString = "highPurity";
    
    // get hlt bit
    Handle<edm::TriggerResults> triggerResults;
    iEvent.getByLabel(edm::InputTag("TriggerResults","","HLT"), triggerResults);
+
    const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
-   bool accept[nTrigs];
-   accept[0]=false; accept[1]=false; accept[2]=false; accept[3]=false; accept[4]=false;
-   
-   accept[0] = triggerResults->accept(triggerNames.triggerIndex("HLT_MinBiasBSC"));
-   accept[1] = triggerResults->accept(triggerNames.triggerIndex("HLT_L1Jet6U"));
-   accept[2] = triggerResults->accept(triggerNames.triggerIndex("HLT_Jet15U"));
-   accept[3] = triggerResults->accept(triggerNames.triggerIndex("HLT_Jet30U"));
-   accept[4] = triggerResults->accept(triggerNames.triggerIndex("HLT_Jet50U"));
+   std::vector<bool> accept(5,false);
 
-   for(int i=0; i<nTrigs; i++) { 
-      //cout<<triggerResults->accept(triggerNames.triggerIndex("HLT_MinBiasBSC"))<<endl;
-      //accept[i] = triggerResults->accept(triggerNames.triggerIndex(hltNames[i])); 
-      //if(accept[i]) hHLTPaths->Fill(hltNames[i],1); 
-    } 
+   for(unsigned i=0; i<hltNames_.size(); i++) { 
 
-   
+     unsigned index = triggerNames.triggerIndex(hltNames_[i]);
+     if(index < triggerResults->size())
+       accept[i] = triggerResults->accept(index);
+     else 
+       edm::LogWarning("TrackSpectraAnalyzer")
+	 << "Index returned by TriggerNames object for trigger '"
+	 << hltNames_[i]
+	 << "' is out of range (" 
+	 << index << " >= " << triggerResults->size() << ")";
+     
+   } 
    
    //----- loop over pat jets and store in a vector -----
    Handle<std::vector<pat::Jet> > pjets;
@@ -123,7 +124,6 @@ TrackSpectraAnalyzer::beginJob()
    if(doOutput_){
       nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
       hTrkPtMB = fs->make<TH1D>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
-      hVtxZ = fs->make<TH1D>("hVtxZ","z position of best reconstructed pixel vertex", 80,-20,20);
       if(isGEN_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
       if(doJet_) {
 	 nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");

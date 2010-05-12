@@ -53,7 +53,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TNtuple *nt_jettrack;
 
    TH1D *hTrkPtMB;
-   TH1D *hVtxZ;
 
    edm::Service<TFileService> fs;
    
@@ -63,5 +62,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::InputTag src_;
    edm::InputTag vsrc_;
    edm::InputTag jsrc_;
+   std::vector<std::string> hltNames_;
 
 };
