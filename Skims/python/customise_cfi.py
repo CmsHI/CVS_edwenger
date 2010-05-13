@@ -13,7 +13,7 @@ def enableSIM(process):
     
     return process
 
-
+# this is for Summer 09 samples where the HLT has been re-run during Spring 10 production
 def enableREDIGI(process):
     process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
