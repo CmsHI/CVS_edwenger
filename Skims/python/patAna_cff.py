@@ -8,7 +8,7 @@ patJets.addBTagInfo = cms.bool(False)
 patJets.addDiscriminators = cms.bool(False)
 
 # Select jets
-selectedPatJets.cut = cms.string('pt > 2 & abs(eta) < 3.0')
+selectedPatJets.cut = cms.string('pt > 10')
 
 # Define Sequence
 patAnaSequence = cms.Sequence(
