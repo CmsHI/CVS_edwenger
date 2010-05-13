@@ -12,5 +12,6 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                                          'HLT_L1Jet6U',
                                          'HLT_Jet15U',
                                          'HLT_Jet30U',
-                                         'HLT_Jet50U')
+                                         'HLT_Jet50U'),
+        triglabel = cms.untracked.InputTag('TriggerResults','','HLT')
 )

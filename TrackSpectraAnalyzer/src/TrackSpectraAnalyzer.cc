@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.5 2010/05/12 15:27:22 frankma Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.6 2010/05/12 15:30:22 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -20,6 +20,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
+   triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
 
 }
 
@@ -35,7 +36,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    
    // get hlt bit
    Handle<edm::TriggerResults> triggerResults;
-   iEvent.getByLabel(edm::InputTag("TriggerResults","","HLT"), triggerResults);
+   iEvent.getByLabel(triglabel_, triggerResults);
 
    const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
    std::vector<bool> accept(5,false);
