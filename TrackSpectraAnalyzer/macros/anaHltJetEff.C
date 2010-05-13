@@ -25,11 +25,12 @@ void anaHltJetEff(){
    nt_jet->Add("dcache:///net/hisrv0001/home/edwenger/t2bat/MinimumBias/MB-C10-PR9-TRKANASKIM-v2/38a0275e6a2a62980cf9b1868edbd493/ROOTuple_HighPurity_*.root");
    cout << "# of events: " << nt_jet->GetEntries() << endl;
 
-   TH1D *hJetMB = new TH1D("hJetMB","",400,0,200);
-   TH1D *hJet6U = new TH1D("hJet6U","",400,0,200);
-   TH1D *hJet15U = new TH1D("hJet15U","",400,0,200);
-   TH1D *hJet30U = new TH1D("hJet30U","",400,0,200);
-   TH1D *hJet50U = new TH1D("hJet50U","",400,0,200);
+   Int_t histJetPtMax=300;
+   TH1D *hJetMB = new TH1D("hJetMB","",histJetPtMax,0,histJetPtMax);
+   TH1D *hJet6U = new TH1D("hJet6U","",histJetPtMax,0,histJetPtMax);
+   TH1D *hJet15U = new TH1D("hJet15U","",histJetPtMax,0,histJetPtMax);
+   TH1D *hJet30U = new TH1D("hJet30U","",histJetPtMax,0,histJetPtMax);
+   TH1D *hJet50U = new TH1D("hJet50U","",histJetPtMax,0,histJetPtMax);
 
 
    hJetMB->Sumw2();
@@ -83,8 +84,8 @@ void anaHltJetEff(){
    pp1->cd();
    pp1->SetLogy();
 
-   int upper = 35;
-   //int upper = 150; 
+   //int upper = 35;
+   int upper = 150; 
    double prescale = 1.15;
 
    Char_t xTitle[100],yTitle[100];
@@ -116,17 +117,6 @@ void anaHltJetEff(){
    TH1D *dum2 = GetDummyHist(-0.1,1.4,xTitle,yTitle);  
    //TH1D *dum2 = GetDummyHist(0.01,1.4,xTitle,yTitle);  
 
-   /*
-   dum2->GetYaxis()->SetLabelSize(0.1);
-   dum2->GetYaxis()->SetTitleSize(0.12);
-   dum2->GetYaxis()->SetTitleOffset(0.67);
-
-   dum2->GetXaxis()->SetLabelSize(0.109);
-   dum2->GetXaxis()->SetLabelOffset(0.05);
-   dum2->GetXaxis()->SetTitleSize(0.125);
-   dum2->GetXaxis()->SetTitleOffset(1.45);
-   */
-
    dum2->GetYaxis()->SetLabelSize(0.07);
    dum2->GetYaxis()->SetTitleSize(0.10);
    dum2->GetYaxis()->SetTitleOffset(0.69);
@@ -148,12 +138,6 @@ void anaHltJetEff(){
    TH1D* hJet15U_dum = hJet15U->Clone("hJet15U_dum");
    TH1D* hJet30U_dum = hJet30U->Clone("hJet30U_dum");
    TH1D* hJet50U_dum = hJet50U->Clone("hJet50U_dum");
-
-   hJetMB_dum->Sumw2();
-   hJet6U_dum->Sumw2();
-   hJet15U_dum->Sumw2();
-   hJet30U_dum->Sumw2();
-   hJet50U_dum->Sumw2();
 
    cout<<"number of bin in MB_dum "<<hJetMB_dum->GetNbinsX()<<endl;
    cout<<"number of bin in 6U_dum "<<hJet6U_dum->GetNbinsX()<<endl;
