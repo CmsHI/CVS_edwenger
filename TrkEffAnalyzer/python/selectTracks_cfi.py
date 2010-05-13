@@ -12,7 +12,7 @@ selectTracks = cms.EDFilter("HackedAnalyticalTrackSelector",
     vtxChi2Prob = cms.double(0.0), ## at least 1% chi2nprobability (if it has a chi2)
 
     copyTrajectories = cms.untracked.bool(False),
-    copyExtras = cms.untracked.bool(True), ## set to false on AOD
+    copyExtras = cms.untracked.bool(False), ## set to false on AOD
     qualityBit = cms.string(''), ## set to '' or comment out if you don't want to set the bit
 
     # parameters for adapted optimal cuts on chi2 and primary vertex compatibility
