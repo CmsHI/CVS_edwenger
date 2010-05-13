@@ -6,13 +6,12 @@ highPurityTracks = cms.EDFilter("TrackSelector",
     'quality("highPurity") && (ptError/pt)<0.05 && algo<=7 && numberOfValidHits>=5')
 )
 
-import davidlw.ROOTupleAnalyzer.AnalysisTracksHighPurity_VtxSignificance3_cfi as ATS
-selectTracks = ATS.selectTracks.clone(
-    d0_par2 = cms.vdouble(3, 0.0),
-    dz_par2 = cms.vdouble(3, 0.0),
-    max_d0 = cms.double(0.2),
-    max_z0 = cms.double(0.2)
-    )
+from edwenger.TrkEffAnalyzer.selectTracks_cfi import *
+selectTracks.src = cms.InputTag("highPurityTracks")
+selectTracks.d0_par2 = cms.vdouble(3, 0.0)
+selectTracks.dz_par2 = cms.vdouble(3, 0.0)
+selectTracks.max_d0 = cms.double(0.2)
+selectTracks.max_z0 = cms.double(0.2)
 
 looseSelectTracks = selectTracks.clone(
     vertices = cms.InputTag("selectedVertex")

@@ -9,6 +9,7 @@
 <use name=SimTracker/TrackAssociation>
 <use name=DataFormats/RecoCandidate>
 <use name=Geometry/TrackerGeometryBuilder>
+<use name=DataFormats/VertexReco>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerTrkEffAnalyzer>
@@ -23,4 +24,5 @@
    <use name=SimTracker/TrackAssociation>
    <use name=DataFormats/RecoCandidate>
    <use name=Geometry/TrackerGeometryBuilder>
+   <use name=DataFormats/VertexReco>
 </export>
