@@ -10,6 +10,7 @@ def enableSIM(process):
     process.rootpleProducer.OnlyRECO=False
     process.eventFilter.remove(process.physDeclFilter) # always false in MC
     process.eventFilter.remove(process.bptxAnd)        # always false in MC
+    process.trkEffAnalyzer.hasSimInfo=True
     
     return process
 

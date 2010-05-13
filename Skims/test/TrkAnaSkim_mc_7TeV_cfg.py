@@ -22,7 +22,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START3X_V26A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.5 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -48,7 +48,7 @@ process = enableSIM(process)    # activate isGEN in analyzers
 
 process.eventFilter_step = cms.Path(process.eventFilter)
 process.extraReco_step   = cms.Path(process.eventFilter * process.extraReco)
-process.ana_step         = cms.Path(process.eventFilter * process.analysisSeqMC)
+process.ana_step         = cms.Path(process.eventFilter * process.analysisSeq)
 
 # Re-make genjets for 35x reprocessing of 31x MC
 
