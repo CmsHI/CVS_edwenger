@@ -58,5 +58,9 @@ primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
     maxd0 = cms.double(2)	
     )
 
+# filter on events without vertex and produce vertex collection
+# containing only the vertex with the most tracks
+from edwenger.VertexAnalyzer.SelectedVertex_cfi import *
+
 minBiasBscFilter = cms.Sequence(physDeclFilter * bscOrBptxOr * bptxAnd * bscOr * bscNoHalo)
 minBiasBscFilterMC = cms.Sequence(bscOrBptxOr * bscOr * bscNoHalo)

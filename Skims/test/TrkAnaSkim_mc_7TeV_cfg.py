@@ -8,13 +8,12 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
-# =============== 7 TeV Collisions =====================
+# =============== 7 TeV MC Sample =====================
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
     '/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V26A_356ReReco-v1/0009/FEFC70B6-F53D-DF11-B57E-003048679150.root',
-    '/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V26A_356ReReco-v1/0009/FED8673E-F53D-DF11-9E58-0026189437EB.root')
-)
+    '/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V26A_356ReReco-v1/0009/FED8673E-F53D-DF11-9E58-0026189437EB.root'))
 
 # =============== Other Statements =====================
 
@@ -29,59 +28,27 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 process.TFileService = cms.Service("TFileService", 
-                                   fileName = cms.string('trkhists.root')
+                                   fileName = cms.string('trkhistsMC.root')
                                    )
 
-# =============== Event Filter =====================
+# =============== Import Sequences =====================
 
-process.load("edwenger.Skims.eventSelection_cff")
-process.load("edwenger.Skims.hfCoincFilter_cff")
-process.load("edwenger.Skims.evtSelAnalyzer_cff")
+process.load("edwenger.Skims.EventFilter_cff")
+process.load("edwenger.Skims.ExtraReco_cff")
+process.load("edwenger.Skims.Analysis_cff")
 
-process.eventFilter = cms.Sequence(process.preTrgTest *
-                                   process.minBiasBscFilterMC *  ## BSC OR, !BSCHALO
-                                   process.postTrgTest *
-                                   process.hfCoincFilter *       ## E=3 GeV calotower threshold
-                                   process.purityFractionFilter)
-
-# =============== Extra Reco Steps =====================
-
-process.load("edwenger.Skims.ChargedCandidates_cff") 
-process.load("edwenger.Skims.ExtraVertex_cff")
-
-process.extraVtx = cms.Sequence(process.extraVertex *          ## agglomerative pixel vertexing
-                                process.postEvtSelTest *
-                                process.selectedVertex *       ## most-populated (filters)
-                                process.postVtxTest)
-
-process.extraReco = cms.Sequence(process.chargedCandidates *   ## selected tracks -> charged candidates
-                                 process.preTrkVtxTest *
-                                 process.primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
-                                 process.postTrkVtxTest)
-
-process.load("edwenger.Skims.patAna_cff") # PAT jet sequence
-
-# get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Summer09_7TeV_ReReco332")
+switchJECSet( process, "Summer09_7TeV_ReReco332") # get the 7 TeV jet corrections
+
+from edwenger.Skims.customise_cfi import *
+process = enableSIM(process)    # activate isGEN in analyzers
+#process = enableREDIGI(process) # set proper HLT process name for REDIGI samples
 
 # =============== Final Paths =====================
 
 process.eventFilter_step = cms.Path(process.eventFilter)
-
-process.extraReco_step   = cms.Path(process.eventFilter *
-                                    process.extraVtx *
-                                    process.extraReco)
-
-process.pat_step         = cms.Path(process.eventFilter *
-                                    process.patAnaSequence)
-
-process.ana_step         = cms.Path(process.eventFilter *
-                                    process.selectedVertex *
-                                    process.looseTrackAna *
-                                    process.primaryVertexFilter *
-                                    process.trackAna *
-                                    process.trkEffAnalyzer)
+process.extraReco_step   = cms.Path(process.eventFilter * process.extraReco)
+process.ana_step         = cms.Path(process.eventFilter * process.analysisSeqMC)
 
 # Re-make genjets for 35x reprocessing of 31x MC
 
@@ -107,14 +74,10 @@ process.output_step = cms.EndPath(process.output)
 
 # =============== Schedule =====================
 
-from edwenger.Skims.customise_cfi import *
-process = enableSIM(process) #activate isGEN in analyzers
-process = enableREDIGI(process) # set proper HLT process name for REDIGI samples
-
-process.schedule = cms.Schedule(#process.gen_step,
-                                process.eventFilter_step,
-                                process.extraReco_step,
-				process.pat_step,
-                                process.ana_step,
-                                #process.output_step
-                                )
+process.schedule = cms.Schedule(
+    #process.gen_step,
+    process.eventFilter_step,
+    process.extraReco_step,
+    process.ana_step,
+    #process.output_step
+    )

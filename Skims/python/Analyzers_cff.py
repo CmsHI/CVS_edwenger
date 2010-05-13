@@ -9,7 +9,6 @@ postVtxAna = evtselanalyzer.clone()
 postTrkVtxAna = evtselanalyzer.clone()
 
 # clone vertex analyzer to run with various inputs
-from edwenger.VertexAnalyzer.SelectedVertex_cfi import *
 from edwenger.VertexAnalyzer.vertexanalyzer_cfi import *
 preVtxSel = vertexanalyzer.clone(
     vtxlabel = cms.untracked.InputTag("pixel3Vertices"))
