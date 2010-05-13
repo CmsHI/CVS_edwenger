@@ -29,7 +29,7 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 process.TFileService = cms.Service("TFileService", 
-                                   fileName = cms.string('ROOTupleMC_HighPurity.root')
+                                   fileName = cms.string('trkhists.root')
                                    )
 
 # =============== Event Filter =====================
@@ -48,9 +48,6 @@ process.eventFilter = cms.Sequence(process.preTrgTest *
 
 process.load("edwenger.Skims.ChargedCandidates_cff") 
 process.load("edwenger.Skims.ExtraVertex_cff")
-#process.load("edwenger.Skims.TrackRefit_cff")
-process.load("edwenger.Skims.RootpleProducer_cfi")
-process.load("davidlw.ROOTupleAnalyzer.AnalysisParticles_cfi")
 
 process.extraVtx = cms.Sequence(process.extraVertex *          ## agglomerative pixel vertexing
                                 process.postEvtSelTest *
@@ -58,26 +55,15 @@ process.extraVtx = cms.Sequence(process.extraVertex *          ## agglomerative 
                                 process.postVtxTest)
 
 process.extraReco = cms.Sequence(process.chargedCandidates *   ## selected tracks -> charged candidates
-                                 #process.trackRefit *         ## refit constrained to PV
                                  process.preTrkVtxTest *
                                  process.primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
-                                 process.postTrkVtxTest *
-                                 process.AnalysisParticles *  ## selected gen particles
-                                 process.rootpleProducer)     ## make wei's rootples
+                                 process.postTrkVtxTest)
 
-# =============== PAT ===========================
+process.load("edwenger.Skims.patAna_cff") # PAT jet sequence
 
-process.load("edwenger.Skims.patAna_cff")
 # get the 7 TeV jet corrections
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJECSet( process, "Summer09_7TeV_ReReco332")
-
-#================ Track Association =============
-
-#process.load("SimTracker.TrackAssociation.TrackAssociatorByHits_cfi")
-#process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
-#process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("generalTracks")
-#process.TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 
 # =============== Final Paths =====================
 
@@ -92,10 +78,19 @@ process.pat_step         = cms.Path(process.eventFilter *
 
 process.ana_step         = cms.Path(process.eventFilter *
                                     process.selectedVertex *
+                                    process.looseTrackAna *
                                     process.primaryVertexFilter *
                                     process.trackAna *
-                                    #process.trackingParticleRecoTrackAsssociation *
                                     process.trkEffAnalyzer)
+
+# Re-make genjets for 35x reprocessing of 31x MC
+
+process.load("RecoJets.Configuration.GenJetParticles_cff")
+process.load("RecoJets.Configuration.RecoGenJets_cff")
+
+process.gen_step = cms.Path(process.genJetParticles *
+                            process.ak5GenJets *
+                            process.ak7GenJets)
 
 # =============== Output ================================
 process.load("edwenger.Skims.analysisSkimContent_cff")
@@ -112,11 +107,14 @@ process.output_step = cms.EndPath(process.output)
 
 # =============== Schedule =====================
 
-from edwenger.Skims.enableSIM_cfi import *
+from edwenger.Skims.customise_cfi import *
 process = enableSIM(process) #activate isGEN in analyzers
+process = enableREDIGI(process) # set proper HLT process name for REDIGI samples
 
-process.schedule = cms.Schedule(process.eventFilter_step,
+process.schedule = cms.Schedule(#process.gen_step,
+                                process.eventFilter_step,
                                 process.extraReco_step,
 				process.pat_step,
                                 process.ana_step,
-                                process.output_step)
+                                #process.output_step
+                                )
