@@ -8,7 +8,7 @@ void printCanvases(TCanvas * MyCanvas, const char * name, int log=0)
    MyCanvas->SetLogx(log);
    printf("canvas name: %s\n",name);
 
-   MyCanvas->Print(Form("%s.eps",name));
+   MyCanvas->Print(Form("%s.C",name));
    MyCanvas->Print(Form("%s.gif",name));
    MyCanvas->Print(Form("%s.pdf",name));
 
