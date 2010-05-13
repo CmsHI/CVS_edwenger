@@ -54,6 +54,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    TH1D *hTrkPtMB;
    // Jets
+   TH1D *hJet0Pt;
    TH1D *hJet0Pt_HltMB;
    TH1D *hJet0Pt_HltJet6U;
    TH1D *hJet0Pt_HltJet15U;
