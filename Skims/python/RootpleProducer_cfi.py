@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+## ROOTple
 rootpleProducer = cms.EDProducer("AnalysisRootpleProducer",
                                  TracksCollectionName      = cms.InputTag("goodTracks"),
                                  VertexCollectionName      = cms.InputTag("offlinePrimaryVertices"),
@@ -14,3 +15,24 @@ rootpleProducer = cms.EDProducer("AnalysisRootpleProducer",
                                  triggerResults            = cms.InputTag("TriggerResults","","HLT"),
                                  genEventScale             = cms.InputTag("generator")
                                  )
+
+
+## genparticle and genjet selections for filling in MC
+from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
+from RecoJets.Configuration.GenJetParticles_cff import *
+from PhysicsTools.HepMCCandAlgos.genParticles_cfi import *
+goodParticles = cms.EDFilter("GenParticleSelector",
+    filter = cms.bool(False),
+    src = cms.InputTag("genParticles"),
+    cut = cms.string('pt > 0.0 & status == 1')
+)
+
+chargeParticles = cms.EDFilter("GenParticleSelector",
+    filter = cms.bool(False),
+    src = cms.InputTag("genParticles"),
+    cut = cms.string('charge != 0 & pt > 0.0 & status == 1')
+)
+
+AnalysisParticles = cms.Sequence(genParticles*genJetParticles*goodParticles*chargeParticles)
+
+rootpleProducerMC = cms.Sequence(AnalysisParticles * rootpleProducer)

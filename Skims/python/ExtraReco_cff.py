@@ -4,7 +4,6 @@ from edwenger.Skims.eventSelection_cff import *
 from edwenger.Skims.ExtraVertex_cff import *
 from edwenger.Skims.Analyzers_cff import *
 from edwenger.Skims.TrackSelection_cff import *
-from davidlw.ROOTupleAnalyzer.AnalysisParticles_cfi import *
 from edwenger.Skims.RootpleProducer_cfi import * 
 
 extraReco = cms.Sequence(extraVertex *         ## agglomerative pixel vertexing
