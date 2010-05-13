@@ -32,5 +32,8 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1D *hVtxSize;
       TH1D *hVtxTracks;
       TH1D *hVtxZ;
+      TH2D *hMultVtxTracks;
+      TH2D *hMultVtxZ;
+      TH1D *hAllVtxZ;
 
 };

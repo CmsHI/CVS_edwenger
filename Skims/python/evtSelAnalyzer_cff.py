@@ -24,7 +24,7 @@ postTrkVtxSel = vertexanalyzer.clone(
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
-looseTrackAna = trackAna.clone()
+looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
 # tracking efficiency analyzer
 from edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff import *

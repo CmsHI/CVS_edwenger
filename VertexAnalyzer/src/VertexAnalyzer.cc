@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.1 2010/05/07 15:05:14 edwenger Exp $
+// $Id: VertexAnalyzer.cc,v 1.2 2010/05/10 13:17:48 edwenger Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -36,7 +36,13 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   hVtxTracks->Fill(vtxs[0].tracksSize());
   hVtxZ->Fill(vtxs[0].z());
 
+  for(unsigned i=0; i<vtxs.size(); i++)
+    hAllVtxZ->Fill(vtxs[i].z());
+
   if(vtxs.size()<2) return;
+
+  hMultVtxTracks->Fill(vtxs[0].tracksSize(),vtxs[1].tracksSize());
+  hMultVtxZ->Fill(vtxs[0].z(),vtxs[1].z());
 
   for(unsigned i=0; i<vtxs.size(); i++)
     edm::LogVerbatim("VertexAnalyzer") << "vtx #" << i << " has " 
@@ -53,7 +59,9 @@ VertexAnalyzer::beginJob()
   hVtxSize = f->make<TH1D>("hVtxSize","number of reconstructed vertices",10,-0.5,9.5);
   hVtxTracks = f->make<TH1D>("hVtxTracks","number of tracks fitted to vertex",50,-0.5,49.5);
   hVtxZ = f->make<TH1D>("hVtxZ","z position of best reconstructed vertex",80,-20.0,20.0);
-
+  hMultVtxTracks = f->make<TH2D>("hMultVtxTracks","number of tracks fitted to vertex; most populated; 2nd most populated",50,-0.5,49.5,50,-0.5,49.5);
+  hMultVtxZ = f->make<TH2D>("hMultVtxZ","z position of reconstructed vertex; most populated; 2nd most populated",80,-20.0,20.0,80,-20.0,20.0);
+  hAllVtxZ = f->make<TH1D>("hAllVtxZ","z position of all reconstructed vertices",80,-20.0,20.0);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

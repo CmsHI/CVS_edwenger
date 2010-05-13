@@ -14,6 +14,10 @@ selectTracks = ATS.selectTracks.clone(
     max_z0 = cms.double(0.2)
     )
 
+looseSelectTracks = selectTracks.clone(
+    vertices = cms.InputTag("selectedVertex")
+    )
+
 allTracks = cms.EDProducer("ConcreteChargedCandidateProducer",
     src = cms.InputTag("selectTracks"),
     particleType = cms.string('pi+')
