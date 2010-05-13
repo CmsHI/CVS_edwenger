@@ -37,12 +37,12 @@ process.MessageLogger.cerr = cms.untracked.PSet(
 )
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     annotation = cms.untracked.string('step2 nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(1000)
 )
 process.options = cms.untracked.PSet(
     #wantSummary = cms.untracked.bool(True)
@@ -66,6 +66,7 @@ process.load("edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff")
 process.trkEffAnalyzer.tracks = cms.untracked.InputTag('highPurityTracks')
 process.trackingParticleRecoTrackAsssociation.label_tr = cms.untracked.InputTag('highPurityTracks')
 process.trkEffAnalyzer.doAssociation = cms.untracked.bool(True) # association done inside analyzer (not from map)
+process.trkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # for MC matching
 
 # Output definition
 process.RECODEBUGEventContent.outputCommands.extend(

@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.10 2010/05/05 13:15:43 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.11 2010/05/06 10:32:04 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -33,7 +33,8 @@ TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
   associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap")),
   vtxTags_(iConfig.getUntrackedParameter<edm::InputTag>("vertices")),
   bsTags_(iConfig.getUntrackedParameter<edm::InputTag>("beamspot")),
-  doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true))
+  doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true)),
+  hasSimInfo_(iConfig.getUntrackedParameter<bool>("hasSimInfo",false))
 {
 
   histograms = new TrkEffHistograms(iConfig);
@@ -46,17 +47,14 @@ void
 TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
+  edm::ESHandle<TrackAssociatorBase> theAssociator;
   const TrackAssociatorByHits * theAssociatorByHits;
+  edm::Handle<reco::SimToRecoCollection > simtorecoCollectionH;
+  edm::Handle<reco::RecoToSimCollection > recotosimCollectionH;
+  edm::Handle<TrackingParticleCollection>  TPCollectionHeff, TPCollectionHfake;
+  reco::RecoToSimCollection recSimColl;
+  reco::SimToRecoCollection simRecColl;
 
-  // sim track collections
-
-  edm::Handle<TrackingParticleCollection>  TPCollectionHeff ;
-  iEvent.getByLabel(label_tp_effic_,TPCollectionHeff);
-  const TrackingParticleCollection tPCeff = *(TPCollectionHeff.product());
-  
-  edm::Handle<TrackingParticleCollection>  TPCollectionHfake ;
-  iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
-  const TrackingParticleCollection tPCfake = *(TPCollectionHfake.product());
 
   // reco track, vertex, beamspot collections
 
@@ -66,60 +64,67 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(vtxTags_,vertexCollectionH);
   iEvent.getByLabel(bsTags_,beamSpotH);
 
-  // association map
 
-  reco::RecoToSimCollection recSimColl;
-  reco::SimToRecoCollection simRecColl;
+  // sim track collections
 
-  if(doAssociation_){
-     edm::ESHandle<TrackAssociatorBase> theAssociator;
-     iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
-     theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();
+  if(hasSimInfo_) {
 
-     simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
-     recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
-  }else{
-     edm::Handle<reco::SimToRecoCollection > simtorecoCollectionH;
-     iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
-     simRecColl= *(simtorecoCollectionH.product());
-
-     edm::Handle<reco::RecoToSimCollection > recotosimCollectionH;
-     iEvent.getByLabel(associatorMap_,recotosimCollectionH);
-     recSimColl= *(recotosimCollectionH.product());
-  }
-
-
-  // SIM loop
-
-  for(TrackingParticleCollection::size_type i=0; i<tPCeff.size(); i++) {
-
-    TrackingParticleRef tpr(TPCollectionHeff, i);
-    TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
-
-    if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
-
-    std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
-    const reco::Track* mtr=0;
-    size_t nrec=0;
-
-    if(simRecColl.find(tpr) != simRecColl.end()){
-      rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
-      nrec=rt.size();   
-      if(nrec) mtr = rt.begin()->first.get();      
+    // sim track collections
+    
+    iEvent.getByLabel(label_tp_effic_,TPCollectionHeff);
+    iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
+    
+    
+    // association map generated on-the-fly or read from file
+    
+    if(doAssociation_){
+      iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
+      theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();
+      
+      simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
+      recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
+    }else{
+      iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
+      simRecColl= *(simtorecoCollectionH.product());
+      
+      iEvent.getByLabel(associatorMap_,recotosimCollectionH);
+      recSimColl= *(recotosimCollectionH.product());
     }
-     
-    SimTrack_t s = setSimTrack(*tp, *mtr, nrec);
-    histograms->fillSimHistograms(s);  
-
+    
+    
+    // -------------------- SIM loop ----------------------------------------
+    
+    for(TrackingParticleCollection::size_type i=0; i<TPCollectionHeff->size(); i++) {
+      
+      TrackingParticleRef tpr(TPCollectionHeff, i);
+      TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
+      
+      if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
+      
+      std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
+      const reco::Track* mtr=0;
+      size_t nrec=0;
+      
+      if(simRecColl.find(tpr) != simRecColl.end()){
+	rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
+	nrec=rt.size();   
+	if(nrec) mtr = rt.begin()->first.get();      
+      }
+      
+      SimTrack_t s = setSimTrack(*tp, *mtr, nrec);
+      histograms->fillSimHistograms(s);  
+      
 #ifdef DEBUG
-    if(nrec) edm::LogVerbatim("TrkEffAnalyzer") 
-      << "TrackingParticle #" << i << " with pt=" << tp->pt() 
-      << " associated with quality:" << rt.begin()->second;
+      if(nrec) edm::LogVerbatim("TrkEffAnalyzer") 
+	<< "TrackingParticle #" << i << " with pt=" << tp->pt() 
+	<< " associated with quality:" << rt.begin()->second;
 #endif
-  }
+    }
+    
 
-
-  // RECO loop
+  } //end if(hasSimInfo_)
+    
+  // -------------------- RECO loop ----------------------------------------
 
   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i){
     
@@ -130,7 +135,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     const TrackingParticle *mtp=0;
     size_t nsim=0;
 
-    if(recSimColl.find(track) != recSimColl.end()){
+    if(hasSimInfo_ && recSimColl.find(track) != recSimColl.end()){
       tp = recSimColl[track];
       nsim=tp.size();
       if(nsim) mtp = tp.begin()->first.get();       

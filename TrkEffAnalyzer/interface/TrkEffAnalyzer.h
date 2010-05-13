@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.h,v 1.6 2010/05/05 10:35:01 edwenger Exp $
+// $Id: TrkEffAnalyzer.h,v 1.7 2010/05/06 10:32:04 edwenger Exp $
 //
 
 // user include files
@@ -50,6 +50,7 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
       edm::Handle<reco::VertexCollection> vertexCollectionH;
       edm::Handle<reco::BeamSpot> beamSpotH;
       bool doAssociation_;
+      bool hasSimInfo_;
 
       TrkEffHistograms *histograms;
       edm::Service<TFileService> f;
