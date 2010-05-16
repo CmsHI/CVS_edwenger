@@ -30,7 +30,9 @@
 
 // ROOT includes
 #include "TNtuple.h"
-#include "TH1D.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
 #include "TFile.h"
 
 // define track and jet spectra analyzer
@@ -52,19 +54,26 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TNtuple *nt_jet;
    TNtuple *nt_jettrack;
 
-   TH1D *hTrkPtMB;
+   TH1F *hTrkPtMB;
+
+   TH2F *hTrkPtEta;
+   TH2F *hGenTrkPtEta;
+   
+   TH3F *hTrkPtEtaJetEt;
+
    // Jets
-   TH1D *hJet0Pt;
-   TH1D *hJet0Pt_HltMB;
-   TH1D *hJet0Pt_HltJet6U;
-   TH1D *hJet0Pt_HltJet15U;
-   TH1D *hJet0Pt_HltJet30U;
-   TH1D *hJet0Pt_HltJet50U;
+   TH1F *hJet0Pt;
+   TH1F *hJet0Pt_HltMB;
+   TH1F *hJet0Pt_HltJet6U;
+   TH1F *hJet0Pt_HltJet15U;
+   TH1F *hJet0Pt_HltJet30U;
+   TH1F *hJet0Pt_HltJet50U;
 
    edm::Service<TFileService> fs;
    
    bool doOutput_;
    bool isGEN_, doJet_;
+   bool histOnly_;
    double  etaMax_;
    edm::InputTag src_;
    edm::InputTag vsrc_;

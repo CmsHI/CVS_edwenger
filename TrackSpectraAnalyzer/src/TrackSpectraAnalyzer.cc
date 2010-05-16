@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.7 2010/05/13 09:08:05 edwenger Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.8 2010/05/13 11:53:47 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -18,6 +18,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    doOutput_ = iConfig.getUntrackedParameter<bool>("doOutput", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
+   histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
@@ -61,16 +62,16 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
    vector<const pat::Jet *> sortedpJets;
 
-   if(doJet_){
-      for(unsigned it=0; it<pjets->size(); ++it){
-	 const pat::Jet* pjts = &((*pjets)[it]);
-	 sortedpJets.push_back( & *pjts);
-	 sortByEtRef (&sortedpJets);
-      }
-      
+   for(unsigned it=0; it<pjets->size(); ++it){
+      const pat::Jet* pjts = &((*pjets)[it]);
+      sortedpJets.push_back( & *pjts);
+      sortByEtRef (&sortedpJets);
+   }
+   
+   if(doJet_){ 
       for(unsigned it=0; it<sortedpJets.size(); ++it){
-	 nt_jet->Fill(sortedpJets[it]->et(),sortedpJets[it]->eta(),sortedpJets[it]->phi(),
-		      accept[0],accept[1],accept[2],accept[3],accept[4]); 
+	 if(!histOnly_) nt_jet->Fill(sortedpJets[it]->et(),sortedpJets[it]->eta(),sortedpJets[it]->phi(),
+				     accept[0],accept[1],accept[2],accept[3],accept[4]); 
 	 hJet0Pt->Fill(sortedpJets[it]->et());
 	 if (accept[0]) hJet0Pt_HltMB->Fill(sortedpJets[it]->et());
 	 if (accept[1]) hJet0Pt_HltJet6U->Fill(sortedpJets[it]->et());
@@ -80,7 +81,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 break;             
       }                     
    }
-
+   
    // get track collection 
    Handle<vector<Track> > tracks;
    iEvent.getByLabel(src_, tracks);
@@ -91,19 +92,19 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       if(!trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 
       if(accept[0]==1) hTrkPtMB->Fill(trk.pt());
-      nt_dndptdeta->Fill(trk.pt(),trk.eta());
+      if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
 
-      // (leading jet)-track                                  
-      // even if there's no jet track info saved (needed for MB) 
+      // (leading jet)-track                         
+      float jet_et = 0, jet_eta = 0;
+      unsigned index = 0; 
+      if(sortedpJets.size()==0) jet_et = 0,jet_eta = 0; 
+      else jet_et = sortedpJets[index]->et(), jet_eta = sortedpJets[index]->eta(); 
+      if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
+				   accept[0],accept[1],accept[2],accept[3],accept[4]); 
 
-      if(doJet_){
-         double jet_et = 0, jet_eta = 0;
-         unsigned index = 0; 
-         if(sortedpJets.size()==0) jet_et = 0,jet_eta = 0; 
-	 else jet_et = sortedpJets[index]->et(), jet_eta = sortedpJets[index]->eta(); 
-         nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
-                           accept[0],accept[1],accept[2],accept[3],accept[4]); 
-      }                                                       
+      hTrkPtEta->Fill(trk.eta(),trk.pt());
+      hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
+      
    }
 
    if(isGEN_){
@@ -117,7 +118,8 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 if(gen.collisionId() != 0) continue;
 	 if(gen.charge() == 0) continue;
 	 if(fabs(gen.eta())>etaMax_) continue;
-	 nt_gen_dndptdeta->Fill(gen.pt(),gen.eta());
+	 if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta());
+	 hGenTrkPtEta->Fill(gen.eta(),gen.pt());
       }
    }
 
@@ -129,19 +131,26 @@ void
 TrackSpectraAnalyzer::beginJob()
 {
    if(doOutput_){
-      nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
-      hTrkPtMB = fs->make<TH1D>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
-      if(isGEN_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
+      if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
+      hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
+      hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",250, -2.5, 2.5, 1000, 0.0, 200.0);
+      // memory consumption limits the number of bins...
+      hTrkPtEtaJetEt = fs->make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+				      250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0); 
+      if(isGEN_) {
+	 if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
+	 hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",250, -2.5, 2.5, 1000, 0.0, 200.0);
+      }
       if(doJet_) {
-	 nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
-	 nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
+	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
+	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
 	 // jet histograms
-	 hJet0Pt = fs->make<TH1D>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltMB = fs->make<TH1D>("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet6U = fs->make<TH1D>("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet15U = fs->make<TH1D>("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet30U = fs->make<TH1D>("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet50U = fs->make<TH1D>("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltMB = fs->make<TH1F>("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet6U = fs->make<TH1F>("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet15U = fs->make<TH1F>("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet30U = fs->make<TH1F>("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 hJet0Pt_HltJet50U = fs->make<TH1F>("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
       }
    }
 }
