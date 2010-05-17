@@ -43,8 +43,9 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    std::vector<bool> accept(5,false);
 
    for(unsigned i=0; i<hltNames_.size(); i++) { 
-
+      std::cout<<"HLT name: "<<hltNames_[i]<<std::endl;
      unsigned index = triggerNames.triggerIndex(hltNames_[i]);
+     std::cout<<"index:  "<<index<<std::endl;
      if(index < triggerResults->size())
        accept[i] = triggerResults->accept(index);
      else 
@@ -53,9 +54,10 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 << hltNames_[i]
 	 << "' is out of range (" 
 	 << index << " >= " << triggerResults->size() << ")";
-     
+     std::cout<<"trigger bit:  "<<accept[i]<<std::endl;
    } 
-   
+
+
    //----- loop over pat jets and store in a vector -----
    Handle<std::vector<pat::Jet> > pjets;
    iEvent.getByLabel(jsrc_, pjets);
@@ -93,12 +95,14 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
       if(accept[0]==1) hTrkPtMB->Fill(trk.pt());
       if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
+      
 
       // (leading jet)-track                         
       float jet_et = 0, jet_eta = 0;
       unsigned index = 0; 
       if(sortedpJets.size()==0) jet_et = 0,jet_eta = 0; 
       else jet_et = sortedpJets[index]->et(), jet_eta = sortedpJets[index]->eta(); 
+
       if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
 				   accept[0],accept[1],accept[2],accept[3],accept[4]); 
 
@@ -131,12 +135,16 @@ void
 TrackSpectraAnalyzer::beginJob()
 {
    if(doOutput_){
+
+      TFileDirectory subDir = fs->mkdir( "threeDHist" );
+
       if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
       hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
       hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",250, -2.5, 2.5, 1000, 0.0, 200.0);
+
       // memory consumption limits the number of bins...
-      hTrkPtEtaJetEt = fs->make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-				      250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0); 
+      hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					  250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0); 
       if(isGEN_) {
 	 if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
 	 hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",250, -2.5, 2.5, 1000, 0.0, 200.0);
