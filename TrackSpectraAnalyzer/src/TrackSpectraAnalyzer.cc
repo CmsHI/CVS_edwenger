@@ -43,9 +43,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    std::vector<bool> accept(5,false);
 
    for(unsigned i=0; i<hltNames_.size(); i++) { 
-      std::cout<<"HLT name: "<<hltNames_[i]<<std::endl;
      unsigned index = triggerNames.triggerIndex(hltNames_[i]);
-     std::cout<<"index:  "<<index<<std::endl;
      if(index < triggerResults->size())
        accept[i] = triggerResults->accept(index);
      else 
@@ -54,7 +52,6 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 << hltNames_[i]
 	 << "' is out of range (" 
 	 << index << " >= " << triggerResults->size() << ")";
-     std::cout<<"trigger bit:  "<<accept[i]<<std::endl;
    } 
 
 
