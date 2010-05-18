@@ -48,12 +48,13 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,200);
-  cpJetPt.AddHist1D(hs1D["hJet0Pt"],"All Jets |#eta|<3","",kViolet+2);
+  cpJetPt.AddHist1D(hs1D["hJet0Pt"],"All Jets","",kViolet+2);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltMB"],"HLT_MinBiasBSC","",kBlue);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet6U"],"HLT_L1Jet6U","",kAzure+6);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet15U"],"HLT_Jet15U","",kGreen-3);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet30U"],"HLT_Jet30U","",kOrange-5);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet50U"],"HLT_Jet50U","",kOrange-3);
+  cpJetPt.SetLegendHeader("Calojets |#eta|<3");
   cpJetPt.Draw(cJetPt,true,"gif");
 
   // === HLT Eff Ana ===
@@ -79,12 +80,13 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   TCanvas * cHltEff = new TCanvas("cHltEff","cHltEff",500,500);
   CPlot cpHltEff("HltEff","Hlt Eff","p_{T}^{corr jet} [GeV/c]","#epsilon_{HLT}");
   cpHltEff.SetXRange(0,200);
-  cpHltEff.SetYRange(0,1.2);
+  cpHltEff.SetYRange(0,1.1);
   cpHltEff.AddGraph(gAEs["gHltEff_HltMB"],"HLT_MinBiasBSC","pz",kBlue);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet6U"],"HLT_L1Jet6U","pz",kAzure+6);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kOrange-3);
-  cpHltEff.TransLegend(0,-0.25);
+  cpHltEff.SetLegendHeader("Calojets |#eta|<3");
+  cpHltEff.SetLegend(0.58,0.38,0.91,0.67);
   cpHltEff.Draw(cHltEff,true,"gif");
 }
