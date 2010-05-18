@@ -3,46 +3,70 @@
 #include "TFile.h"
 #include "TCanvas.h"
 #include "TH1F.h"
+#include "TChain.h"
 #include "TGraphAsymmErrors.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/tgraphTools.C"
 
 #include <map>
+#include <cassert>
 using namespace std;
 
 void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhists_try9_100k.root",
-    TString outdir="plots")
+    TString outdir="plots",
+    Bool_t useHist = true)
 {
   CPlot::sOutDir = outdir;
   TFile * inFile = new TFile(inFileName);
+  TChain * nt_jet = new TChain("trackAna/nt_jet","ntuple: jets");
 
 
   map<TString, TH1F* > hs1D;
   // === Checks ===
   // Plot Jet Pt distributions from various triggers
-  TH1F *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
-  hs1D["hJet0Pt"] = hJet0Pt;
-  hs1D["hJet0Pt_HltMB"] = hJet0Pt_HltMB;
-  hs1D["hJet0Pt_HltJet6U"] = hJet0Pt_HltJet6U;
-  hs1D["hJet0Pt_HltJet15U"] = hJet0Pt_HltJet15U;
-  hs1D["hJet0Pt_HltJet30U"] = hJet0Pt_HltJet30U;
-  hs1D["hJet0Pt_HltJet50U"] = hJet0Pt_HltJet50U;
-  inFile->GetObject("trackAna/hJet0Pt",hs1D["hJet0Pt"]);
-  inFile->GetObject("trackAna/hJet0Pt_HltMB",hs1D["hJet0Pt_HltMB"]);
-  inFile->GetObject("trackAna/hJet0Pt_HltJet6U",hs1D["hJet0Pt_HltJet6U"]);
-  inFile->GetObject("trackAna/hJet0Pt_HltJet15U",hs1D["hJet0Pt_HltJet15U"]);
-  inFile->GetObject("trackAna/hJet0Pt_HltJet30U",hs1D["hJet0Pt_HltJet30U"]);
-  inFile->GetObject("trackAna/hJet0Pt_HltJet50U",hs1D["hJet0Pt_HltJet50U"]);
+  if (useHist) {
+    TH1F *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
+    hs1D["hJet0Pt"] = hJet0Pt;
+    hs1D["hJet0Pt_HltMB"] = hJet0Pt_HltMB;
+    hs1D["hJet0Pt_HltJet6U"] = hJet0Pt_HltJet6U;
+    hs1D["hJet0Pt_HltJet15U"] = hJet0Pt_HltJet15U;
+    hs1D["hJet0Pt_HltJet30U"] = hJet0Pt_HltJet30U;
+    hs1D["hJet0Pt_HltJet50U"] = hJet0Pt_HltJet50U;
+    inFile->GetObject("trackAna/hJet0Pt",hs1D["hJet0Pt"]);
+    inFile->GetObject("trackAna/hJet0Pt_HltMB",hs1D["hJet0Pt_HltMB"]);
+    inFile->GetObject("trackAna/hJet0Pt_HltJet6U",hs1D["hJet0Pt_HltJet6U"]);
+    inFile->GetObject("trackAna/hJet0Pt_HltJet15U",hs1D["hJet0Pt_HltJet15U"]);
+    inFile->GetObject("trackAna/hJet0Pt_HltJet30U",hs1D["hJet0Pt_HltJet30U"]);
+    inFile->GetObject("trackAna/hJet0Pt_HltJet50U",hs1D["hJet0Pt_HltJet50U"]);
 
-  Int_t ngroups = 8; // 1-->0.5GeV per bin
-  map<TString, TH1F*>::iterator iter;
-  for (iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
-    // check
-    cout << iter->first << " " << iter->second->GetName() << endl;
-    // rebin
-    iter->second->Rebin(ngroups);
+    Int_t ngroups = 8; // 1-->0.5GeV per bin
+    map<TString, TH1F*>::iterator iter;
+    for (iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
+      // check
+      assert(iter->second);
+      cout << iter->first << " " << iter->second->GetName() << endl;
+      // rebin
+      iter->second->Rebin(ngroups);
+    }
+  } else {
+    nt_jet->Add(inFileName);
+    nt_jet->Print();
+    Int_t numPtBins=75;
+    hs1D["hJet0Pt"] = new TH1F("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    hs1D["hJet0Pt_HltMB"] = new TH1F("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    hs1D["hJet0Pt_HltJet6U"] = new TH1F("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    hs1D["hJet0Pt_HltJet15U"] = new TH1F("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    hs1D["hJet0Pt_HltJet50U"] = new TH1F("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<3","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltMB","abs(jeta)<3 && mb","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<3 && jet6","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet15U","abs(jeta)<3 && jet15","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet30U","abs(jeta)<3 && jet30","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet50U","abs(jeta)<3 && jet50","goff");
   }
+
 
   TCanvas * cJetPt = new TCanvas("cJetPt","cJetPt",500,500);
   CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
