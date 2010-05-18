@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.11 2010/05/17 14:20:22 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.8 2010/05/13 11:53:47 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -106,10 +106,46 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
       hTrkPtEta->Fill(trk.eta(),trk.pt());
       hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
-      
+      hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
+
    }
+   
+   hNevt->Fill(1.0); // put more useful stuff
+
+   float gjet_et = 0;
+   if(sortedpJets.size()==0) gjet_et = 0;
+   else gjet_et = sortedpJets[0]->et();
 
    if(isGEN_){
+
+      // Get gen jet
+      /*
+      Handle<reco::CandidateView> gjets;
+      iEvent.getByLabel("ak5GenJets",gjets);
+
+      vector<const reco::CandidateView *> sortedgJets;
+
+      for(unsigned it=0; it<gjets->size(); ++it){
+	 const reco::CandidateView* gjts = &((*gjets)[it]);
+	 sortedgJets.push_back( & *gjts);
+	 sortByEtRef (&sortedgJets);
+      }
+
+      for (unsigned int j=0; j<(*gjets).size();++j) {
+	 const reco::Candidate & jet = (*jets)[j];
+	 Double_t corrPt=jet.pt();
+	 if (jetType==2) {
+	    Handle<vector<pat::Jet> > patjets;
+	    iEvent.getByLabel(jetsrc_,patjets);
+	    corrPt = (*patjets)[j].correctedP4(JECLab1_).pt();
+	 }
+	 hPt->Fill(corrPt);
+	 hEta->Fill(jet.eta());
+	 hPhi->Fill(jet.phi());
+      }
+      */
+
+      // Gen track
       Handle<GenParticleCollection> genParticles;
       iEvent.getByLabel("genParticles", genParticles);
       const GenParticleCollection *genCollect = genParticles.product();
@@ -117,11 +153,14 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       for(unsigned i=0; i<genCollect->size();i++){
 	 const GenParticle & gen = (*genCollect)[i];
 	 if(gen.status() != 1) continue;
-	 if(gen.collisionId() != 0) continue;
+	 std::cout<<"collision id "<<gen.collisionId()<<std::endl;
+	 //if(gen.collisionId() != 0) continue;
 	 if(gen.charge() == 0) continue;
 	 if(fabs(gen.eta())>etaMax_) continue;
 	 if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta());
 	 hGenTrkPtEta->Fill(gen.eta(),gen.pt());
+	 hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),gjet_et);//move to gen jet
+	 //hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),gjet_et,(1./gen.pt())); // weighted by pT
       }
    }
 
@@ -132,9 +171,12 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 void 
 TrackSpectraAnalyzer::beginJob()
 {
+
    if(doOutput_){
 
       TFileDirectory subDir = fs->mkdir( "threeDHist" );
+      
+      hNevt = fs->make<TH1F>("hNevt","evt counter",10, 0.0, 10);
 
       if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
       hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
@@ -143,9 +185,20 @@ TrackSpectraAnalyzer::beginJob()
       // memory consumption limits the number of bins...
       hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					  250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0); 
+
+      hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					 250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0);
+
+      
       if(isGEN_) {
 	 if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
 	 hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",250, -2.5, 2.5, 1000, 0.0, 200.0);
+	 hGenTrkPtEtaJetEt = subDir.make<TH3F>("hGenTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					       250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0);
+
+	 //hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+	 //250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0);
+
       }
       if(doJet_) {
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
