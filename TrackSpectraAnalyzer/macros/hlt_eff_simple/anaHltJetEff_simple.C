@@ -18,14 +18,13 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     Bool_t useHist = true)
 {
   CPlot::sOutDir = outdir;
-  TFile * inFile = new TFile(inFileName);
-  TChain * nt_jet = new TChain("trackAna/nt_jet","ntuple: jets");
-
 
   map<TString, TH1F* > hs1D;
+  TChain * nt_jet = new TChain("trackAna/nt_jet","ntuple: jets");
   // === Checks ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
+    TFile * inFile = new TFile(inFileName);
     TH1F *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
     hs1D["hJet0Pt"] = hJet0Pt;
     hs1D["hJet0Pt_HltMB"] = hJet0Pt_HltMB;
@@ -51,7 +50,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     }
   } else {
     nt_jet->Add(inFileName);
-    nt_jet->Print();
+    //nt_jet->Print();
     Int_t numPtBins=75;
     hs1D["hJet0Pt"] = new TH1F("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
     hs1D["hJet0Pt_HltMB"] = new TH1F("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
@@ -59,6 +58,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     hs1D["hJet0Pt_HltJet15U"] = new TH1F("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
     hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
     hs1D["hJet0Pt_HltJet50U"] = new TH1F("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, 300.0);
+    cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
     nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<3","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltMB","abs(jeta)<3 && mb","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<3 && jet6","goff");
