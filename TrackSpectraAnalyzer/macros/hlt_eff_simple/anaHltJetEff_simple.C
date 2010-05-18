@@ -5,7 +5,7 @@
 #include "TH1F.h"
 #include "TGraphAsymmErrors.h"
 
-#include "CPlot.h"           // helper class for plots
+#include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
 
 void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhists_try7_50k.root",
     TString outdir="plots")
