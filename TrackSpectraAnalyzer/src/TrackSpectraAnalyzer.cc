@@ -183,17 +183,17 @@ TrackSpectraAnalyzer::beginJob()
 
       // memory consumption limits the number of bins...
       hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-					 50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 300.0); 
+					 50, -2.5, 2.5, 1000, 0.0, 200.0, 15, 0.0, 300.0); 
       
       hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-					  50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 300.0);
+					  50, -2.5, 2.5, 1000, 0.0, 200.0, 15, 0.0, 300.0);
       
       
       if(isGEN_) {
 	 if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
 	 hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);
 	 hGenTrkPtEtaJetEt = subDir.make<TH3F>("hGenTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-					       50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 300.0);
+					       50, -2.5, 2.5, 1000, 0.0, 200.0, 15, 0.0, 300.0);
 
 	 //hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 	 //250, -2.5, 2.5, 1000, 0.0, 200.0, 300, 0.0, 300.0);
