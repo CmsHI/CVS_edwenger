@@ -11,7 +11,7 @@
 #include <map>
 using namespace std;
 
-void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhists_try7_50k.root",
+void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhists_try9_100k.root",
     TString outdir="plots")
 {
   CPlot::sOutDir = outdir;
@@ -19,6 +19,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
 
 
   map<TString, TH1F* > hs1D;
+  // === Checks ===
   // Plot Jet Pt distributions from various triggers
   TH1F *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
   hs1D["hJet0Pt"] = hJet0Pt;
@@ -84,5 +85,6 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kOrange-3);
+  cpHltEff.TransLegend(0,-0.25);
   cpHltEff.Draw(cHltEff,true,"gif");
 }
