@@ -66,7 +66,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEtW;
 
    TH3F *hGenTrkPtEtaJetEt;
-   //TH3F *hGenTrkPtEtaJetEtW;
+   TH3F *hGenTrkPtEtaJetEtW;
 
 
    // Jets

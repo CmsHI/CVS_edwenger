@@ -16,3 +16,8 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                                          'HLT_Jet50U'),
         triglabel = cms.untracked.InputTag('TriggerResults','','HLT')
 )
+
+trackAna_mc = trackAna.clone(
+  jsrc = cms.untracked.InputTag("ak5GenJets"),
+  isGEN = cms.untracked.bool(True)
+)
