@@ -25,7 +25,6 @@ trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 trackAna_mc.src = cms.untracked.InputTag("selectTracks")
-trackAna_mc.jsrc = cms.untracked.InputTag("selectedPatJets")
 looseTrackAna_mc = trackAna_mc.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
 # tracking efficiency analyzer

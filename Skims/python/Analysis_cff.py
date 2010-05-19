@@ -10,10 +10,3 @@ analysisSeq = cms.Sequence(patAnaSequence *
                            primaryVertexFilter *
                            trackAna *
                            trkEffAnalyzer)
-
-analysisMcSeq = cms.Sequence(patAnaSequence *
-                           selectedVertex *
-                           looseTrackAna_mc *
-                           primaryVertexFilter *
-                           trackAna_mc *
-                           trkEffAnalyzer)
