@@ -69,6 +69,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   }
 
 
+  // === Begin Ana ===
   TCanvas * cJetPt = new TCanvas("cJetPt","cJetPt",500,500);
   CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
   cpJetPt.SetLogy(1);
@@ -114,4 +115,12 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.SetLegendHeader("Calojets |#eta|<3");
   cpHltEff.SetLegend(0.58,0.38,0.91,0.67);
   cpHltEff.Draw(cHltEff,true,"gif");
+
+  // All done, save hists
+  TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
+  for (map<TString, TH1F*>::iterator 
+      iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
+    iter->second->Write();
+  }
+  outf->Close();
 }
