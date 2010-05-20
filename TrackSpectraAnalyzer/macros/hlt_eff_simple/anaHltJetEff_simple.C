@@ -24,7 +24,6 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   Int_t numPtBins=75;
 
   map<TString, TH1F* > hs1D;
-  TChain * nt_jet = new TChain("trackAna/nt_jet","ntuple: jets");
   // === Checks ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
@@ -53,6 +52,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
       iter->second->Rebin(ngroups);
     }
   } else {
+    TChain * nt_jet = new TChain("trackAna/nt_jet","ntuple: jets");
     nt_jet->Add(inFileName);
     //nt_jet->Print();
     hs1D["hJet0Pt"] = new TH1F("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
@@ -62,12 +62,12 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     hs1D["hJet0Pt_HltJet50U"] = new TH1F("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
-    nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<3","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltMB","abs(jeta)<3 && mb","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<3 && jet6 && jet>6","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet15U","abs(jeta)<3 && jet15 && jet>15","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet30U","abs(jeta)<3 && jet30 && jet>30","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet50U","abs(jeta)<3 && jet50 && jet>50","goff");
+    nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<2.5","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltMB","abs(jeta)<2.5 && mb","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<2.5 && jet6 && jet>6","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet15U","abs(jeta)<2.5 && jet15 && jet>15","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet30U","abs(jeta)<2.5 && jet30 && jet>30","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet50U","abs(jeta)<2.5 && jet50 && jet>50","goff");
   }
 
 
@@ -82,7 +82,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet15U"],"HLT_Jet15U","",kGreen-3);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet30U"],"HLT_Jet30U","",kOrange-5);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet50U"],"HLT_Jet50U","",kRed-2);
-  cpJetPt.SetLegendHeader("Calojets |#eta|<3");
+  cpJetPt.SetLegendHeader("Calojets |#eta|<2.5");
   cpJetPt.Draw(cJetPt,true,"gif");
 
   // === HLT Eff Ana ===
@@ -114,7 +114,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kRed-2);
-  cpHltEff.SetLegendHeader("Calojets |#eta|<3");
+  cpHltEff.SetLegendHeader("Calojets |#eta|<2.5");
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.Draw(cHltEff,true,"gif");
 
