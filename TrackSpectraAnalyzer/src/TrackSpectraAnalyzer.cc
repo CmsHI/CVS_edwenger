@@ -108,6 +108,12 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
       hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
 
+      if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et);
+      if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et);
+      if (accept[3]) hTrkPtEtaJetEt_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et);
+      if (accept[4]) hTrkPtEtaJetEt_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et);
+
+
    }
    
    hNevt->Fill(1.0); // put more useful stuff
@@ -155,6 +161,20 @@ TrackSpectraAnalyzer::beginJob()
       
       hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					  50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 600.0);
+      
+
+      hTrkPtEtaJetEt_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+                                                   50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 600.0);
+
+      hTrkPtEtaJetEt_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						   50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 600.0); 
+      
+      hTrkPtEtaJetEt_HltJet30U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet30U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						   50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 600.0);
+
+      hTrkPtEtaJetEt_HltJet50U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet50U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+                                                   50, -2.5, 2.5, 1000, 0.0, 200.0, 30, 0.0, 600.0);
+
       
       
       if(isGEN_) {
