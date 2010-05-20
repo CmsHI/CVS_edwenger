@@ -19,4 +19,4 @@ root -b -q anaHltJetEff_simple.C+\(\"$inFile\",\"plots/${tag}_fromNt\",false\)
 
 # use hist from nt
 inFile=plots/${tag}_fromNt/anahlt.root
-root -l anaHltJetEff_simple.C+\(\"$inFile\",\"plots/${tag}_histFromNt\",true,\"\",1\)
+root -b -q anaHltJetEff_simple.C+\(\"$inFile\",\"plots/${tag}_histFromNt\",true,\"\",1\)
