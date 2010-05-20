@@ -9,6 +9,7 @@ namespace edm { class ParameterSet ; }
 class TFile;
 class TTree;
 class TH2F;
+class TH3F;
 
 // define matched track structs
 
@@ -29,6 +30,7 @@ typedef struct
   float dzerr;
   int hitr;
   int algo;
+  float jetr;
 } SimTrack_t;
 
 typedef struct
@@ -50,6 +52,7 @@ typedef struct
   int parids;
   float etas;
   float pts;
+  float jetr;
 } RecTrack_t;
 
 // define class to hold histograms and track trees
@@ -72,9 +75,10 @@ class TrkEffHistograms
    RecTrack_t recTrackValues;
    bool fillHistograms;
    bool fillNtuples;
+   bool constPtBins;
    edm::Service<TFileService> f;
 
-   std::vector<double> etaBins, ptBins;
+   std::vector<double> etaBins, ptBins, jetBins;
 
    // SimTrack
    TH2F* hsim;
@@ -82,9 +86,16 @@ class TrkEffHistograms
    TH2F* heff;
    TH2F* hmul;
 
+   TH3F* hsim3D;
+   TH3F* heff3D;
+
    // RecTrack
    TH2F* hrec;
    TH2F* hfak;
+   
+   TH3F* hrec3D;
+   TH3F* hfak3D;
+
 
 };
 

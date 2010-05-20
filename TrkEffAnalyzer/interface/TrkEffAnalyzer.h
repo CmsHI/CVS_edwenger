@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.h,v 1.7 2010/05/06 10:32:04 edwenger Exp $
+// $Id: TrkEffAnalyzer.h,v 1.8 2010/05/13 19:44:53 edwenger Exp $
 //
 
 // user include files
@@ -32,8 +32,8 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob();
       
-      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t);
-      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t);
+      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float);
+      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float);
       bool testVertex(reco::Track&, double&, double&, double&, double&);
       std::pair<bool,bool> isAccepted(TrackingParticle&);
       int getLayerId(const PSimHit&);

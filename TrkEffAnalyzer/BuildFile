@@ -10,6 +10,7 @@
 <use name=DataFormats/RecoCandidate>
 <use name=Geometry/TrackerGeometryBuilder>
 <use name=DataFormats/VertexReco>
+<use name=DataFormats/JetReco>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerTrkEffAnalyzer>
@@ -25,4 +26,5 @@
    <use name=DataFormats/RecoCandidate>
    <use name=Geometry/TrackerGeometryBuilder>
    <use name=DataFormats/VertexReco>
+   <use name=DataFormats/JetReco>
 </export>

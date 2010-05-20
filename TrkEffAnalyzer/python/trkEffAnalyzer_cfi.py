@@ -10,6 +10,7 @@ trkEffAnalyzer = cms.EDAnalyzer('TrkEffAnalyzer',
     beamspot = cms.untracked.InputTag('offlineBeamSpot'),                         
     fillHistograms = cms.bool(True),
     fillNtuples = cms.bool(True),
+    constPtBins = cms.bool(False),
     doAssociation = cms.untracked.bool(True),
     hasSimInfo = cms.untracked.bool(False)
 )

@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.11 2010/05/06 10:32:04 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.12 2010/05/13 19:44:54 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -18,6 +18,8 @@
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
 #include <stdio.h>
@@ -65,6 +67,26 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(bsTags_,beamSpotH);
 
 
+  // PAT jet, to get leading jet ET
+
+  float jet_et = 0.0;
+
+  edm::Handle<std::vector<pat::Jet> > jets;
+  iEvent.getByLabel("selectedPatJets", jets);
+
+  std::vector<const pat::Jet *> sortedJets;
+
+  for(unsigned it=0; it<jets->size(); ++it){
+     const pat::Jet* jts = &((*jets)[it]);
+     sortedJets.push_back( & *jts);
+     sortByEtRef (&sortedJets);
+  }
+
+  for(unsigned it=0; it<sortedJets.size(); ++it){
+     jet_et = sortedJets[it]->et();
+     break;
+  }
+
   // sim track collections
 
   if(hasSimInfo_) {
@@ -91,7 +113,6 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       recSimColl= *(recotosimCollectionH.product());
     }
     
-    
     // -------------------- SIM loop ----------------------------------------
     
     for(TrackingParticleCollection::size_type i=0; i<TPCollectionHeff->size(); i++) {
@@ -111,7 +132,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(nrec) mtr = rt.begin()->first.get();      
       }
       
-      SimTrack_t s = setSimTrack(*tp, *mtr, nrec);
+      SimTrack_t s = setSimTrack(*tp, *mtr, nrec, jet_et);
       histograms->fillSimHistograms(s);  
       
 #ifdef DEBUG
@@ -141,7 +162,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(nsim) mtp = tp.begin()->first.get();       
     }
 
-    RecTrack_t r = setRecTrack(*tr, *mtp, nsim);
+    RecTrack_t r = setRecTrack(*tr, *mtp, nsim, jet_et);
     histograms->fillRecHistograms(r); 
 
 #ifdef DEBUG
@@ -186,7 +207,7 @@ TrkEffAnalyzer::endJob()
 
 // ------------
 SimTrack_t 
-TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec)
+TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet)
 {
 
   SimTrack_t s;
@@ -207,6 +228,7 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
 #endif
 
   s.nrec = nrec;
+  s.jetr = jet;
   
   if(nrec > 0) {
     double dxy=0.0, dz=0.0, d0err=0.0, dzerr=0.0;
@@ -236,7 +258,7 @@ TrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t
 
 // ------------
 RecTrack_t 
-TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim)
+TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet)
 {
 
   RecTrack_t r;
@@ -265,7 +287,8 @@ TrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t 
 #endif
 
   r.nsim = nsim;
-  
+  r.jetr = jet;
+
   if(nsim>0) {
     r.status = tp.status();
     r.ids = tp.pdgId();
