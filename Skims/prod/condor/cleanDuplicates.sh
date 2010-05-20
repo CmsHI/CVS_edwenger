@@ -8,7 +8,8 @@ for file in `find $inDir | grep $tag | sort`; do
     next=${base}_$((i+1)).root
     if [ -f $next ]; then
       #echo next: $next
-      echo rm this: ${base}_${i}.root
+      this=${base}_${i}.root
+      echo rm this: $this
     fi
   done
 done
