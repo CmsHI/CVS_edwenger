@@ -18,6 +18,9 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
 )
 
 trackAna_mc = trackAna.clone(
-  jsrc = cms.untracked.InputTag("ak5GenJets"),
   isGEN = cms.untracked.bool(True)
+)
+
+trackAna_mc_genjet = trackAna_mc.clone(
+  jsrc = cms.untracked.InputTag("ak5GenJets"),
 )
