@@ -7,8 +7,7 @@ def enableSIM(process):
     process.postEvtSelAna.isGEN=True
     process.postVtxAna.isGEN=True
     process.postTrkVtxAna.isGEN=True
-    process.analysisSeq.replace(process.trackAna,process.trackAna_mc)
-    process.analysisSeq.replace(process.looseTrackAna,process.looseTrackAna_mc)
+    process.trackAna.isGEN=True
     process.rootpleProducer.OnlyRECO=False
     process.eventFilter.remove(process.physDeclFilter) # always false in MC
     process.eventFilter.remove(process.bptxAnd)        # always false in MC

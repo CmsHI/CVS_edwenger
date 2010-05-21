@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.18 2010/05/20 14:27:14 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.19 2010/05/21 11:59:03 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -15,6 +15,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    src_ = iConfig.getUntrackedParameter<edm::InputTag>("src",edm::InputTag("generalTracks"));
    vsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("vsrc",edm::InputTag("offlinePrimaryVertices"));
    jsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("jsrc",edm::InputTag("ak5CaloJets"));
+   gjsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gjsrc",edm::InputTag("ak5GenJets"));
    doOutput_ = iConfig.getUntrackedParameter<bool>("doOutput", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
@@ -120,6 +121,22 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    hNevt->Fill(1.0); // put more useful stuff
 
    if(isGEN_){
+     edm::Handle<reco::CandidateView> gjets;
+     iEvent.getByLabel(gjsrc_,gjets);
+
+     vector<const reco::Candidate *> sortedGJets;
+
+     for(unsigned it=0; it<gjets->size(); ++it){
+       const reco::Candidate* jet = &((*gjets)[it]);
+       sortedGJets.push_back(jet);
+       sortByEtRef (&sortedGJets);
+     }
+     // Get Leading jet energy
+     float gjet_et = 0, gjet_eta = 0;
+     unsigned index = 0; 
+     if(sortedJets.size()==0) gjet_et = 0,gjet_eta = 0; 
+     else gjet_et = sortedGJets[index]->et(), gjet_eta = sortedGJets[index]->eta(); 
+
       // Gen track
       Handle<GenParticleCollection> genParticles;
       iEvent.getByLabel("genParticles", genParticles);
@@ -133,8 +150,8 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 if(fabs(gen.eta())>etaMax_) continue;
 	 if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta());
 	 hGenTrkPtEta->Fill(gen.eta(),gen.pt());
-	 hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),jet_et);//move to gen jet
-	 hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),jet_et,(1./gen.pt())); // weighted by pT
+	 hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),gjet_et);//move to gen jet
+	 hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),gjet_et,(1./gen.pt())); // weighted by pT
       }
    }
 

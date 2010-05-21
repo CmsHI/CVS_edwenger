@@ -4,6 +4,7 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
         src = cms.untracked.InputTag("generalTracks"),
         vsrc = cms.untracked.InputTag("offlinePrimaryVertices"),
         jsrc = cms.untracked.InputTag("selectedPatJets"),
+        gjsrc = cms.untracked.InputTag("ak5GenJets"),
         doOutput = cms.untracked.bool(True),
         isGEN = cms.untracked.bool(False),
         doJet = cms.untracked.bool(True),                          
@@ -15,12 +16,4 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                                          'HLT_Jet30U',
                                          'HLT_Jet50U'),
         triglabel = cms.untracked.InputTag('TriggerResults','','HLT')
-)
-
-trackAna_mc = trackAna.clone(
-  isGEN = cms.untracked.bool(True)
-)
-
-trackAna_mc_genjet = trackAna_mc.clone(
-  jsrc = cms.untracked.InputTag("ak5GenJets"),
 )
