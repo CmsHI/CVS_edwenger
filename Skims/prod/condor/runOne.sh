@@ -1,15 +1,16 @@
 #!/bin/bash -
-if [ $# -eq 0 -o $# -lt 3 ]; then
+if [ $# -eq 0 ]; then
    echo Usage
-   echo "   $0 <input_file.root> <output_dir> <nperjob>"
+   echo "   $0 <input_dir> <pref:input_file.root> <output_dir> <nperjob>"
    exit 1
 fi
 
 # input parameters
 cfg=custom_TrkAnaSkim_data_7TeV_cfg.py
-inputFile=$1
-outputDir=$2
-nperjob=$3
+inputDir=$1
+inputFile=$2
+outputDir=$3
+nperjob=$4
 swenv=/net/hisrv0001/home/frankma/work/job/ana/trkAnaCMSSW_3_5_7/env.sh
 
 # check
@@ -35,7 +36,8 @@ logFile=$logDir/${outputFileName%.root}.txt
 . $swenv
 
 mkdir -p $logDir
-cmd="cmsRun $cfg maxEvents=$nperjob files=$inputFile output=$outputFile >& $logFile"
+dccp $inputDir/$inputFile /tmp/
+cmd="cmsRun $cfg maxEvents=$nperjob files=file:/tmp/$inputFile output=$outputFile >& $logFile"
 
 # review
 which cmsRun
@@ -43,3 +45,4 @@ echo $cmd
 
 # run!
 eval $cmd
+rm /tmp/$inputFile
