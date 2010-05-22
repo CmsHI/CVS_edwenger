@@ -24,13 +24,12 @@ def enableREDIGI(process):
     process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
-    process.trackAna_mc.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
-    process.looseTrackAna_mc.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     return process
 
 
 # this is for running of AOD skims that already have extra reco/pat objects
 def enableAOD(process):
     process.extraReco.remove(process.extraVertex)
+    process.extraReco.remove(process.trackingParticleRecoTrackAsssociation)
     process.analysisSeq.remove(process.patAnaSequence)
     return process
