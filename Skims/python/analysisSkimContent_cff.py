@@ -8,7 +8,8 @@ analysisSkimContent = cms.PSet(
       'keep *_pixelVertices_*_*',
       'keep *_pixel3Vertices_*_*',                                     
       'keep *_offlineBeamSpot_*_*',
-      'keep *_TriggerResults_*_HLT',
+      'keep *_TriggerResults_*_*',
+       #'keep *_TriggerResults_*_REDIGI',
       'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*RECO',
 
       # mc gen info
@@ -21,8 +22,8 @@ analysisSkimContent = cms.PSet(
       'keep *_selectedPatJets*_*_*',
                                            
       # tracks
-      'keep recoTracks_generalTracks_*_*RECO',
-      'keep recoTracks_refitTracks_*_*',
+      'keep *_generalTracks_*_*RECO',  
+      'keep *_refitTracks_*_*',
       'keep recoRecoChargedCandidates_allTracks_*_*',
       'keep recoTracks_selectFake*_*_*',
       'keep recoTracks_selectReal*_*_*',
