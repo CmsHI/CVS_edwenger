@@ -13,4 +13,6 @@ extraReco = cms.Sequence(extraVertex *         ## agglomerative pixel vertexing
                          chargedCandidates *   ## selected tracks -> charged candidates
                          preTrkVtxTest *
                          primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
-                         postTrkVtxTest)
+                         postTrkVtxTest *
+                         trackingParticleRecoTrackAsssociation)
+
