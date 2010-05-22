@@ -26,24 +26,13 @@ trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 trackAna.histOnly = cms.untracked.bool(True)
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
-#from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
-#trackAna.src = cms.untracked.InputTag("selectTracks")
-#trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
-#trackAna.histOnly = cms.untracked.bool(True)
-#trackAna_mc.src = cms.untracked.InputTag("selectTracks")
-#looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
-#<<<<<<< Analyzers_cff.py
-#looseTrackAna = trackAna.clone(histOnly= cms.untracked.bool(True))
-#looseTrackAna_mc = trackAna_mc.clone(src=cms.untracked.InputTag("looseSelectTracks"))
-#=======
-#>>>>>>> 1.4
-
 
 # tracking efficiency analyzer
 from edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff import *
 trkEffAnalyzer.tracks = cms.untracked.InputTag("selectTracks")
 trkEffAnalyzer.fillNtuples = cms.bool(False)
 trkEffAnalyzer.constPtBins = cms.bool(True)
+trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("selectTracks")
 
 # sequences
 preTrgTest = cms.Sequence(preTrgAna)
