@@ -88,7 +88,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    
    bool doOutput_;
    bool isGEN_, doJet_;
-   bool histOnly_;
+   bool histOnly_, includeExtra_;
    double  etaMax_;
    edm::InputTag src_;
    edm::InputTag vsrc_;
