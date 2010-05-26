@@ -38,6 +38,8 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       edm::InputTag triglabel_;
       std::vector<std::string> trignames_;
       bool isGEN_;
+      double etaMaxSpec_;
+      double ptMin_;
 
       edm::Service<TFileService> f;
       TH1D *hL1TechBits;
@@ -52,4 +54,21 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       TH1D *hGenMultDD;
       TH1D *hGenMultND;
 
+      TH1D *hGenMultInel_STD;
+      TH1D *hGenMultNSD_STD;
+      TH1D *hGenMultSD_STD;
+      TH1D *hGenMultDD_STD;
+      TH1D *hGenMultND_STD;
+
+      TH1D *hGenMultInel_SPEC;
+      TH1D *hGenMultNSD_SPEC;
+      TH1D *hGenMultSD_SPEC;
+      TH1D *hGenMultDD_SPEC;
+      TH1D *hGenMultND_SPEC;
+
+      TH1D *hGenMultInel_AGR;
+      TH1D *hGenMultNSD_AGR;
+      TH1D *hGenMultSD_AGR;
+      TH1D *hGenMultDD_AGR;
+      TH1D *hGenMultND_AGR;
 };

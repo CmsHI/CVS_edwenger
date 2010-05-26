@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.2 2010/05/10 14:56:00 edwenger Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.3 2010/05/11 10:44:09 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -25,7 +25,10 @@ EvtSelAnalyzer::EvtSelAnalyzer(const edm::ParameterSet& iConfig)
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
   triglabel_(iConfig.getUntrackedParameter<edm::InputTag>("triglabel")),
   trignames_(iConfig.getUntrackedParameter<std::vector <std::string> >("trignames")),
-  isGEN_(iConfig.getUntrackedParameter<bool>("isGEN"))
+  isGEN_(iConfig.getUntrackedParameter<bool>("isGEN")),
+  etaMaxSpec_(iConfig.getUntrackedParameter<double>("etaMaxSpec", 1.0)),
+  ptMin_(iConfig.getUntrackedParameter<double>("ptMin", 0.5))
+
 {
 
 }
@@ -97,15 +100,19 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<reco::GenParticleCollection> genParticles;
     iEvent.getByLabel("genParticles", genParticles);
     
-    int nGEN=0;
+    int nGEN=0, nGEN_SPEC=0, nGEN_STD=0, nGEN_AGR=0;
     const reco::GenParticleCollection *genCollect = genParticles.product();
     for(unsigned i=0; i<genCollect->size();i++){
       const reco::GenParticle & gen = (*genCollect)[i];
       if(gen.status() != 1) continue;
-      if(gen.collisionId() != 0) continue;
+      //if(gen.collisionId() != 0) continue; // found a bug in pp MC sample, so don't use it
       if(gen.charge() == 0) continue;
       if(fabs(gen.eta())>2.5) continue;
       nGEN++;
+      // extra histograms
+      if(gen.pt()>ptMin_ && fabs(gen.eta())<2.4) nGEN_STD++; //standard 
+      if(gen.pt()>ptMin_ && fabs(gen.eta())<etaMaxSpec_) nGEN_SPEC++; // spectra
+      if(gen.pt()>0.5 && fabs(gen.eta())<0.8) nGEN_AGR++; // agreement b/w experiments
     }
     
     edm::Handle<GenEventInfoProduct> genEvtInfo;
@@ -115,15 +122,33 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       << "Process ID = " << pid << ", GEN multiplicity = " << nGEN;
     
     hGenMultInel->Fill(nGEN);
+    hGenMultInel_STD->Fill(nGEN_STD);
+    hGenMultInel_SPEC->Fill(nGEN_SPEC);
+    hGenMultInel_AGR->Fill(nGEN_AGR);
 
     switch(pid) {
     case 94:
       hGenMultDD->Fill(nGEN);
       hGenMultNSD->Fill(nGEN);
+
+      hGenMultDD_STD->Fill(nGEN_STD);
+      hGenMultNSD_STD->Fill(nGEN_STD);
+
+      hGenMultDD_SPEC->Fill(nGEN_SPEC);
+      hGenMultNSD_SPEC->Fill(nGEN_SPEC);
+      
+      hGenMultDD_AGR->Fill(nGEN_AGR);
+      hGenMultNSD_AGR->Fill(nGEN_AGR);
       break;
     case 92:
     case 93:
       hGenMultSD->Fill(nGEN);
+
+      hGenMultSD_STD->Fill(nGEN_STD);
+
+      hGenMultSD_SPEC->Fill(nGEN_SPEC);
+
+      hGenMultSD_AGR->Fill(nGEN_AGR);
       break;
     case 11:
     case 12:
@@ -134,6 +159,15 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     case 95:
       hGenMultND->Fill(nGEN);
       hGenMultNSD->Fill(nGEN);
+
+      hGenMultND_STD->Fill(nGEN_STD);
+      hGenMultNSD_STD->Fill(nGEN_STD);
+
+      hGenMultND_SPEC->Fill(nGEN_SPEC);
+      hGenMultNSD_SPEC->Fill(nGEN_SPEC);
+      
+      hGenMultND_AGR->Fill(nGEN_AGR);
+      hGenMultNSD_AGR->Fill(nGEN_AGR);
       break;
     default:
       edm::LogWarning("EvtSelAnalyzer") 
@@ -162,6 +196,24 @@ EvtSelAnalyzer::beginJob()
     hGenMultSD = f->make<TH1D>("hGenMultSD","Charged mult. (SD) |#eta|<2.5)",100,-0.5,99.5);
     hGenMultDD = f->make<TH1D>("hGenMultDD","Charged mult. (DD) |#eta|<2.5)",100,-0.5,99.5);
     hGenMultND = f->make<TH1D>("hGenMultND","Charged mult. (ND) |#eta|<2.5)",100,-0.5,99.5);
+
+    hGenMultInel_STD = f->make<TH1D>("hGenMultInel_STD","Charged mult. (inel.) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
+    hGenMultNSD_STD = f->make<TH1D>("hGenMultNSD_STD","Charged mult. (NSD) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
+    hGenMultSD_STD = f->make<TH1D>("hGenMultSD_STD","Charged mult. (SD) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
+    hGenMultDD_STD = f->make<TH1D>("hGenMultDD_STD","Charged mult. (DD) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
+    hGenMultND_STD = f->make<TH1D>("hGenMultND_STD","Charged mult. (ND) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
+
+    hGenMultInel_SPEC = f->make<TH1D>("hGenMultInel_SPEC","Charged mult. (inel.) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
+    hGenMultNSD_SPEC = f->make<TH1D>("hGenMultNSD_SPEC","Charged mult. (NSD) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
+    hGenMultSD_SPEC = f->make<TH1D>("hGenMultSD_SPEC","Charged mult. (SD) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
+    hGenMultDD_SPEC = f->make<TH1D>("hGenMultDD_SPEC","Charged mult. (DD) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
+    hGenMultND_SPEC = f->make<TH1D>("hGenMultND_SPEC","Charged mult. (ND) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
+
+    hGenMultInel_AGR = f->make<TH1D>("hGenMultInel_AGR","Charged mult. (inel.) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
+    hGenMultNSD_AGR = f->make<TH1D>("hGenMultNSD_AGR","Charged mult. (NSD) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
+    hGenMultSD_AGR = f->make<TH1D>("hGenMultSD_AGR","Charged mult. (SD) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
+    hGenMultDD_AGR = f->make<TH1D>("hGenMultDD_AGR","Charged mult. (DD) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
+    hGenMultND_AGR = f->make<TH1D>("hGenMultND_AGR","Charged mult. (ND) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
   }
 
 }
