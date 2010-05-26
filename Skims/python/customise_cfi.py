@@ -32,4 +32,5 @@ def enableREDIGI(process):
 def enableAOD(process):
     process.extraReco.remove(process.extraVertex)
     process.analysisSeq.remove(process.patAnaSequence)
+    process.extraReco.remove(process.trackRefit)
     return process
