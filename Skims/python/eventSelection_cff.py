@@ -62,5 +62,8 @@ primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
 # containing only the vertex with the most tracks
 from edwenger.VertexAnalyzer.SelectedVertex_cfi import *
 
+# select only vertices passing a string cut and sort them
+from edwenger.VertexAnalyzer.GoodVertices_cff import *
+
 minBiasBscFilter = cms.Sequence(physDeclFilter * bscOrBptxOr * bptxAnd * bscOr * bscNoHalo)
 minBiasBscFilterMC = cms.Sequence(bscOrBptxOr * bscOr * bscNoHalo)

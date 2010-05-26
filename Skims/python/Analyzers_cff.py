@@ -17,7 +17,7 @@ postVtxSel = vertexanalyzer.clone(
 preTrkVtxSel = vertexanalyzer.clone(
     vtxlabel = cms.untracked.InputTag("offlinePrimaryVertices"))
 postTrkVtxSel = vertexanalyzer.clone(
-    vtxlabel = cms.untracked.InputTag("offlinePrimaryVertices"))
+    vtxlabel = cms.untracked.InputTag("sortedGoodVertices"))
 
 # track and jet spectra analyzer
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
