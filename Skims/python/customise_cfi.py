@@ -12,6 +12,7 @@ def enableSIM(process):
     process.eventFilter.remove(process.physDeclFilter) # always false in MC
     process.eventFilter.remove(process.bptxAnd)        # always false in MC
     process.trkEffAnalyzer.hasSimInfo=True
+    process.extraReco *= process.trackingParticleRecoTrackAsssociation
     return process
 
 
@@ -30,6 +31,5 @@ def enableREDIGI(process):
 # this is for running of AOD skims that already have extra reco/pat objects
 def enableAOD(process):
     process.extraReco.remove(process.extraVertex)
-    process.extraReco.remove(process.trackingParticleRecoTrackAsssociation)
     process.analysisSeq.remove(process.patAnaSequence)
     return process
