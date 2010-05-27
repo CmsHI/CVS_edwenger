@@ -38,6 +38,7 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       edm::InputTag triglabel_;
       std::vector<std::string> trignames_;
       bool isGEN_;
+      bool includeSelTrk_;
       double etaMaxSpec_;
       double ptMin_;
 
@@ -47,6 +48,16 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       TH2D *hHPFracNtrk;
       TH2D *hHfTowers;
       TH1D *hHLTPaths;
+      
+      TH1D *hRecMult;
+      TH1D *hRecMult_STD;
+      TH1D *hRecMult_SPEC;
+      TH1D *hRecMult_AGR;
+      
+      TH1D *hRecMult_sel;
+      TH1D *hRecMult_STD_sel;
+      TH1D *hRecMult_SPEC_sel;
+      TH1D *hRecMult_AGR_sel;
 
       TH1D *hGenMultInel;
       TH1D *hGenMultNSD;

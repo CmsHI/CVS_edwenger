@@ -22,6 +22,7 @@ EvtSelAnalyzer::EvtSelAnalyzer(const edm::ParameterSet& iConfig)
   towerslabel_(iConfig.getUntrackedParameter<edm::InputTag>("towerslabel")),
   hfEThreshold_(iConfig.getUntrackedParameter<double>("hfEThreshold")),
   trackslabel_(iConfig.getUntrackedParameter<edm::InputTag>("trackslabel")),
+  includeSelTrk_(iConfig.getUntrackedParameter<bool>("includeSelTrk")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
   triglabel_(iConfig.getUntrackedParameter<edm::InputTag>("triglabel")),
   trignames_(iConfig.getUntrackedParameter<std::vector <std::string> >("trignames")),
@@ -87,13 +88,54 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle< std::vector <reco::Track> > tracksH;
   iEvent.getByLabel(trackslabel_,tracksH);
 
-  // high-purity fraction
+  // high-purity fraction and track multiplicity
   int numhighpurity=0;
   float fraction=0;
-  for(unsigned it=0; it<tracksH->size(); it++)
-    if((*tracksH)[it].quality(reco::TrackBase::qualityByName(qualityString_))) numhighpurity++;
+  int nREC=0, nREC_SPEC=0, nREC_STD=0, nREC_AGR=0;
+
+  for(unsigned it=0; it<tracksH->size(); it++){
+     const reco::Track & trk = (*tracksH)[it];
+
+     if((*tracksH)[it].quality(reco::TrackBase::qualityByName(qualityString_))) numhighpurity++;
+     else continue;
+     if(fabs(trk.eta())>2.5) continue;
+     nREC++;
+     if(trk.pt()>ptMin_ && fabs(trk.eta())<2.4) nREC_STD++; //standard                                                                                                 
+     if(trk.pt()>ptMin_ && fabs(trk.eta())<etaMaxSpec_) nREC_SPEC++; // spectra                                                                                        
+     if(trk.pt()>0.5 && fabs(trk.eta())<0.8) nREC_AGR++; // agreement b/w experiments        
+  }
   if(tracksH->size()) fraction = (float) numhighpurity / (float) tracksH->size();
   hHPFracNtrk->Fill(tracksH->size(),fraction);
+
+  hRecMult->Fill(nREC);
+  hRecMult_STD->Fill(nREC_STD);
+  hRecMult_SPEC->Fill(nREC_SPEC);
+  hRecMult_AGR->Fill(nREC_AGR);
+
+  //----- selectTracks--------------------
+  if(includeSelTrk_){
+     edm::Handle< std::vector <reco::Track> > tracksH_sel;
+     iEvent.getByLabel("selectTracks",tracksH_sel);
+
+     int nREC_sel=0, nREC_SPEC_sel=0, nREC_STD_sel=0, nREC_AGR_sel=0;
+
+     for(unsigned it=0; it<tracksH_sel->size(); it++){
+	const reco::Track & strk = (*tracksH_sel)[it];
+
+	if(!(*tracksH_sel)[it].quality(reco::TrackBase::qualityByName(qualityString_))) continue;
+	if(fabs(strk.eta())>2.5) continue;
+	nREC++;
+	if(strk.pt()>ptMin_ && fabs(strk.eta())<2.4) nREC_STD_sel++; 
+	if(strk.pt()>ptMin_ && fabs(strk.eta())<etaMaxSpec_) nREC_SPEC_sel++; 
+	if(strk.pt()>0.5 && fabs(strk.eta())<0.8) nREC_AGR_sel++; 
+     }
+
+     hRecMult_sel->Fill(nREC_sel);
+     hRecMult_STD_sel->Fill(nREC_STD_sel);
+     hRecMult_SPEC_sel->Fill(nREC_SPEC_sel);
+     hRecMult_AGR_sel->Fill(nREC_AGR_sel);
+  }
+
 
   //------- GEN --------------------------------
   if(isGEN_) {
@@ -183,12 +225,30 @@ void
 EvtSelAnalyzer::beginJob()
 {
 
+  int numBins = 200;
+  
+  double xmax_STD = 99.5;
+  double xmax_SPEC = 49.5;
+  double xmax_AGR = 49.5;
+
   hL1TechBits = f->make<TH1D>("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
   hL1AlgoBits = f->make<TH1D>("hL1AlgoBits","L1 algorithm trigger bits before mask",128,-0.5,127.5);
   hHPFracNtrk = f->make<TH2D>("hHPFracNtrk","High purity fraction vs. # of tracks; number of tracks; highPurity fraction",50,0,500,50,0,1);
   hHfTowers   = f->make<TH2D>("hHfTowers","Number of HF towers above threshold; positive side; negative side",80,-0.5,79.5,80,-0.5,79.5);
   hHLTPaths = f->make<TH1D>("hHLTPaths","HLT Paths",5,0,5);
   hHLTPaths->SetBit(TH1::kCanRebin);
+
+  hRecMult = f->make<TH1D>("hRecMult","Charged mult. |#eta|<2.5)",numBins,-0.5,99.5);
+  hRecMult_STD = f->make<TH1D>("hRecMult_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+  hRecMult_SPEC = f->make<TH1D>("hRecMult_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+  hRecMult_AGR = f->make<TH1D>("hRecMult_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+  
+  if(includeSelTrk_){
+     hRecMult_sel = f->make<TH1D>("hRecMult_sel","Charged mult. |#eta|<2.5)",numBins,-0.5,99.5);
+     hRecMult_STD_sel = f->make<TH1D>("hRecMult_STD_sel","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+     hRecMult_SPEC_sel = f->make<TH1D>("hRecMult_SPEC_sel","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+     hRecMult_AGR_sel = f->make<TH1D>("hRecMult_AGR_sel","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+  }
 
   if(isGEN_) {
     hGenMultInel = f->make<TH1D>("hGenMultInel","Charged mult. (inel.) |#eta|<2.5)",100,-0.5,99.5);
@@ -197,23 +257,23 @@ EvtSelAnalyzer::beginJob()
     hGenMultDD = f->make<TH1D>("hGenMultDD","Charged mult. (DD) |#eta|<2.5)",100,-0.5,99.5);
     hGenMultND = f->make<TH1D>("hGenMultND","Charged mult. (ND) |#eta|<2.5)",100,-0.5,99.5);
 
-    hGenMultInel_STD = f->make<TH1D>("hGenMultInel_STD","Charged mult. (inel.) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
-    hGenMultNSD_STD = f->make<TH1D>("hGenMultNSD_STD","Charged mult. (NSD) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
-    hGenMultSD_STD = f->make<TH1D>("hGenMultSD_STD","Charged mult. (SD) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
-    hGenMultDD_STD = f->make<TH1D>("hGenMultDD_STD","Charged mult. (DD) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
-    hGenMultND_STD = f->make<TH1D>("hGenMultND_STD","Charged mult. (ND) |#eta|<2.4 with min p_{T})",100,-0.5,99.5);
+    hGenMultInel_STD = f->make<TH1D>("hGenMultInel_STD","Charged mult. (inel.) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenMultNSD_STD = f->make<TH1D>("hGenMultNSD_STD","Charged mult. (NSD) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenMultSD_STD = f->make<TH1D>("hGenMultSD_STD","Charged mult. (SD) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenMultDD_STD = f->make<TH1D>("hGenMultDD_STD","Charged mult. (DD) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenMultND_STD = f->make<TH1D>("hGenMultND_STD","Charged mult. (ND) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
 
-    hGenMultInel_SPEC = f->make<TH1D>("hGenMultInel_SPEC","Charged mult. (inel.) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
-    hGenMultNSD_SPEC = f->make<TH1D>("hGenMultNSD_SPEC","Charged mult. (NSD) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
-    hGenMultSD_SPEC = f->make<TH1D>("hGenMultSD_SPEC","Charged mult. (SD) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
-    hGenMultDD_SPEC = f->make<TH1D>("hGenMultDD_SPEC","Charged mult. (DD) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
-    hGenMultND_SPEC = f->make<TH1D>("hGenMultND_SPEC","Charged mult. (ND) |#eta|<1.0 with min p_{T})",100,-0.5,99.5);
+    hGenMultInel_SPEC = f->make<TH1D>("hGenMultInel_SPEC","Charged mult. (inel.) |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenMultNSD_SPEC = f->make<TH1D>("hGenMultNSD_SPEC","Charged mult. (NSD) |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenMultSD_SPEC = f->make<TH1D>("hGenMultSD_SPEC","Charged mult. (SD) |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenMultDD_SPEC = f->make<TH1D>("hGenMultDD_SPEC","Charged mult. (DD) |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenMultND_SPEC = f->make<TH1D>("hGenMultND_SPEC","Charged mult. (ND) |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
 
-    hGenMultInel_AGR = f->make<TH1D>("hGenMultInel_AGR","Charged mult. (inel.) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
-    hGenMultNSD_AGR = f->make<TH1D>("hGenMultNSD_AGR","Charged mult. (NSD) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
-    hGenMultSD_AGR = f->make<TH1D>("hGenMultSD_AGR","Charged mult. (SD) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
-    hGenMultDD_AGR = f->make<TH1D>("hGenMultDD_AGR","Charged mult. (DD) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
-    hGenMultND_AGR = f->make<TH1D>("hGenMultND_AGR","Charged mult. (ND) |#eta|<0.8 with min p_{T})",100,-0.5,99.5);
+    hGenMultInel_AGR = f->make<TH1D>("hGenMultInel_AGR","Charged mult. (inel.) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+    hGenMultNSD_AGR = f->make<TH1D>("hGenMultNSD_AGR","Charged mult. (NSD) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+    hGenMultSD_AGR = f->make<TH1D>("hGenMultSD_AGR","Charged mult. (SD) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+    hGenMultDD_AGR = f->make<TH1D>("hGenMultDD_AGR","Charged mult. (DD) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+    hGenMultND_AGR = f->make<TH1D>("hGenMultND_AGR","Charged mult. (ND) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
   }
 
 }

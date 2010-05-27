@@ -13,6 +13,7 @@ evtselanalyzer = cms.EDAnalyzer('EvtSelAnalyzer',
                                       'HLT_Jet30U',
                                       'HLT_Jet50U'),
       isGEN=cms.untracked.bool(False),
+      includeSelTrk=cms.untracked.bool(False),
       etaMaxSpec=cms.untracked.double(1.0),
       ptMin=cms.untracked.double(0.5)
 )
