@@ -18,6 +18,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    gjsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gjsrc",edm::InputTag("ak5GenJets"));
    doOutput_ = iConfig.getUntrackedParameter<bool>("doOutput", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
+   pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
@@ -37,87 +38,88 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
    const string qualityString = "highPurity";
    
-   // get hlt bit
-   Handle<edm::TriggerResults> triggerResults;
-   iEvent.getByLabel(triglabel_, triggerResults);
-
-   const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
-   std::vector<bool> accept(5,false);
-
-   for(unsigned i=0; i<hltNames_.size(); i++) { 
-     unsigned index = triggerNames.triggerIndex(hltNames_[i]);
-     if(index < triggerResults->size())
-       accept[i] = triggerResults->accept(index);
-     else 
-       edm::LogWarning("TrackSpectraAnalyzer")
-	 << "Index returned by TriggerNames object for trigger '"
-	 << hltNames_[i]
-	 << "' is out of range (" 
-	 << index << " >= " << triggerResults->size() << ")";
-   } 
-
-
-   //----- loop over pat jets and store in a vector -----
-   edm::Handle<reco::CandidateView> jets;
-   iEvent.getByLabel(jsrc_,jets);
-   hNumJets->Fill(jets->size()); // check # of jets found in event
-
-   vector<const reco::Candidate *> sortedJets;
-
-   for(unsigned it=0; it<jets->size(); ++it){
-      const reco::Candidate* jet = &((*jets)[it]);
-      sortedJets.push_back(jet);
-      sortByEtRef (&sortedJets);
-   }
-   
-   if(doJet_){ 
-      for(unsigned it=0; it<sortedJets.size(); ++it){
-	 if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
-				     accept[0],accept[1],accept[2],accept[3],accept[4]); 
-	 if(fabs(sortedJets[it]->eta())>etaMax_) continue;
-	 hJet0Pt->Fill(sortedJets[it]->et());
-	 if (accept[0]) hJet0Pt_HltMB->Fill(sortedJets[it]->et());
-	 if (accept[1]) hJet0Pt_HltJet6U->Fill(sortedJets[it]->et());
-	 if (accept[2]) hJet0Pt_HltJet15U->Fill(sortedJets[it]->et());
-	 if (accept[3]) hJet0Pt_HltJet30U->Fill(sortedJets[it]->et());
-	 if (accept[4]) hJet0Pt_HltJet50U->Fill(sortedJets[it]->et());
-	 break;             
-      }                     
-   }
-   // Get Leading jet energy
-   float jet_et = 0, jet_eta = 0;
-   unsigned index = 0; 
-   if(sortedJets.size()==0) jet_et = 0,jet_eta = 0; 
-   else jet_et = sortedJets[index]->et(), jet_eta = sortedJets[index]->eta(); 
-   
-   // get track collection 
-   Handle<vector<Track> > tracks;
-   iEvent.getByLabel(src_, tracks);
-
-   for(unsigned it=0; it<tracks->size(); ++it){
-      const reco::Track & trk = (*tracks)[it];
-
-      if(!trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
-
-      if(accept[0]==1) hTrkPtMB->Fill(trk.pt());
-      if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
+   if(!pureGENmode_){  // if pure GEN, skip through to the GEN ana part
       
+      // get hlt bit
+      Handle<edm::TriggerResults> triggerResults;
+      iEvent.getByLabel(triglabel_, triggerResults);
+      
+      const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
+      std::vector<bool> accept(5,false);
+      
+      for(unsigned i=0; i<hltNames_.size(); i++) { 
+	 unsigned index = triggerNames.triggerIndex(hltNames_[i]);
+	 if(index < triggerResults->size())
+	    accept[i] = triggerResults->accept(index);
+	 else 
+	    edm::LogWarning("TrackSpectraAnalyzer")
+	       << "Index returned by TriggerNames object for trigger '"
+	       << hltNames_[i]
+	       << "' is out of range (" 
+	       << index << " >= " << triggerResults->size() << ")";
+      } 
 
-      // (leading jet)-track                         
-      if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
-				   accept[0],accept[1],accept[2],accept[3],accept[4]); 
+      //----- loop over pat jets and store in a vector -----
+      edm::Handle<reco::CandidateView> jets;
+      iEvent.getByLabel(jsrc_,jets);
+      hNumJets->Fill(jets->size()); // check # of jets found in event
+      
+      vector<const reco::Candidate *> sortedJets;
+      
+      for(unsigned it=0; it<jets->size(); ++it){
+	 const reco::Candidate* jet = &((*jets)[it]);
+	 sortedJets.push_back(jet);
+	 sortByEtRef (&sortedJets);
+      }
+      
+      if(doJet_){ 
+	 for(unsigned it=0; it<sortedJets.size(); ++it){
+	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
+					accept[0],accept[1],accept[2],accept[3],accept[4]); 
+	    if(fabs(sortedJets[it]->eta())>etaMax_) continue;
+	    hJet0Pt->Fill(sortedJets[it]->et());
+	    if (accept[0]) hJet0Pt_HltMB->Fill(sortedJets[it]->et());
+	    if (accept[1]) hJet0Pt_HltJet6U->Fill(sortedJets[it]->et());
+	    if (accept[2]) hJet0Pt_HltJet15U->Fill(sortedJets[it]->et());
+	    if (accept[3]) hJet0Pt_HltJet30U->Fill(sortedJets[it]->et());
+	    if (accept[4]) hJet0Pt_HltJet50U->Fill(sortedJets[it]->et());
+	    break;             
+	 }                     
+      }
+      // Get Leading jet energy
+      float jet_et = 0, jet_eta = 0;
+      unsigned index = 0; 
+      if(sortedJets.size()==0) jet_et = 0,jet_eta = 0; 
+      else jet_et = sortedJets[index]->et(), jet_eta = sortedJets[index]->eta(); 
+      
+      // get track collection 
+      Handle<vector<Track> > tracks;
+      iEvent.getByLabel(src_, tracks);
+      
+      for(unsigned it=0; it<tracks->size(); ++it){
+	 const reco::Track & trk = (*tracks)[it];
+	 
+	 if(!trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
+	 
+	 if(accept[0]==1) hTrkPtMB->Fill(trk.pt());
+	 if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
+	 
+	 
+	 // (leading jet)-track                         
+	 if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
+						      accept[0],accept[1],accept[2],accept[3],accept[4]); 
+	 
+	 hTrkPtEta->Fill(trk.eta(),trk.pt());
+	 hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
+	 if(includeExtra_) hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
+	 
+	 if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et);
+	 if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et);
+	 if (accept[3]) hTrkPtEtaJetEt_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et);
+	 if (accept[4]) hTrkPtEtaJetEt_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et);
 
-      hTrkPtEta->Fill(trk.eta(),trk.pt());
-      hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
-      if(includeExtra_) hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
-
-      if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et);
-      if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et);
-      if (accept[3]) hTrkPtEtaJetEt_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et);
-      if (accept[4]) hTrkPtEtaJetEt_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et);
-
-
-   }
+      }
+   } // end of if(pureGENmode_)
    
    hNevt->Fill(1.0); // put more useful stuff
 
@@ -151,7 +153,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 if(fabs(gen.eta())>etaMax_) continue;
 	 if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta());
 	 hGenTrkPtEta->Fill(gen.eta(),gen.pt());
-	 hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),gjet_et);//move to gen jet
+	 hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),gjet_et); // one for NSD too?
 	 if(includeExtra_) hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),gjet_et,(1./gen.pt())); // weighted by pT
       }
    }
@@ -164,36 +166,43 @@ void
 TrackSpectraAnalyzer::beginJob()
 {
 
-   if(doOutput_){
+   if(doOutput_){  // not really necessary!
 
       TFileDirectory subDir = fs->mkdir( "threeDHist" );
       
       hNevt = fs->make<TH1F>("hNevt","evt counter",10, 0.0, 10);
 
-      if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
-      hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
-      hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);
+      if(!pureGENmode_){
+	 if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
+	 hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
+	 hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);
+	 
+	 // memory consumption limits the number of bins...
+	 hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					    50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
+	 if(includeExtra_) hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+							       50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEt_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						     50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEt_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						      50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
+	 hTrkPtEtaJetEt_HltJet30U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet30U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						      50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEt_HltJet50U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet50U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						      50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 
-      // memory consumption limits the number of bins...
-      hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-					 50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
-      
-      if(includeExtra_) hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-							    50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-      
-
-      hTrkPtEtaJetEt_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-                                                   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-
-      hTrkPtEtaJetEt_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
-      
-      hTrkPtEtaJetEt_HltJet30U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet30U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-
-      hTrkPtEtaJetEt_HltJet50U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet50U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-                                                   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-
+	 if(doJet_) {
+	    if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
+	    if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
+	    hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
+	    hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	    hJet0Pt_HltMB = fs->make<TH1F>("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	    hJet0Pt_HltJet6U = fs->make<TH1F>("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	    hJet0Pt_HltJet15U = fs->make<TH1F>("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	    hJet0Pt_HltJet30U = fs->make<TH1F>("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	    hJet0Pt_HltJet50U = fs->make<TH1F>("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
+	 }
+      } // end of pureGENmode
       
       
       if(isGEN_) {
@@ -201,24 +210,11 @@ TrackSpectraAnalyzer::beginJob()
 	 hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);
 	 hGenTrkPtEtaJetEt = subDir.make<TH3F>("hGenTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					       50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-
 	 if(includeExtra_) hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 								  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-
-      }
-      if(doJet_) {
-	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
-	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
-	 // jet histograms
-	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
-	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltMB = fs->make<TH1F>("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet6U = fs->make<TH1F>("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet15U = fs->make<TH1F>("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet30U = fs->make<TH1F>("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
-	 hJet0Pt_HltJet50U = fs->make<TH1F>("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0);
       }
    }
+
 }
 
 

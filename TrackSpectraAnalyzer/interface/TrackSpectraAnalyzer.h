@@ -87,7 +87,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::Service<TFileService> fs;
    
    bool doOutput_;
-   bool isGEN_, doJet_;
+   bool isGEN_, doJet_, pureGENmode_;
    bool histOnly_, includeExtra_;
    double  etaMax_;
    edm::InputTag src_;
