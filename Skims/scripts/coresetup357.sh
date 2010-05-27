@@ -14,4 +14,10 @@ cvs co UserCode/edwenger/TrkEffAnalyzer
 # agglomerative vertex
 cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
 
+# vertex constraint for refitting
+cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
+
+# cleanup
 mv UserCode/edwenger .
+mv UserCode/ASYoon/PPTrackingTools/ .
+rm -r UserCode/ASYoon
