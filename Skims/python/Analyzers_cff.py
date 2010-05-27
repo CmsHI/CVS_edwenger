@@ -24,7 +24,8 @@ from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 trackAna.histOnly = cms.untracked.bool(True)
-preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(False))
+preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(True),
+                             isGEN=cms.untracked.bool(True))
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
@@ -37,7 +38,7 @@ trkEffAnalyzer.constPtBins = cms.bool(True)
 trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("selectTracks")
 
 # sequences
-preTrgTest = cms.Sequence(preTrgAna * preTrackAna)
+preTrgTest = cms.Sequence(preTrgAna)
 postTrgTest = cms.Sequence(postTrgAna)
 postEvtSelTest = cms.Sequence(postEvtSelAna * preVtxSel)
 postVtxTest = cms.Sequence(postVtxAna * postVtxSel)
