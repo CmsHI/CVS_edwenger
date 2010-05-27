@@ -33,4 +33,5 @@ def enableAOD(process):
     process.extraReco.remove(process.extraVertex)
     process.analysisSeq.remove(process.patAnaSequence)
     process.extraReco.remove(process.trackRefit)
+    process.analysisSeq.remove(process.refitTrackAna)
     return process
