@@ -5,8 +5,8 @@ from edwenger.EvtSelAnalyzer.evtselanalyzer_cfi import *
 preTrgAna = evtselanalyzer.clone()
 postTrgAna = evtselanalyzer.clone()
 postEvtSelAna = evtselanalyzer.clone()
-postVtxAna = evtselanalyzer.clone()
-postTrkVtxAna = evtselanalyzer.clone()
+postVtxAna = evtselanalyzer.clone(includeSelTrk=cms.untracked.bool(True))
+postTrkVtxAna = evtselanalyzer.clone(includeSelTrk=cms.untracked.bool(True))
 
 # clone vertex analyzer to run with various inputs
 from edwenger.VertexAnalyzer.vertexanalyzer_cfi import *
@@ -24,6 +24,8 @@ from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 trackAna.histOnly = cms.untracked.bool(True)
+preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(True),
+                             isGEN=cms.untracked.bool(True))
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
@@ -36,7 +38,7 @@ trkEffAnalyzer.constPtBins = cms.bool(True)
 trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("selectTracks")
 
 # sequences
-preTrgTest = cms.Sequence(preTrgAna)
+preTrgTest = cms.Sequence(preTrgAna * preTrackAna)
 postTrgTest = cms.Sequence(postTrgAna)
 postEvtSelTest = cms.Sequence(postEvtSelAna * preVtxSel)
 postVtxTest = cms.Sequence(postVtxAna * postVtxSel)
