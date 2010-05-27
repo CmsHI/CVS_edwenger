@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.3 2010/05/11 10:44:09 edwenger Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.5 2010/05/27 16:59:36 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -225,11 +225,11 @@ void
 EvtSelAnalyzer::beginJob()
 {
 
-  int numBins = 200;
+  int numBins = 100;
   
   double xmax_STD = 99.5;
-  double xmax_SPEC = 49.5;
-  double xmax_AGR = 49.5;
+  double xmax_SPEC = 99.5;
+  double xmax_AGR = 99.5;
 
   hL1TechBits = f->make<TH1D>("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
   hL1AlgoBits = f->make<TH1D>("hL1AlgoBits","L1 algorithm trigger bits before mask",128,-0.5,127.5);
