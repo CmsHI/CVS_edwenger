@@ -30,6 +30,7 @@
 
 // ROOT includes
 #include "TNtuple.h"
+#include "TF1.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH3F.h"
@@ -70,9 +71,11 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEt_HltJet30U;
    TH3F *hTrkPtEtaJetEt_HltJet50U;
 
-
    TH3F *hGenTrkPtEtaJetEt;
    TH3F *hGenTrkPtEtaJetEtW;
+
+   //evt sel eff. correction
+   TF1 *evtSelEff;
 
 
    // Jets
@@ -89,7 +92,12 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool doOutput_;
    bool isGEN_, doJet_, pureGENmode_;
    bool histOnly_, includeExtra_;
-   double  etaMax_;
+   bool applyEvtEffCorr_;
+   int32_t evtEffCorrType_;
+   double  etaMax_, ptMin_;
+
+   std::vector<double> efit_para_;
+
    edm::InputTag src_;
    edm::InputTag vsrc_;
    edm::InputTag jsrc_;

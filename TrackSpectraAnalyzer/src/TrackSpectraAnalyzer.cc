@@ -1,12 +1,12 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.20 2010/05/21 13:02:52 frankma Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.22 2010/05/27 17:02:22 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "edwenger/TrackSpectraAnalyzer/interface/TrackSpectraAnalyzer.h"
-
+#include <TF1.h>
 
 TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
 
@@ -23,9 +23,12 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
+   ptMin_ = iConfig.getUntrackedParameter<double>("ptMin", 0.5);
+   applyEvtEffCorr_ = iConfig.getUntrackedParameter<bool>("applyEvtEffCorr", true);
+   evtEffCorrType_ = iConfig.getUntrackedParameter<int>("evtEffCorrType_", 0);
+   efit_para_ = iConfig.getUntrackedParameter< std::vector<double> >("efit_para");
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
-
 }
 
 // ------------ method called to for each event  ------------
@@ -37,6 +40,9 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    using namespace reco;
 
    const string qualityString = "highPurity";
+
+   float nevt = 1.0;
+   float evt_sel_eff = 1;
    
    if(!pureGENmode_){  // if pure GEN, skip through to the GEN ana part
       
@@ -93,6 +99,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       else jet_et = sortedJets[index]->et(), jet_eta = sortedJets[index]->eta(); 
       
       // get track collection 
+      int mult = 0;
       Handle<vector<Track> > tracks;
       iEvent.getByLabel(src_, tracks);
       
@@ -105,7 +112,6 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
 	 
 	 
-	 // (leading jet)-track                         
 	 if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
 						      accept[0],accept[1],accept[2],accept[3],accept[4]); 
 	 
@@ -113,15 +119,30 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
 	 if(includeExtra_) hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
 	 
+
 	 if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[3]) hTrkPtEtaJetEt_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[4]) hTrkPtEtaJetEt_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et);
-
+	 
+	 if(evtEffCorrType_==0){
+	    if(fabs(trk.eta())<2.4 && trk.pt()>ptMin_) mult++;
+	 }else if(evtEffCorrType_==1){
+	    if(fabs(trk.eta())<1.0 && trk.pt()>ptMin_) mult++;
+	 }else if(evtEffCorrType_==2){
+	    if(fabs(trk.eta())<0.8 && trk.pt()>ptMin_) mult++;
+	 }
       }
+
+      // evt sel eff. correction
+      evt_sel_eff = (evtSelEff->Eval(mult)>0) ? (float) evtSelEff->Eval(mult) : 0 ;
+      if(applyEvtEffCorr_) hTrkPtEtaJetEt->Scale(evt_sel_eff);
+      //std::cout<<"Efficiency = "<<evt_sel_eff<<std::endl;
    } // end of if(pureGENmode_)
-   
-   hNevt->Fill(1.0); // put more useful stuff
+
+   if(applyEvtEffCorr_) nevt *= evt_sel_eff;
+   hNevt->Fill(nevt);
+
 
    if(isGEN_){
      edm::Handle<reco::CandidateView> gjets;
@@ -166,11 +187,16 @@ void
 TrackSpectraAnalyzer::beginJob()
 {
 
+   // Initialize functions for various efficiency correction 
+   evtSelEff = new TF1("evtSelEff","[0]*(1/([1]+TMath::Exp(-[2]*x*x))) + [3]*(1/([4]+TMath::Exp(-[5]*pow(x,[6]))))",0,200);
+   evtSelEff->SetParameters(efit_para_[0],efit_para_[1],efit_para_[2],efit_para_[3],efit_para_[4],efit_para_[5],efit_para_[6]);
+
+   // Defin Histograms
    if(doOutput_){  // not really necessary!
 
       TFileDirectory subDir = fs->mkdir( "threeDHist" );
       
-      hNevt = fs->make<TH1F>("hNevt","evt counter",10, 0.0, 10);
+      hNevt = fs->make<TH1F>("hNevt","evt counter",50, 0.0, 2);
 
       if(!pureGENmode_){
 	 if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
