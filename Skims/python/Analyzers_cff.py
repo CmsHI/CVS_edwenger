@@ -24,8 +24,7 @@ from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 trackAna.histOnly = cms.untracked.bool(True)
-preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(True),
-                             isGEN=cms.untracked.bool(True))
+preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(False))
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
