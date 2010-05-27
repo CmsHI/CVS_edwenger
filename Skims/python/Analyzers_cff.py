@@ -23,9 +23,20 @@ postTrkVtxSel = vertexanalyzer.clone(
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
-trackAna.histOnly = cms.untracked.bool(True)
-preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(True),
-                             isGEN=cms.untracked.bool(True))
+trackAna_STD = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                              evtEffCorrType=cms.untracked.int32(0),
+                              efit_para = cms.untracked.vdouble(2.31590e+00,4.58625e+00,-5.37943e+01,
+                                                                3.80259e-02,3.83653e-02,3.48486e+00,5.72379e-01))
+trackAna_SPEC = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                               evtEffCorrType=cms.untracked.int32(1),
+                               efit_para = cms.untracked.vdouble(2.31590e+00,7.58625e+00,-5.37943e+01,
+                                                                 3.80259e-02,3.83653e-02,3.48486e+00,6.72379e-01))
+trackAna_AGR = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                              evtEffCorrType=cms.untracked.int32(2),
+                              efit_para = cms.untracked.vdouble(1.31590e+00,4.58625e+00,-5.37943e+01,
+                                                                3.80259e-02,3.83653e-02,3.48486e+00,3.72379e-01))
+
+preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(False))
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 

@@ -8,6 +8,5 @@ analysisSeq = cms.Sequence(patAnaSequence *
                            selectedVertex *
                            looseTrackAna *
                            primaryVertexFilter *
-                           trackAna *
-			   refitTrackAna * #track ana on refitTracks        
+                           (trackAna + trackAna_STD + trackAna_SPEC + trackAna_AGR + refitTrackAna) *
                            trkEffAnalyzer)
