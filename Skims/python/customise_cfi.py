@@ -8,6 +8,7 @@ def enableSIM(process):
     process.postVtxAna.isGEN=True
     process.postTrkVtxAna.isGEN=True
     process.trackAna.isGEN=True
+    process.preTrackAna.pureGENmode=True
     process.rootpleProducer.OnlyRECO=False
     process.eventFilter.remove(process.physDeclFilter) # always false in MC
     process.eventFilter.remove(process.bptxAnd)        # always false in MC
