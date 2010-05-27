@@ -188,7 +188,7 @@ TrackSpectraAnalyzer::beginJob()
 {
 
    // Initialize functions for various efficiency correction 
-   evtSelEff = new TF1("evtSelEff","[0]*(1/([1]+TMath::Exp(-[2]*x*x))) + [3]*(1/([4]+TMath::Exp(-[5]*pow(x,[6]))))",0,200);
+   evtSelEff = new TF1("evtSelEff","[0]*(1/([1]+TMath::Exp(-[2]*x*x))) + [3]*(1/([4]+TMath::Exp(-[5]*pow(x,[6]))))",0,500);
    evtSelEff->SetParameters(efit_para_[0],efit_para_[1],efit_para_[2],efit_para_[3],efit_para_[4],efit_para_[5],efit_para_[6]);
 
    // Defin Histograms
