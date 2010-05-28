@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.5 2010/05/27 16:59:36 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.6 2010/05/27 20:51:43 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -22,11 +22,11 @@ EvtSelAnalyzer::EvtSelAnalyzer(const edm::ParameterSet& iConfig)
   towerslabel_(iConfig.getUntrackedParameter<edm::InputTag>("towerslabel")),
   hfEThreshold_(iConfig.getUntrackedParameter<double>("hfEThreshold")),
   trackslabel_(iConfig.getUntrackedParameter<edm::InputTag>("trackslabel")),
-  includeSelTrk_(iConfig.getUntrackedParameter<bool>("includeSelTrk")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
   triglabel_(iConfig.getUntrackedParameter<edm::InputTag>("triglabel")),
   trignames_(iConfig.getUntrackedParameter<std::vector <std::string> >("trignames")),
   isGEN_(iConfig.getUntrackedParameter<bool>("isGEN")),
+  includeSelTrk_(iConfig.getUntrackedParameter<bool>("includeSelTrk")),
   etaMaxSpec_(iConfig.getUntrackedParameter<double>("etaMaxSpec", 1.0)),
   ptMin_(iConfig.getUntrackedParameter<double>("ptMin", 0.5))
 
@@ -225,11 +225,11 @@ void
 EvtSelAnalyzer::beginJob()
 {
 
-  int numBins = 100;
-  
-  double xmax_STD = 99.5;
-  double xmax_SPEC = 99.5;
-  double xmax_AGR = 99.5;
+  int numBins = 200;
+  double xmax = 199.5;
+  double xmax_STD = 199.5;
+  double xmax_SPEC = 199.5;
+  double xmax_AGR = 199.5;
 
   hL1TechBits = f->make<TH1D>("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
   hL1AlgoBits = f->make<TH1D>("hL1AlgoBits","L1 algorithm trigger bits before mask",128,-0.5,127.5);
@@ -238,24 +238,24 @@ EvtSelAnalyzer::beginJob()
   hHLTPaths = f->make<TH1D>("hHLTPaths","HLT Paths",5,0,5);
   hHLTPaths->SetBit(TH1::kCanRebin);
 
-  hRecMult = f->make<TH1D>("hRecMult","Charged mult. |#eta|<2.5)",numBins,-0.5,99.5);
+  hRecMult = f->make<TH1D>("hRecMult","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
   hRecMult_STD = f->make<TH1D>("hRecMult_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
   hRecMult_SPEC = f->make<TH1D>("hRecMult_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
   hRecMult_AGR = f->make<TH1D>("hRecMult_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
   
   if(includeSelTrk_){
-     hRecMult_sel = f->make<TH1D>("hRecMult_sel","Charged mult. |#eta|<2.5)",numBins,-0.5,99.5);
+     hRecMult_sel = f->make<TH1D>("hRecMult_sel","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
      hRecMult_STD_sel = f->make<TH1D>("hRecMult_STD_sel","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
      hRecMult_SPEC_sel = f->make<TH1D>("hRecMult_SPEC_sel","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
      hRecMult_AGR_sel = f->make<TH1D>("hRecMult_AGR_sel","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
   }
 
   if(isGEN_) {
-    hGenMultInel = f->make<TH1D>("hGenMultInel","Charged mult. (inel.) |#eta|<2.5)",100,-0.5,99.5);
-    hGenMultNSD = f->make<TH1D>("hGenMultNSD","Charged mult. (NSD) |#eta|<2.5)",100,-0.5,99.5);
-    hGenMultSD = f->make<TH1D>("hGenMultSD","Charged mult. (SD) |#eta|<2.5)",100,-0.5,99.5);
-    hGenMultDD = f->make<TH1D>("hGenMultDD","Charged mult. (DD) |#eta|<2.5)",100,-0.5,99.5);
-    hGenMultND = f->make<TH1D>("hGenMultND","Charged mult. (ND) |#eta|<2.5)",100,-0.5,99.5);
+    hGenMultInel = f->make<TH1D>("hGenMultInel","Charged mult. (inel.) |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenMultNSD = f->make<TH1D>("hGenMultNSD","Charged mult. (NSD) |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenMultSD = f->make<TH1D>("hGenMultSD","Charged mult. (SD) |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenMultDD = f->make<TH1D>("hGenMultDD","Charged mult. (DD) |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenMultND = f->make<TH1D>("hGenMultND","Charged mult. (ND) |#eta|<2.5)",numBins,-0.5,xmax);
 
     hGenMultInel_STD = f->make<TH1D>("hGenMultInel_STD","Charged mult. (inel.) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
     hGenMultNSD_STD = f->make<TH1D>("hGenMultNSD_STD","Charged mult. (NSD) |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
