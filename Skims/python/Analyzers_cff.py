@@ -23,20 +23,21 @@ postTrkVtxSel = vertexanalyzer.clone(
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
-trackAna_STD = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
-                              evtEffCorrType=cms.untracked.int32(0),
-                              efit_para = cms.untracked.vdouble(2.31590e+00,4.58625e+00,-5.37943e+01,
-                                                                3.80259e-02,3.83653e-02,3.48486e+00,5.72379e-01))
-trackAna_SPEC = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
-                               evtEffCorrType=cms.untracked.int32(1),
-                               efit_para = cms.untracked.vdouble(2.31590e+00,7.58625e+00,-5.37943e+01,
-                                                                 3.80259e-02,3.83653e-02,3.48486e+00,6.72379e-01))
-trackAna_AGR = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
-                              evtEffCorrType=cms.untracked.int32(2),
-                              efit_para = cms.untracked.vdouble(1.31590e+00,4.58625e+00,-5.37943e+01,
-                                                                3.80259e-02,3.83653e-02,3.48486e+00,3.72379e-01))
 
-preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(False))
+trackAna_STD_1pxl = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                              evtEffCorrType=cms.untracked.int32(0),
+                              efit_para = cms.untracked.vdouble(-8.06924e-02,-7.17044e-01,-2.74749e-01,4.39522e-01,4.43058e-01,1.97233e-01,1.16675e+00))
+trackAna_STD_4trk = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                              evtEffCorrType=cms.untracked.int32(0),
+                              efit_para = cms.untracked.vdouble(-1.81752e+00,1.02653e+00,-2.64738e-02,4.23789e+00,4.27101e+00,8.43603e-03,2.05349e+00))
+trackAna_SPEC_1pxl = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                               evtEffCorrType=cms.untracked.int32(1),
+                               efit_para = cms.untracked.vdouble(-7.54462e-01,1.58465e+00,-4.34577e+01,1.07743e+00,1.08147e+00,4.27893e-01,1.05561e+00))
+trackAna_SPEC_4trk = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+                               evtEffCorrType=cms.untracked.int32(1),
+                               efit_para = cms.untracked.vdouble(-5.21944e-01,5.67420e-01,-9.96122e-01,6.65958e-01,6.71037e-01,1.64208e-01,1.59302e+00))
+
+preTrackAna = trackAna.clone(pureGENmode=cms.untracked.bool(True))
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
