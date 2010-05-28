@@ -8,12 +8,12 @@ def enableSIM(process):
     process.postVtxAna.isGEN=True
     process.postTrkVtxAna.isGEN=True
     process.trackAna.isGEN=True
-    #process.preTrackAna.isGEN=True
-    #process.preTrackAna.pureGENmode=True
+    process.looseTrackAna.isGEN=True
     process.rootpleProducer.OnlyRECO=False
     process.eventFilter.remove(process.physDeclFilter) # always false in MC
     process.eventFilter.remove(process.bptxAnd)        # always false in MC
     process.trkEffAnalyzer.hasSimInfo=True
+    process.loosetrkEffAnalyzer.hasSimInfo=True
     process.extraReco *= process.trackingParticleRecoTrackAsssociation
     process.preTrgTest *= process.preTrackAna
     return process

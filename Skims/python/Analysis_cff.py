@@ -6,7 +6,8 @@ from edwenger.Skims.Analyzers_cff import *
 
 analysisSeq = cms.Sequence(patAnaSequence *
                            selectedVertex *
-                           looseTrackAna *
+                           (looseTrackAna + looseTrackAna_STD) *
+                           loosetrkEffAnalyzer *
                            primaryVertexFilter *
-                           (trackAna + trackAna_STD_1pxl + trackAna_STD_4trk + trackAna_SPEC_1pxl + trackAna_SPEC_4trk + refitTrackAna) *
+                           (trackAna + trackAna_STD + refitTrackAna) *
                            trkEffAnalyzer)
