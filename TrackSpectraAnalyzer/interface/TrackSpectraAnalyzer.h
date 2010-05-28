@@ -56,7 +56,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TNtuple *nt_jettrack;
 
    TH1F *hNevt;
-   //TH1F *hGenNevt;
+   TH1F *hGenNevt;
 
    TH1F *hTrkPtMB;
 
@@ -89,7 +89,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    edm::Service<TFileService> fs;
    
-   bool doOutput_;
    bool isGEN_, doJet_, pureGENmode_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
