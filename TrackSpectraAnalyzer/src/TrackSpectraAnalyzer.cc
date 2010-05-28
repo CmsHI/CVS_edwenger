@@ -135,12 +135,12 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       }
 
       // evt sel eff. correction
-      evt_sel_eff = (evtSelEff->Eval(mult)>0) ? (float) evtSelEff->Eval(mult) : 0 ;
-      if(applyEvtEffCorr_) hTrkPtEtaJetEt->Scale(evt_sel_eff);
-      //std::cout<<"Efficiency = "<<evt_sel_eff<<std::endl;
+      evt_sel_eff = (evtSelEff->Eval(mult)>0) ? (float) evtSelEff->Eval(mult) : 1 ;
+      if(applyEvtEffCorr_) hTrkPtEtaJetEt->Scale(1./evt_sel_eff);
+
    } // end of if(pureGENmode_)
 
-   if(applyEvtEffCorr_) nevt *= evt_sel_eff;
+   if(applyEvtEffCorr_) nevt *= evt_sel_eff; // later invert 1./eff to get Nevt
    hNevt->Fill(nevt);
 
 
@@ -196,7 +196,7 @@ TrackSpectraAnalyzer::beginJob()
 
       TFileDirectory subDir = fs->mkdir( "threeDHist" );
       
-      hNevt = fs->make<TH1F>("hNevt","evt counter",50, 0.0, 2);
+      hNevt = fs->make<TH1F>("hNevt","evt sel eff",50, 0.0, 2);
 
       if(!pureGENmode_){
 	 if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
