@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.22 2010/05/27 17:02:22 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.26 2010/05/28 12:45:59 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -16,6 +16,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    vsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("vsrc",edm::InputTag("offlinePrimaryVertices"));
    jsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("jsrc",edm::InputTag("ak5CaloJets"));
    gjsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gjsrc",edm::InputTag("ak5GenJets"));
+   src_evtCorr_ = iConfig.getUntrackedParameter<edm::InputTag>("src_evtCorr",edm::InputTag("generalTracks"));
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
@@ -106,11 +107,26 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       if(sortedJets.size()==0) jet_et = 0,jet_eta = 0; 
       else jet_et = sortedJets[index]->et(), jet_eta = sortedJets[index]->eta(); 
       
+      // Get multiplicity dist from another track collection
+      int mult = 0;
+      bool diffEffCorrSrc = false;
+
+      if(!(src_==src_evtCorr_)){
+	 Handle<vector<Track> > etracks;
+	 iEvent.getByLabel(src_evtCorr_, etracks);
+
+	 for(unsigned it=0; it<etracks->size(); ++it){
+	    const reco::Track & etrk = (*etracks)[it];
+	    if(!etrk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
+	    if(fabs(etrk.eta())<etaCut_evtSel && etrk.pt()>ptMin_) mult++;
+	 }
+	 diffEffCorrSrc = true;
+      }
+
       // get track collection 
       Handle<vector<Track> > tracks;
       iEvent.getByLabel(src_, tracks);
 
-      int mult = 0;
       float evt_sel_eff = 1;
       float evt_sel_corr = 1;
 
@@ -128,18 +144,22 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 
 	 hTrkPtEta->Fill(trk.eta(),trk.pt());
 	 hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
-	 if(includeExtra_) hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
+	 if(includeExtra_) {
+	    hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
+	 }
 	 if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[3]) hTrkPtEtaJetEt_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[4]) hTrkPtEtaJetEt_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et);
 	 
-	 if(fabs(trk.eta())<etaCut_evtSel && trk.pt()>ptMin_) mult++;
+	 if((!diffEffCorrSrc) && fabs(trk.eta())<etaCut_evtSel && trk.pt()>ptMin_) mult++;
       }
 
       // evt sel eff. correction
       if(applyEvtEffCorr_) {
 
+	 // for ~ 4trks, it is still possible for the eff not to be zero, 
+	 // 1. either due to fit or 2. ...
 	 evt_sel_eff = (evtSelEff->Eval(mult)>0) ? (float) evtSelEff->Eval(mult) : 0 ;
 	 evt_sel_corr = (evt_sel_eff>0) ? (float) (1./evt_sel_eff) : 0 ;
 
@@ -155,6 +175,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
       if(applyEvtEffCorr_) nevt *= evt_sel_eff; // later invert 1./eff to get Nevt
       hNevt->Fill(nevt);
+
    } // end of if(pureGENmode_)
 
 
@@ -229,7 +250,7 @@ TrackSpectraAnalyzer::beginJob()
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
    
    if(!pureGENmode_){
-      hNevt = fs->make<TH1F>("hNevt","evt sel eff",50, 0.0, 2);
+      hNevt = fs->make<TH1F>("hNevt","evt sel eff",50, 0.0, 1.2);
       
       if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
       hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
@@ -238,8 +259,16 @@ TrackSpectraAnalyzer::beginJob()
       // memory consumption limits the number of bins...
       hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					 50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
-      if(includeExtra_) hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-							    50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      if(includeExtra_) {
+	 hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					     50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEt_mult1 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult1","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEt_mult2 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult2","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+                                                  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEt_mult3 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult3","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+                                                  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      }
       hTrkPtEtaJetEt_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       hTrkPtEtaJetEt_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
@@ -263,7 +292,7 @@ TrackSpectraAnalyzer::beginJob()
    } // end of pureGENmode
    
    if(isGEN_) {
-      hGenNevt = fs->make<TH1F>("hGenNevt","evt sel eff",50, 0.0, 2);
+      hGenNevt = fs->make<TH1F>("hGenNevt","evt sel eff",50, 0.0, 1.2);
       
       if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
       hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);

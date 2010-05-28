@@ -66,6 +66,11 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEt;
    TH3F *hTrkPtEtaJetEtW;
 
+   TH3F *hTrkPtEtaJetEt_mult1;
+   TH3F *hTrkPtEtaJetEt_mult2;
+   TH3F *hTrkPtEtaJetEt_mult3;
+
+
    TH3F *hTrkPtEtaJetEt_HltJet6U;
    TH3F *hTrkPtEtaJetEt_HltJet15U;
    TH3F *hTrkPtEtaJetEt_HltJet30U;
@@ -101,6 +106,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::InputTag vsrc_;
    edm::InputTag jsrc_;
    edm::InputTag gjsrc_;
+   edm::InputTag src_evtCorr_;
    std::vector<std::string> hltNames_;
    edm::InputTag triglabel_;
 
