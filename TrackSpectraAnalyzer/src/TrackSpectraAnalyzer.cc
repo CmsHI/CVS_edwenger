@@ -146,6 +146,10 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et);
 	 if(includeExtra_) {
 	    hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(1./trk.pt())); // weighted by pT
+	    // multplicity should be known a priori, --> change a way to get mult 
+	    if(mult==1) hTrkPtEtaJetEt_mult1->Fill(trk.eta(),trk.pt(),jet_et);
+	    if(mult==2) hTrkPtEtaJetEt_mult2->Fill(trk.eta(),trk.pt(),jet_et);
+	    if(mult==3) hTrkPtEtaJetEt_mult3->Fill(trk.eta(),trk.pt(),jet_et);
 	 }
 	 if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et);
 	 if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et);
