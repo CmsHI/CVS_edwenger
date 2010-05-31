@@ -10,7 +10,7 @@ void anaTrigSpectra(){
 
    Int_t color[12]={kViolet+2,kBlue,kAzure+6,kGreen-3,kOrange-5,kOrange-3,kOrange+4,kRed-3,kRed,1,1,1};
    //TFile *f1 = new TFile("../root_files/trkAna_test.root");
-   TFile *f1 = new TFile("../root_files/ANA_v4_10M_2nd.root");
+   TFile *f1 = new TFile("/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/trkhists_11_1.root");
    //TFile *f1 = new TFile("../root_files/ANA_v4_10M_1st_DATA.root");  
 
    //data
