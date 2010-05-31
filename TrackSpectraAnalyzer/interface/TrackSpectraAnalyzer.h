@@ -64,7 +64,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    TH1F *hRecMult_STD;
    TH1F *hRecMult_STD_corr;
-   TH1F *hRecMultEff_STD_corr;
 
    TH1F *hGenNevt;
 
@@ -74,7 +73,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH2F *hGenTrkPtEta;
    
    TH3F *hTrkPtEtaJetEt;
-   TH3F *hTrkPtEtaJetEtW;
+   //TH3F *hTrkPtEtaJetEtW;
 
    TH3F *hTrkPtEtaJetEt_mult1;
    TH3F *hTrkPtEtaJetEt_mult2;
@@ -87,7 +86,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEt_HltJet50U;
 
    TH3F *hGenTrkPtEtaJetEt;
-   TH3F *hGenTrkPtEtaJetEtW;
+   //TH3F *hGenTrkPtEtaJetEtW;
 
    //evt sel eff. correction
    TF1 *evtSelEff;
