@@ -33,6 +33,7 @@ Double_t GetEffJetPt(TGraph *eff, Double_t minEff)
 }
 
 void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V0531_histFromNt/anahlt.root",
+    const char * ntFiles = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/trkhists_9*.root",
     TString outdir="plots/trigSpectra",
     TString histDir = "trackAna/")
 {
@@ -79,4 +80,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
 
   // ================== Triggered Spectra Ana ==================
   HistoGroup trigSpec("trigSepc");
+  TChain * nt_jettrk = new TChain(histDir+"nt_jettrack","ntuple: jets and tracks");
+  nt_jettrk->Add(ntFiles);
+  cout << "Ana: " << histDir << "nt_jettrack: " << nt_jettrk->GetEntries() << " tracks" << endl;;
 }
