@@ -21,7 +21,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -29,6 +29,11 @@ process.configurationMetadata = cms.untracked.PSet(
 process.TFileService = cms.Service("TFileService", 
                                    fileName = cms.string('trkhists.root')
                                    )
+process.SimpleMemoryCheck = cms.Service('SimpleMemoryCheck',
+    ignoreTotal=cms.untracked.int32(0),
+    oncePerEventMode = cms.untracked.bool(False)
+    )
+
 
 # =============== Import Sequences =====================
 
