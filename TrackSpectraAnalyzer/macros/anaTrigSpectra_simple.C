@@ -7,6 +7,7 @@
 #include "TGraphAsymmErrors.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
+#include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HistoGroup.h"
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/tgraphTools.C"
 
 #include <map>
@@ -74,4 +75,8 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
     effJetPt[ig->first] = GetEffJetPt(ig->second,0.99);
   }
+
+
+  // ================== Triggered Spectra Ana ==================
+  HistoGroup trigSpec("trigSepc");
 }
