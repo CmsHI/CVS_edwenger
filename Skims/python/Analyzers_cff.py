@@ -25,18 +25,31 @@ trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 
 preTrackAna = trackAna.clone(isGEN=cms.untracked.bool(True),
-                             pureGENmode=cms.untracked.bool(True))
+                             pureGENmode=cms.untracked.bool(True),
+                             nsdOnly=cms.untracked.bool(True))
 
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 
-looseTrackAna_STD = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+looseTrackAna_STD = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
+                                   applyEvtEffCorr=cms.untracked.bool(True),
                                    evtEffCorrType=cms.untracked.int32(0),
-                                   efit_para = cms.untracked.vdouble(-8.06924e-02,-7.17044e-01,-2.74749e-01,4.39522e-01,4.43058e-01,1.97233e-01,1.16675e+00))
+                                   efit_type=cms.untracked.int32(0),
+                                   evtSelEffv = cms.untracked.vdouble(16,0.0193237,0.219512,0.336957,0.524272,0.486726,0.62963,0.671756,
+                                                                      0.767241,0.80315,0.84127,0.843137,0.912281,0.954128,0.963303,0.925926,0.975207),
+                                   #evtSelEffv = cms.untracked.vdouble(16,0.0232558,0.213483,0.375723,0.470588,0.547739,0.641304,
+                                   #                                  0.718085,0.731579,0.786585,0.835616,0.88125,0.951389,0.94,0.948148,0.97931,0.969925),
+                                   efit_para = cms.untracked.vdouble(-2.36755,1.40115,-0.394101,0.900227,0.99578,0,0))
 
-trackAna_STD = trackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
+trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
+                              applyEvtEffCorr=cms.untracked.bool(True),
                               evtEffCorrType=cms.untracked.int32(0),
-                              efit_para = cms.untracked.vdouble(-1.81752e+00,1.02653e+00,-2.64738e-02,4.23789e+00,4.27101e+00,8.43603e-03,2.05349e+00))
+                              efit_type=cms.untracked.int32(1),
+                              evtSelEffv = cms.untracked.vdouble(16,0.0193237,0.219512,0.336957,0.524272,0.486726,0.62963,0.671756,
+                                                                 0.767241,0.80315,0.84127,0.843137,0.912281,0.954128,0.963303,0.925926,0.975207),
+                              #evtSelEffv = cms.untracked.vdouble(16,0.0232558,0.213483,0.375723,0.470588,0.547739,0.641304,
+                              #0.718085,0.731579,0.786585,0.835616,0.88125,0.951389,0.94,0.948148,0.97931,0.969925),
+                              efit_para = cms.untracked.vdouble(0.105333,-0.894184,-134.324,-3.99298,0,0,0))
 
 
 # tracking efficiency analyzer
