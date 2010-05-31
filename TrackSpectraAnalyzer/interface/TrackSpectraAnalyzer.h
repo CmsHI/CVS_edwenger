@@ -26,6 +26,8 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
 // ROOT includes
@@ -56,6 +58,14 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TNtuple *nt_jettrack;
 
    TH1F *hNevt;
+   TH1F *hNevt_mult1;
+   TH1F *hNevt_mult2;
+   TH1F *hNevt_mult3;
+
+   TH1F *hRecMult_STD;
+   TH1F *hRecMult_STD_corr;
+   TH1F *hRecMultEff_STD_corr;
+
    TH1F *hGenNevt;
 
    TH1F *hTrkPtMB;
@@ -94,13 +104,15 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    edm::Service<TFileService> fs;
    
-   bool isGEN_, doJet_, pureGENmode_;
+   bool isGEN_, doJet_, pureGENmode_, nsdOnly_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
-   int32_t evtEffCorrType_;
+   int32_t evtEffCorrType_, efit_type_;
    double  etaMax_, ptMin_;
+   double evtSelEffCut_;
 
    std::vector<double> efit_para_;
+   std::vector<double> evtSelEffv_;
 
    edm::InputTag src_;
    edm::InputTag vsrc_;
