@@ -79,8 +79,14 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
 
 
   // ================== Triggered Spectra Ana ==================
-  HistoGroup trigSpec("trigSepc");
   TChain * nt_jettrk = new TChain(histDir+"nt_jettrack","ntuple: jets and tracks");
   nt_jettrk->Add(ntFiles);
   cout << "Ana: " << histDir << "nt_jettrack: " << nt_jettrk->GetEntries() << " tracks" << endl;;
+  HistoGroup trigSpec("trigSepc",100,0,100);
+  trigSpec.Add("hSpec6U");
+  trigSpec.Add("hSpec15U");
+  trigSpec.Add("hSpec30U");
+  trigSpec.Add("hSpec50U");
+  TCanvas * c2 = new TCanvas("c2","c2",500,500);
+  trigSpec.hm_["hSpec6U"]->Draw();
 }
