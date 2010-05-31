@@ -5,6 +5,7 @@
 #include "TH1F.h"
 #include "TChain.h"
 #include "TGraphAsymmErrors.h"
+#include "TCut.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HistoGroup.h"
@@ -83,10 +84,14 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   nt_jettrk->Add(ntFiles);
   cout << "Ana: " << histDir << "nt_jettrack: " << nt_jettrk->GetEntries() << " tracks" << endl;;
   HistoGroup trigSpec("trigSepc",100,0,100);
-  trigSpec.Add("hSpec6U");
-  trigSpec.Add("hSpec15U");
-  trigSpec.Add("hSpec30U");
-  trigSpec.Add("hSpec50U");
+  trigSpec.Add("hSpecMB",1);
+  trigSpec.Add("hSpec6U",1);
+  trigSpec.Add("hSpec15U",1);
+  trigSpec.Add("hSpec30U",1);
+  trigSpec.Add("hSpec50U",1);
+  TCut selSpecMB(Form("jet<%1.1f",effJetPt["gHltEff_HltJet6U"]));
+  cout << "Spec sel: " << TString(selSpecMB) << endl;
+  nt_jettrk->Draw("pt>>hSpecMB",selSpecMB,"goff");
   TCanvas * c2 = new TCanvas("c2","c2",500,500);
-  trigSpec.hm_["hSpec6U"]->Draw();
+  trigSpec.hm_["hSpecMB"]->Draw();
 }
