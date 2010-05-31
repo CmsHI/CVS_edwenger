@@ -24,7 +24,7 @@ Double_t GetEffJetPt(TGraph *eff, Double_t minEff)
     //cout << "Point " << ig << " x,y: " << x << "," << y << endl;
     if(y>minEff){
       minpt = x;
-      //cout<<"jet pt with eff > "<<minEff<<" = "<<minpt<< " GeV" << endl;
+      cout<<"jet pt with eff > "<<minEff<<" = "<<minpt<< " GeV" << endl;
       break;
     }
   }
@@ -69,5 +69,9 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.Draw(cHltEff,false);
 
-  GetEffJetPt(gAEs["gHltEff_HltJet6U"],0.99);
+  // Find Efficiency > 99% jet et
+  map<TString, Double_t> effJetPt;
+  for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
+    effJetPt[ig->first] = GetEffJetPt(ig->second,0.99);
+  }
 }
