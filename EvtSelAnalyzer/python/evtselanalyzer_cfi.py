@@ -15,5 +15,5 @@ evtselanalyzer = cms.EDAnalyzer('EvtSelAnalyzer',
       isGEN=cms.untracked.bool(False),
       includeSelTrk=cms.untracked.bool(False),
       etaMaxSpec=cms.untracked.double(1.0),
-      ptMin=cms.untracked.double(0.5)
+      ptMin=cms.untracked.double(0.0)
 )

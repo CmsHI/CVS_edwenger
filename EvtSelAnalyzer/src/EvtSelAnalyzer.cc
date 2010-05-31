@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.6 2010/05/27 20:51:43 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.7 2010/05/28 17:02:32 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -181,6 +181,11 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       hGenMultDD_AGR->Fill(nGEN_AGR);
       hGenMultNSD_AGR->Fill(nGEN_AGR);
+      
+      hGenRecMultNSD->Fill(nREC_STD);
+      hGenRecMultNSD_STD->Fill(nREC_STD);
+      hGenRecMultNSD_SPEC->Fill(nREC_STD);
+      hGenRecMultNSD_AGR->Fill(nREC_STD);
       break;
     case 92:
     case 93:
@@ -210,6 +215,11 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       hGenMultND_AGR->Fill(nGEN_AGR);
       hGenMultNSD_AGR->Fill(nGEN_AGR);
+
+      hGenRecMultNSD->Fill(nREC_STD);
+      hGenRecMultNSD_STD->Fill(nREC_STD);
+      hGenRecMultNSD_SPEC->Fill(nREC_STD);
+      hGenRecMultNSD_AGR->Fill(nREC_STD);
       break;
     default:
       edm::LogWarning("EvtSelAnalyzer") 
@@ -274,6 +284,11 @@ EvtSelAnalyzer::beginJob()
     hGenMultSD_AGR = f->make<TH1D>("hGenMultSD_AGR","Charged mult. (SD) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
     hGenMultDD_AGR = f->make<TH1D>("hGenMultDD_AGR","Charged mult. (DD) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
     hGenMultND_AGR = f->make<TH1D>("hGenMultND_AGR","Charged mult. (ND) |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+
+    hGenRecMultNSD = f->make<TH1D>("hGenRecMultNSD","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenRecMultNSD_STD = f->make<TH1D>("hGenRecMultNSD_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenRecMultNSD_SPEC = f->make<TH1D>("hGenRecMultNSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenRecMultNSD_AGR = f->make<TH1D>("hGenRecMultNSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
   }
 
 }
