@@ -34,22 +34,17 @@ looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 looseTrackAna_STD = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
                                    applyEvtEffCorr=cms.untracked.bool(True),
                                    evtEffCorrType=cms.untracked.int32(0),
-                                   efit_type=cms.untracked.int32(0),
-                                   evtSelEffv = cms.untracked.vdouble(16,0.0193237,0.219512,0.336957,0.524272,0.486726,0.62963,0.671756,
-                                                                      0.767241,0.80315,0.84127,0.843137,0.912281,0.954128,0.963303,0.925926,0.975207),
-                                   #evtSelEffv = cms.untracked.vdouble(16,0.0232558,0.213483,0.375723,0.470588,0.547739,0.641304,
-                                   #                                  0.718085,0.731579,0.786585,0.835616,0.88125,0.951389,0.94,0.948148,0.97931,0.969925),
-                                   efit_para = cms.untracked.vdouble(-2.36755,1.40115,-0.394101,0.900227,0.99578,0,0))
+                                   evtSelEffv = cms.untracked.vdouble(8,0.0315315,0.324786,0.53719,0.765217,0.77305,0.921875,0.957447,0.891026),# from 5K 
+                                   efit_para = cms.untracked.vdouble(-2.36755,1.40115,-0.394101,0.900227,0.99578,0,0),
+                                   evtSelEffCut = cms.untracked.double(0.04))
 
 trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               applyEvtEffCorr=cms.untracked.bool(True),
                               evtEffCorrType=cms.untracked.int32(0),
                               efit_type=cms.untracked.int32(1),
-                              evtSelEffv = cms.untracked.vdouble(16,0.0193237,0.219512,0.336957,0.524272,0.486726,0.62963,0.671756,
-                                                                 0.767241,0.80315,0.84127,0.843137,0.912281,0.954128,0.963303,0.925926,0.975207),
-                              #evtSelEffv = cms.untracked.vdouble(16,0.0232558,0.213483,0.375723,0.470588,0.547739,0.641304,
-                              #0.718085,0.731579,0.786585,0.835616,0.88125,0.951389,0.94,0.948148,0.97931,0.969925),
-                              efit_para = cms.untracked.vdouble(0.105333,-0.894184,-134.324,-3.99298,0,0,0))
+                              evtSelEffv = cms.untracked.vdouble(12,0,0,0,0.0347826,0.255319,0.460938,0.673759,0.717949,0.9,0.898438,0.978723,0.985185),# from 5K
+                              efit_para = cms.untracked.vdouble(0.105333,-0.894184,-134.324,-3.99298,0,0,0),
+                              evtSelEffCut = cms.untracked.double(0.01))
 
 
 # tracking efficiency analyzer
