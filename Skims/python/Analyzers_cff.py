@@ -34,7 +34,8 @@ looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 looseTrackAna_STD = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
                                    applyEvtEffCorr=cms.untracked.bool(True),
                                    evtEffCorrType=cms.untracked.int32(0),
-                                   evtSelEffv = cms.untracked.vdouble(8,0.0315315,0.324786,0.53719,0.765217,0.77305,0.921875,0.957447,0.891026),# from 5K 
+                                   evtSelEffv = cms.untracked.vdouble(8,0.0334129,0.357513,0.581081,0.759259,0.8,0.873984,0.921875,0.932584), #from 50K
+                                   #evtSelEffv = cms.untracked.vdouble(8,0.0315315,0.324786,0.53719,0.765217,0.77305,0.921875,0.957447,0.891026),# from 5K 
                                    efit_para = cms.untracked.vdouble(-2.36755,1.40115,-0.394101,0.900227,0.99578,0,0),
                                    evtSelEffCut = cms.untracked.double(0.04))
 
@@ -42,7 +43,8 @@ trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               applyEvtEffCorr=cms.untracked.bool(True),
                               evtEffCorrType=cms.untracked.int32(0),
                               efit_type=cms.untracked.int32(1),
-                              evtSelEffv = cms.untracked.vdouble(12,0,0,0,0.0347826,0.255319,0.460938,0.673759,0.717949,0.9,0.898438,0.978723,0.985185),# from 5K
+                              evtSelEffv = cms.untracked.vdouble(12,0,0,0,0.037037,0.222642,0.439024,0.644531,0.76779,0.955102,0.962025,0.987952,0.981273), #from 50K
+                              #evtSelEffv = cms.untracked.vdouble(12,0,0,0,0.0347826,0.255319,0.460938,0.673759,0.717949,0.9,0.898438,0.978723,0.985185),# from 5K
                               efit_para = cms.untracked.vdouble(0.105333,-0.894184,-134.324,-3.99298,0,0,0),
                               evtSelEffCut = cms.untracked.double(0.01))
 
