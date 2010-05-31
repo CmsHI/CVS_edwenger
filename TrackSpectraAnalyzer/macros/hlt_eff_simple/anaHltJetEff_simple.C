@@ -101,6 +101,8 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   map<TString, TGraphAsymmErrors*>::iterator ig;
   for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
     // check
+    assert(ig->second);
+    ig->second->SetName(ig->first);
     cout << ig->first << " " << ig->second->GetName() << endl;
     clearXErrorBar(ig->second);
   }
@@ -123,6 +125,10 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   for (map<TString, TH1F*>::iterator 
       iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
     iter->second->Write();
+  }
+  for (map<TString, TGraphAsymmErrors*>::iterator
+      ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
+    ig->second->Write();
   }
   outf->Close();
 }
