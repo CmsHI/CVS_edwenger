@@ -235,11 +235,11 @@ void
 EvtSelAnalyzer::beginJob()
 {
 
-  int numBins = 200;
-  double xmax = 199.5;
-  double xmax_STD = 199.5;
-  double xmax_SPEC = 199.5;
-  double xmax_AGR = 199.5;
+  int numBins = 300;
+  double xmax = 299.5;
+  double xmax_STD = 299.5;
+  double xmax_SPEC = 299.5;
+  double xmax_AGR = 299.5;
 
   hL1TechBits = f->make<TH1D>("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
   hL1AlgoBits = f->make<TH1D>("hL1AlgoBits","L1 algorithm trigger bits before mask",128,-0.5,127.5);
