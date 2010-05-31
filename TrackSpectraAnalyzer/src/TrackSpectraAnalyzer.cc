@@ -174,10 +174,10 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    
 	 }
 	 
-	 hNevt->Fill(nevt*(1./((float)evt_sel_eff)));
-	 if(mult==1) hNevt_mult1->Fill(nevt*(1./((float)evt_sel_eff)));
-	 if(mult==2) hNevt_mult2->Fill(nevt*(1./((float)evt_sel_eff)));
-	 if(mult==3) hNevt_mult3->Fill(nevt*(1./((float)evt_sel_eff)));
+	 hNevt->Fill(evt_sel_eff);
+	 if(mult==1) hNevt_mult1->Fill(evt_sel_eff);
+	 if(mult==2) hNevt_mult2->Fill(evt_sel_eff);
+	 if(mult==3) hNevt_mult3->Fill(evt_sel_eff);
 
       }// end of skip evt
 
@@ -243,15 +243,14 @@ void
 TrackSpectraAnalyzer::beginJob()
 {
 
-   int numBins = 200;
-   double xmax = 199.5;
+   int numBins = 300;
+   double xmax = 299.5;
    
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
    
    if(!pureGENmode_){
-      //hNevt = fs->make<TH1F>("hNevt","evt sel eff", 51, -0.01, 1.01);
-      hNevt = fs->make<TH1F>("hNevt","evt sel eff", 400, 0,15);  
+      hNevt = fs->make<TH1F>("hNevt","evt sel eff", 51, -0.01, 1.01);
       hNevt_mult1 = fs->make<TH1F>("hNevt_mult1","evt sel eff", 51, -0.01, 1.01);
       hNevt_mult2 = fs->make<TH1F>("hNevt_mult2","evt sel eff", 51, -0.01, 1.01);
       hNevt_mult3 = fs->make<TH1F>("hNevt_mult3","evt sel eff", 51, -0.01, 1.01);
