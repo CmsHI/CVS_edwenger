@@ -6,6 +6,7 @@
 #include "TChain.h"
 #include "TGraphAsymmErrors.h"
 #include "TCut.h"
+#include "TSystem.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HistoGroup.h"
@@ -119,5 +120,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   cpTrigSpec.Draw(cTrigSpec,false);
   
   // All done, save hists
+  gSystem->mkdir(outdir,true);
   TFile * outf = new TFile(Form("%s/anaspec.root",outdir.Data()),"RECREATE");
+  trigSpec.Save();
 }
