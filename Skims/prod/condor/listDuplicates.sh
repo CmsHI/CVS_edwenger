@@ -22,13 +22,17 @@ else
 fi
 
 for file in `cat $inputs` ; do
-  base=`echo $file | sed 's/_1\.root$//'`
+  base=`echo $file | sed 's/_[0-9]\.root$//'`
   #echo base: $base
   for i in `seq 1 5`; do
+    this=${base}_${i}.root
+    grep -q $this $inputs
+    thisExists=$?
     next=${base}_$((i+1)).root
-    if [ -f $next ]; then
+    grep -q $next $inputs
+    nextExists=$?
+    if [ $((thisExists+nextExists)) -eq 0 ]; then
       #echo next: $next
-      this=${base}_${i}.root
       echo $this
     fi
   done
