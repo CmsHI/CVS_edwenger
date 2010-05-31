@@ -90,8 +90,34 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   trigSpec.Add("hSpec30U",1);
   trigSpec.Add("hSpec50U",1);
   TCut selSpecMB(Form("jet<%1.1f",effJetPt["gHltEff_HltJet6U"]));
-  cout << "Spec sel: " << TString(selSpecMB) << endl;
+  TCut selSpec6U(Form("jet6 && jet>=%1.1f && jet<%1.1f",effJetPt["gHltEff_HltJet6U"],effJetPt["gHltEff_HltJet15U"]));
+  TCut selSpec15U(Form("jet15 && jet>=%1.1f && jet<%1.1f",effJetPt["gHltEff_HltJet15U"],effJetPt["gHltEff_HltJet30U"]));
+  TCut selSpec30U(Form("jet30 && jet>=%1.1f && jet<%1.1f",effJetPt["gHltEff_HltJet30U"],effJetPt["gHltEff_HltJet50U"]));
+  TCut selSpec50U(Form("jet50 && jet>=%1.1f",effJetPt["gHltEff_HltJet50U"]));
+  cout << "hSpecMB sel: " << TString(selSpecMB) << endl;
+  cout << "hSpec6U sel: " << TString(selSpec6U) << endl;
+  cout << "hSpec15U sel: " << TString(selSpec15U) << endl;
+  cout << "hSpec30U sel: " << TString(selSpec30U) << endl;
+  cout << "hSpec50U sel: " << TString(selSpec50U) << endl;
   nt_jettrk->Draw("pt>>hSpecMB",selSpecMB,"goff");
-  TCanvas * c2 = new TCanvas("c2","c2",500,500);
-  trigSpec.hm_["hSpecMB"]->Draw();
+  nt_jettrk->Draw("pt>>hSpec6U",selSpec6U,"goff");
+  nt_jettrk->Draw("pt>>hSpec15U",selSpec15U,"goff");
+  nt_jettrk->Draw("pt>>hSpec30U",selSpec30U,"goff");
+  nt_jettrk->Draw("pt>>hSpec50U",selSpec50U,"goff");
+
+  // Draw Final Plots
+  TCanvas * cTrigSpec = new TCanvas("cTrigSpec","cTrigSpec",500,500);
+  CPlot cpTrigSpec("TrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
+  cpTrigSpec.SetLogy(1);
+  cpTrigSpec.SetXRange(0,trigSpec.xmax_);
+  cpTrigSpec.AddHist1D(trigSpec.hm_["hSpecMB"],"BSC_OR+BPTX+HF_Coinc.","",kViolet+2);
+  cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec6U"],"HLT_L1Jet6U","",kAzure+6);
+  cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec15U"],"HLT_Jet15U","",kGreen-3);
+  cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec30U"],"HLT_Jet30U","",kOrange-5);
+  cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec50U"],"HLT_Jet50U","",kRed-2);
+  cpTrigSpec.SetLegendHeader("Calojets |#eta|<2.5");
+  cpTrigSpec.Draw(cTrigSpec,false);
+  
+  // All done, save hists
+  TFile * outf = new TFile(Form("%s/anaspec.root",outdir.Data()),"RECREATE");
 }
