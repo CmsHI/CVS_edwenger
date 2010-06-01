@@ -106,6 +106,9 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   nt_jettrk->Draw("pt>>hSpec30U",selSpec30U,"goff");
   nt_jettrk->Draw("pt>>hSpec50U",selSpec50U,"goff");
 
+  // scale
+  trigSpec.Scale();
+
   // Draw Final Plots
   TCanvas * cTrigSpec = new TCanvas("cTrigSpec","cTrigSpec",500,500);
   CPlot cpTrigSpec("TrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");

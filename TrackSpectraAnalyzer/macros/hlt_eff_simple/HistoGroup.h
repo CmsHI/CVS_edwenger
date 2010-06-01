@@ -13,6 +13,7 @@ class HistoGroup
     HistoGroup(TString name, Int_t n=0, Float_t xmin=0, Float_t xmax=0);
     void Add(TH1F* h1,Float_t sc=1);
     void Add(TString hname,Float_t sc=1);
+    void Scale();
     void Save();
 
     // data
@@ -38,12 +39,6 @@ void HistoGroup::Add(TH1F* h1,Float_t sc) {
   assert(h1);
   hm_[h1->GetName()] = h1;
   scales_[h1->GetName()] = sc;
-
-  // now maked scaled histograms
-  TString nameSc(Form("%s_scaled",h1->GetName()));
-  TH1F * h2 = (TH1F*)h1->Clone(nameSc);
-  h2->Scale(sc);
-  hscm_[nameSc] = h2;
 }
 
 void HistoGroup::Add(TString hname,Float_t sc) {
@@ -60,6 +55,18 @@ void HistoGroup::Save()
   for (std::map<TString, TH1F*>::iterator 
       iter=hscm_.begin(); iter != hscm_.end(); ++iter) {
     iter->second->Write();
+  }
+}
+
+void HistoGroup::Scale()
+{
+  for (std::map<TString, TH1F*>::iterator 
+      iter=hm_.begin(); iter != hm_.end(); ++iter) {
+    // now maked scaled histograms
+    TString nameSc(Form("%s_scaled",iter->second->GetName()));
+    TH1F * h2 = (TH1F*)iter->second->Clone(nameSc.Data());
+    h2->Scale(scales_[iter->first]);
+    hscm_[nameSc] = h2;
   }
 }
 #endif
