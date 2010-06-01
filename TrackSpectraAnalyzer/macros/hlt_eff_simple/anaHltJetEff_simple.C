@@ -5,6 +5,7 @@
 #include "TH1F.h"
 #include "TChain.h"
 #include "TGraphAsymmErrors.h"
+#include "TCut.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/tgraphTools.C"
@@ -60,18 +61,13 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     hs1D["hJet0Pt_HltJet50U"] = new TH1F("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
-    /*
-    nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<2.5","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<2.5 && jet6 && jet>6","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet15U","abs(jeta)<2.5 && jet15 && jet>15","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet30U","abs(jeta)<2.5 && jet30 && jet>30","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet50U","abs(jeta)<2.5 && jet50 && jet>50","goff");
-    */
-    nt_jet->Draw("jet>>hJet0Pt","","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet6U","jet6 && jet>6","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet15U","jet15 && jet>15","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet30U","jet30 && jet>30","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltJet50U","jet50 && jet>50","goff");
+    TCut baseJetCut;
+    //TCut baseJetCut = "abs(jeta)<2.5";
+    nt_jet->Draw("jet>>hJet0Pt",baseJetCut,"goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet6U",baseJetCut&&"jet6 && jet>6","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet15U",baseJetCut&&"jet15 && jet>15","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet30U",baseJetCut&&"jet30 && jet>30","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet50U",baseJetCut&&"jet50 && jet>50","goff");
   }
 
 
