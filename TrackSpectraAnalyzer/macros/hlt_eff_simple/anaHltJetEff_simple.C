@@ -136,6 +136,8 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.Draw(pLower,false);
 
   // All done, save hists
+  cJetTurnOn->Print(Form("%s/cJetTurnOn.gif",outdir.Data()));
+  cJetTurnOn->Print(Form("%s/cJetTurnOn.pdf",outdir.Data()));
   TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
   for (map<TString, TH1F*>::iterator 
       iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
