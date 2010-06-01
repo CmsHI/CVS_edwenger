@@ -32,7 +32,14 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/anaspec.root"
   psTrigSpec.Add(inFile,"hSpec50U_scaled");
   psTrigSpec.Sum();
 
-  // Check
+  // Find spectra ratio of combined triggered spectra
+  // and all MB spectra
+  TH1F * hSpecRatio = (TH1F*)psTrigSpec.hSum_->Clone("hSpecRatio");
+  TH1F * hSpecMBHF_scaled = (TH1F*)inFile->FindObjectAny("hSpecMBHF_scaled");
+  hSpecRatio->Divide(hSpecRatio);
+
+  // Final plots
+  // Spectra comparison
   TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",500,500);
   CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
   cpPSTrigSpec.SetLogy(1);
@@ -47,6 +54,16 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/anaspec.root"
   cpPSTrigSpec.SetLegendHeader("Calojets |#eta|<2.5");
   cpPSTrigSpec.SetLegend(0.315,0.62,0.86,0.92);
   cpPSTrigSpec.Draw(cPSTrigSpec,true,"gif");
+
+  // Ratio Plot
+  TCanvas * cMBTrigSpecRatio = new TCanvas("cMBTrigSpecRatio","cMBTrigSpecRatio",500,500);
+  CPlot cpMBTrigSpecRatio("finalMBTrigSpecRatio","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
+  cpMBTrigSpecRatio.SetXRange(0,100);
+  cpMBTrigSpecRatio.SetYRange(0,1.1);
+  cpMBTrigSpecRatio.AddHist1D(hSpecRatio,"E",kViolet+2);
+  //cpMBTrigSpecRatio.SetLegendHeader("Calojets |#eta|<2.5");
+  //cpMBTrigSpecRatio.SetLegend(0.315,0.62,0.86,0.92);
+  cpMBTrigSpecRatio.Draw(cMBTrigSpecRatio,true,"gif");
   
   // All done, save hists
   gSystem->mkdir(outdir,true);
