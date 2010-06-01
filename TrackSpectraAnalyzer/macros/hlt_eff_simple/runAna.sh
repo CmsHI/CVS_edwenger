@@ -1,5 +1,5 @@
 #!/bin/bash -
-tag=V0531_v2
+tag=V0531_v3
 
 # use histo
 #inFile=$scratch/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v2_job3/all/trkhists_histOnly_all.root

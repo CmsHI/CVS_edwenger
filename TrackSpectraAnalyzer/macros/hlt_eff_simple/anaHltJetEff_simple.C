@@ -31,13 +31,11 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     TFile * inFile = new TFile(inFileName);
     TH1F *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
     hs1D["hJet0Pt"] = hJet0Pt;
-    hs1D["hJet0Pt_HltMB"] = hJet0Pt_HltMB;
     hs1D["hJet0Pt_HltJet6U"] = hJet0Pt_HltJet6U;
     hs1D["hJet0Pt_HltJet15U"] = hJet0Pt_HltJet15U;
     hs1D["hJet0Pt_HltJet30U"] = hJet0Pt_HltJet30U;
     hs1D["hJet0Pt_HltJet50U"] = hJet0Pt_HltJet50U;
     inFile->GetObject(histDir+"hJet0Pt",hs1D["hJet0Pt"]);
-    inFile->GetObject(histDir+"hJet0Pt_HltMB",hs1D["hJet0Pt_HltMB"]);
     inFile->GetObject(histDir+"hJet0Pt_HltJet6U",hs1D["hJet0Pt_HltJet6U"]);
     inFile->GetObject(histDir+"hJet0Pt_HltJet15U",hs1D["hJet0Pt_HltJet15U"]);
     inFile->GetObject(histDir+"hJet0Pt_HltJet30U",hs1D["hJet0Pt_HltJet30U"]);
@@ -57,7 +55,6 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     nt_jet->Add(inFileName);
     //nt_jet->Print();
     hs1D["hJet0Pt"] = new TH1F("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltMB"] = new TH1F("hJet0Pt_HltMB","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     hs1D["hJet0Pt_HltJet6U"] = new TH1F("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     hs1D["hJet0Pt_HltJet15U"] = new TH1F("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
@@ -65,14 +62,12 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
     /*
     nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<2.5","goff");
-    nt_jet->Draw("jet>>hJet0Pt_HltMB","abs(jeta)<2.5 && mb","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<2.5 && jet6 && jet>6","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet15U","abs(jeta)<2.5 && jet15 && jet>15","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet30U","abs(jeta)<2.5 && jet30 && jet>30","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet50U","abs(jeta)<2.5 && jet50 && jet>50","goff");
     */
     nt_jet->Draw("jet>>hJet0Pt","","goff");
-    //nt_jet->Draw("jet>>hJet0Pt_HltMB","mb","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet6U","jet6 && jet>6","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet15U","jet15 && jet>15","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet30U","jet30 && jet>30","goff");
@@ -86,7 +81,6 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
   cpJetPt.AddHist1D(hs1D["hJet0Pt"],"MB_HF","",kViolet+2);
-  //cpJetPt.AddHist1D(hs1D["hJet0Pt_HltMB"],"HLT_MinBiasBSC","",kBlue);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet6U"],"HLT_L1Jet6U","",kAzure+6);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet15U"],"HLT_Jet15U","",kGreen-3);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet30U"],"HLT_Jet30U","",kOrange-5);
@@ -97,13 +91,11 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
 
   // === HLT Eff Ana ===
   map<TString, TGraphAsymmErrors* > gAEs;
-  gAEs["gHltEff_HltMB"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet6U"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet15U"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet30U"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet50U"] = new TGraphAsymmErrors();
   // Calc Hlt Eff
-  gAEs["gHltEff_HltMB"]->BayesDivide(hs1D["hJet0Pt_HltMB"],hs1D["hJet0Pt"]);
   gAEs["gHltEff_HltJet6U"]->BayesDivide(hs1D["hJet0Pt_HltJet6U"],hs1D["hJet0Pt"]);
   gAEs["gHltEff_HltJet15U"]->BayesDivide(hs1D["hJet0Pt_HltJet15U"],hs1D["hJet0Pt_HltJet6U"]);
   gAEs["gHltEff_HltJet30U"]->BayesDivide(hs1D["hJet0Pt_HltJet30U"],hs1D["hJet0Pt_HltJet15U"]);
@@ -121,7 +113,6 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   CPlot cpHltEff("HltEff","Hlt Eff","p_{T}^{corr jet} [GeV/c]","#epsilon_{HLT}");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);
-  //cpHltEff.AddGraph(gAEs["gHltEff_HltMB"],"HLT_MinBiasBSC","pz",kBlue);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet6U"],"HLT_L1Jet6U","pz",kAzure+6);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
