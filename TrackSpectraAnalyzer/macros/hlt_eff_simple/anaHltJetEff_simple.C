@@ -115,6 +115,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kRed-2);
   cpHltEff.SetLegendHeader("Ak5 Calojets");
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
+  cpHltEff.ShowLegend(0);
   cpHltEff.Draw(cHltEff,true,"gif");
 
   // All done, save hists
