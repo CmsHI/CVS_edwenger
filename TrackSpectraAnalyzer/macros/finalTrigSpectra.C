@@ -17,7 +17,7 @@
 using namespace std;
 
 void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/anaspec.root",
-    TString outdir="plots/trigSpectra")
+    TString outdir="plots/trigSpectra/proc0531_v3")
 {
   CPlot::sOutDir = outdir;
   Float_t histJetEtMax = 300;
@@ -44,14 +44,14 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
   TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",500,500);
   CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
   cpPSTrigSpec.SetLogy(1);
-  cpPSTrigSpec.SetXRange(0,100);
-  cpPSTrigSpec.AddHist1D(inFile,"hSpecMBHF_scaled","MB_HF","histE",kBlack,kFullCircle,9);
+  cpPSTrigSpec.SetXRange(0,70);
+  cpPSTrigSpec.AddHist1D(inFile,"hSpecMBHF_scaled","MB_HF","E",kBlack,kFullCircle);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF leadingJet<34GeV","E",kViolet+2);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, 34GeV<leadingJet<46GeV","E",kAzure+6);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, 46GeV<leadingJet<78GeV","E",kGreen-3);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, 78GeV<leadingJet<98GeV","E",kOrange-5);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, 98GeV<leadingJet","E",kRed-2);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Combine Triggers","hist",kRed,0);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigSpec.SetLegendHeader("Ak5 Calojets");
   cpPSTrigSpec.SetLegend(0.315,0.62,0.86,0.92);
   cpPSTrigSpec.Draw(cPSTrigSpec,true,"gif");
@@ -59,11 +59,10 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
   // Ratio Plot
   TCanvas * cMBTrigSpecRatio = new TCanvas("cMBTrigSpecRatio","cMBTrigSpecRatio",500,500);
   CPlot cpMBTrigSpecRatio("finalMBTrigSpecRatio","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
-  cpMBTrigSpecRatio.SetXRange(0,100);
+  cpMBTrigSpecRatio.SetXRange(0,70);
   cpMBTrigSpecRatio.SetYRange(0,1.1);
-  cpMBTrigSpecRatio.AddHist1D(hSpecRatio,"E",kViolet+2);
-  //cpMBTrigSpecRatio.SetLegendHeader("Calojets |#eta|<2.5");
-  //cpMBTrigSpecRatio.SetLegend(0.315,0.62,0.86,0.92);
+  cpMBTrigSpecRatio.AddHist1D(hSpecRatio,"#frac{Triggered Classes Combined}{MB_HF}","E",kViolet+2);
+  cpMBTrigSpecRatio.SetLegend(0.18,0.18,0.72,0.36);
   cpMBTrigSpecRatio.Draw(cMBTrigSpecRatio,true,"gif");
   
   // All done, save hists
