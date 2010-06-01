@@ -41,20 +41,20 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
 
   // Final plots
   // Spectra comparison
-  TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",500,500);
+  TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",500,550);
   CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
   cpPSTrigSpec.SetLogy(1);
   cpPSTrigSpec.SetXRange(0,70);
   cpPSTrigSpec.AddHist1D(inFile,"hSpecMBHF_scaled","MB_HF","E",kBlack,kFullCircle);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF leadingJet<34GeV","E",kViolet+2);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, 34GeV<leadingJet<46GeV","E",kAzure+6);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, 46GeV<leadingJet<78GeV","E",kGreen-3);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, 78GeV<leadingJet<98GeV","E",kOrange-5);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, 98GeV<leadingJet","E",kRed-2);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 34GeV","E",kViolet+2);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, E_{T}^{jet1} = 34-46GeV","E",kAzure+6);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 46-78GeV","E",kGreen-3);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 78-98GeV","E",kOrange-5);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 98GeV","E",kRed-2);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigSpec.SetLegendHeader("Ak5 Calojets");
-  cpPSTrigSpec.SetLegend(0.315,0.62,0.86,0.92);
-  cpPSTrigSpec.Draw(cPSTrigSpec,true,"gif");
+  cpPSTrigSpec.SetLegend(0.373,0.577,0.917,0.925);
+  cpPSTrigSpec.Draw(cPSTrigSpec,true,"all");
 
   // Ratio Plot
   TCanvas * cMBTrigSpecRatio = new TCanvas("cMBTrigSpecRatio","cMBTrigSpecRatio",500,500);
