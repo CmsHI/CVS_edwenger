@@ -5,6 +5,7 @@
 #include <cassert>
 #include "TString.h"
 #include "TH1F.h"
+#include "TFile.h"
 
 class HistoGroup
 {
@@ -13,6 +14,7 @@ class HistoGroup
     HistoGroup(TString name, Int_t n=0, Float_t xmin=0, Float_t xmax=0);
     void Add(TH1F* h1,Float_t sc=1);
     void Add(TString hname,Float_t sc=1);
+    void Add(TFile * inFile, TString hname,Float_t sc=1);
     void Scale();
     void Save();
 
@@ -35,14 +37,24 @@ HistoGroup::HistoGroup(TString name, Int_t n, Float_t xmin, Float_t xmax) :
 {
 }
 
-void HistoGroup::Add(TH1F* h1,Float_t sc) {
+void HistoGroup::Add(TH1F* h1,Float_t sc)
+{
   assert(h1);
   hm_[h1->GetName()] = h1;
   scales_[h1->GetName()] = sc;
 }
 
-void HistoGroup::Add(TString hname,Float_t sc) {
+void HistoGroup::Add(TString hname,Float_t sc)
+{
   TH1F * h1 = new TH1F(hname,"",nbins_,xmin_,xmax_);
+  Add(h1,sc);
+}
+
+void HistoGroup::Add(TFile * inFile, TString hname,Float_t sc)
+{
+  assert(inFile);
+  TH1F * h1;
+  inFile->GetObject(hname.Data(),h1);
   Add(h1,sc);
 }
 
