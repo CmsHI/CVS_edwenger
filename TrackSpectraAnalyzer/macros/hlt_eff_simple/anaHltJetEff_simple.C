@@ -22,6 +22,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   CPlot::sOutDir = outdir;
   Float_t histJetEtMax = 300;
   Int_t numPtBins=75;
+  TH1::SetDefaultSumw2();
 
   map<TString, TH1F* > hs1D;
   // === Checks ===
@@ -62,12 +63,20 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     hs1D["hJet0Pt_HltJet50U"] = new TH1F("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
+    /*
     nt_jet->Draw("jet>>hJet0Pt","abs(jeta)<2.5","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltMB","abs(jeta)<2.5 && mb","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet6U","abs(jeta)<2.5 && jet6 && jet>6","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet15U","abs(jeta)<2.5 && jet15 && jet>15","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet30U","abs(jeta)<2.5 && jet30 && jet>30","goff");
     nt_jet->Draw("jet>>hJet0Pt_HltJet50U","abs(jeta)<2.5 && jet50 && jet>50","goff");
+    */
+    nt_jet->Draw("jet>>hJet0Pt","","goff");
+    //nt_jet->Draw("jet>>hJet0Pt_HltMB","mb","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet6U","jet6 && jet>6","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet15U","jet15 && jet>15","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet30U","jet30 && jet>30","goff");
+    nt_jet->Draw("jet>>hJet0Pt_HltJet50U","jet50 && jet>50","goff");
   }
 
 
@@ -76,13 +85,14 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
-  cpJetPt.AddHist1D(hs1D["hJet0Pt"],"BSC_OR+BPTX+HF_Coinc.","",kViolet+2);
+  cpJetPt.AddHist1D(hs1D["hJet0Pt"],"MB_HF","",kViolet+2);
   //cpJetPt.AddHist1D(hs1D["hJet0Pt_HltMB"],"HLT_MinBiasBSC","",kBlue);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet6U"],"HLT_L1Jet6U","",kAzure+6);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet15U"],"HLT_Jet15U","",kGreen-3);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet30U"],"HLT_Jet30U","",kOrange-5);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet50U"],"HLT_Jet50U","",kRed-2);
-  cpJetPt.SetLegendHeader("Calojets |#eta|<2.5");
+  //cpJetPt.SetLegendHeader("Ak5 Calojets |#eta|<2.5");
+  cpJetPt.SetLegendHeader("Ak5 Calojets");
   cpJetPt.Draw(cJetPt,true,"gif");
 
   // === HLT Eff Ana ===
@@ -116,7 +126,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kRed-2);
-  cpHltEff.SetLegendHeader("Calojets |#eta|<2.5");
+  cpHltEff.SetLegendHeader("Ak5 Calojets");
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.Draw(cHltEff,true,"gif");
 
