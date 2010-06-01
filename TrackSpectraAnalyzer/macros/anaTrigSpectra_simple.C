@@ -34,9 +34,9 @@ Double_t GetEffJetPt(TGraph *eff, Double_t minEff)
   return  minpt;
 }
 
-void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V0531_histFromNt/anahlt.root",
-    const char * ntFiles = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/trkhists_9*.root",
-    TString outdir="plots/trigSpectra",
+void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V0531_v3_fromNt/anahlt.root",
+    const char * ntFiles = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root",
+    TString outdir="plots/trigSpectra/proc0531_v3",
     TString histDir = "trackAna/")
 {
   CPlot::sOutDir = outdir;
