@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.7 2010/05/28 17:02:32 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.9 2010/05/31 20:30:47 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -182,20 +182,22 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenMultDD_AGR->Fill(nGEN_AGR);
       hGenMultNSD_AGR->Fill(nGEN_AGR);
       
-      hGenRecMultNSD->Fill(nREC_STD);
+      hGenRecMultNSD->Fill(nREC);
       hGenRecMultNSD_STD->Fill(nREC_STD);
-      hGenRecMultNSD_SPEC->Fill(nREC_STD);
-      hGenRecMultNSD_AGR->Fill(nREC_STD);
+      hGenRecMultNSD_SPEC->Fill(nREC_SPEC);
+      hGenRecMultNSD_AGR->Fill(nREC_AGR);
       break;
     case 92:
     case 93:
       hGenMultSD->Fill(nGEN);
-
       hGenMultSD_STD->Fill(nGEN_STD);
-
       hGenMultSD_SPEC->Fill(nGEN_SPEC);
-
       hGenMultSD_AGR->Fill(nGEN_AGR);
+
+      hGenRecMultSD->Fill(nREC);
+      hGenRecMultSD_STD->Fill(nREC_STD);
+      hGenRecMultSD_SPEC->Fill(nREC_SPEC);
+      hGenRecMultSD_AGR->Fill(nREC_AGR);
       break;
     case 11:
     case 12:
@@ -216,10 +218,10 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenMultND_AGR->Fill(nGEN_AGR);
       hGenMultNSD_AGR->Fill(nGEN_AGR);
 
-      hGenRecMultNSD->Fill(nREC_STD);
+      hGenRecMultNSD->Fill(nREC);
       hGenRecMultNSD_STD->Fill(nREC_STD);
-      hGenRecMultNSD_SPEC->Fill(nREC_STD);
-      hGenRecMultNSD_AGR->Fill(nREC_STD);
+      hGenRecMultNSD_SPEC->Fill(nREC_SPEC);
+      hGenRecMultNSD_AGR->Fill(nREC_AGR);
       break;
     default:
       edm::LogWarning("EvtSelAnalyzer") 
@@ -289,6 +291,13 @@ EvtSelAnalyzer::beginJob()
     hGenRecMultNSD_STD = f->make<TH1D>("hGenRecMultNSD_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
     hGenRecMultNSD_SPEC = f->make<TH1D>("hGenRecMultNSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
     hGenRecMultNSD_AGR = f->make<TH1D>("hGenRecMultNSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+
+    hGenRecMultSD = f->make<TH1D>("hGenRecMultSD","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenRecMultSD_STD = f->make<TH1D>("hGenRecMultSD_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenRecMultSD_SPEC = f->make<TH1D>("hGenRecMultSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenRecMultSD_AGR = f->make<TH1D>("hGenRecMultSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+
+
   }
 
 }
