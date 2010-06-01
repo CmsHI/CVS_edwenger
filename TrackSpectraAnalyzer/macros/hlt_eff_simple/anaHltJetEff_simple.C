@@ -71,7 +71,22 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   }
 
 
+  // ===Plotting Pad ===
+  TCanvas * cJetTurnOn = new TCanvas("cJetTurnOn","cJetTurnOn",510,640);
+  cJetTurnOn->cd();
+  TPad * pUpper = new TPad("pUpper","pUpper",0,0,1,0.34,0,0,0);
+  pUpper->SetBottomMargin(0);
+  pUpper->SetTopMargin(0.05*(1./0.72));
+  pUpper->Draw();
+  cJetTurnOn->cd();
+  TPad * pLower = new TPad("pLower","pLower",0,0,1,0.34,0,0,0);
+  pLower->SetTopMargin(0);
+  pLower->SetBottomMargin(0.14*(1./0.34));
+  pLower->Draw();
+
   // === Begin Ana ===
+  pUpper->cd();
+  pUpper->SetLogy();
   TCanvas * cJetPt = new TCanvas("cJetPt","cJetPt",500,500);
   CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
   cpJetPt.SetLogy(1);
