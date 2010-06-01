@@ -41,7 +41,7 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
 
   // Final plots
   // Spectra comparison
-  TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",500,550);
+  TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",510,640);
   CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
   cpPSTrigSpec.SetLogy(1);
   cpPSTrigSpec.SetXRange(0,70);
