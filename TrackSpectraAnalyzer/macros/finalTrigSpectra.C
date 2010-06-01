@@ -23,6 +23,7 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/anaspec.root"
   Float_t histJetEtMax = 300;
   Int_t numPtBins=75;
   TFile * inFile = new TFile(inFileName);
+  TH1::SetDefaultSumw2();
 
   HistoGroup psTrigSpec("scTrigSpec");
   psTrigSpec.Add(inFile,"hSpecMBJet_scaled");

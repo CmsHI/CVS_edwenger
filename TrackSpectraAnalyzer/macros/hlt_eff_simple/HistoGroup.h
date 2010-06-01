@@ -39,6 +39,7 @@ HistoGroup::HistoGroup(TString name, Int_t n, Float_t xmin, Float_t xmax) :
   xmin_(xmin),
   xmax_(xmax)
 {
+  TH1::SetDefaultSumw2();
 }
 
 void HistoGroup::Add(TH1F* h1,Float_t sc)

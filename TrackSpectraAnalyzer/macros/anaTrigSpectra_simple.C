@@ -43,6 +43,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   Float_t histJetEtMax = 300;
   Int_t numPtBins=75;
   TFile * inFile = new TFile(inFileName);
+  TH1::SetDefaultSumw2();
 
   TGraphAsymmErrors *gHltEff_HltJet6U, *gHltEff_HltJet15U, *gHltEff_HltJet30U, *gHltEff_HltJet50U;
   inFile->GetObject("gHltEff_HltJet6U",gHltEff_HltJet6U);
