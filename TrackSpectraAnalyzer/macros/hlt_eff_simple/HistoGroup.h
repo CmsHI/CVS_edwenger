@@ -15,18 +15,22 @@ class HistoGroup
     void Add(TH1F* h1,Float_t sc=1);
     void Add(TString hname,Float_t sc=1);
     void Add(TFile * inFile, TString hname,Float_t sc=1);
-    void Scale();
     void Save();
+    void Scale();
+    TH1F * Sum();
 
     // data
     TString name_;
     std::map<TString,TH1F*> hm_;
     std::map<TString,TH1F*> hscm_;
     std::map<TString,Float_t> scales_;
-    // histo properties
+    // group properties
     Int_t nbins_;
     Float_t xmin_;
     Float_t xmax_;
+
+    // group relations
+    TH1F * hSum_;
 };
 
 HistoGroup::HistoGroup(TString name, Int_t n, Float_t xmin, Float_t xmax) :
@@ -80,5 +84,17 @@ void HistoGroup::Scale()
     h2->Scale(scales_[iter->first]);
     hscm_[nameSc] = h2;
   }
+}
+
+TH1F * HistoGroup::Sum()
+{
+  for (std::map<TString, TH1F*>::iterator 
+      iter=hm_.begin(); iter != hm_.end(); ++iter) {
+    if (iter==hm_.begin()) {
+      hSum_ = (TH1F*)iter->second->Clone(name_+"_Sum");
+    }
+    hSum_->Add(iter->second);
+  }
+  return hSum_;
 }
 #endif
