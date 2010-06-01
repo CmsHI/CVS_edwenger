@@ -92,8 +92,11 @@ TH1F * HistoGroup::Sum()
       iter=hm_.begin(); iter != hm_.end(); ++iter) {
     if (iter==hm_.begin()) {
       hSum_ = (TH1F*)iter->second->Clone(name_+"_Sum");
+      cout << "first to add: " << iter->first << endl;
+    } else {
+      cout << "add more: " << iter->first << endl;
+      hSum_->Add(iter->second);
     }
-    hSum_->Add(iter->second);
   }
   return hSum_;
 }
