@@ -76,14 +76,13 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cJetTurnOn->cd();
   TPad * pUpper = new TPad("pUpper","pUpper",0,0.34,1,1,0,0,0);
   pUpper->SetBottomMargin(0);
-  pUpper->SetTopMargin(0.05*(1./0.72));
   pUpper->Draw();
   pUpper->cd();
   pUpper->SetNumber(1);
   cJetTurnOn->cd();
   TPad * pLower = new TPad("pLower","pLower",0,0,1,0.34,0,0,0);
   pLower->SetTopMargin(0);
-  pLower->SetBottomMargin(0.14*(1./0.34));
+  pLower->SetBottomMargin(0.1*(1./0.34));
   pLower->Draw();
   pLower->cd();
   pLower->SetNumber(2);
@@ -100,6 +99,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet50U"],"HLT_Jet50U","",kRed-2);
   //cpJetPt.SetLegendHeader("Ak5 Calojets |#eta|<2.5");
   cpJetPt.SetLegendHeader("Ak5 Calojets");
+  cpJetPt.SetAxisLabeling(15,63,18,63,4,2);
   cpJetPt.Draw(pUpper,false);
 
   // === HLT Eff Ana ===
@@ -133,6 +133,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.SetLegendHeader("Ak5 Calojets");
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.ShowLegend(0);
+  cpHltEff.SetAxisLabeling(15,63,18,63,4,2);
   cpHltEff.Draw(pLower,false);
 
   // All done, save hists
