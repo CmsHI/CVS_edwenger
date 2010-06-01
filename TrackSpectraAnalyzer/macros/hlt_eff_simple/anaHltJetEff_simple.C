@@ -74,20 +74,22 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   // ===Plotting Pad ===
   TCanvas * cJetTurnOn = new TCanvas("cJetTurnOn","cJetTurnOn",510,640);
   cJetTurnOn->cd();
-  TPad * pUpper = new TPad("pUpper","pUpper",0,0,1,0.34,0,0,0);
+  TPad * pUpper = new TPad("pUpper","pUpper",0,0.34,1,1,0,0,0);
   pUpper->SetBottomMargin(0);
   pUpper->SetTopMargin(0.05*(1./0.72));
   pUpper->Draw();
+  pUpper->cd();
+  pUpper->SetNumber(1);
   cJetTurnOn->cd();
   TPad * pLower = new TPad("pLower","pLower",0,0,1,0.34,0,0,0);
   pLower->SetTopMargin(0);
   pLower->SetBottomMargin(0.14*(1./0.34));
   pLower->Draw();
+  pLower->cd();
+  pLower->SetNumber(2);
 
   // === Begin Ana ===
   pUpper->cd();
-  pUpper->SetLogy();
-  TCanvas * cJetPt = new TCanvas("cJetPt","cJetPt",500,500);
   CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
@@ -98,7 +100,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet50U"],"HLT_Jet50U","",kRed-2);
   //cpJetPt.SetLegendHeader("Ak5 Calojets |#eta|<2.5");
   cpJetPt.SetLegendHeader("Ak5 Calojets");
-  cpJetPt.Draw(cJetPt,true,"gif");
+  cpJetPt.Draw(pUpper,false);
 
   // === HLT Eff Ana ===
   map<TString, TGraphAsymmErrors* > gAEs;
@@ -120,7 +122,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     clearXErrorBar(ig->second);
   }
 
-  TCanvas * cHltEff = new TCanvas("cHltEff","cHltEff",500,500);
+  pLower->cd();
   CPlot cpHltEff("HltEff","Hlt Eff","p_{T}^{corr jet} [GeV/c]","#epsilon_{HLT}");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);
@@ -131,7 +133,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.SetLegendHeader("Ak5 Calojets");
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.ShowLegend(0);
-  cpHltEff.Draw(cHltEff,true,"gif");
+  cpHltEff.Draw(pLower,false);
 
   // All done, save hists
   TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
