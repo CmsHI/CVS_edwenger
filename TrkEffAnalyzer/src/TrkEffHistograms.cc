@@ -113,6 +113,11 @@ TrkEffHistograms::declareHistograms()
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
+    // non-primary
+    hsec = f->make<TH2F>("hsec","Non-Primary Tracks;#eta;p_{T} (GeV/c)",
+		    etaBins.size()-1, &etaBins[0],
+		    ptBins.size()-1, &ptBins[0]);
+
     // simulated 3D 
     hsim3D = f->make<TH3F>("hsim3D","Sim Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
                       etaBins.size()-1, &etaBins[0],
@@ -172,6 +177,7 @@ TrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
     hrec->Fill(r.etar, r.ptr);
     hrec3D->Fill(r.etar, r.ptr, r.jetr);
     if(!r.nsim) hfak->Fill(r.etar, r.ptr), hfak3D->Fill(r.etar, r.ptr, r.jetr);
+    if(r.nsim==1 && r.status<1) hsec->Fill(r.etar, r.ptr);
   }
 
 }

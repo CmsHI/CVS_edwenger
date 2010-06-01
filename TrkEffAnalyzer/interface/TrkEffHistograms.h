@@ -92,6 +92,7 @@ class TrkEffHistograms
    // RecTrack
    TH2F* hrec;
    TH2F* hfak;
+   TH2F* hsec;
    
    TH3F* hrec3D;
    TH3F* hfak3D;
