@@ -52,7 +52,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
       iter->second->Rebin(ngroups);
     }
   } else {
-    TChain * nt_jet = new TChain("trackAna/nt_jet","ntuple: jets");
+    TChain * nt_jet = new TChain(histDir+"nt_jet","ntuple: jets");
     nt_jet->Add(inFileName);
     //nt_jet->Print();
     hs1D["hJet0Pt"] = new TH1F("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
@@ -137,6 +137,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.Draw(pLower,false);
 
   // All done, save hists
+  gSystem->mkdir(outdir.Data());
   cJetTurnOn->Print(Form("%s/cJetTurnOn.gif",outdir.Data()));
   cJetTurnOn->Print(Form("%s/cJetTurnOn.pdf",outdir.Data()));
   TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
