@@ -68,7 +68,7 @@ TrkEffHistograms::declareHistograms()
     // eta bins
     static float etaMin   = -3.0;
     static float etaMax   =  3.0;
-    static float etaWidth =  0.1;
+    static float etaWidth =  0.2;
 
     for(double eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
       etaBins.push_back(eta);
@@ -76,7 +76,7 @@ TrkEffHistograms::declareHistograms()
 
     // jet et bins
     static float jetMin = 0.0;
-    static float jetMax = 600; // good to be matched with ana 
+    static float jetMax = 1200; // good to be matched with ana 
     static float jetWidth = 20;
 
     for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
@@ -113,10 +113,11 @@ TrkEffHistograms::declareHistograms()
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
-    // non-primary
-    hsec = f->make<TH2F>("hsec","Non-Primary Tracks;#eta;p_{T} (GeV/c)",
-		    etaBins.size()-1, &etaBins[0],
-		    ptBins.size()-1, &ptBins[0]);
+    // secondary
+    hsec = f->make<TH2F>("hsec","Secondary Tracks;#eta;p_{T} (GeV/c)",
+			 etaBins.size()-1, &etaBins[0],
+			 ptBins.size()-1, &ptBins[0]);
+    
 
     // simulated 3D 
     hsim3D = f->make<TH3F>("hsim3D","Sim Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
@@ -124,11 +125,18 @@ TrkEffHistograms::declareHistograms()
                       ptBins.size()-1, &ptBins[0],
                       jetBins.size()-1, &jetBins[0]);
 
-    // efficiency   3D 
+    // efficiency  3D 
     heff3D = f->make<TH3F>("heff3D","Effic Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
                       etaBins.size()-1, &etaBins[0],
                       ptBins.size()-1, &ptBins[0],
                       jetBins.size()-1, &jetBins[0]);
+
+    // multiply reconstructed 3D 
+    hmul3D = f->make<TH3F>("hmul3D","Mult Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+                           etaBins.size()-1, &etaBins[0],
+                           ptBins.size()-1, &ptBins[0],
+                           jetBins.size()-1, &jetBins[0]);
+
 
     // reconstructed 3D 
     hrec3D = f->make<TH3F>("hrec3D","Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
@@ -141,6 +149,12 @@ TrkEffHistograms::declareHistograms()
                       etaBins.size()-1, &etaBins[0],
                       ptBins.size()-1, &ptBins[0],
                       jetBins.size()-1, &jetBins[0]);
+
+    // secondary
+    hsec3D = f->make<TH3F>("hsec3D","Secondary Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+			   etaBins.size()-1, &etaBins[0],
+			   ptBins.size()-1, &ptBins[0],
+			   jetBins.size()-1, &jetBins[0]);
   }
 
 }
@@ -159,7 +173,7 @@ TrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
     hsim3D->Fill(s.etas, s.pts, s.jetr);
     if(s.acc)    hacc->Fill(s.etas, s.pts);
     if(s.nrec>0) heff->Fill(s.etas, s.pts), heff3D->Fill(s.etas, s.pts, s.jetr);
-    if(s.nrec>1) hmul->Fill(s.etas, s.pts);
+    if(s.nrec>1) hmul->Fill(s.etas, s.pts), hmul3D->Fill(s.etas, s.pts, s.jetr);
   }
 
 }
@@ -177,7 +191,7 @@ TrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
     hrec->Fill(r.etar, r.ptr);
     hrec3D->Fill(r.etar, r.ptr, r.jetr);
     if(!r.nsim) hfak->Fill(r.etar, r.ptr), hfak3D->Fill(r.etar, r.ptr, r.jetr);
-    if(r.nsim==1 && r.status<1) hsec->Fill(r.etar, r.ptr);
+    if(r.nsim>0 && r.status<0) hsec->Fill(r.etar, r.ptr), hsec3D->Fill(r.etar, r.ptr, r.jetr); // nsim>0 redudant?
   }
 
 }
