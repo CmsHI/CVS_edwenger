@@ -43,7 +43,7 @@ trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               evtEffCorrType=cms.untracked.int32(0),
                               evtSelEffv = cms.untracked.vdouble(20,0,0,0.00083682,0.0331934,0.218967,0.461346,0.652913,0.79913,0.939804,
                                                                  0.981668,0.992803,1.00635,1.01619,1.00576,0.991106,0.997151,0.989709,0.989865,0.991269,0.987993),
-                              evtSelEffCut = cms.untracked.double(0.01))
+                              evtSelEffCut = cms.untracked.double(0.04))
 
 
 
