@@ -1,5 +1,0 @@
-=== Examples ===
-- from dir
-  listDuplicates.sh /pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c | sort |uniq
-- from list
-  listDuplicates.sh log/pub_files.txt 1 trkAnaSkimAOD | sort | uniq
