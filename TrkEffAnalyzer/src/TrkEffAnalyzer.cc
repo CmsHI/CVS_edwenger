@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.12 2010/05/13 19:44:54 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.13 2010/05/20 15:50:40 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -377,7 +377,9 @@ TrkEffAnalyzer::isAccepted(TrackingParticle & tp)
       (f[BPix2] && f[FPix1_pos]) ||
       (f[BPix2] && f[FPix1_neg]) ||
       (f[BPix2] && f[FPix2_pos]) ||
-      (f[BPix2] && f[FPix2_neg]) );
+      (f[BPix2] && f[FPix2_neg]) ||
+      (f[FPix2_neg] && f[FPix2_neg]) ||
+      (f[FPix2_pos] && f[FPix2_pos]) );
 
   return std::pair<bool,bool>(canBeTriplet, canBePair);
 }
