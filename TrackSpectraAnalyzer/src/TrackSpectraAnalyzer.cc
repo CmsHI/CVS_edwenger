@@ -157,10 +157,10 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 							 accept[0],accept[1],accept[2],accept[3],accept[4]); 
 	    
 	    hTrkPtEta->Fill(trk.eta(),trk.pt(),1./evt_sel_eff);
-	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),1./evt_sel_eff);
+	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
 	    
 	    if(includeExtra_) {
-	       //hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(evt_sel_corr/trk.pt())); // weighted by pT
+	       hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(evt_sel_corr/trk.pt())); // weighted by pT
 	       if(mult==1) hTrkPtEtaJetEt_mult1->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
 	       if(mult==2) hTrkPtEtaJetEt_mult2->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
 	       if(mult==3) hTrkPtEtaJetEt_mult3->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
@@ -266,8 +266,8 @@ TrackSpectraAnalyzer::beginJob()
       if(includeExtra_) {
 	 hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
 	 hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
-	 //hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-	 //				     50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+	 				     50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEt_mult1 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult1","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEt_mult2 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult2","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
