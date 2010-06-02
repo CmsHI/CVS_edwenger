@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.30 2010/05/31 20:30:19 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.34 2010/06/02 09:28:38 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -57,7 +57,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
    if(!pureGENmode_){  // if pure GEN, skip through to the GEN ana part
 
-      float nevt = 1.0;
+     //float nevt = 1.0; // comment out unused variable (EAW)
       
       // get hlt bit
       Handle<edm::TriggerResults> triggerResults;
