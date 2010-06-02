@@ -137,7 +137,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.Draw(pLower,false);
 
   // All done, save hists
-  gSystem->mkdir(outdir.Data());
+  gSystem->mkdir(outdir.Data(),true);
   cJetTurnOn->Print(Form("%s/cJetTurnOn.gif",outdir.Data()));
   cJetTurnOn->Print(Form("%s/cJetTurnOn.pdf",outdir.Data()));
   TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
