@@ -3,7 +3,7 @@ tag=V0531_v5
 
 # === First Get the HLT Turn-on ===
 # use nt
-effNtAnaInFile=$scratch'/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_9*.root'
+effNtAnaInFile=$scratch'/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root'
 effNtAnaOutDir=plots/$tag/ntHltEff
 root -b -q anaHltJetEff_simple.C+\(\"$effNtAnaInFile\",\"$effNtAnaOutDir\",false,\"trackAna/\"\)
 
