@@ -256,33 +256,33 @@ TrackSpectraAnalyzer::beginJob()
 
       if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
       hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
-      hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);
+      hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",25, -2.5, 2.5, 1000, 0.0, 200.0);
       
       // memory consumption limits the number of bins...
       hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-					 50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
+					 25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
       hTrkPtEtaJetEt->Sumw2();
 
       if(includeExtra_) {
 	 hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
 	 hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
 	 hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-	 				     50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 				     25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEt_mult1 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult1","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+						  25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEt_mult2 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult2","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-                                                  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+                                                  25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEt_mult3 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult3","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-                                                  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+                                                  25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       }
       hTrkPtEtaJetEt_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						  50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+						  25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       hTrkPtEtaJetEt_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
+						   25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
       hTrkPtEtaJetEt_HltJet30U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet30U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+						   25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       hTrkPtEtaJetEt_HltJet50U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet50U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+						   25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       
       if(doJet_) {
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
@@ -301,9 +301,9 @@ TrackSpectraAnalyzer::beginJob()
       hGenNevt = fs->make<TH1F>("hGenNevt","evt sel eff", 51, -0.01, 1.01);
       
       if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
-      hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",50, -2.5, 2.5, 1000, 0.0, 200.0);
+      hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)",25, -2.5, 2.5, 1000, 0.0, 200.0);
       hGenTrkPtEtaJetEt = subDir.make<TH3F>("hGenTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-					    50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+					    25, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       //if(includeExtra_) hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
       //50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
    }
