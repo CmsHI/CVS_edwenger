@@ -37,7 +37,7 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
   // and all MB spectra
   TH1F * hSpecRatio = (TH1F*)psTrigSpec.hSum_->Clone("hSpecRatio");
   TH1F * hSpecMBHF_scaled = (TH1F*)inFile->FindObjectAny("hSpecMBHF_scaled");
-  hSpecRatio->Divide(hSpecRatio);
+  hSpecRatio->Divide(hSpecMBHF_scaled);
 
   // Final plots
   // Spectra comparison
