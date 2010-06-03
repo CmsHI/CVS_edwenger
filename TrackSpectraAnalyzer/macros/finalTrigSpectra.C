@@ -9,7 +9,7 @@
 #include "TSystem.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
-#include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HistoGroup.h"
+#include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HisGroup.h"
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/tgraphTools.C"
 
 #include <map>
@@ -25,7 +25,7 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
   TFile * inFile = new TFile(inFileName);
   TH1::SetDefaultSumw2();
 
-  HistoGroup psTrigSpec("scTrigSpec");
+  HisGroup psTrigSpec("scTrigSpec");
   psTrigSpec.Add(inFile,"hSpecMBJet_scaled");
   psTrigSpec.Add(inFile,"hSpec6U_scaled");
   psTrigSpec.Add(inFile,"hSpec15U_scaled");

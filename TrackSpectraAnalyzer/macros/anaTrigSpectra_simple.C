@@ -9,7 +9,7 @@
 #include "TSystem.h"
 
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/CPlot.h"           // helper class for plots
-#include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HistoGroup.h"
+#include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/HisGroup.h"
 #include "edwenger/TrackSpectraAnalyzer/macros/hlt_eff_simple/tgraphTools.C"
 
 #include <map>
@@ -85,7 +85,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   TChain * nt_jettrk = new TChain(histDir+"nt_jettrack","ntuple: jets and tracks");
   nt_jettrk->Add(ntFiles);
   cout << "Ana: " << histDir << "nt_jettrack: " << nt_jettrk->GetEntries() << " tracks" << endl;;
-  HistoGroup trigSpec("trigSpec",100,0,100);
+  HisGroup trigSpec("trigSpec",100,0,100);
   trigSpec.Add("hSpecMBHF",1);
   trigSpec.Add("hSpecMBJet",1);
   trigSpec.Add("hSpec6U",1);
