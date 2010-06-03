@@ -42,3 +42,11 @@ def enableAOD(process):
     process.extraReco.remove(process.trackRefit)
     #process.analysisSeq.remove(process.refitTrackAna)
     return process
+
+
+### this is for selecting jet events instead of prescaled MB
+def enableHLTJet15U(process):
+    process.eventFilter.remove(process.bscOrBptxOr)
+    process.hltJets.HLTPaths = ['HLT_Jet15U']
+    process.eventFilter *= process.hltJets
+    return process
