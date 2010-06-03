@@ -5,3 +5,23 @@
   listDuplicates.sh log/pub_files.txt 1 trkAnaSkimAOD | sort | uniq
 - check files against pub list
   * for i in `ls *.root | sed 's/trkhists_//'`; do grep -q $i log/pub_aod_list.txt; if [ $? -ne 0 ]; then echo "mv trkhists_$i not_pub"; fi; done
+
+=== Example Cleaning Steps ===
+../scripts/listDuplicates.sh . | sort | uniq > log/duplicates.txt
+cat log/duplicates.txt | sed 's/^/rm /'
+cat log/duplicates.txt | sed 's/^/rm /' | bash +x
+for i in `find . -size -10 | grep AOD.*root$`; do ll $i; done
+mkdir bad
+for i in `find . -size -10 | grep AOD.*root$`; do mv $i bad/; done
+../scripts/listBadFiles.sh log
+cat log/badFileList.txt
+../scripts/cleanBadFiles.sh log/badFileList.txt
+../scripts/checkRootFileList.sh .
+cat log/corruptRootFiles.txt
+for i in `ls *.root | sed 's/trkhists_//'`; do grep $i log/pub_aod_list.txt; done > log/in_pub_aod_list.txt
+mkdir not_pub
+for i in `ls *.root | sed 's/trkhists_//'`; do grep -q $i log/pub_aod_list.txt; if [ $? -ne 0 ]; then echo "mv trkhists_$i not_pub"; fi; done | bash +x
+
+# finished cleaning now merge
+mkdir all
+hadd -T trkhists_histOnly_all.root trkhists_trkAnaSkimAOD_*.root
