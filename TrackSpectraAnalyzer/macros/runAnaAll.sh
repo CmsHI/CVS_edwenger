@@ -1,5 +1,5 @@
 #!/bin/bash -
-tag=V0531_v5
+tag=V0531_v6
 
 # === First Get the HLT Turn-on ===
 # use nt

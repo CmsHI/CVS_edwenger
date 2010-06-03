@@ -2,7 +2,7 @@
 #include <TStyle.h>                  // class to handle plot styles in ROOT
 #include "TFile.h"
 #include "TCanvas.h"
-#include "TH1F.h"
+#include "TH1D.h"
 #include "TChain.h"
 #include "TGraphAsymmErrors.h"
 #include "TCut.h"
@@ -25,12 +25,12 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   Int_t numPtBins=75;
   TH1::SetDefaultSumw2();
 
-  map<TString, TH1F* > hs1D;
+  map<TString, TH1D* > hs1D;
   // === Checks ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
     TFile * inFile = new TFile(inFileName);
-    TH1F *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
+    TH1D *hJet0Pt,*hJet0Pt_HltMB,*hJet0Pt_HltJet6U,*hJet0Pt_HltJet15U,*hJet0Pt_HltJet30U,*hJet0Pt_HltJet50U;
     hs1D["hJet0Pt"] = hJet0Pt;
     hs1D["hJet0Pt_HltJet6U"] = hJet0Pt_HltJet6U;
     hs1D["hJet0Pt_HltJet15U"] = hJet0Pt_HltJet15U;
@@ -43,7 +43,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     inFile->GetObject(histDir+"hJet0Pt_HltJet50U",hs1D["hJet0Pt_HltJet50U"]);
 
     Int_t ngroups = reBinFactor; // 1-->0.5GeV per bin
-    map<TString, TH1F*>::iterator iter;
+    map<TString, TH1D*>::iterator iter;
     for (iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
       // check
       assert(iter->second);
@@ -55,11 +55,11 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
     TChain * nt_jet = new TChain(histDir+"nt_jet","ntuple: jets");
     nt_jet->Add(inFileName);
     //nt_jet->Print();
-    hs1D["hJet0Pt"] = new TH1F("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet6U"] = new TH1F("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet15U"] = new TH1F("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet30U"] = new TH1F("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet50U"] = new TH1F("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt"] = new TH1D("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet6U"] = new TH1D("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet15U"] = new TH1D("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet30U"] = new TH1D("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet50U"] = new TH1D("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
     TCut baseJetCut;
     //TCut baseJetCut = "abs(jeta)<2.5";
@@ -141,7 +141,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cJetTurnOn->Print(Form("%s/cJetTurnOn.gif",outdir.Data()));
   cJetTurnOn->Print(Form("%s/cJetTurnOn.pdf",outdir.Data()));
   TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
-  for (map<TString, TH1F*>::iterator 
+  for (map<TString, TH1D*>::iterator 
       iter=hs1D.begin(); iter != hs1D.end(); ++iter) {
     iter->second->Write();
   }

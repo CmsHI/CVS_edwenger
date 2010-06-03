@@ -2,7 +2,7 @@
 #include <TStyle.h>                  // class to handle plot styles in ROOT
 #include "TFile.h"
 #include "TCanvas.h"
-#include "TH1F.h"
+#include "TH1D.h"
 #include "TChain.h"
 #include "TGraphAsymmErrors.h"
 #include "TCut.h"

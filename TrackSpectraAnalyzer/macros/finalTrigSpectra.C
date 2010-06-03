@@ -2,7 +2,7 @@
 #include <TStyle.h>                  // class to handle plot styles in ROOT
 #include "TFile.h"
 #include "TCanvas.h"
-#include "TH1F.h"
+#include "TH1D.h"
 #include "TChain.h"
 #include "TGraphAsymmErrors.h"
 #include "TCut.h"
@@ -35,8 +35,8 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
 
   // Find spectra ratio of combined triggered spectra
   // and all MB spectra
-  TH1F * hSpecRatio = (TH1F*)psTrigSpec.hSum_->Clone("hSpecRatio");
-  TH1F * hSpecMBHF_scaled = (TH1F*)inFile->FindObjectAny("hSpecMBHF_scaled");
+  TH1D * hSpecRatio = (TH1D*)psTrigSpec.hSum_->Clone("hSpecRatio");
+  TH1D * hSpecMBHF_scaled = (TH1D*)inFile->FindObjectAny("hSpecMBHF_scaled");
   hSpecRatio->Divide(hSpecMBHF_scaled);
 
   // Final plots
