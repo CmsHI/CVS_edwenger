@@ -26,8 +26,12 @@ def enableREDIGI(process):
     process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     return process
 
 
