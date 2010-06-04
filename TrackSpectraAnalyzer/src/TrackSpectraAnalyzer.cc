@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.36 2010/06/03 17:07:54 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.37 2010/06/04 10:16:34 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -249,7 +249,7 @@ TrackSpectraAnalyzer::beginJob()
    double xmax = 299.5;
 
    float etaHistMax = 2.4;
-   int nbinsEta = 25;
+   int nbinsEta = 24;
    
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
