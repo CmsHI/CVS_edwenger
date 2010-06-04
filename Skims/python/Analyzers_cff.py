@@ -23,6 +23,7 @@ postTrkVtxSel = vertexanalyzer.clone(
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
+#trackAna.lowPtStudyHist = cms.untracked.bool(True)
 
 preTrackAna = trackAna.clone(isGEN=cms.untracked.bool(True),
                              pureGENmode=cms.untracked.bool(True),
@@ -52,6 +53,7 @@ from edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff import *
 trkEffAnalyzer.tracks = cms.untracked.InputTag("selectTracks")
 trkEffAnalyzer.fillNtuples = cms.bool(False)
 trkEffAnalyzer.constPtBins = cms.bool(True)
+#trkEffAnalyzer.lowPtMode   = cms.bool(True)
 loosetrkEffAnalyzer = trkEffAnalyzer.clone(tracks=cms.untracked.InputTag("looseSelectTracks"),
                                            vertices = cms.untracked.InputTag('selectedVertex',''),
                                            )

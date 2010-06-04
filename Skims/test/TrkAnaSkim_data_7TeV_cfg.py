@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
-process = cms.Process("ANASKIM")
+#process = cms.Process("ANASKIM")
+process = cms.Process("ANA")
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
@@ -12,16 +13,17 @@ process.load('Configuration/EventContent/EventContent_cff')
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-   '/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
+   #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'
+    'file:/d100/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/trkAnaSkimAOD_106_2.root'))
    #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v4/38a0275e6a2a62980cf9b1868edbd493/trkAnaSkimAOD_97_1.root'))
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.8 $'),
+    version = cms.untracked.string('$Revision: 1.9 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -35,6 +37,11 @@ process.SimpleMemoryCheck = cms.Service('SimpleMemoryCheck',
     )
 
 
+process.SimpleMemoryCheck = cms.Service('SimpleMemoryCheck',
+                                            ignoreTotal=cms.untracked.int32(0),
+                                            oncePerEventMode = cms.untracked.bool(False)
+                                            )
+
 # =============== Import Sequences =====================
 
 process.load("edwenger.Skims.EventFilter_cff")
@@ -47,8 +54,8 @@ switchJECSet( process, "Summer09_7TeV_ReReco332") # get the 7 TeV jet correction
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
 
-#from edwenger.Skims.customise_cfi import *
-#process = enableAOD(process)
+from edwenger.Skims.customise_cfi import *
+process = enableAOD(process)
 
 # =============== Final Paths =====================
 

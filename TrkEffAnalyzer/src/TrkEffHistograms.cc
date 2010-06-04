@@ -15,6 +15,7 @@ TrkEffHistograms::TrkEffHistograms(const edm::ParameterSet& pset)
   fillHistograms         = pset.getParameter<bool>("fillHistograms");
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
   constPtBins            = pset.getParameter<bool>("constPtBins");
+  lowPtMode              = pset.getParameter<bool>("lowPtMode");
 }
 
 
@@ -55,16 +56,27 @@ TrkEffHistograms::declareHistograms()
        for(pt =  50; pt < 100-small; pt +=  5.0 ) ptBins.push_back(pt);
        for(pt = 100; pt < 200-small; pt += 10.0 ) ptBins.push_back(pt);
        for(pt = 200; pt < 500-small; pt += 20.0 ) ptBins.push_back(pt);
+
+    }else if(lowPtMode){
+
+       static float ptMin   =  0.0;
+       static float ptMax   =  2.0;
+       static float ptWidth =  0.02;
+
+       for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
+	  ptBins.push_back(pt);
+
     }else{
+
        static float ptMin   =  0.0;
        static float ptMax   =  200.0;
        static float ptWidth =  0.2;
 
        for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
 	  ptBins.push_back(pt);
+
     }
     
-
     // eta bins
     static float etaMin   = -3.0;
     static float etaMax   =  3.0;
