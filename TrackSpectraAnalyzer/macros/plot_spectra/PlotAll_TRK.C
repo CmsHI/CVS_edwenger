@@ -43,7 +43,18 @@ void PlotAll_TRK()
    }
 
    if(full_eta) eta_max = 2.4;
-   else eta_max = 1.1;
+   else eta_max = 1.0;
+
+
+   char file1[100], file2[100], file3[100], file4[100], file5[100], file6[100], file7[100];
+
+   sprintf(file1,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file2,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file3,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file4,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file5,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file6,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file7,"../root_files/trkhistsMC_10K_june05.root");
 
 
    MC = true, GEN = true, CORRECT = false;
@@ -51,13 +62,7 @@ void PlotAll_TRK()
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_gen_tight =
-      invar_yield_ana_v9_graph("../root_files/TrkHistMCv10_QCD_10Mv3.root", 
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root", 
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root", 
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
 			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
@@ -67,13 +72,7 @@ void PlotAll_TRK()
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight =
-      invar_yield_ana_v9_graph("../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-			       "../root_files/TrkHistMCv10_QCD_10Mv3.root",
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
 			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
@@ -83,13 +82,7 @@ void PlotAll_TRK()
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_mlt =
-      invar_yield_ana_v9_graph("../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
                                evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
@@ -98,28 +91,17 @@ void PlotAll_TRK()
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_sec =
-      invar_yield_ana_v9_graph("../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
                                evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+
 
    MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = true;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_mlt_sec =
-      invar_yield_ana_v9_graph("../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
-                               "../root_files/TrkHistMCv10_QCD_10Mv3.root",
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
                                evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
