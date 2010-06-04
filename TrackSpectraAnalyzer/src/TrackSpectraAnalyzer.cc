@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.38 2010/06/04 12:19:13 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.39 2010/06/04 17:32:39 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -237,6 +237,9 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
 	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),gjet_et); 
 	    hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),gjet_et,(1./gen.pt())); // weighted by pT
+
+	    if(lowPtStudyHist_ && gen.pt()<2.0) hGenTrkLowPtEtaJetEtW->Fill(gen.eta(),gen.pt(),
+									    gjet_et,1./(gen.pt()));
 	 }
 	 hGenNevt->Fill(nevtGEN);
       }
@@ -317,6 +320,8 @@ TrackSpectraAnalyzer::beginJob()
 					    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					     nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      if(lowPtStudyHist_) hGenTrkLowPtEtaJetEtW = subDir.make<TH3F>("hGenTrkLowPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+								    nbinsEta, -1.*etaHistMax, etaHistMax, 100, 0.0, 2.0, 60, 0.0, 1200.0);
    }
     
 }
