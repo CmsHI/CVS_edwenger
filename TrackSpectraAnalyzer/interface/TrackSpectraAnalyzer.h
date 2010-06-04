@@ -74,6 +74,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    
    TH3F *hTrkPtEtaJetEt;
    TH3F *hTrkPtEtaJetEtW;
+   TH3F *hTrkLowPtEtaJetEtW;
 
    TH3F *hTrkPtEtaJetEtW_mult1;
    TH3F *hTrkPtEtaJetEtW_mult2;
@@ -103,7 +104,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::Service<TFileService> fs;
    
    bool isGEN_, doJet_, pureGENmode_, nsdOnly_;
-   bool histOnly_, includeExtra_;
+   bool histOnly_, includeExtra_, lowPtStudyHist_;
    bool applyEvtEffCorr_;
    bool pthatCut_;
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;

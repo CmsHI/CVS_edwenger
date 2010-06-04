@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.37 2010/06/04 10:16:34 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.38 2010/06/04 12:19:13 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -24,6 +24,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
+   lowPtStudyHist_ = iConfig.getUntrackedParameter<bool>("lowPtStudyHist",false);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
    ptMin_ = iConfig.getUntrackedParameter<double>("ptMin", 0.5);
    applyEvtEffCorr_ = iConfig.getUntrackedParameter<bool>("applyEvtEffCorr", true);
@@ -160,6 +161,8 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt())); // weighted by pT   
 
 	    if(includeExtra_) {
+	       if(lowPtStudyHist_ && trk.pt()<2.0) hTrkLowPtEtaJetEtW->Fill(trk.eta(),trk.pt(),
+									    jet_et,1./(evt_sel_eff*trk.pt()));
 	       if(mult==1) hTrkPtEtaJetEtW_mult1->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
 	       if(mult==2) hTrkPtEtaJetEtW_mult2->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
 	       if(mult==3) hTrkPtEtaJetEtW_mult3->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
@@ -273,6 +276,8 @@ TrackSpectraAnalyzer::beginJob()
       hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
 
       if(includeExtra_) {
+	 if(lowPtStudyHist_) hTrkLowPtEtaJetEtW = subDir.make<TH3F>("hTrkLowPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+								    nbinsEta, -1.*etaHistMax, etaHistMax, 100, 0.0, 2.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEtW_mult1 = subDir.make<TH3F>("hTrkPtEtaJetEtW_mult1","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEtW_mult2 = subDir.make<TH3F>("hTrkPtEtaJetEtW_mult2","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
