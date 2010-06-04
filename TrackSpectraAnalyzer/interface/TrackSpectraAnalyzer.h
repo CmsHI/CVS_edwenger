@@ -75,22 +75,21 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEt;
    TH3F *hTrkPtEtaJetEtW;
 
-   TH3F *hTrkPtEtaJetEt_mult1;
-   TH3F *hTrkPtEtaJetEt_mult2;
-   TH3F *hTrkPtEtaJetEt_mult3;
+   TH3F *hTrkPtEtaJetEtW_mult1;
+   TH3F *hTrkPtEtaJetEtW_mult2;
+   TH3F *hTrkPtEtaJetEtW_mult3;
 
 
-   TH3F *hTrkPtEtaJetEt_HltJet6U;
-   TH3F *hTrkPtEtaJetEt_HltJet15U;
-   TH3F *hTrkPtEtaJetEt_HltJet30U;
-   TH3F *hTrkPtEtaJetEt_HltJet50U;
+   TH3F *hTrkPtEtaJetEtW_HltJet6U;
+   TH3F *hTrkPtEtaJetEtW_HltJet15U;
+   TH3F *hTrkPtEtaJetEtW_HltJet30U;
+   TH3F *hTrkPtEtaJetEtW_HltJet50U;
 
    TH3F *hGenTrkPtEtaJetEt;
-   //TH3F *hGenTrkPtEtaJetEtW;
+   TH3F *hGenTrkPtEtaJetEtW;
 
    //evt sel eff. correction
    TF1 *evtSelEff;
-
 
    // Jets
    TH1F *hNumJets;
@@ -106,11 +105,10 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool isGEN_, doJet_, pureGENmode_, nsdOnly_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
-   int32_t evtEffCorrType_, efit_type_;
+   bool pthatCut_;
+   int32_t evtEffCorrType_, efit_type_, evtMultCut_;
    double  etaMax_, ptMin_;
-   double evtSelEffCut_;
 
-   std::vector<double> efit_para_;
    std::vector<double> evtSelEffv_;
 
    edm::InputTag src_;

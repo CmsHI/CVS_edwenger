@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.35 2010/06/02 14:19:27 edwenger Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.36 2010/06/03 17:07:54 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -20,6 +20,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    nsdOnly_ = iConfig.getUntrackedParameter<bool>("nsdOnly", false);
+   pthatCut_ = iConfig.getUntrackedParameter<double>("pthatCut_", 0.0);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
@@ -29,8 +30,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    evtEffCorrType_ = iConfig.getUntrackedParameter<int>("evtEffCorrType_", 0);
    efit_type_ = iConfig.getUntrackedParameter<int>("efit_type", 0);
    evtSelEffv_ = iConfig.getUntrackedParameter< std::vector<double> >("evtSelEffv");
-   evtSelEffCut_ = iConfig.getUntrackedParameter<double>("evtSelEffCut", 0.05);
-   efit_para_ = iConfig.getUntrackedParameter< std::vector<double> >("efit_para");
+   evtMultCut_ = iConfig.getUntrackedParameter<int>("evtMultCut", 0);
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
 }
@@ -126,19 +126,18 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       
       // get evt sel eff
       double evt_sel_eff = 1;
-      double evt_sel_corr = 1;
 
       if(applyEvtEffCorr_) {
-         if(mult+1>(int)evtSelEffv_[0]) evt_sel_eff = 1.0;
-	 else evt_sel_eff = evtSelEffv_[(unsigned)(mult+1)];
-	 if(evt_sel_eff<evtSelEffCut_) skipEvt = true;
-         if(includeExtra_ && !skipEvt) {
-	    hRecMult_STD->Fill(mult);
+	 hRecMult_STD->Fill(mult);
+	 if(mult<=evtMultCut_) { // skip event by hand
+	    skipEvt = true;
+	 }else{
+	    if(mult+1>(int)evtSelEffv_[0]) evt_sel_eff = 1.0; // set eff = 1 
+	    else evt_sel_eff = evtSelEffv_[(unsigned)(mult+1)];
 	    hRecMult_STD_corr->Fill(mult,(1./evt_sel_eff));
 	 }
       }
-
-
+      
       // get track collection                
       if(!skipEvt){
 
@@ -150,7 +149,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    
 	    if(!trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 	    
-	    if(accept[0]==1) hTrkPtMB->Fill(trk.pt(),evt_sel_corr);
+	    if(accept[0]==1) hTrkPtMB->Fill(trk.pt(),1./evt_sel_eff);
 	    if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
 	    
 	    if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),jet_et,
@@ -158,19 +157,18 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    
 	    hTrkPtEta->Fill(trk.eta(),trk.pt(),1./evt_sel_eff);
 	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	    
+	    hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt())); // weighted by pT   
+
 	    if(includeExtra_) {
-	       hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),jet_et,(evt_sel_corr/trk.pt())); // weighted by pT
-	       if(mult==1) hTrkPtEtaJetEt_mult1->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	       if(mult==2) hTrkPtEtaJetEt_mult2->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	       if(mult==3) hTrkPtEtaJetEt_mult3->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
+	       if(mult==1) hTrkPtEtaJetEtW_mult1->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
+	       if(mult==2) hTrkPtEtaJetEtW_mult2->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
+	       if(mult==3) hTrkPtEtaJetEtW_mult3->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
 	    }
 	    
-	    if (accept[1]) hTrkPtEtaJetEt_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	    if (accept[2]) hTrkPtEtaJetEt_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	    if (accept[3]) hTrkPtEtaJetEt_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	    if (accept[4]) hTrkPtEtaJetEt_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et,1./evt_sel_eff);
-	    
+	    if (accept[1]) hTrkPtEtaJetEtW_HltJet6U->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
+	    if (accept[2]) hTrkPtEtaJetEtW_HltJet15U->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
+	    if (accept[3]) hTrkPtEtaJetEtW_HltJet30U->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
+	    if (accept[4]) hTrkPtEtaJetEtW_HltJet50U->Fill(trk.eta(),trk.pt(),jet_et,1./(evt_sel_eff*trk.pt()));
 	 }
 	 
 	 hNevt->Fill(evt_sel_eff);
@@ -206,6 +204,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       edm::Handle<GenEventInfoProduct> genEvtInfo;
       iEvent.getByLabel("generator", genEvtInfo);
       int pid = genEvtInfo->signalProcessID();
+      double pthat = genEvtInfo->qScale();
       
       bool isWanted = false;
       
@@ -215,6 +214,10 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 isWanted = true;
       }
       
+      if((int)pthatCut_!=0){
+	 if(pthat>pthatCut_) isWanted = false;
+      }
+
       // Gen track
       if(isWanted){
 	 Handle<GenParticleCollection> genParticles;
@@ -230,7 +233,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    
 	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
 	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),gjet_et); 
-	    //if(includeExtra_) hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),gjet_et,(1./gen.pt())); // weighted by pT
+	    hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),gjet_et,(1./gen.pt())); // weighted by pT
 	 }
 	 hGenNevt->Fill(nevtGEN);
       }
@@ -261,31 +264,31 @@ TrackSpectraAnalyzer::beginJob()
       hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
       hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)", nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0);
       
-      // memory consumption limits the number of bins...
       hTrkPtEtaJetEt = subDir.make<TH3F>("hTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					 nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
-      hTrkPtEtaJetEt->Sumw2();
+      hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      
+      hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
+      hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
 
       if(includeExtra_) {
-	 hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
-	 hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
-	 hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-	 				     nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-	 hTrkPtEtaJetEt_mult1 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult1","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-	 hTrkPtEtaJetEt_mult2 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult2","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-                                                  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-	 hTrkPtEtaJetEt_mult3 = subDir.make<TH3F>("hTrkPtEtaJetEt_mult3","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-                                                  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEtW_mult1 = subDir.make<TH3F>("hTrkPtEtaJetEtW_mult1","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEtW_mult2 = subDir.make<TH3F>("hTrkPtEtaJetEtW_mult2","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+	 hTrkPtEtaJetEtW_mult3 = subDir.make<TH3F>("hTrkPtEtaJetEtW_mult3","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       }
-      hTrkPtEtaJetEt_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-      hTrkPtEtaJetEt_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
-      hTrkPtEtaJetEt_HltJet30U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet30U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+
+      hTrkPtEtaJetEtW_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEtW_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-      hTrkPtEtaJetEt_HltJet50U = subDir.make<TH3F>("hTrkPtEtaJetEt_HltJet50U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      hTrkPtEtaJetEtW_HltJet15U = subDir.make<TH3F>("hTrkPtEtaJetEtW_HltJet15U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
+      hTrkPtEtaJetEtW_HltJet30U = subDir.make<TH3F>("hTrkPtEtaJetEtW_HltJet30U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      hTrkPtEtaJetEtW_HltJet50U = subDir.make<TH3F>("hTrkPtEtaJetEtW_HltJet50U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       
       if(doJet_) {
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
@@ -307,8 +310,8 @@ TrackSpectraAnalyzer::beginJob()
       hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)", nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0);
       hGenTrkPtEtaJetEt = subDir.make<TH3F>("hGenTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-      //if(includeExtra_) hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-      //50, -2.5, 2.5, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+      hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+					     nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
    }
     
 }
