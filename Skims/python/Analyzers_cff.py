@@ -26,6 +26,7 @@ trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 
 preTrackAna = trackAna.clone(isGEN=cms.untracked.bool(True),
                              pureGENmode=cms.untracked.bool(True),
+                             #pthatCut = cms.untracked.double(15.0), #needed for 0-15 dijet sample
                              nsdOnly=cms.untracked.bool(True))
 
 refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
@@ -34,23 +35,22 @@ looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"))
 looseTrackAna_STD = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
                                    applyEvtEffCorr=cms.untracked.bool(True),
                                    evtEffCorrType=cms.untracked.int32(0),
+                                   evtMultCut=cms.untracked.int32(0),
                                    evtSelEffv = cms.untracked.vdouble(20,0.0268806,0.362319,0.564854,0.712705,0.840352,0.875089,0.927253,
-                                                                      0.974257,1.03461,1.02732,1.02303,1.0173,1.02061,1.00998,0.9942,0.998779,0.990604,0.992278,0.99435,0.989137),
-                                   evtSelEffCut = cms.untracked.double(0.04))
+                                                                      0.974257,1.03461,1.02732,1.02303,1.0173,1.02061,1.00998,0.9942,0.998779,0.990604,0.992278,0.99435,0.989137))
 
 trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               applyEvtEffCorr=cms.untracked.bool(True),
                               evtEffCorrType=cms.untracked.int32(0),
+                              evtMultCut=cms.untracked.int32(3),
                               evtSelEffv = cms.untracked.vdouble(20,0,0,0.00083682,0.0331934,0.218967,0.461346,0.652913,0.79913,0.939804,
-                                                                 0.981668,0.992803,1.00635,1.01619,1.00576,0.991106,0.997151,0.989709,0.989865,0.991269,0.987993),
-                              evtSelEffCut = cms.untracked.double(0.04))
-
+                                                                 0.981668,0.992803,1.00635,1.01619,1.00576,0.991106,0.997151,0.989709,0.989865,0.991269,0.987993))
 
 
 # tracking efficiency analyzer
 from edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff import *
 trkEffAnalyzer.tracks = cms.untracked.InputTag("selectTracks")
-trkEffAnalyzer.fillNtuples = cms.bool(True)
+trkEffAnalyzer.fillNtuples = cms.bool(False)
 trkEffAnalyzer.constPtBins = cms.bool(True)
 loosetrkEffAnalyzer = trkEffAnalyzer.clone(tracks=cms.untracked.InputTag("looseSelectTracks"),
                                            vertices = cms.untracked.InputTag('selectedVertex',''),
