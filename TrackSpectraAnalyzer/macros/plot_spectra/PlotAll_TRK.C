@@ -27,7 +27,8 @@ void PlotAll_TRK()
    bool onetwothreebin = false;
    bool evteffcorr = false;
    bool full_eta =false;
-   bool oneoverpt=false;
+   bool oneoverpt=true;
+   bool minpt=false;
 
    double eta_max;
    float pt_max;
@@ -39,7 +40,7 @@ void PlotAll_TRK()
       else pt_max = 55, ymin = 3e-13, ymax = 9e1, ymin_r = 0.30, ymax_r = 1.7;
    }else{
       if(MC) pt_max = 10, ymin = 5e-7, ymax = 2e1, ymin_r = 0.7, ymax_r = 1.4;       
-      else pt_max = 10, ymin = 5e-7, ymax = 5e1, ymin_r = 0.85, ymax_r = 1.15;
+      else pt_max = 10, ymin = 5e-7, ymax = 5e1, ymin_r = 0.97, ymax_r = 1.03;
    }
 
    if(full_eta) eta_max = 2.4;
@@ -48,13 +49,13 @@ void PlotAll_TRK()
 
    char file1[100], file2[100], file3[100], file4[100], file5[100], file6[100], file7[100];
 
-   sprintf(file1,"../root_files/trkhistsMC_10K_june05.root");
-   sprintf(file2,"../root_files/trkhistsMC_10K_june05.root");
-   sprintf(file3,"../root_files/trkhistsMC_10K_june05.root");
-   sprintf(file4,"../root_files/trkhistsMC_10K_june05.root");
-   sprintf(file5,"../root_files/trkhistsMC_10K_june05.root");
-   sprintf(file6,"../root_files/trkhistsMC_10K_june05.root");
-   sprintf(file7,"../root_files/trkhistsMC_10K_june05.root");
+   sprintf(file1,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file2,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file3,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file4,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file5,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file6,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file7,"../root_files/TrkHistMC_june04_QCD_10M.root");
 
 
    MC = true, GEN = true, CORRECT = false;
@@ -64,46 +65,46 @@ void PlotAll_TRK()
    invar_yield_ana_v9_data spec_gen_tight =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
 
 
-   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = false; 
+   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = false, minpt = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
 
 
-   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = false;
+   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = false, minpt = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_mlt =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
 
-   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = true;
+   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = true, minpt = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_sec =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
 
 
-   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = true;
+   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = true, minpt = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_mlt_sec =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
 
 
 
@@ -145,6 +146,9 @@ void PlotAll_TRK()
    }else{
       TH1D *dndpt_gen_tight = spec_gen_tight.hInvX;
       TH1D *dndpt_rec_tight = spec_rec_tight.hInvX;
+      TH1D *dndpt_rec_tight_mlt = spec_rec_tight_mlt.hInvX;
+      TH1D *dndpt_rec_tight_sec = spec_rec_tight_sec.hInvX;
+      TH1D *dndpt_rec_tight_mlt_sec = spec_rec_tight_mlt_sec.hInvX;
    }
    
    
@@ -279,56 +283,17 @@ void PlotAll_TRK()
    //th1Style1(dndpt1_dum_div_cms7000,13,30,1.0,13,1.5,1,1);
    
 
-   /*
    if(entire_range){  
-      if(full_eta) printCanvases(call,"spectra_PREV8_TRK_PAS_fullEta",0,1);
-      else printCanvases(call,"spectra_PREV8_TRK_PAS",0,1);
+      if(full_eta) printCanvases(call,"spectra_TRK_fullEta",0,1);
+      else printCanvases(call,"spectra_TRK_PAS",0,1);
    }else{
-      if(full_eta) printCanvases(call,"spectra_PREV8_TRK_PAS_narrow_fullEta",0,1);
-      else printCanvases(call,"spectra_PREV8_TRK_PAS_narrow",0,1);
+      if(full_eta) printCanvases(call,"spectra_TRK_narrow_fullEta",0,1);
+      else printCanvases(call,"spectra_TRK_PAS_narrow",0,1);
    }
-   */
 
 }
 
 
-
-void PrintDetailsOfHist(TH3F* hSpectra){
-
-   int  nbinX = hSpectra->GetNbinsX();
-   int  nbinY = hSpectra->GetNbinsY();
-   int  nbinZ = hSpectra->GetNbinsZ();
-
-   cout<<"Number of bins in X (eta) : "<<nbinX
-       <<" in Y (pt) : "<<nbinY
-       <<" in Z (Jet ET) : "<<nbinZ<<endl;
-
-   int binXmin = hSpectra->GetXaxis()->GetBinLowEdge(1);
-   int binXmax = hSpectra->GetXaxis()->GetBinUpEdge(nbinX);
-
-   int binYmin = hSpectra->GetYaxis()->GetBinLowEdge(1);
-   int binYmax = hSpectra->GetYaxis()->GetBinUpEdge(nbinY);
-
-   int binZmin = hSpectra->GetZaxis()->GetBinLowEdge(1);
-   int binZmax = hSpectra->GetZaxis()->GetBinUpEdge(nbinZ);
-
-   cout<<" eta ragnes[bin] : "<<binXmin<<" to " <<binXmax<<endl;
-   cout<<" pt ragnes[bin] : "<<binYmin<<" to " <<binYmax<<endl;
-   cout<<" jet ragnes[bin] : "<<binZmin<<" to " <<binZmax<<endl;
-
-   /*
-   int binMaxEta = hSpectra->GetXaxis()->FindBin(feta);
-   int binMinEta = hSpectra->GetXaxis()->FindBin(-1.0*feta);
-
-   cout<<"[DEBUG]-----"<<endl;
-   cout<<"for input eta "<<feta<<" found max eta (bin center): "<<hSpectra->GetBinCenter(binMaxEta)<<endl;
-   cout<<"for input eta "<<-1.0*feta<<" found min eta (bin center): "<<hSpectra->GetBinCenter(binMinEta)<<endl;
-   cout<<"[DEBUG]-----"<<endl;
-
-   float maxEta = hSpectra->GetXaxis()->GetBinCenter(binMaxEta);
-   float minEta =hSpectra->GetXaxis()->GetBinCenter(binMinEta);
-   */
-}
 
 
 
@@ -336,6 +301,7 @@ TH1D* GetDummyHist(Float_t xmax, Float_t min, Float_t max,Char_t *xttl,Char_t *y
 
    TH1D *dum;
    dum = new TH1D("dum","",100,0.0,xmax);     
+   //dum = new TH1D("dum","",100,0.2,xmax);   
 
    dum->SetMinimum(min);
    dum->SetMaximum(max);
