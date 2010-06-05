@@ -1,16 +1,14 @@
 #!/bin/bash -
-jobTag=proc0602_v3
-# === A20RR v2 ===
-inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2/86d28cd0599312fbc0b38fb077d9e1fc
-output_dir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2_${jobTag}
-# === A20RR v3 ===
-#inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v3/86d28cd0599312fbc0b38fb077d9e1fc
-#output_dir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-A20RR-TRKANASKIM-v3_${jobTag}
-# === PR9 v3 ===
-#inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c
-#output_dir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_${jobTag}
+if [ $# -lt 2 ]; then
+  echo Usage:
+  echo "  $0 <input_dir> <output_dir>"
+  exit 1
+fi
 
-inputList=$output_dir/log/pub_files_aod.txt
+inputTopDir=$1
+output_dir=$2
+
+#inputList=$output_dir/log/pub_files_aod.txt
 tag=trkAnaSkimAOD
 #prefix=dcache:
 #prefix=file:
@@ -24,6 +22,6 @@ do
   cmd="./condor64.sh runOne.sh $inputTopDir $ifile $output_dir -1"
   #cmd="./runOne.sh $inputTopDir $ifile $output_dir 10"
   echo $cmd
-  eval $cmd
+  #eval $cmd
 done
 
