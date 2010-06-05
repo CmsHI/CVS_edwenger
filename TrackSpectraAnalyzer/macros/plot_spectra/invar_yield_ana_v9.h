@@ -121,6 +121,44 @@ std::pair<TH3F*,TH3F*> getEffHists(char *file, char *dirC, char *histN, char *hi
 }
 
 
+void PrintDetailsOfHist(TH3F* hSpectra){
+
+   int  nbinX = hSpectra->GetNbinsX();
+   int  nbinY = hSpectra->GetNbinsY();
+   int  nbinZ = hSpectra->GetNbinsZ();
+
+   cout<<"Number of bins in X (eta) : "<<nbinX
+       <<" in Y (pt) : "<<nbinY
+       <<" in Z (Jet ET) : "<<nbinZ<<endl;
+
+   int binXmin = hSpectra->GetXaxis()->GetBinLowEdge(1);
+   int binXmax = hSpectra->GetXaxis()->GetBinUpEdge(nbinX);
+
+   int binYmin = hSpectra->GetYaxis()->GetBinLowEdge(1);
+   int binYmax = hSpectra->GetYaxis()->GetBinUpEdge(nbinY);
+
+   int binZmin = hSpectra->GetZaxis()->GetBinLowEdge(1);
+   int binZmax = hSpectra->GetZaxis()->GetBinUpEdge(nbinZ);
+
+   cout<<" eta ragnes[bin] : "<<binXmin<<" to " <<binXmax<<endl;
+   cout<<" pt ragnes[bin] : "<<binYmin<<" to " <<binYmax<<endl;
+   cout<<" jet ragnes[bin] : "<<binZmin<<" to " <<binZmax<<endl;
+
+   /*
+   int binMaxEta = hSpectra->GetXaxis()->FindBin(feta);
+   int binMinEta = hSpectra->GetXaxis()->FindBin(-1.0*feta);
+
+   cout<<"[DEBUG]-----"<<endl;
+   cout<<"for input eta "<<feta<<" found max eta (bin center): "<<hSpectra->GetBinCenter(binMaxEta)<<endl;
+   cout<<"for input eta "<<-1.0*feta<<" found min eta (bin center): "<<hSpectra->GetBinCenter(binMinEta)<<endl;
+   cout<<"[DEBUG]-----"<<endl;
+
+   float maxEta = hSpectra->GetXaxis()->GetBinCenter(binMaxEta);
+   float minEta =hSpectra->GetXaxis()->GetBinCenter(binMinEta);
+   */
+}
+
+
 
 TH1D* RebinIt(TH1D* hist, bool REBIN){
 
