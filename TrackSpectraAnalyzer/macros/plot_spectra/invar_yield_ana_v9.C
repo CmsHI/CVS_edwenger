@@ -31,7 +31,7 @@ const int NHIST = 5;
 
 invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, char *cFileTRK1, char *cFileTRK2, char *cFileTRK3, char *cFileTRK4, char *cFileTRK5,
 						  char *dir, char *dir_corr, bool gen, bool trkeffcrct, bool multcrct, bool seccrct, bool mc, bool jetcrct, 
-						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt,
+						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt, bool minpt,
 						  double ieta, double feta)
 
 {
@@ -224,8 +224,8 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    cout<<"[DEBUG]--------------------"<<endl;
    cout<<"for input eta "<<feta<<" found max eta (bin center): "<<hSpectra3D->GetXaxis()->GetBinCenter(binMaxEta)<<endl;
    cout<<"for input eta "<<-1.0*feta<<" found min eta (bin center): "<<hSpectra3D->GetXaxis()->GetBinCenter(binMinEta)<<endl;
-   cout<<"for input eta "<<feta<<" found max eta (bin low edge): "<<hSpectra3D->GetXaxis()->GetBinLowEdge(binMaxEta)<<endl;
-   cout<<"for input eta "<<-1.0*feta<<" found min eta (bin up edge): "<<hSpectra3D->GetXaxis()->GetBinUpEdge(binMinEta)<<endl;
+   cout<<"for input eta "<<feta<<" found max eta (bin up edge): "<<hSpectra3D->GetXaxis()->GetBinUpEdge(binMaxEta)<<endl;
+   cout<<"for input eta "<<-1.0*feta<<" found min eta (bin low edge): "<<hSpectra3D->GetXaxis()->GetBinLowEdge(binMinEta)<<endl;
    cout<<"[DEBUG]--------------------"<<endl;
 
    float deta = feta + feta; // symmetric case       
@@ -348,7 +348,8 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
    // make sure i don't include(exclude) eta region i want!
    // bin edges have to be matched to max eta and min eta!
-   data.hInvX = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta+1,binMaxEta-1,
+   if(minpt) hSpectra3D->GetYaxis()->SetRange(2,200);
+   data.hInvX = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
 						hSpectra3D->GetZaxis()->GetFirst(),
 						hSpectra3D->GetZaxis()->GetLast(),
 						"e");    
