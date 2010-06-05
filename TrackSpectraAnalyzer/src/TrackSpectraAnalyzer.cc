@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.39 2010/06/04 17:32:39 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.40 2010/06/04 17:47:19 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -274,9 +274,20 @@ TrackSpectraAnalyzer::beginJob()
 					 nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
       hTrkPtEtaJetEtW = subDir.make<TH3F>("hTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
-      
       hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
       hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
+
+      // Set Sumw2()
+      hNevt->Sumw2();
+      hNevt_mult1->Sumw2();
+      hNevt_mult2->Sumw2();
+      hNevt_mult3->Sumw2();
+      hTrkPtMB->Sumw2();
+      hTrkPtEta->Sumw2();
+      hTrkPtEtaJetEt->Sumw2();
+      hTrkPtEtaJetEtW->Sumw2();
+      hRecMult_STD->Sumw2();
+      hRecMult_STD_corr->Sumw2();
 
       if(includeExtra_) {
 	 if(lowPtStudyHist_) hTrkLowPtEtaJetEtW = subDir.make<TH3F>("hTrkLowPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
@@ -287,6 +298,12 @@ TrackSpectraAnalyzer::beginJob()
 						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
 	 hTrkPtEtaJetEtW_mult3 = subDir.make<TH3F>("hTrkPtEtaJetEtW_mult3","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						   nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+
+	 // Set Sumw2()     
+	 if(lowPtStudyHist_) hTrkLowPtEtaJetEtW->Sumw2();
+	 hTrkPtEtaJetEtW_mult1->Sumw2();
+	 hTrkPtEtaJetEtW_mult2->Sumw2();
+	 hTrkPtEtaJetEtW_mult3->Sumw2();
       }
 
       hTrkPtEtaJetEtW_HltJet6U = subDir.make<TH3F>("hTrkPtEtaJetEtW_HltJet6U","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
@@ -322,6 +339,12 @@ TrackSpectraAnalyzer::beginJob()
 					     nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       if(lowPtStudyHist_) hGenTrkLowPtEtaJetEtW = subDir.make<TH3F>("hGenTrkLowPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 								    nbinsEta, -1.*etaHistMax, etaHistMax, 100, 0.0, 2.0, 60, 0.0, 1200.0);
+      // Set Sumw2()
+      hGenNevt->Sumw2();
+      hGenTrkPtEta->Sumw2();
+      hGenTrkPtEtaJetEt->Sumw2();
+      hGenTrkPtEtaJetEtW->Sumw2();
+      if(lowPtStudyHist_) hGenTrkLowPtEtaJetEtW->Sumw2();
    }
     
 }
