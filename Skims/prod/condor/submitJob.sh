@@ -22,6 +22,6 @@ do
   cmd="./condor64.sh runOne.sh $inputTopDir $ifile $output_dir -1"
   #cmd="./runOne.sh $inputTopDir $ifile $output_dir 10"
   echo $cmd
-  #eval $cmd
+  eval $cmd
 done
 
