@@ -23,7 +23,7 @@ postTrkVtxSel = vertexanalyzer.clone(
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
-#trackAna.lowPtStudyHist = cms.untracked.bool(True)
+trackAna.lowPtStudyHist = cms.untracked.bool(True)
 
 preTrackAna = trackAna.clone(isGEN=cms.untracked.bool(True),
                              pureGENmode=cms.untracked.bool(True),
@@ -37,15 +37,15 @@ looseTrackAna_STD = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks
                                    applyEvtEffCorr=cms.untracked.bool(True),
                                    evtEffCorrType=cms.untracked.int32(0),
                                    evtMultCut=cms.untracked.int32(0),
-                                   evtSelEffv = cms.untracked.vdouble(20,0.0268806,0.362319,0.564854,0.712705,0.840352,0.875089,0.927253,
-                                                                      0.974257,1.03461,1.02732,1.02303,1.0173,1.02061,1.00998,0.9942,0.998779,0.990604,0.992278,0.99435,0.989137))
+                                   evtSelEffv = cms.untracked.vdouble(20,0.0266389,0.352064,0.55773,0.709436,0.821248,0.89875,0.956152,0.995745,1.01817,1.02657,
+                                                                      1.02549,1.01831,1.01144,1.00505,0.998037,0.994116,0.992235,0.991112,0.991103,0.990337))
 
 trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               applyEvtEffCorr=cms.untracked.bool(True),
                               evtEffCorrType=cms.untracked.int32(0),
                               evtMultCut=cms.untracked.int32(3),
-                              evtSelEffv = cms.untracked.vdouble(20,0,0,0.00083682,0.0331934,0.218967,0.461346,0.652913,0.79913,0.939804,
-                                                                 0.981668,0.992803,1.00635,1.01619,1.00576,0.991106,0.997151,0.989709,0.989865,0.991269,0.987993))
+                              evtSelEffv = cms.untracked.vdouble(20,0,9.0384e-05,0.00223004,0.0304791,0.217088,0.460085,0.673905,0.830166,0.92802,0.978678,
+                                                                 1.00044,1.00497,1.00382,1.00041,0.994874,0.99174,0.990136,0.989347,0.989595,0.989071))
 
 
 # tracking efficiency analyzer
@@ -53,7 +53,7 @@ from edwenger.TrkEffAnalyzer.trkEffAnalyzer_cff import *
 trkEffAnalyzer.tracks = cms.untracked.InputTag("selectTracks")
 trkEffAnalyzer.fillNtuples = cms.bool(False)
 trkEffAnalyzer.constPtBins = cms.bool(True)
-#trkEffAnalyzer.lowPtMode   = cms.bool(True)
+trkEffAnalyzer.lowPtMode   = cms.bool(True)
 loosetrkEffAnalyzer = trkEffAnalyzer.clone(tracks=cms.untracked.InputTag("looseSelectTracks"),
                                            vertices = cms.untracked.InputTag('selectedVertex',''),
                                            )
