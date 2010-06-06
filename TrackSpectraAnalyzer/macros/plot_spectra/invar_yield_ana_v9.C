@@ -31,7 +31,7 @@ const int NHIST = 5;
 
 invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, char *cFileTRK1, char *cFileTRK2, char *cFileTRK3, char *cFileTRK4, char *cFileTRK5,
 						  char *dir, char *dir_corr, bool gen, bool trkeffcrct, bool multcrct, bool seccrct, bool mc, bool jetcrct, 
-						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt, bool minpt,
+						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt,
 						  double ieta, double feta)
 
 {
@@ -213,6 +213,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
 
    PrintDetailsOfHist(hSpectra3D);
+   hSpectra3D->Sumw2();
 
    int  nbinX = hSpectra3D->GetNbinsX();
    int  nbinY = hSpectra3D->GetNbinsY();
@@ -246,7 +247,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
       float  pt = hSpectra3D->GetYaxis()->GetBinCenter(ybin+1);
       float  jet = hSpectra3D->GetZaxis()->GetBinCenter(zbin+1);
       float  dbin = hSpectra3D->GetYaxis()->GetBinWidth(ybin+1);
-      
+
       float  dn = hSpectra3D->GetBinContent(xbin+1,ybin+1,zbin+1);
       float  edn = hSpectra3D->GetBinError(xbin+1,ybin+1,zbin+1);
 
@@ -348,7 +349,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
    // make sure i don't include(exclude) eta region i want!
    // bin edges have to be matched to max eta and min eta!
-   if(minpt) hSpectra3D->GetYaxis()->SetRange(2,200);
+   //if(minpt) hSpectra3D->GetYaxis()->SetRange(2,200);
    data.hInvX = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
 						hSpectra3D->GetZaxis()->GetFirst(),
 						hSpectra3D->GetZaxis()->GetLast(),
