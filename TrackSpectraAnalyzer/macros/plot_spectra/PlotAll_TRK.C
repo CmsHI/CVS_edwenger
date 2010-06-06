@@ -28,7 +28,7 @@ void PlotAll_TRK()
    bool evteffcorr = false;
    bool full_eta =false;
    bool oneoverpt=true;
-   bool minpt=false;
+   bool minpt=true;
 
    double eta_max;
    float pt_max;
@@ -41,6 +41,7 @@ void PlotAll_TRK()
    }else{
       if(MC) pt_max = 10, ymin = 5e-7, ymax = 2e1, ymin_r = 0.7, ymax_r = 1.4;       
       else pt_max = 10, ymin = 5e-7, ymax = 5e1, ymin_r = 0.97, ymax_r = 1.03;
+      //else pt_max = 10, ymin = 5e-7, ymax = 5e1, ymin_r = 0.94, ymax_r = 1.06;        
    }
 
    if(full_eta) eta_max = 2.4;
@@ -49,13 +50,13 @@ void PlotAll_TRK()
 
    char file1[100], file2[100], file3[100], file4[100], file5[100], file6[100], file7[100];
 
-   sprintf(file1,"../root_files/TrkHistMC_june04_QCD_10M.root");
-   sprintf(file2,"../root_files/TrkHistMC_june04_QCD_10M.root");
-   sprintf(file3,"../root_files/TrkHistMC_june04_QCD_10M.root");
-   sprintf(file4,"../root_files/TrkHistMC_june04_QCD_10M.root");
-   sprintf(file5,"../root_files/TrkHistMC_june04_QCD_10M.root");
-   sprintf(file6,"../root_files/TrkHistMC_june04_QCD_10M.root");
-   sprintf(file7,"../root_files/TrkHistMC_june04_QCD_10M.root");
+   sprintf(file1,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file2,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file3,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file4,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file5,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file6,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file7,"../root_files/TrkHistMC_june04_10Mv2.root");
 
 
    MC = true, GEN = true, CORRECT = false;
@@ -65,46 +66,46 @@ void PlotAll_TRK()
    invar_yield_ana_v9_data spec_gen_tight =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
+			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
 
-   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = false, minpt = false;
+   MC = true, GEN = false, CORRECT = false, multcrct = false, seccrct = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
+			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
 
-   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = false, minpt = false;
+   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_mlt =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
-   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = true, minpt = false;
+   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = true;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_sec =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
 
-   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = true, minpt = false;
+   MC = true, GEN = false, CORRECT = true, multcrct = true, seccrct = true;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_mlt_sec =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,minpt,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
 
 
@@ -196,6 +197,13 @@ void PlotAll_TRK()
    call_pd->cd();
    gPad->SetLogy();
 
+   if(minpt){
+      dndpt_rec_tight->GetXaxis()->SetRange(3,dndpt_rec_tight->GetXaxis()->GetLast());
+      dndpt_rec_tight_mlt->GetXaxis()->SetRange(3,dndpt_rec_tight_mlt->GetXaxis()->GetLast());
+      dndpt_rec_tight_sec->GetXaxis()->SetRange(3,dndpt_rec_tight_sec->GetXaxis()->GetLast());
+      dndpt_rec_tight_mlt_sec->GetXaxis()->SetRange(3,dndpt_rec_tight_mlt_sec->GetXaxis()->GetLast());
+   }
+
 
    //plotting 
    th1Style1(dndpt_gen_tight,12,24,1.0,12,1.5,1,3);
@@ -258,22 +266,31 @@ void PlotAll_TRK()
    line->Draw();
 
 
+   
    TH1D *dndpt_gen_tight_dum = (TH1D*) dndpt_gen_tight->Clone("dndpt_gen_tight_dum");
    TH1D *dndpt_rec_tight_dum = (TH1D*) dndpt_rec_tight->Clone("dndpt_rec_tight_dum"); 
    TH1D *dndpt_rec_tight_mlt_dum = (TH1D*) dndpt_rec_tight_mlt->Clone("dndpt_rec_tight_mlt_dum");
    TH1D *dndpt_rec_tight_sec_dum = (TH1D*) dndpt_rec_tight_sec->Clone("dndpt_rec_tight_sec_dum");
-   TH1D *dndpt_rec_tigh_mlt_sect_dum = (TH1D*) dndpt_rec_tight_mlt_sec->Clone("dndpt_rec_tight_mlt_sec_dum");
+   TH1D *dndpt_rec_tight_mlt_sec_dum = (TH1D*) dndpt_rec_tight_mlt_sec->Clone("dndpt_rec_tight_mlt_sec_dum");
+
 
    dndpt_gen_tight_dum->Sumw2();
    dndpt_rec_tight_dum->Sumw2();
    dndpt_rec_tight_mlt_dum->Sumw2();
    dndpt_rec_tight_sec_dum->Sumw2();
-   dndpt_rec_tigh_mlt_sect_dum->Sumw2();
+   dndpt_rec_tight_mlt_sec_dum->Sumw2();
 
    dndpt_rec_tight_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_mlt_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_sec_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_mlt_sec_dum->Divide(dndpt_gen_tight_dum);
+
+   if(minpt){
+      dndpt_rec_tight_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_dum->GetXaxis()->GetLast());
+      dndpt_rec_tight_mlt_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_mlt_dum->GetXaxis()->GetLast());
+      dndpt_rec_tight_sec_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_sec_dum->GetXaxis()->GetLast());
+      dndpt_rec_tight_mlt_sec_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_mlt_sec_dum->GetXaxis()->GetLast());
+   }
 
    th1Style1(dndpt_rec_tight_dum,2,24,1.0,2,1.5,1,1);
    th1Style1(dndpt_rec_tight_mlt_dum,4,25,1.0,4,1.5,1,1);
