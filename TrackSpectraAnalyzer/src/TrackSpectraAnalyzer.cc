@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.40 2010/06/04 17:47:19 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.41 2010/06/05 16:34:46 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -261,10 +261,10 @@ TrackSpectraAnalyzer::beginJob()
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
    
    if(!pureGENmode_){
-      hNevt = fs->make<TH1F>("hNevt","evt sel eff", 510, -0.01, 1.01);
-      hNevt_mult1 = fs->make<TH1F>("hNevt_mult1","evt sel eff", 510, -0.01, 1.01);
-      hNevt_mult2 = fs->make<TH1F>("hNevt_mult2","evt sel eff", 510, -0.01, 1.01);
-      hNevt_mult3 = fs->make<TH1F>("hNevt_mult3","evt sel eff", 510, -0.01, 1.01);
+      hNevt = fs->make<TH1F>("hNevt","evt sel eff", 102, -0.02, 2.02);
+      hNevt_mult1 = fs->make<TH1F>("hNevt_mult1","evt sel eff", 102, -0.02, 2.02);
+      hNevt_mult2 = fs->make<TH1F>("hNevt_mult2","evt sel eff", 102, -0.02, 2.02);
+      hNevt_mult3 = fs->make<TH1F>("hNevt_mult3","evt sel eff", 102, -0.02, 2.02);
 
       if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
       hTrkPtMB = fs->make<TH1F>("hTrkPtMB","track p_{T}; p_{T} [GeV/c]", 1000, 0.0, 200.0);
