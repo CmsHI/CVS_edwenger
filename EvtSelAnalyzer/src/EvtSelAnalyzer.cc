@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.9 2010/05/31 20:30:47 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.10 2010/06/01 16:43:46 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -186,6 +186,10 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultNSD_STD->Fill(nREC_STD);
       hGenRecMultNSD_SPEC->Fill(nREC_SPEC);
       hGenRecMultNSD_AGR->Fill(nREC_AGR);
+
+      if(nREC_STD==0) hGenToRecZeroBinNSD_STD->Fill(nGEN_STD);
+      if(nREC_STD<4) hGenToRec123BinNSD_STD->Fill(nGEN_STD);
+      hGenVsRecMultNSD_STD->Fill(nGEN_STD,nREC_STD);
       break;
     case 92:
     case 93:
@@ -222,6 +226,10 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultNSD_STD->Fill(nREC_STD);
       hGenRecMultNSD_SPEC->Fill(nREC_SPEC);
       hGenRecMultNSD_AGR->Fill(nREC_AGR);
+
+      if(nREC_STD==0) hGenToRecZeroBinNSD_STD->Fill(nGEN_STD);
+      if(nREC_STD<4) hGenToRec123BinNSD_STD->Fill(nGEN_STD);
+      hGenVsRecMultNSD_STD->Fill(nGEN_STD,nREC_STD);
       break;
     default:
       edm::LogWarning("EvtSelAnalyzer") 
@@ -297,6 +305,10 @@ EvtSelAnalyzer::beginJob()
     hGenRecMultSD_SPEC = f->make<TH1D>("hGenRecMultSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
     hGenRecMultSD_AGR = f->make<TH1D>("hGenRecMultSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
 
+    hGenToRecZeroBinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
+    hGenToRec123BinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
+    hGenVsRecMultNSD_STD = f->make<TH2D>("hGenVsRecMultNSD_STD","GEN vs REC;GEN mult.;REC mult.",numBins,-0.5,xmax_STD,
+				      numBins,-0.5,xmax_STD);
 
   }
 
