@@ -188,7 +188,7 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultNSD_AGR->Fill(nREC_AGR);
 
       if(nREC_STD==0) hGenToRecZeroBinNSD_STD->Fill(nGEN_STD);
-      if(nREC_STD<4) hGenToRec123BinNSD_STD->Fill(nGEN_STD);
+      if(nREC_STD<4) hGenToRec0123BinNSD_STD->Fill(nGEN_STD);
       hGenVsRecMultNSD_STD->Fill(nGEN_STD,nREC_STD);
       break;
     case 92:
@@ -228,7 +228,7 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultNSD_AGR->Fill(nREC_AGR);
 
       if(nREC_STD==0) hGenToRecZeroBinNSD_STD->Fill(nGEN_STD);
-      if(nREC_STD<4) hGenToRec123BinNSD_STD->Fill(nGEN_STD);
+      if(nREC_STD<4) hGenToRec0123BinNSD_STD->Fill(nGEN_STD);
       hGenVsRecMultNSD_STD->Fill(nGEN_STD,nREC_STD);
       break;
     default:
@@ -306,7 +306,7 @@ EvtSelAnalyzer::beginJob()
     hGenRecMultSD_AGR = f->make<TH1D>("hGenRecMultSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
 
     hGenToRecZeroBinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
-    hGenToRec123BinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
+    hGenToRec0123BinNSD_STD = f->make<TH1D>("hGenToRec0123BinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
     hGenVsRecMultNSD_STD = f->make<TH2D>("hGenVsRecMultNSD_STD","GEN vs REC;GEN mult.;REC mult.",numBins,-0.5,xmax_STD,
 				      numBins,-0.5,xmax_STD);
 
