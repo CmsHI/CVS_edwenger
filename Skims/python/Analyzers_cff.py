@@ -23,7 +23,7 @@ postTrkVtxSel = vertexanalyzer.clone(
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
-trackAna.lowPtStudyHist = cms.untracked.bool(True)
+trackAna.lowPtStudyHist = cms.untracked.bool(False)
 
 preTrackAna = trackAna.clone(isGEN=cms.untracked.bool(True),
                              pureGENmode=cms.untracked.bool(True),
