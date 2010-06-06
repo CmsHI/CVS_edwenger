@@ -22,7 +22,7 @@ void PlotAll_TRK()
    bool cross = false;
    bool loose = false;
    bool jet_based_correction = true;
-   bool entire_range = false;
+   bool entire_range = true;
    bool zerobin = false;
    bool onetwothreebin = false;
    bool evteffcorr = false;
@@ -37,7 +37,7 @@ void PlotAll_TRK()
 
    if(entire_range){
       if(MC) pt_max = 55,  ymin = 3e-13, ymax = 9e1, ymin_r = 0.30, ymax_r = 1.65;
-      else pt_max = 55, ymin = 3e-13, ymax = 9e1, ymin_r = 0.30, ymax_r = 1.7;
+      else pt_max = 55, ymin = 3e-13, ymax = 9e1, ymin_r = 0.7, ymax_r = 1.3;
    }else{
       if(MC) pt_max = 10, ymin = 5e-7, ymax = 2e1, ymin_r = 0.7, ymax_r = 1.4;       
       else pt_max = 10, ymin = 5e-7, ymax = 5e1, ymin_r = 0.97, ymax_r = 1.03;
@@ -52,11 +52,11 @@ void PlotAll_TRK()
 
    sprintf(file1,"../root_files/TrkHistMC_june04_10Mv2.root");
    sprintf(file2,"../root_files/TrkHistMC_june04_10Mv2.root");
-   sprintf(file3,"../root_files/TrkHistMC_june04_10Mv2.root");
-   sprintf(file4,"../root_files/TrkHistMC_june04_10Mv2.root");
-   sprintf(file5,"../root_files/TrkHistMC_june04_10Mv2.root");
-   sprintf(file6,"../root_files/TrkHistMC_june04_10Mv2.root");
-   sprintf(file7,"../root_files/TrkHistMC_june04_10Mv2.root");
+   sprintf(file3,"../root_files/TrkHistMCv10_QCD_Pt15v3.root");
+   sprintf(file4,"../root_files/TrkHistMCv11_qcdPt30.root");
+   sprintf(file5,"../root_files/TrkHistMCv11_qcdPt80.root");
+   sprintf(file6,"../root_files/TrkHistMCv11_qcdPt80.root");
+   sprintf(file7,"../root_files/TrkHistMCv11_qcdPt300v2.root");
 
 
    MC = true, GEN = true, CORRECT = false;
@@ -68,8 +68,16 @@ void PlotAll_TRK()
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
 			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
 
-
    MC = true, GEN = false, CORRECT = false, multcrct = false, seccrct = false;
+   sprintf(dir,"trackAna");
+   sprintf(dir_corr,"trkEffAnalyzer");
+
+   invar_yield_ana_v9_data spec_raw_tight =
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
+                               dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,0,eta_max);
+
+   MC = true, GEN = false, CORRECT = true, multcrct = false, seccrct = false;
    sprintf(dir,"trackAna");
    sprintf(dir_corr,"trkEffAnalyzer");
 
@@ -140,12 +148,14 @@ void PlotAll_TRK()
 
    if(REBIN){
       TH1D *dndpt_gen_tight = spec_gen_tight.hRInvX;
+      TH1D *dndpt_raw_tight = spec_raw_tight.hRInvX;
       TH1D *dndpt_rec_tight = spec_rec_tight.hRInvX;
       TH1D *dndpt_rec_tight_mlt = spec_rec_tight_mlt.hRInvX;
       TH1D *dndpt_rec_tight_sec = spec_rec_tight_sec.hRInvX;
       TH1D *dndpt_rec_tight_mlt_sec = spec_rec_tight_mlt_sec.hRInvX;
    }else{
       TH1D *dndpt_gen_tight = spec_gen_tight.hInvX;
+      TH1D *dndpt_raw_tight = spec_raw_tight.hInvX;
       TH1D *dndpt_rec_tight = spec_rec_tight.hInvX;
       TH1D *dndpt_rec_tight_mlt = spec_rec_tight_mlt.hInvX;
       TH1D *dndpt_rec_tight_sec = spec_rec_tight_sec.hInvX;
@@ -207,6 +217,7 @@ void PlotAll_TRK()
 
    //plotting 
    th1Style1(dndpt_gen_tight,12,24,1.0,12,1.5,1,3);
+   th1Style1(dndpt_raw_tight,19,30,1.0,19,1.5,1,1);
    th1Style1(dndpt_rec_tight,2,24,1.0,2,1.5,1,1);
    th1Style1(dndpt_rec_tight_mlt,4,25,1.0,4,1.5,1,1);
    th1Style1(dndpt_rec_tight_sec,6,26,1.0,6,1.5,1,1);
@@ -224,6 +235,7 @@ void PlotAll_TRK()
    if(full_eta) leg2->SetHeader("pp #rightarrow h+X, 7 TeV MC, |#eta|<2.4");
    else leg2->SetHeader("pp #rightarrow h+X, 7 TeV MC, |#eta|<1.0");               
    leg2->AddEntry(dndpt_gen_tight,"PYTHIA D6T (selected)","l"); 
+   leg2->AddEntry(dndpt_raw_tight,"RECO TRK Eff/FR Raw.","pl");
    leg2->AddEntry(dndpt_rec_tight,"RECO TRK Eff/FR Corr.","pl");
    leg2->AddEntry(dndpt_rec_tight_mlt,"RECO TRK Eff/FR/Mlt Corr.","pl");
    leg2->AddEntry(dndpt_rec_tight_sec,"RECO TRK Eff/FR/Sec Corr.","pl");
@@ -268,6 +280,7 @@ void PlotAll_TRK()
 
    
    TH1D *dndpt_gen_tight_dum = (TH1D*) dndpt_gen_tight->Clone("dndpt_gen_tight_dum");
+   TH1D *dndpt_raw_tight_dum = (TH1D*) dndpt_raw_tight->Clone("dndpt_raw_tight_dum");
    TH1D *dndpt_rec_tight_dum = (TH1D*) dndpt_rec_tight->Clone("dndpt_rec_tight_dum"); 
    TH1D *dndpt_rec_tight_mlt_dum = (TH1D*) dndpt_rec_tight_mlt->Clone("dndpt_rec_tight_mlt_dum");
    TH1D *dndpt_rec_tight_sec_dum = (TH1D*) dndpt_rec_tight_sec->Clone("dndpt_rec_tight_sec_dum");
@@ -275,23 +288,27 @@ void PlotAll_TRK()
 
 
    dndpt_gen_tight_dum->Sumw2();
+   dndpt_raw_tight_dum->Sumw2();
    dndpt_rec_tight_dum->Sumw2();
    dndpt_rec_tight_mlt_dum->Sumw2();
    dndpt_rec_tight_sec_dum->Sumw2();
    dndpt_rec_tight_mlt_sec_dum->Sumw2();
 
+   dndpt_raw_tight_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_mlt_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_sec_dum->Divide(dndpt_gen_tight_dum);
    dndpt_rec_tight_mlt_sec_dum->Divide(dndpt_gen_tight_dum);
 
    if(minpt){
+      dndpt_raw_tight_dum->GetXaxis()->SetRange(3,dndpt_raw_tight_dum->GetXaxis()->GetLast());
       dndpt_rec_tight_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_dum->GetXaxis()->GetLast());
       dndpt_rec_tight_mlt_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_mlt_dum->GetXaxis()->GetLast());
       dndpt_rec_tight_sec_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_sec_dum->GetXaxis()->GetLast());
       dndpt_rec_tight_mlt_sec_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_mlt_sec_dum->GetXaxis()->GetLast());
    }
 
+   th1Style1(dndpt_raw_tight_dum,19,30,1.0,19,1.5,1,1);
    th1Style1(dndpt_rec_tight_dum,2,24,1.0,2,1.5,1,1);
    th1Style1(dndpt_rec_tight_mlt_dum,4,25,1.0,4,1.5,1,1);
    th1Style1(dndpt_rec_tight_sec_dum,6,26,1.0,6,1.5,1,1);
