@@ -85,8 +85,13 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
    if(trkeffcrct && (!gen)) {
       for(int i=0;i<NHIST;i++){
+	 
+	 if(i==0) cFileTRKArray[i] = cFileTRK1;
+	 else if(i==1) cFileTRKArray[i] = cFileTRK2;
+	 else if(i==2) cFileTRKArray[i] = cFileTRK3;
+	 else if(i==3) cFileTRKArray[i] = cFileTRK4;
+	 else if(i==4) cFileTRKArray[i] = cFileTRK5;
 
-	 cFileTRKArray[i] = cFileTRK1;
 	 
 	 h3DEff[i] = getEffHists(cFileTRKArray[i],dir_corr,hist1,hist2);
 	 h3DFake[i] = getEffHists(cFileTRKArray[i],dir_corr,hist3,hist4);
@@ -107,20 +112,27 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    cout<<"[Preparing TRK eff correction]======================================="<<endl;
    cout<<"\n"<<endl;
 
+   cout<<"[Get number of evetns ]========================================"<<endl;
    //-------- Get Number for evt sel correction
    TFile *fEVT = new TFile(cFileEVT);
 
    if(zerobin){
-      TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenMultNSD");
+      //TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenMultNSD");
+      //TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenMultNSD_STD");     
+      TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");    
       double zerobinFraction = GetZeroBinFraction(hNSD_GEN);
       cout<<"ZERO bin fractiosn (from hGenMultNSD) : "<<zerobinFraction<<endl;
    }
 
    if(onetwothreebin){
-      TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("looseTrackAna_STD/hRecMult_STD_corr");
-      double ottbinFraction = GetOTTBinFraction(hNSDvtx_CORR_123);
-      cout<<"1,2,3 bin fraction (from hRecMult_STD_corr) : "<<ottbinFraction<<endl;
+      //TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("looseTrackAna_STD/hRecMult_STD_corr");
+      TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");
+      //double ottbinFraction = GetOTTBinFraction(hNSDvtx_CORR_123);
+      //cout<<"1,2,3 bin fraction (from hRecMult_STD_corr) : "<<ottbinFraction<<endl;
       
+      double zottbinFraction = GetZOTTBinFraction(hNSDvtx_CORR_123);
+      cout<<"0, 1,2,3 bin fraction (from hRecMult_STD_corr) : "<<zottbinFraction<<endl;
+
       TH3F *hSpectra3D_mult1 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult1");
       TH3F *hSpectra3D_mult2 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult2");
       TH3F *hSpectra3D_mult3 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult3");
@@ -129,8 +141,6 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
    //------------------------- Ana source
    TFile *f1 = new TFile(cFile);
-
-   cout<<"[Get number of evetns ]========================================"<<endl; 
 
    double NumEvt = 0;
    double NumEvtCorrected = 0;
@@ -162,7 +172,11 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
       NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zerobinFraction);
       cout<<"Corrected for ZERO bin only !"<<endl;
    }else if(evteffcorr && zerobin && onetwothreebin){
-      NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zerobinFraction-ottbinFraction);
+      //NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zerobinFraction-ottbinFraction);
+      NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zottbinFraction);
+      //correction for 1.01 bin
+      cout<<"temporary correction"<<endl;
+      NumEvtCorrectedMult = NumEvtCorrectedMult*(6.98903/6.97963);
       cout<<"Corrected for ZERO bin,1,2,3 bin!"<<endl;
    }
 
