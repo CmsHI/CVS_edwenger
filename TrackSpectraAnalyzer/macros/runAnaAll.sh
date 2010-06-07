@@ -1,9 +1,15 @@
 #!/bin/bash -
-tag=V0531_v6
+if [ $# -lt 2 ]; then
+  echo Usage
+  echo "  $0 <ana_input_file> <tag>"
+  exit
+fi
+
+effNtAnaInFile=$1
+tag=$2
 
 # === First Get the HLT Turn-on ===
 # use nt
-effNtAnaInFile=$scratch'/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root'
 effNtAnaOutDir=plots/$tag/ntHltEff
 root -b -q anaHltJetEff_simple.C+\(\"$effNtAnaInFile\",\"$effNtAnaOutDir\",false,\"trackAna/\"\)
 
