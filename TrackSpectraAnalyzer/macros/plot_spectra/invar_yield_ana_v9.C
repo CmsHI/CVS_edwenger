@@ -15,6 +15,7 @@ struct invar_yield_ana_v9_data {
    TH1D *hRInvX; // rebinned   
    TGraphErrors *InvX;
    TGraphErrors *RInvX; // rebinned   
+   double integratedLum;
 };
 
 const float pi = 3.14159265358979323846;
@@ -33,7 +34,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 						  char *dir, char *dir_corr, bool gen, bool trkeffcrct, bool multcrct, bool seccrct, bool mc, bool jetcrct, 
 						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt,
 						  double ieta, double feta)
-
+   
 {
    cout<<"\n"<<endl;
    cout<<"[Loading]==========================================================="<<endl;
@@ -54,6 +55,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    pt_1st = 9, pt_2nd = 12, pt_3rd = 40, pt_4th = 100;
    
    float jet_1st, jet_2nd, jet_3rd, jet_4th;
+   //jet_1st = 50, jet_2nd = 50, jet_3rd = 90, jet_4th = 180;   
    jet_1st = 30, jet_2nd = 50, jet_3rd = 90, jet_4th = 180;
    //jet_1st = 600, jet_2nd = 1600, jet_3rd = 2600, jet_4th = 3600;
 
@@ -117,21 +119,15 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    TFile *fEVT = new TFile(cFileEVT);
 
    if(zerobin){
-      //TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenMultNSD");
-      //TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenMultNSD_STD");     
       TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");    
       double zerobinFraction = GetZeroBinFraction(hNSD_GEN);
-      cout<<"ZERO bin fractiosn (from hGenMultNSD) : "<<zerobinFraction<<endl;
+      cout<<"ZERO bin fractiosn (from ??) : "<<zerobinFraction<<endl;
    }
 
    if(onetwothreebin){
-      //TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("looseTrackAna_STD/hRecMult_STD_corr");
       TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");
-      //double ottbinFraction = GetOTTBinFraction(hNSDvtx_CORR_123);
-      //cout<<"1,2,3 bin fraction (from hRecMult_STD_corr) : "<<ottbinFraction<<endl;
-      
       double zottbinFraction = GetZOTTBinFraction(hNSDvtx_CORR_123);
-      cout<<"0, 1,2,3 bin fraction (from hRecMult_STD_corr) : "<<zottbinFraction<<endl;
+      cout<<"0, 1,2,3 bin fraction (from ??) : "<<zottbinFraction<<endl;
 
       TH3F *hSpectra3D_mult1 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult1");
       TH3F *hSpectra3D_mult2 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult2");
@@ -147,10 +143,9 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    double NumEvtCorrectedMult = 0;
 
    char dirMult[100];
-
    if(strcmp(dir,"looseTrackAna_STD")==0) sprintf(dirMult,"looseTrackAna_STD/hRecMult_STD_corr");
    else sprintf(dirMult,"trackAna_STD/hRecMult_STD_corr");
-
+   
    TH1F *hNSDvtx_CORR = (TH1F*) f1->Get(dirMult);
 
    TDirectoryFile *dSpec = f1->GetDirectory(dir);
@@ -172,9 +167,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
       NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zerobinFraction);
       cout<<"Corrected for ZERO bin only !"<<endl;
    }else if(evteffcorr && zerobin && onetwothreebin){
-      //NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zerobinFraction-ottbinFraction);
       NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zottbinFraction);
-      //correction for 1.01 bin
       cout<<"temporary correction"<<endl;
       NumEvtCorrectedMult = NumEvtCorrectedMult*(6.98903/6.97963);
       cout<<"Corrected for ZERO bin,1,2,3 bin!"<<endl;
@@ -189,7 +182,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    Double_t intLum = NumEvt/totMB_xsec;
    if(!cross && evteffcorr) intLum = NumEvtCorrectedMult;      
    if(!cross && !evteffcorr) intLum =  NumEvt;
-
+   
    cout<<"Int. LUM is "<<intLum<<endl;
    cout<<"[Get number of evetns ]========================================"<<endl;
    cout<<"\n"<<endl;
@@ -368,7 +361,8 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 						hSpectra3D->GetZaxis()->GetFirst(),
 						hSpectra3D->GetZaxis()->GetLast(),
 						"e");    
-   data.hInvX->Scale(1./intLum);
+   data.integratedLum = intLum;
+   //data.hInvX->Scale(1./intLum);
 
 
    cout<<"[Rebinning ]================================================"<<endl;
