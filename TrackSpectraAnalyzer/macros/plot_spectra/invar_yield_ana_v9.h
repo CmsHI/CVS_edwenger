@@ -54,6 +54,7 @@ double CorrectNevtWithMult(TH1F* histEVT){
 }
 
 
+/*
 double GetZeroBinFraction(TH1F* hist){
 
    double total = hist->Integral();
@@ -63,11 +64,57 @@ double GetZeroBinFraction(TH1F* hist){
    return fraction;
 }
 
+double GetZOTTBinFraction(TH1F* hist){
+
+   double total = hist->Integral();
+   double non_zerobin = hist->Integral(5,hist->GetNbinsX());// i - {0,1,2,3}
+   double fraction = (total-non_zerobin)/total;
+   //double fraction = (total-non_zerobin)/total;                                                                                                                                                                                      
+   return fraction;
+}
+
 double GetOTTBinFraction(TH1F* hist){
 
    double total = hist->Integral(2,hist->GetNbinsX());//except zero bin                                                                                                   
    double non_zerobin = hist->Integral(5,hist->GetNbinsX());
    double fraction = (total-non_zerobin)/total;
+   return fraction;
+}
+*/
+
+
+// defined differently
+
+double GetZeroBinFraction(TH1F* hist){
+
+   double total = hist->Integral();
+   //double non_zerobin = hist->Integral(2,hist->GetNbinsX());
+   //double fraction = (total-non_zerobin)/total;
+   double  zerobin = hist->Integral(1,1);
+   double fraction = (zerobin)/total;
+   return fraction;
+}
+
+double GetZOTTBinFraction(TH1F* hist){
+
+   double total = hist->Integral();
+   //double non_zerobin = hist->Integral(5,hist->GetNbinsX());// i - {0,1,2,3}
+   //double fraction = (total-non_zerobin)/total;
+   double zerobin = hist->Integral(1,4);
+   double fraction = (zerobin)/total;
+
+   return fraction;
+}
+
+double GetOTTBinFraction(TH1F* hist){
+
+   double total = hist->Integral(2,hist->GetNbinsX());//except zero bin 
+   //double non_zerobin = hist->Integral(5,hist->GetNbinsX());
+   //double fraction = (total-non_zerobin)/total;
+
+   double zerobin = hist->Integral(1,4);
+   double fraction = (zerobin)/total;
+
    return fraction;
 }
 
@@ -191,6 +238,7 @@ TH1D* RebinIt(TH1D* hist, bool REBIN){
          //cout<<"bins[nbins] = "<<bins[nbins]<<endl;                                                                                                                     
          nbins++;
 	 // MC
+	 /*
          if (bin < 2)          bin += 1;
          else if(bin < 8)      bin += 2;
          else if (bin < 12)    bin += 4;
@@ -200,9 +248,9 @@ TH1D* RebinIt(TH1D* hist, bool REBIN){
          else if (bin < 100)   bin += 15;
          else if (bin < 200)   bin += 20;
          else                  bin += 30;
-
+	 */
 	 // DATA
-	 /*
+
 	 if (bin < 2)          bin += 1;
 	 else if(bin < 8)      bin += 2;
 	 else if (bin < 12)    bin += 4;
@@ -212,7 +260,7 @@ TH1D* RebinIt(TH1D* hist, bool REBIN){
 	 else if (bin < 100)   bin += 40;
 	 else if (bin < 200)   bin += 55;
 	 else                  bin += 100;
-	 */
+
       }
       bins[nbins] = binWidth*binTemp[totBins];
       //cout<<"bins[nbins] = "<<bins[nbins]<<endl;                                                                                                                        
