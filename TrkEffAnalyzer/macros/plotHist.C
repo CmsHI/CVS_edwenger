@@ -6,7 +6,7 @@ void plotHist() {
 
   set_plot_style();
 
-  TFile *f = new TFile("~/andre_root_files/TrkHistMC_QCD_10M.root");
+  TFile *f = new TFile("~/andre_root_files/TrkHistMC_june04_QCD_10M.root");
 
   // sim-to-reco hists
   TH2F *hSim = (TH2F*) f->Get("trkEffAnalyzer/hsim"); hSim->GetYaxis()->SetRangeUser(0,10);
@@ -17,14 +17,14 @@ void plotHist() {
   // reco-to-sim hists
   TH2F *hRec = (TH2F*) f->Get("trkEffAnalyzer/hrec"); hRec->GetYaxis()->SetRangeUser(0,10);
   TH2F *hFak = (TH2F*) f->Get("trkEffAnalyzer/hfak"); hFak->GetYaxis()->SetRangeUser(0,10);
-  //TH2F *hSec = (TH2F*) f->Get("trkEffAnalyzer/hsec");
+  TH2F *hSec = (TH2F*) f->Get("trkEffAnalyzer/hsec"); hSec->GetYaxis()->SetRangeUser(0,10);
 
   // ratio histograms
   TH2F *rAcc = (TH2F*) hAcc->Clone("rAcc");
   TH2F *rEff = (TH2F*) hEff->Clone("rEff");
   TH2F *rMul = (TH2F*) hMul->Clone("rMul");
   TH2F *rFak = (TH2F*) hFak->Clone("rFak");
-  //TH2F *rSec = (TH2F*) hSec->Clone("rSec");
+  TH2F *rSec = (TH2F*) hSec->Clone("rSec");
   //TH2F *rDec = (TH2F*) hDec->Clone("rDec");
 
   //---------------------------------------------
@@ -66,13 +66,13 @@ void plotHist() {
   rFak->Draw("colz");
 
   // secondary reco fraction
-  //TCanvas *c5 = new TCanvas("c5","Secondary Fraction",600,500);  
-  //gPad->SetRightMargin(0.15);
-  //rSec->Divide(hSec,hRec,1,1,"B");
-  //rSec->SetStats(0);
-  //rSec->SetMaximum(0.05); rSec->SetMinimum(0.0);
-  //rSec->SetTitle("Non-Primary Reconstruction Fraction");
-  //rSec->Draw("colz");
+  TCanvas *c5 = new TCanvas("c5","Secondary Fraction",600,500);  
+  gPad->SetRightMargin(0.15);
+  rSec->Divide(hSec,hRec,1,1,"B");
+  rSec->SetStats(0);
+  rSec->SetMaximum(0.05); rSec->SetMinimum(0.0);
+  rSec->SetTitle("Non-Primary Reconstruction Fraction");
+  rSec->Draw("colz");
 
   //---------------------------------------------
 
@@ -95,7 +95,7 @@ void plotHist() {
   TH1D* hMulEta = (TH1D*) hMul->ProjectionX("hMulEta",ptbin04,ptbins,"e");
   TH1D* hRecEta = (TH1D*) hRec->ProjectionX("hRecEta",ptbin04,ptbins,"e");
   TH1D* hFakEta = (TH1D*) hFak->ProjectionX("hFakEta",ptbin04,ptbins,"e");
-  //TH1D* hSecEta = (TH1D*) hSec->ProjectionX("hSecEta",ptbin04,ptbins,"e");
+  TH1D* hSecEta = (TH1D*) hSec->ProjectionX("hSecEta",ptbin04,ptbins,"e");
 
   // projected hists: pt > 2.0 GeV/c
   TH1D* hSimEta2 = (TH1D*) hSim->ProjectionX("hSimEta2",ptbin20,ptbins,"e");
@@ -104,6 +104,7 @@ void plotHist() {
   TH1D* hMulEta2 = (TH1D*) hMul->ProjectionX("hMulEta2",ptbin20,ptbins,"e");
   TH1D* hRecEta2 = (TH1D*) hRec->ProjectionX("hRecEta2",ptbin20,ptbins,"e");
   TH1D* hFakEta2 = (TH1D*) hFak->ProjectionX("hFakEta2",ptbin20,ptbins,"e");
+  TH1D* hSecEta2 = (TH1D*) hSec->ProjectionX("hSecEta2",ptbin20,ptbins,"e");
 
   TH1D* hDumEta = new TH1D("hDumEta",";#eta",60,-2.4,2.4); hDumEta->SetMaximum(1.0);
   hDumEta->GetXaxis()->CenterTitle(); hDumEta->GetYaxis()->SetTitleOffset(1.8);
@@ -118,7 +119,7 @@ void plotHist() {
   TH1D* hMulPt  = (TH1D*) hMul->ProjectionY("hMulPt",etabin10m,etabin10p,"e");
   TH1D* hRecPt  = (TH1D*) hRec->ProjectionY("hRecPt",etabin10m,etabin10p,"e");
   TH1D* hFakPt  = (TH1D*) hFak->ProjectionY("hFakPt",etabin10m,etabin10p,"e");
-  //TH1D* hSecPt  = (TH1D*) hSec->ProjectionY("hSecPt",etabin10m,etabin10p,"e");
+  TH1D* hSecPt  = (TH1D*) hSec->ProjectionY("hSecPt",etabin10m,etabin10p,"e");
 
   // projected hists: abs(eta) < 2.4
   TH1D* hSimPt2  = (TH1D*) hSim->ProjectionY("hSimPt2",etabin24m,etabin24p,"e");
@@ -127,7 +128,7 @@ void plotHist() {
   TH1D* hMulPt2  = (TH1D*) hMul->ProjectionY("hMulPt2",etabin24m,etabin24p,"e");
   TH1D* hRecPt2  = (TH1D*) hRec->ProjectionY("hRecPt2",etabin24m,etabin24p,"e");
   TH1D* hFakPt2  = (TH1D*) hFak->ProjectionY("hFakPt2",etabin24m,etabin24p,"e");
-  //TH1D* hSecPt2  = (TH1D*) hSec->ProjectionY("hSecPt",etabin24m,etabin24p,"e");
+  TH1D* hSecPt2  = (TH1D*) hSec->ProjectionY("hSecPt2",etabin24m,etabin24p,"e");
   
   TH1D* hDumPt = new TH1D("hDumPt",";p_{T} [GeV/c]",80,0.0,10.0); hDumPt->SetMaximum(1.0);
   hDumPt->GetXaxis()->CenterTitle(); hDumPt->GetYaxis()->SetTitleOffset(1.8);
@@ -292,7 +293,6 @@ void plotHist() {
   c9->cd(2); hDumPtFak->Draw(); gFakPt->Draw("pc"); gFakPt2->Draw("pc"); legPt2->Draw();
 
   // Secondaries
-  /*
   TGraphAsymmErrors *gSecEta = new TGraphAsymmErrors();
   gSecEta->BayesDivide(hSecEta,hRecEta);
   gSecEta->SetMarkerStyle(25);
@@ -327,7 +327,6 @@ void plotHist() {
   hDumPtSec->GetYaxis()->SetTitle("Non-Primary Reconstruction Fraction");
   c10->cd(1); hDumEtaSec->Draw(); gSecEta->Draw("pc"); gSecEta2->Draw("pc"); legEta2->Draw();
   c10->cd(2); hDumPtSec->Draw(); gSecPt->Draw("pc"); gSecPt2->Draw("pc"); legPt2->Draw();
-  */
 }
 
 
