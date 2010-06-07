@@ -12,17 +12,17 @@ process.load('Configuration/EventContent/EventContent_cff')
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-   '/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
-   #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v4/38a0275e6a2a62980cf9b1868edbd493/trkAnaSkimAOD_97_1.root'))
+     #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
+   '/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c/trkAnaSkimAOD_100_1.root'))
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.8 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/prod/condor/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
