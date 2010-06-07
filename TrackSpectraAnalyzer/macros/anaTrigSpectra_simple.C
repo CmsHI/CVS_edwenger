@@ -37,7 +37,8 @@ Double_t GetEffJetPt(TGraph *eff, Double_t minEff)
 void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V0531_v3_fromNt/anahlt.root",
     const char * ntFiles = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/trigSpectra/proc0531_v3",
-    TString histDir = "trackAna/")
+    TString histDir = "trackAna/",
+    Double_t minHltJetEff = 0.99)
 {
   CPlot::sOutDir = outdir;
   Float_t histJetEtMax = 300;
@@ -77,7 +78,14 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   // Find Efficiency > 99% jet et
   map<TString, Double_t> effJetPt;
   for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
-    effJetPt[ig->first] = GetEffJetPt(ig->second,0.99);
+    effJetPt[ig->first] = GetEffJetPt(ig->second,minHltJetEff);
+  }
+  // check
+  if (effJetPt["gHltEff_HltJet6U"] >= effJetPt["gHltEff_HltJet15U"] ||
+      effJetPt["gHltEff_HltJet15U"] >= effJetPt["gHltEff_HltJet30U"] ||
+      effJetPt["gHltEff_HltJet30U"] >= effJetPt["gHltEff_HltJet50U"]) {
+    cout << "Problem: turn on point of a lower jet trigger is higher, check HLT efficiency" << endl;
+    exit(1);
   }
 
 
