@@ -46,11 +46,11 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
   cpPSTrigSpec.SetLogy(1);
   cpPSTrigSpec.SetXRange(0,70);
   cpPSTrigSpec.AddHist1D(inFile,"hSpecMBHF_scaled","MB_HF","E",kBlack,kFullCircle);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 34GeV","E",kViolet+2);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, E_{T}^{jet1} = 34-46GeV","E",kAzure+6);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 46-78GeV","E",kGreen-3);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 78-98GeV","E",kOrange-5);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 98GeV","E",kRed-2);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 30GeV","E",kViolet+2);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, E_{T}^{jet1} = 30-42GeV","E",kAzure+6);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 42-78GeV","E",kGreen-3);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 78-94GeV","E",kOrange-5);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV","E",kRed-2);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigSpec.SetLegendHeader("Ak5 Calojets");
   cpPSTrigSpec.SetLegend(0.373,0.577,0.917,0.925);
