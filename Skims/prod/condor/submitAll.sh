@@ -1,5 +1,7 @@
 #!/bin/bash -
-jobTag=proc0605
+./create_custom_python_cfg.sh
+
+jobTag=proc0607
 # === A20RR v2 ===
 # there is refit track
 inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2/86d28cd0599312fbc0b38fb077d9e1fc
