@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.42 2010/06/06 20:04:02 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.43 2010/06/07 21:22:59 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -233,7 +233,8 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    if(gen.status() != 1) continue;
 	    if(gen.charge() == 0) continue;
 	    if(fabs(gen.eta())>etaMax_) continue;
-	    if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta());
+	    if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta(),leadJetEt_,leadGJetEt_,
+		hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]);
 	    
 	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
 	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),leadGJetEt_); 
@@ -332,7 +333,7 @@ TrackSpectraAnalyzer::beginJob()
    if(isGEN_) {
       hGenNevt = fs->make<TH1F>("hGenNevt","evt sel eff", 51, -0.01, 1.01);
       
-      if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta");
+      if(!histOnly_) nt_gen_dndptdeta = fs->make<TNtuple>("nt_gen_dndptdeta","eta vs pt","pt:eta:jet:gjet:jet6:jet15:jet30:jet50");
       hGenTrkPtEta = fs->make<TH2F>("hGenTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)", nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0);
       hGenTrkPtEtaJetEt = subDir.make<TH3F>("hGenTrkPtEtaJetEt","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
