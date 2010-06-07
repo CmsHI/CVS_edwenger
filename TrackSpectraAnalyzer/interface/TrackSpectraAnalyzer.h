@@ -110,7 +110,9 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool pthatCut_;
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;
    double  etaMax_, ptMin_;
+   double  leadJetEt_, leadJetEta_, leadGJetEt_, leadGJetEta_;
 
+   std::vector<bool> hltAccept_;
    std::vector<double> evtSelEffv_;
 
    edm::InputTag src_;
