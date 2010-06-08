@@ -25,7 +25,7 @@ if [ $? -ne 0 ]; then exit 1; fi
 # === Second Plot the Triggered Spectra ===
 trigSpecAnaInFile=$effHisAnaOutDir/anahlt.root
 trigSpecAnaOutDir=plots/$tag/trigSpec
-root -b -q anaTrigSpectra_simple.C+\(\"$trigSpecAnaInFile\",\"$effNtAnaInFile\",\"$trigSpecAnaOutDir\",\"trackAna/\",\"$trkNtName\",0.99\)
+root -b -q anaTrigSpectra_simple.C+\(\"$sampleName\",\"$trigSpecAnaInFile\",\"$effNtAnaInFile\",\"$trigSpecAnaOutDir\",\"trackAna/\",\"$trkNtName\",0.99\)
 if [ $? -ne 0 ]; then exit 1; fi
 
 trigSpecPlotsInFile=$trigSpecAnaOutDir/anaspec.root

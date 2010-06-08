@@ -34,7 +34,8 @@ Double_t GetEffJetPt(TGraph *eff, Double_t minEff)
   return  minpt;
 }
 
-void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V0531_v3_fromNt/anahlt.root",
+void anaTrigSpectra_simple(TString sampleName="Data",
+    const char * inFileName = "../anasimplehlt/plots/V0531_v3_fromNt/anahlt.root",
     const char * ntFiles = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/trigSpectra/proc0531_v3",
     TString histDir = "trackAna/",
@@ -72,7 +73,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kRed-2);
-  cpHltEff.SetLegendHeader("Calojets |#eta|<2.5");
+  cpHltEff.SetLegendHeader(sampleName);
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.Draw(cHltEff,false);
 
@@ -132,7 +133,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
   cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec15U"],"HLT_Jet15U","",kGreen-3);
   cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec30U"],"HLT_Jet30U","",kOrange-5);
   cpTrigSpec.AddHist1D(trigSpec.hm_["hSpec50U"],"HLT_Jet50U","",kRed-2);
-  cpTrigSpec.SetLegendHeader("Calojets |#eta|<2.5");
+  cpTrigSpec.SetLegendHeader(sampleName);
   cpTrigSpec.Draw(cTrigSpec,false);
   
   // All done, save hists
