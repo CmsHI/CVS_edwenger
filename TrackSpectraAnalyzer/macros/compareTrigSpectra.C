@@ -120,17 +120,17 @@ void compareTrigSpectra(TString recoSampleName = "PythiaD6T",
   TCanvas * cPSTrigRecoGenSpec = new TCanvas("cPSTrigRecoGenSpec","cPSTrigRecoGenSpec",510,640);
   CPlot cpPSTrigRecoGenSpec("finalPSTrigRecoGenSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
   cpPSTrigRecoGenSpec.SetLogy(1);
-  cpPSTrigRecoGenSpec.SetXRange(0,42);
+  cpPSTrigRecoGenSpec.SetXRange(0,50);
   cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 38GeV, GenTrk","E",kViolet+4,kOpenSquare);
   cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 46-70GeV, GenTrk","E",kGreen-1,kOpenSquare);
   //cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 70-94GeV, GenTrk","E",kOrange-3,kOpenSquare);
-  //cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV, GenTrk","E",kRed+3);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV, GenTrk","E",kRed+3,kOpenSquare);
   cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 38GeV, RecoTrk","E",kViolet+2);
   cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 46-70GeV, RecoTrk","E",kGreen-3);
   //cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 70-94GeV, RecoTrk","E",kOrange-5);
-  //cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV, RecoTrk","E",kRed-2);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV, RecoTrk","E",kRed-2);
   cpPSTrigRecoGenSpec.SetLegendHeader(recoSampleName);
-  cpPSTrigRecoGenSpec.SetLegend(0.271,0.717,0.816,0.925);
+  cpPSTrigRecoGenSpec.SetLegend(0.271,0.683,0.816,0.925);
   cpPSTrigRecoGenSpec.Draw(cPSTrigRecoGenSpec,true,"all");
 
   // All done, save hists
