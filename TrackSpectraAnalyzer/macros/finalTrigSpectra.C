@@ -16,7 +16,8 @@
 #include <cassert>
 using namespace std;
 
-void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/anaspec.root",
+void finalTrigSpectra(TString sampleName = "Data",
+    const char * inFileName = "plots/trigSpectra/proc0531_v3/anaspec.root",
     TString outdir="plots/trigSpectra/proc0531_v3")
 {
   CPlot::sOutDir = outdir;
@@ -52,7 +53,7 @@ void finalTrigSpectra(const char * inFileName = "plots/trigSpectra/proc0531_v3/a
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 78-94GeV","E",kOrange-5);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV","E",kRed-2);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
-  cpPSTrigSpec.SetLegendHeader("Data");
+  cpPSTrigSpec.SetLegendHeader(sampleName);
   cpPSTrigSpec.SetLegend(0.373,0.577,0.917,0.925);
   cpPSTrigSpec.Draw(cPSTrigSpec,true,"all");
 

@@ -29,5 +29,5 @@ root -b -q anaTrigSpectra_simple.C+\(\"$sampleName\",\"$trigSpecAnaInFile\",\"$e
 if [ $? -ne 0 ]; then exit 1; fi
 
 trigSpecPlotsInFile=$trigSpecAnaOutDir/anaspec.root
-root -b -q finalTrigSpectra.C+\(\"$trigSpecPlotsInFile\",\"$trigSpecAnaOutDir\"\)
+root -b -q finalTrigSpectra.C+\(\"$sampleName\",\"$trigSpecPlotsInFile\",\"$trigSpecAnaOutDir\"\)
 
