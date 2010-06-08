@@ -14,7 +14,8 @@
 #include <cassert>
 using namespace std;
 
-void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhists_try9_100k.root",
+void anaHltJetEff_simple(TString sampleName="Data",
+    const char * inFileName = "../process_aod/outputs/trkhists_try9_100k.root",
     TString outdir="plots/fromHist",
     Bool_t useHist = true,
     TString histDir = "trackAna/",
@@ -97,7 +98,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet15U"],"HLT_Jet15U","",kGreen-3);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet30U"],"HLT_Jet30U","",kOrange-5);
   cpJetPt.AddHist1D(hs1D["hJet0Pt_HltJet50U"],"HLT_Jet50U","",kRed-2);
-  cpJetPt.SetLegendHeader("Data");
+  cpJetPt.SetLegendHeader(sampleName);
   cpJetPt.SetAxisLabeling(15,63,18,63,4,2);
   cpJetPt.Draw(pUpper,false);
 
@@ -129,7 +130,7 @@ void anaHltJetEff_simple(const char * inFileName = "../process_aod/outputs/trkhi
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT_Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT_Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT_Jet50U","pz",kRed-2);
-  cpHltEff.SetLegendHeader("Data");
+  cpHltEff.SetLegendHeader(sampleName);
   cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.ShowLegend(0);
   cpHltEff.SetAxisLabeling(15,63,18,63,4,2);
