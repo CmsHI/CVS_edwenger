@@ -1,13 +1,24 @@
 #!/bin/bash -
-tag=mcproc0607
-
 recoTrkNtName="nt_jettrack"
 genTrkNtName="nt_gen_dndptdeta"
-# run all
-stag=$tag/sub375
+
+# === run data ===
+tag=proc0607
+stag=$tag/all_data
 #./runAnaAll.sh "Data" $scratch'/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0607/trkhists_trkAnaSkimAOD_*.root' $stag $recoTrkNtName
-./runAnaAll.sh "PythiaD6T" 'dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/frankma/mc/s10-STARTV26A_356/proc0607/trkhistsMC_375_1.root' $stag $genTrkNtName
+
+# === run mc ===
+tag=mcproc0607_v2
+# run mc reco
+stag=$tag/all_mcrecotrk
+./runAnaAll.sh "PythiaD6T" 'dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/frankma/mc/s10-STARTV26A_356/proc0607/trkhistsMC_*_1.root' $stag $recoTrkNtName
+
+# run mc gen
+stag=$tag/all_mcgentrk
+./runAnaAll.sh "PythiaD6T" 'dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/frankma/mc/s10-STARTV26A_356/proc0607/trkhistsMC_*_1.root' $stag $genTrkNtName
 exit
+
+
 
 # run sub ranges of files to check results as a function of lumi
 for i in `seq 1 9`; do
