@@ -38,6 +38,7 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
     const char * ntFiles = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/trigSpectra/proc0531_v3",
     TString histDir = "trackAna/",
+    TString trkNtName = "nt_jettrack",
     Double_t minHltJetEff = 0.99)
 {
   CPlot::sOutDir = outdir;
@@ -90,9 +91,9 @@ void anaTrigSpectra_simple(const char * inFileName = "../anasimplehlt/plots/V053
 
 
   // ================== Triggered Spectra Ana ==================
-  TChain * nt_jettrk = new TChain(histDir+"nt_jettrack","ntuple: jets and tracks");
+  TChain * nt_jettrk = new TChain(histDir+trkNtName,"ntuple: jets and tracks");
   nt_jettrk->Add(ntFiles);
-  cout << "Ana: " << histDir << "nt_jettrack: " << nt_jettrk->GetEntries() << " tracks" << endl;;
+  cout << "Ana: " << histDir << trkNtName << ": " << nt_jettrk->GetEntries() << " tracks" << endl;;
   HisGroup trigSpec("trigSpec",100,0,100);
   trigSpec.Add("hSpecMBHF",1);
   trigSpec.Add("hSpecMBJet",1);
