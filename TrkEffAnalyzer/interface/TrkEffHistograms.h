@@ -90,6 +90,9 @@ class TrkEffHistograms
    TH3F* hsim3D;
    TH3F* heff3D;
    TH3F* hmul3D;
+   TH3F* hresStoR3D;
+   TH3F* hresStoR3D_v2;
+
 
    // RecTrack
    TH2F* hrec;
@@ -99,6 +102,7 @@ class TrkEffHistograms
    TH3F* hrec3D;
    TH3F* hfak3D;
    TH3F* hsec3D;
+   TH3F* hresRtoS3D;
 
 };
 
