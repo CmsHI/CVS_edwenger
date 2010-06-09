@@ -156,11 +156,11 @@ std::pair<TH3F*,TH3F*> getEffHists(char *file, char *dirC, char *histN, char *hi
    while ((key=(TKey*)next())) {
       sprintf(name,"%s",key->GetName());
       if(strcmp((key->GetName()),(histN))==0){
-         cout<<"[getEffHists] Your numerator for Eff "<<name<<endl;
+         //cout<<"[getEffHists] Your numerator for Eff "<<name<<endl;
          TH3F *hpneff3d = (TH3F*) efileDIR->Get(name);
       }
       if(strcmp((key->GetName()),(histD))==0){
-         cout<<"[getEffHists] Your denominator for Eff "<<name<<endl; 
+         //cout<<"[getEffHists] Your denominator for Eff "<<name<<endl; 
          TH3F *hpdeff3d = (TH3F*) efileDIR->Get(name);
       }
    }
@@ -251,7 +251,8 @@ TH1D* RebinIt(TH1D* hist, bool REBIN){
 	 */
 	 // DATA
 
-	 if (bin < 2)          bin += 1;
+	 //if (bin < 2)          bin += 1;
+	 if (bin < 3)          bin += 1;      
 	 else if(bin < 8)      bin += 2;
 	 else if (bin < 12)    bin += 4;
 	 else if (bin < 30)    bin += 6;
