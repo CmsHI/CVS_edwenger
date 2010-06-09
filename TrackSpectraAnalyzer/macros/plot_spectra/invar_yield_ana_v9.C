@@ -9,6 +9,7 @@
 using namespace std;
 #include <utility>
 #include "invar_yield_ana_v9.h"
+#include "/home/sungho/plots/common/utilities.h"
 
 struct invar_yield_ana_v9_data {
    TH1D *hInvX;
@@ -55,10 +56,10 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    pt_1st = 9, pt_2nd = 12, pt_3rd = 40, pt_4th = 100;
    
    float jet_1st, jet_2nd, jet_3rd, jet_4th;
-   //jet_1st = 50, jet_2nd = 50, jet_3rd = 90, jet_4th = 180;   
    jet_1st = 30, jet_2nd = 50, jet_3rd = 90, jet_4th = 180;
-   //jet_1st = 600, jet_2nd = 1600, jet_3rd = 2600, jet_4th = 3600;
-
+   //jet_1st = 25, jet_2nd = 50, jet_3rd = 90, jet_4th = 180;
+   //jet_1st = 30, jet_2nd = 50, jet_3rd = 90, jet_4th = 180;
+   //jet_1st = 25, jet_2nd = 45, jet_3rd = 90, jet_4th = 180;
 
 
    char* cFileTRKArray[NHIST];
@@ -93,8 +94,9 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 	 else if(i==2) cFileTRKArray[i] = cFileTRK3;
 	 else if(i==3) cFileTRKArray[i] = cFileTRK4;
 	 else if(i==4) cFileTRKArray[i] = cFileTRK5;
-
+	 cout<<"TRK correction file to be processed : "<<cFileTRKArray[i]<<endl;
 	 
+	 // trk eff/fr correction
 	 h3DEff[i] = getEffHists(cFileTRKArray[i],dir_corr,hist1,hist2);
 	 h3DFake[i] = getEffHists(cFileTRKArray[i],dir_corr,hist3,hist4);
 	 
