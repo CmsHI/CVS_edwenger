@@ -56,11 +56,11 @@ void anaHltJetEff_simple(TString sampleName="Data",
     TChain * nt_jet = new TChain(histDir+"nt_jet","ntuple: jets");
     nt_jet->Add(inFileName);
     //nt_jet->Print();
-    hs1D["hJet0Pt"] = new TH1D("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet6U"] = new TH1D("hJet0Pt_HltJet6U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet15U"] = new TH1D("hJet0Pt_HltJet15U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet30U"] = new TH1D("hJet0Pt_HltJet30U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
-    hs1D["hJet0Pt_HltJet50U"] = new TH1D("hJet0Pt_HltJet50U","jet p_{T}; p_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt"] = new TH1D("hJet0Pt","jet p_{T}; E_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet6U"] = new TH1D("hJet0Pt_HltJet6U","jet p_{T}; E_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet15U"] = new TH1D("hJet0Pt_HltJet15U","jet p_{T}; E_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet30U"] = new TH1D("hJet0Pt_HltJet30U","jet p_{T}; E_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
+    hs1D["hJet0Pt_HltJet50U"] = new TH1D("hJet0Pt_HltJet50U","jet p_{T}; E_{T}^{corr jet} [GeV/c]", numPtBins, 0.0, histJetEtMax);
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
     TCut baseJetCut;
     //TCut baseJetCut = "abs(jeta)<2.5";
@@ -90,7 +90,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
 
   // === Begin Ana ===
   pUpper->cd();
-  CPlot cpJetPt("JetPt","Jet Pt","p_{T}^{corr jet} [GeV/c]","# evt");
+  CPlot cpJetPt("JetPt","Jet Pt","E_{T}^{corr jet} [GeV/c]","# evt");
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
   cpJetPt.AddHist1D(hs1D["hJet0Pt"],"MB_HF","",kViolet+2);
