@@ -43,18 +43,18 @@ void finalTrigSpectra(TString sampleName = "Data",
   // Final plots
   // Spectra comparison
   TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",510,640);
-  CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
+  CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# Events/GeV");
   cpPSTrigSpec.SetLogy(1);
   cpPSTrigSpec.SetXRange(0,70);
-  cpPSTrigSpec.AddHist1D(inFile,"hSpecMBHF_scaled","MB_HF","E",kBlack,kFullCircle);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 30GeV","E",kViolet+2);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, E_{T}^{jet1} = 30-42GeV","E",kAzure+6);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 42-78GeV","E",kGreen-3);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 78-94GeV","E",kOrange-5);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV","E",kRed-2);
+  cpPSTrigSpec.AddHist1D(inFile,"hSpecMBHF_scaled","MinBias All","E",kBlack,kFullCircle);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MinBias All and E_{T}^{jet1} < 30GeV","E",kViolet+2);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT: Jet6^{Raw} and E_{T}^{jet1} = 30-42GeV","E",kAzure+6);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT: Jet15^{Raw} and E_{T}^{jet1} = 42-78GeV","E",kGreen-3);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT: Jet30^{Raw} and E_{T}^{jet1} = 78-94GeV","E",kOrange-5);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT: Jet50^{Raw} and E_{T}^{jet1} > 94GeV","E",kRed-2);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigSpec.SetLegendHeader(sampleName);
-  cpPSTrigSpec.SetLegend(0.373,0.577,0.917,0.925);
+  cpPSTrigSpec.SetLegend(0.35,0.66,0.86,0.93);
   cpPSTrigSpec.Draw(cPSTrigSpec,true,"all");
 
   // Ratio Plot
