@@ -10,12 +10,12 @@ from edwenger.Skims.TrackRefit_cff import *
 extraReco = cms.Sequence(extraVertex *         ## agglomerative pixel vertexing
                          postEvtSelTest *
                          selectedVertex *      ## most-populated (filters)
+                         goodVertices *        ## all vertices pass ndof>4, etc.
+                         sortedGoodVertices *
                          chargedCandidates *   ## selected tracks -> charged candidates
                          postVtxTest *
                          preTrkVtxTest *
                          primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
-                         goodVertices *
-                         sortedGoodVertices *
                          trackRefit * 
                          postTrkVtxTest)
 

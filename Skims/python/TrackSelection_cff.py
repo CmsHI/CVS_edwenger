@@ -12,6 +12,7 @@ selectTracks.d0_par2 = cms.vdouble(3, 0.0)
 selectTracks.dz_par2 = cms.vdouble(3, 0.0)
 selectTracks.max_d0 = cms.double(0.2)
 selectTracks.max_z0 = cms.double(0.2)
+selectTracks.vertices = cms.InputTag("sortedGoodVertices")
 
 looseSelectTracks = selectTracks.clone(
     vertices = cms.InputTag("selectedVertex")
