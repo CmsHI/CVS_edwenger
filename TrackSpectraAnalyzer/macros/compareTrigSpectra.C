@@ -51,18 +51,18 @@ void compareTrigSpectra(TString recoSampleName = "PythiaD6T",
   // Final plots
   // Spectra comparison
   TCanvas * cPSTrigSpec = new TCanvas("cPSTrigSpec","cPSTrigSpec",510,640);
-  CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
+  CPlot cpPSTrigSpec("finalPSTrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# Events/GeV");
   cpPSTrigSpec.SetLogy(1);
   cpPSTrigSpec.SetXRange(0,70);
-  cpPSTrigSpec.AddHist1D(recoFile,"hSpecMBHF_scaled","MB_HF","E",kBlack,kFullCircle);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 30GeV","E",kViolet+2);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT_L1Jet6U, E_{T}^{jet1} = 30-42GeV","E",kAzure+6);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 42-78GeV","E",kGreen-3);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 78-94GeV","E",kOrange-5);
-  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV","E",kRed-2);
+  cpPSTrigSpec.AddHist1D(recoFile,"hSpecMBHF_scaled","MinBias All","E",kBlack,kFullCircle);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MinBias All and E_{T}^{jet1} < 30GeV","E",kViolet+2);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec6U_scaled"],"HLT: Jet6^{Raw} and E_{T}^{jet1} = 30-42GeV","E",kAzure+6);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT: Jet15^{Raw} and E_{T}^{jet1} = 42-78GeV","E",kGreen-3);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT: Jet30^{Raw} and E_{T}^{jet1} = 78-94GeV","E",kOrange-5);
+  cpPSTrigSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT: Jet50^{Raw} and E_{T}^{jet1} > 94GeV","E",kRed-2);
   cpPSTrigSpec.AddHist1D(psTrigSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigSpec.SetLegendHeader(recoSampleName);
-  cpPSTrigSpec.SetLegend(0.373,0.577,0.917,0.925);
+  cpPSTrigSpec.SetLegend(0.35,0.66,0.86,0.93);
   cpPSTrigSpec.Draw(cPSTrigSpec,true,"all");
 
   // Ratio Plot
@@ -92,7 +92,7 @@ void compareTrigSpectra(TString recoSampleName = "PythiaD6T",
   // Final plots
   // Spectra comparison
   TCanvas * cPSTrigGenSpec = new TCanvas("cPSTrigGenSpec","cPSTrigGenSpec",510,640);
-  CPlot cpPSTrigGenSpec("finalPSTrigGenSpec","Jet triggered spectra","p_{T}^{gentrk} [GeV/c]","# evt");
+  CPlot cpPSTrigGenSpec("finalPSTrigGenSpec","Jet triggered spectra","p_{T}^{gentrk} [GeV/c]","# Events/GeV");
   cpPSTrigGenSpec.SetLogy(1);
   cpPSTrigGenSpec.SetXRange(0,70);
   cpPSTrigGenSpec.AddHist1D(genFile,"hSpecMBHF_scaled","MB_HF","E",kBlack,kFullCircle);
@@ -103,7 +103,7 @@ void compareTrigSpectra(TString recoSampleName = "PythiaD6T",
   cpPSTrigGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV","E",kRed-2);
   cpPSTrigGenSpec.AddHist1D(psTrigGenSpec.hSum_,"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigGenSpec.SetLegendHeader(genSampleName);
-  cpPSTrigGenSpec.SetLegend(0.373,0.577,0.917,0.925);
+  cpPSTrigGenSpec.SetLegend(0.35,0.66,0.86,0.93);
   cpPSTrigGenSpec.Draw(cPSTrigGenSpec,true,"all");
 
   // Ratio Plot
@@ -118,19 +118,19 @@ void compareTrigSpectra(TString recoSampleName = "PythiaD6T",
   // === Reco vs Gen Trk comparison ===
   // Spectra comparison
   TCanvas * cPSTrigRecoGenSpec = new TCanvas("cPSTrigRecoGenSpec","cPSTrigRecoGenSpec",510,640);
-  CPlot cpPSTrigRecoGenSpec("finalPSTrigRecoGenSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
+  CPlot cpPSTrigRecoGenSpec("finalPSTrigRecoGenSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# Events/GeV");
   cpPSTrigRecoGenSpec.SetLogy(1);
   cpPSTrigRecoGenSpec.SetXRange(0,50);
-  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 38GeV, GenTrk","E",kViolet+4,kOpenSquare);
-  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 46-70GeV, GenTrk","E",kGreen-1,kOpenSquare);
-  //cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 70-94GeV, GenTrk","E",kOrange-3,kOpenSquare);
-  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV, GenTrk","E",kRed+3,kOpenSquare);
-  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MB_HF, E_{T}^{jet1} < 38GeV, RecoTrk","E",kViolet+2);
-  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT_Jet15U, E_{T}^{jet1} = 46-70GeV, RecoTrk","E",kGreen-3);
-  //cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT_Jet30U, E_{T}^{jet1} = 70-94GeV, RecoTrk","E",kOrange-5);
-  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT_Jet50U, E_{T}^{jet1} > 94GeV, RecoTrk","E",kRed-2);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpecMBJet_scaled"],"MinBias All and E_{T}^{jet1} < 38GeV, GenTrk","E",kViolet+4,kOpenSquare);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec15U_scaled"],"HLT: Jet15^{Raw} and E_{T}^{jet1} = 46-70GeV, GenTrk","E",kGreen-1,kOpenSquare);
+  //cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec30U_scaled"],"HLT: Jet30^{Raw} and E_{T}^{jet1} = 70-94GeV, GenTrk","E",kOrange-3,kOpenSquare);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigGenSpec.hm_["hSpec50U_scaled"],"HLT: Jet50^{Raw} and E_{T}^{jet1} > 94GeV, GenTrk","E",kRed+3,kOpenSquare);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpecMBJet_scaled"],"MinBias All and E_{T}^{jet1} < 38GeV, RecoTrk","E",kViolet+2);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec15U_scaled"],"HLT: Jet15^{Raw} and E_{T}^{jet1} = 46-70GeV, RecoTrk","E",kGreen-3);
+  //cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec30U_scaled"],"HLT: Jet30^{Raw} E_{T}^{jet1} = 70-94GeV, RecoTrk","E",kOrange-5);
+  cpPSTrigRecoGenSpec.AddHist1D(psTrigSpec.hm_["hSpec50U_scaled"],"HLT: Jet50^{Raw} and E_{T}^{jet1} > 94GeV, RecoTrk","E",kRed-2);
   cpPSTrigRecoGenSpec.SetLegendHeader(recoSampleName);
-  cpPSTrigRecoGenSpec.SetLegend(0.271,0.683,0.816,0.925);
+  cpPSTrigRecoGenSpec.SetLegend(0.26,0.70,0.70,0.93);
   cpPSTrigRecoGenSpec.Draw(cPSTrigRecoGenSpec,true,"all");
 
   // All done, save hists
