@@ -90,7 +90,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
 
   // === Begin Ana ===
   pUpper->cd();
-  CPlot cpJetPt("JetPt","Jet Pt","E_{T}^{corr jet} [GeV/c]","# evt");
+  CPlot cpJetPt("JetPt","Jet Pt","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
   cpJetPt.AddHist1D(hs1D["hJet0Pt"],"MB_HF","",kViolet+2);
