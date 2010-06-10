@@ -35,6 +35,11 @@ bscOrBptxOr = l1Filter.clone(
 # ================ HLT Filters =====================
 from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 
+hltMinBias = hltHighLevel.clone(
+    HLTPaths = cms.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus'),
+    andOr = cms.bool(True)
+    )
+
 hltJets = hltHighLevel.clone(
     HLTPaths = cms.vstring('HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U'),
     andOr = cms.bool(True)
@@ -65,5 +70,5 @@ from edwenger.VertexAnalyzer.SelectedVertex_cfi import *
 # select only vertices passing a string cut and sort them
 from edwenger.VertexAnalyzer.GoodVertices_cff import *
 
-minBiasBscFilter = cms.Sequence(physDeclFilter * bscOrBptxOr * bptxAnd * bscOr * bscNoHalo)
+minBiasBscFilter = cms.Sequence(physDeclFilter * bscOrBptxOr * hltMinBias * bptxAnd * bscOr * bscNoHalo)
 minBiasBscFilterMC = cms.Sequence(bscOrBptxOr * bscOr * bscNoHalo)
