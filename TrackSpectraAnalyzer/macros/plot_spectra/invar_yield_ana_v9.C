@@ -33,7 +33,7 @@ const int NHIST = 5;
 
 invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, char *cFileTRK1, char *cFileTRK2, char *cFileTRK3, char *cFileTRK4, char *cFileTRK5,
 						  char *dir, char *dir_corr, bool gen, bool trkeffcrct, bool multcrct, bool seccrct, bool mc, bool jetcrct, 
-						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt,
+						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt, bool rescrct,
 						  double ieta, double feta)
    
 {
@@ -115,6 +115,9 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    }
    cout<<"[Preparing TRK eff correction]======================================="<<endl;
    cout<<"\n"<<endl;
+
+   
+
 
    cout<<"[Get number of evetns ]========================================"<<endl;
    //-------- Get Number for evt sel correction
@@ -355,25 +358,29 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
    invar_yield_ana_v9_data data;
 
-
    // make sure i don't include(exclude) eta region i want!
    // bin edges have to be matched to max eta and min eta!
    //if(minpt) hSpectra3D->GetYaxis()->SetRange(2,200);
-   data.hInvX = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
-						hSpectra3D->GetZaxis()->GetFirst(),
-						hSpectra3D->GetZaxis()->GetLast(),
-						"e");    
+   //data.hInvX = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
+   TH1D* hInvX_pre = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
+						     hSpectra3D->GetZaxis()->GetFirst(),
+						     hSpectra3D->GetZaxis()->GetLast(),
+						     "e");    
+
+   
+   if(rescrct) {
+      TH1D* hRInvX_pre = (TH1D*) hInvX_pre->Clone("hRInvX_pre");
+      std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[0],hInvX_pre,ieta,feta,0.5,15);
+      data.hInvX = (TH1D*) correctedSPEC.first;
+      data.hRInvX = (TH1D*) correctedSPEC.second;
+   }else{
+      data.hInvX = (TH1D*) hInvX_pre->Clone("hInvX");
+      TH1D *hInvX_dum = (TH1D*) data.hInvX->Clone("hInvX_dum");
+      data.hRInvX = (TH1D*) RebinIt(hInvX_dum,true);
+   }
+
+
    data.integratedLum = intLum;
-   //data.hInvX->Scale(1./intLum);
-
-
-   cout<<"[Rebinning ]================================================"<<endl;
-   TH1D *hInvX_dum = (TH1D*) data.hInvX->Clone("hInvX_dum");
-   data.hRInvX = (TH1D*) RebinIt(hInvX_dum,true);       
-   cout<<"[Rebinning ]================================================"<<endl;
-   cout<<"\n"<<endl;
-
-
    return (data);
 
 }
