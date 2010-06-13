@@ -168,24 +168,30 @@ TrkEffHistograms::declareHistograms()
 			   ptBins.size()-1, &ptBins[0],
 			   jetBins.size()-1, &jetBins[0]);
 
-    // mom resolution (Rec to Sim)
-    hresRtoS3D = f->make<TH3F>("hresRtoS3D","Momentum resolution (rec to sim);#eta;sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
-			       etaBins.size()-1, &etaBins[0],
-			       ptBins.size()-1, &ptBins[0],
-			       ptBins.size()-1, &ptBins[0]);
-    
-    
     // mom resolution (Sim to Rec) 
     hresStoR3D = f->make<TH3F>("hresStoR3D","Momentum resolution (sim to rec);#eta;sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
                                etaBins.size()-1, &etaBins[0],
                                ptBins.size()-1, &ptBins[0],
                                ptBins.size()-1, &ptBins[0]);
-   
+
+    hresStoR3D_etaS = f->make<TH3F>("hresStoR3D_etaS","Momentum resolution (sim to rec);#jet E_{T} (GeV/c);sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
+				    jetBins.size()-1, &jetBins[0],
+				    ptBins.size()-1, &ptBins[0],
+				    ptBins.size()-1, &ptBins[0]);
+
+    hresStoR3D_etaL = f->make<TH3F>("hresStoR3D_etaL","Momentum resolution (sim to rec);#jet E_{T} (GeV/c);sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
+                                    jetBins.size()-1, &jetBins[0],
+                                    ptBins.size()-1, &ptBins[0],
+                                    ptBins.size()-1, &ptBins[0]);
+
+
     // mom resolution (Sim to Rec) v2      
     hresStoR3D_v2 = f->make<TH3F>("hresStoR3D_v2","Momentum resolution (sim to rec);#eta;sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
 				  etaBins.size()-1, &etaBins[0],
 				  ptBins.size()-1, &ptBins[0],
 				  ptBins.size()-1, &ptBins[0]);
+
+
   }
 
 }
@@ -203,7 +209,11 @@ TrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
     hsim->Fill(s.etas, s.pts);
     hsim3D->Fill(s.etas, s.pts, s.jetr);
     if(s.acc)    hacc->Fill(s.etas, s.pts);
-    if(s.nrec==1) hresStoR3D->Fill(s.etas, s.pts, s.ptr);
+    if(s.nrec==1) {
+       hresStoR3D->Fill(s.etas, s.pts, s.ptr);
+       if(fabs(s.etas)<1.0) hresStoR3D_etaS->Fill(s.jetr, s.pts, s.ptr);
+       if(fabs(s.etas)<2.4) hresStoR3D_etaL->Fill(s.jetr, s.pts, s.ptr);
+    }
     if(s.nrec>0) heff->Fill(s.etas, s.pts), heff3D->Fill(s.etas, s.pts, s.jetr), hresStoR3D_v2->Fill(s.etas, s.pts, s.ptr);
     if(s.nrec>1) hmul->Fill(s.etas, s.pts), hmul3D->Fill(s.etas, s.pts, s.jetr);
   }
@@ -222,7 +232,6 @@ TrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
   if(fillHistograms) {
     hrec->Fill(r.etar, r.ptr);
     hrec3D->Fill(r.etar, r.ptr, r.jetr);
-    if(r.nsim==1) hresRtoS3D->Fill(r.etar, r.pts, r.ptr);
     if(!r.nsim) hfak->Fill(r.etar, r.ptr), hfak3D->Fill(r.etar, r.ptr, r.jetr);
     if(r.nsim>0 && r.status<0) hsec->Fill(r.etar, r.ptr), hsec3D->Fill(r.etar, r.ptr, r.jetr); // nsim>0 redudant?
   }
