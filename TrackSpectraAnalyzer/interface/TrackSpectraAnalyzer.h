@@ -32,6 +32,7 @@
 
 // ROOT includes
 #include "TNtuple.h"
+#include "TH1.h"
 #include "TF1.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -51,7 +52,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
       virtual void endJob(){} ;
 
    // ----------member data ---------------------------
-   
+
    TNtuple *nt_dndptdeta; 
    TNtuple *nt_gen_dndptdeta;
    TNtuple *nt_jet;
@@ -67,7 +68,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    TH1F *hGenNevt;
 
-   TH1F *hTrkPtMB;
 
    TH2F *hTrkPtEta;
    TH2F *hGenTrkPtEta;
@@ -75,17 +75,12 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEt;
    TH3F *hTrkPtEtaJetEtW;
    TH3F *hTrkLowPtEtaJetEtW;
+   TH3F *hTrkPtEtaJetEtW_Trig[6];  // not an automatic pickup yet
 
    TH3F *hTrkPtEtaJetEtW_mult1;
    TH3F *hTrkPtEtaJetEtW_mult2;
    TH3F *hTrkPtEtaJetEtW_mult3;
-
-
-   TH3F *hTrkPtEtaJetEtW_HltJet6U;
-   TH3F *hTrkPtEtaJetEtW_HltJet15U;
-   TH3F *hTrkPtEtaJetEtW_HltJet30U;
-   TH3F *hTrkPtEtaJetEtW_HltJet50U;
-
+   
    TH3F *hGenTrkPtEtaJetEt;
    TH3F *hGenTrkPtEtaJetEtW;
    TH3F *hGenTrkLowPtEtaJetEtW;
@@ -96,11 +91,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    // Jets
    TH1F *hNumJets;
    TH1F *hJet0Pt;
-   TH1F *hJet0Pt_HltMB;
-   TH1F *hJet0Pt_HltJet6U;
-   TH1F *hJet0Pt_HltJet15U;
-   TH1F *hJet0Pt_HltJet30U;
-   TH1F *hJet0Pt_HltJet50U;
+   TH1F *hJet0Pt_Trig[6];
 
    edm::Service<TFileService> fs;
    
@@ -122,5 +113,5 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::InputTag src_evtCorr_;
    std::vector<std::string> hltNames_;
    edm::InputTag triglabel_;
-
+   
 };
