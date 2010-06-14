@@ -20,9 +20,9 @@ cat log/badFileList.txt
 cat log/corruptRootFiles.txt
 mkdir not_pub
 pub_list=../submit/pub_list/
-for i in `ls *.root | sed 's/trkhists_//'`; do grep -q $i $pub_list; if [ $? -ne 0 ]; then echo "mv trkhists_$i not_pub"; fi; done
-for i in `ls *.root | sed 's/trkhists_//'`; do grep -q $i $pub_list; if [ $? -ne 0 ]; then echo "mv trkhists_$i not_pub"; fi; done | bash +x
-for i in `ls *.root | sed 's/trkhists_//'`; do grep $i $pub_list; done > log/in_pub_aod_list.txt
+for i in `ls *.root | sed 's/trkhists//'`; do grep -q $i $pub_list; if [ $? -ne 0 ]; then echo "mv trkhists_$i not_pub"; fi; done
+for i in `ls *.root | sed 's/trkhists//'`; do grep -q $i $pub_list; if [ $? -ne 0 ]; then echo "mv trkhists_$i not_pub"; fi; done | bash +x
+for i in `ls *.root | sed 's/trkhists//'`; do grep $i $pub_list; done > log/in_pub_aod_list.txt
 
 # finished cleaning now merge
 mkdir all
