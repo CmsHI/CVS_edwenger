@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.10 2010/06/01 16:43:46 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.12 2010/06/06 13:03:46 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -15,6 +15,10 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "edwenger/EvtSelAnalyzer/interface/EvtSelAnalyzer.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "edwenger/VertexAnalyzer/interface/VertexComparator.h"
+
 
 EvtSelAnalyzer::EvtSelAnalyzer(const edm::ParameterSet& iConfig)
 :
@@ -25,11 +29,14 @@ EvtSelAnalyzer::EvtSelAnalyzer(const edm::ParameterSet& iConfig)
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
   triglabel_(iConfig.getUntrackedParameter<edm::InputTag>("triglabel")),
   trignames_(iConfig.getUntrackedParameter<std::vector <std::string> >("trignames")),
+  vtxlabel_(iConfig.getUntrackedParameter<edm::InputTag>("vtxlabel")),
   isGEN_(iConfig.getUntrackedParameter<bool>("isGEN")),
   includeSelTrk_(iConfig.getUntrackedParameter<bool>("includeSelTrk")),
   etaMaxSpec_(iConfig.getUntrackedParameter<double>("etaMaxSpec", 1.0)),
-  ptMin_(iConfig.getUntrackedParameter<double>("ptMin", 0.5))
-
+  ptMin_(iConfig.getUntrackedParameter<double>("ptMin", 0.5)),
+  vtxWeight_(iConfig.getUntrackedParameter<bool>("vtxWeight")),
+  pvtxG_DATA_(iConfig.getUntrackedParameter< std::vector<double> >("pvtxG_DATA")),
+  pvtxG_MC_(iConfig.getUntrackedParameter< std::vector<double> >("pvtxG_MC"))
 {
 
 }
@@ -84,6 +91,27 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   hHfTowers->Fill(nHfTowersP,nHfTowersN);
   
+  //------- Vertices ---------------------
+  float Zvtx = 0;
+  float dndvz_data = 0, dndvz_mc = 0;
+  float Wvtx = 0;
+
+  if(vtxWeight_){
+     edm::Handle<reco::VertexCollection> vtxsH;
+     iEvent.getByLabel(vtxlabel_,vtxsH);
+     
+     reco::VertexCollection vtxs = *vtxsH;
+     std::sort(vtxs.begin(),vtxs.end(),MoreTracksThenLowerChi2<reco::Vertex>());
+     
+     Zvtx = vtxs[0].z();
+     
+     dndvz_data = vtxGaussian_DATA->Eval(Zvtx);
+     dndvz_mc = vtxGaussian_MC->Eval(Zvtx);
+     
+     if(dndvz_mc==0) Wvtx = 0;
+     else Wvtx = dndvz_data/dndvz_mc;
+  }
+
   //------- Tracks ----------------------------
   edm::Handle< std::vector <reco::Track> > tracksH;
   iEvent.getByLabel(trackslabel_,tracksH);
@@ -111,6 +139,8 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   hRecMult_STD->Fill(nREC_STD);
   hRecMult_SPEC->Fill(nREC_SPEC);
   hRecMult_AGR->Fill(nREC_AGR);
+
+  if(vtxWeight_) hRecMult_STD_W->Fill(nREC_STD,Wvtx);
 
   //----- selectTracks--------------------
   if(includeSelTrk_){
@@ -186,6 +216,8 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultNSD_STD->Fill(nREC_STD);
       hGenRecMultNSD_SPEC->Fill(nREC_SPEC);
       hGenRecMultNSD_AGR->Fill(nREC_AGR);
+      
+      if(vtxWeight_) hGenRecMultNSD_STD_W->Fill(nREC_STD,Wvtx);
 
       if(nREC_STD==0) hGenToRecZeroBinNSD_STD->Fill(nGEN_STD);
       if(nREC_STD<4) hGenToRec0123BinNSD_STD->Fill(nGEN_STD);
@@ -202,6 +234,8 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultSD_STD->Fill(nREC_STD);
       hGenRecMultSD_SPEC->Fill(nREC_SPEC);
       hGenRecMultSD_AGR->Fill(nREC_AGR);
+
+      if(vtxWeight_) hGenRecMultSD_STD_W->Fill(nREC_STD,Wvtx);
       break;
     case 11:
     case 12:
@@ -251,6 +285,13 @@ EvtSelAnalyzer::beginJob()
   double xmax_SPEC = 299.5;
   double xmax_AGR = 299.5;
 
+
+  vtxGaussian_DATA = new TF1("vtxGaussian_DATA","[2]*TMath::Exp(-0.5*(x-[0])*(x-[0])/([1]*[1]))",-50,50);
+  vtxGaussian_DATA->SetParameters(pvtxG_DATA_[0],pvtxG_DATA_[1],pvtxG_DATA_[2],pvtxG_DATA_[3]);
+  vtxGaussian_MC = new TF1("vtxGaussian_MC","[2]*TMath::Exp(-0.5*(x-[0])*(x-[0])/([1]*[1]))",-50,50);
+  vtxGaussian_MC->SetParameters(pvtxG_MC_[0],pvtxG_MC_[1],pvtxG_MC_[2],pvtxG_MC_[3]);
+
+
   hL1TechBits = f->make<TH1D>("hL1TechBits","L1 technical trigger bits before mask",64,-0.5,63.5);
   hL1AlgoBits = f->make<TH1D>("hL1AlgoBits","L1 algorithm trigger bits before mask",128,-0.5,127.5);
   hHPFracNtrk = f->make<TH2D>("hHPFracNtrk","High purity fraction vs. # of tracks; number of tracks; highPurity fraction",50,0,500,50,0,1);
@@ -263,6 +304,8 @@ EvtSelAnalyzer::beginJob()
   hRecMult_SPEC = f->make<TH1D>("hRecMult_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
   hRecMult_AGR = f->make<TH1D>("hRecMult_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
   
+  if(vtxWeight_) hRecMult_STD_W = f->make<TH1D>("hRecMult_STD_W","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+
   if(includeSelTrk_){
      hRecMult_sel = f->make<TH1D>("hRecMult_sel","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
      hRecMult_STD_sel = f->make<TH1D>("hRecMult_STD_sel","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
@@ -300,10 +343,14 @@ EvtSelAnalyzer::beginJob()
     hGenRecMultNSD_SPEC = f->make<TH1D>("hGenRecMultNSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
     hGenRecMultNSD_AGR = f->make<TH1D>("hGenRecMultNSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
 
+    hGenRecMultNSD_STD_W = f->make<TH1D>("hGenRecMultNSD_STD_W","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+
     hGenRecMultSD = f->make<TH1D>("hGenRecMultSD","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
     hGenRecMultSD_STD = f->make<TH1D>("hGenRecMultSD_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
     hGenRecMultSD_SPEC = f->make<TH1D>("hGenRecMultSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
     hGenRecMultSD_AGR = f->make<TH1D>("hGenRecMultSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+
+    if(vtxWeight_) hGenRecMultSD_STD_W = f->make<TH1D>("hGenRecMultSD_STD_W","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
 
     hGenToRecZeroBinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
     hGenToRec0123BinNSD_STD = f->make<TH1D>("hGenToRec0123BinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);

@@ -16,5 +16,9 @@ evtselanalyzer = cms.EDAnalyzer('EvtSelAnalyzer',
       isGEN=cms.untracked.bool(False),
       includeSelTrk=cms.untracked.bool(False),
       etaMaxSpec=cms.untracked.double(1.0),
-      ptMin=cms.untracked.double(0.0)
+      ptMin=cms.untracked.double(0.0),
+      vtxlabel=cms.untracked.InputTag("pixel3Vertices"),
+      vtxWeight=cms.untracked.bool(False),
+      pvtxG_DATA=cms.untracked.vdouble(7.31011e-01,3.04673e+00,6.54385e-02),
+      pvtxG_MC=cms.untracked.vdouble(-6.53244e-01,4.47771e+00,4.45992e-02)
 )

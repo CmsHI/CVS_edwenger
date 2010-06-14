@@ -5,8 +5,12 @@ from edwenger.EvtSelAnalyzer.evtselanalyzer_cfi import *
 preTrgAna = evtselanalyzer.clone()
 postTrgAna = evtselanalyzer.clone()
 postEvtSelAna = evtselanalyzer.clone()
-postVtxAna = evtselanalyzer.clone(includeSelTrk=cms.untracked.bool(True))
-postTrkVtxAna = evtselanalyzer.clone(includeSelTrk=cms.untracked.bool(True))
+postVtxAna = evtselanalyzer.clone(includeSelTrk=cms.untracked.bool(True),
+                                  vtxWeight=cms.untracked.bool(True),
+                                  vtxlabel=cms.untracked.InputTag("selectedVertex"))
+postTrkVtxAna = evtselanalyzer.clone(includeSelTrk=cms.untracked.bool(True),
+                                     vtxWeight=cms.untracked.bool(True),
+                                     vtxlabel=cms.untracked.InputTag("sortedGoodVertices"))
 
 # clone vertex analyzer to run with various inputs
 from edwenger.VertexAnalyzer.vertexanalyzer_cfi import *

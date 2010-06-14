@@ -12,6 +12,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include <TH2.h>
+#include "TF1.h"
 
 //
 // class declaration
@@ -37,10 +38,19 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       std::string qualityString_;
       edm::InputTag triglabel_;
       std::vector<std::string> trignames_;
+      edm::InputTag vtxlabel_;
       bool isGEN_;
       bool includeSelTrk_;
       double etaMaxSpec_;
       double ptMin_;
+      bool vtxWeight_;
+      std::vector<double> pvtxG_DATA_;
+      std::vector<double> pvtxG_MC_;
+
+
+      //vtx weighting
+      TF1 *vtxGaussian_DATA;
+      TF1 *vtxGaussian_MC;
 
       edm::Service<TFileService> f;
       TH1D *hL1TechBits;
@@ -53,6 +63,8 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       TH1D *hRecMult_STD;
       TH1D *hRecMult_SPEC;
       TH1D *hRecMult_AGR;
+      
+      TH1D *hRecMult_STD_W;
       
       TH1D *hRecMult_sel;
       TH1D *hRecMult_STD_sel;
@@ -88,10 +100,14 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       TH1D *hGenRecMultNSD_SPEC;
       TH1D *hGenRecMultNSD_AGR;
 
+      TH1D *hGenRecMultNSD_STD_W;
+
       TH1D *hGenRecMultSD;
       TH1D *hGenRecMultSD_STD;
       TH1D *hGenRecMultSD_SPEC;
       TH1D *hGenRecMultSD_AGR;
+
+      TH1D *hGenRecMultSD_STD_W;
 
       TH1D *hGenToRecZeroBinNSD_STD;
       TH1D *hGenToRec0123BinNSD_STD;
