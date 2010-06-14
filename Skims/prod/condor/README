@@ -26,4 +26,4 @@ for i in `ls *.root | sed 's/trkhists//'`; do grep $i $pub_list; done > log/in_p
 
 # finished cleaning now merge
 mkdir all
-hadd -T all/trkhists_histOnly_all.root trkhists_*.root
+hadd -T all/trkhists_histOnly_all.root trkhists_*.root >& log/hadd.txt &
