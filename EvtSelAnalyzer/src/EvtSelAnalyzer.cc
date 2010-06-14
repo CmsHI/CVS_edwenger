@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.12 2010/06/06 13:03:46 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.13 2010/06/14 10:01:08 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -140,8 +140,8 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   hRecMult_SPEC->Fill(nREC_SPEC);
   hRecMult_AGR->Fill(nREC_AGR);
 
-  if(vtxWeight_) hRecMult_STD_W->Fill(nREC_STD,Wvtx);
-
+  if(vtxWeight_) hRecMult_STD_W->Fill(nREC_STD,Wvtx), hGenRecMultNSDvsZvtx_STD->Fill(nREC_STD,Zvtx);
+  
   //----- selectTracks--------------------
   if(includeSelTrk_){
      edm::Handle< std::vector <reco::Track> > tracksH_sel;
@@ -354,9 +354,12 @@ EvtSelAnalyzer::beginJob()
 
     hGenToRecZeroBinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
     hGenToRec0123BinNSD_STD = f->make<TH1D>("hGenToRec0123BinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
-    hGenVsRecMultNSD_STD = f->make<TH2D>("hGenVsRecMultNSD_STD","GEN vs REC;GEN mult.;REC mult.",numBins,-0.5,xmax_STD,
+    hGenVsRecMultNSD_STD = f->make<TH2F>("hGenVsRecMultNSD_STD","GEN vs REC;GEN mult.;REC mult.",numBins,-0.5,xmax_STD,
 				      numBins,-0.5,xmax_STD);
 
+    if(vtxWeight_) hGenRecMultNSDvsZvtx_STD = f->make<TH2F>("hGenRecMultNSDvsZvtx_STD","Mult vs Zvtx;mult.;V_{z}",numBins,-0.5,xmax_STD,
+							      80,-20,20);
+    
   }
 
 }
