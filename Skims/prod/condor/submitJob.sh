@@ -12,7 +12,7 @@ output_dir=$2
 tag=trkAnaSkimAOD
 #prefix=dcache:
 #prefix=file:
-njobs=10 #00000
+njobs=1000000
 
 echo begin
 #for i in `ls $inputTopDir | grep $tag | sort | head -n $njobs`
