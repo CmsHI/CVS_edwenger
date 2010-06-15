@@ -1,22 +1,22 @@
 #!/bin/bash -
 ./create_custom_python_cfg.sh
 
-jobTag=proc0607
+jobTag=proc0615
 # === A20RR v2 ===
 # there is refit track
-inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2/86d28cd0599312fbc0b38fb077d9e1fc
+inputList=pub_list/MB-C10-A20RR-TRKANASKIM-v2.txt
 output_dir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2_${jobTag}
-./submitJob.sh $inputTopDir $output_dir
+./submitJob.sh $inputList $output_dir
 
 # === A20RR v3 ===
 # there is refit track
-inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v3/86d28cd0599312fbc0b38fb077d9e1fc
+inputList=pub_list/MB-C10-A20RR-TRKANASKIM-v3.txt
 output_dir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-A20RR-TRKANASKIM-v3_${jobTag}
-./submitJob.sh $inputTopDir $output_dir
+./submitJob.sh $inputList $output_dir
 
 # === PR9 v3 ===
 # there is refit track
-inputTopDir=/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c
+inputList=pub_list/MB-C10-PR9-TRKANASKIM-v3.txt
 output_dir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_${jobTag}
-./submitJob.sh $inputTopDir $output_dir
+./submitJob.sh $inputList $output_dir
 
