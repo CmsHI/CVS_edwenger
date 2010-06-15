@@ -7,75 +7,151 @@
 //--------------------------------------------------------------------
 
 
-using namespace std;
-#include <utility>
-//#include "/home/sungho/plots/common/utilities.h"
 
-std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist, double ieta, double feta, double xmin, double xmax){ 
+#include <utility>
+#include <iostream>
+
+#include "/home/sungho/plots/common/utilities.h"
+
+#include <TROOT.h>
+#include <TStyle.h>
+
+#include "TFile.h"
+#include "TCanvas.h"
+
+#include "TH1F.h"
+#include "TH1D.h"
+
+#include "TH2F.h"
+#include "TH2D.h"
+
+#include "TH3F.h"
+
+#include "TF1.h"
+
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+
+#include "TDirectory.h"
+#include "TDirectoryFile.h"
+
+#include "TChain.h"
+#include "TGraph.h"
+
+#include "TKey.h";
+
+using namespace std;
+
+
+TH1D* FillFromFunc(TH1D* hist, TF1* func);
+int GetFirstNonEmptyBin(TH1D* hist);
+int GetLastNonEmptyBin(TH1D* hist);
+double GetEffFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
+double GetFakFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
+double CorrectNevt(TH1F* histEVT);
+double CorrectNevtWithMult(TH1F* histEVT);
+double GetZeroBinFraction(TH1F* hist);
+double GetZOTTBinFraction(TH1F* hist);
+double GetOTTBinFraction(TH1F* hist);
+double CorrectNevtV2(TH1F* histDen, TH1F* histNum);
+std::pair<TH3F*,TH3F*> getEffHists(char *file, char *dirC, char *histN, char *histD);
+void PrintDetailsOfHist(TH3F* hSpectra);
+std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly, double ieta, double feta, double xmin, double xmax);
+
+
+std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly, double ieta, double feta, double xmin, double xmax){ 
 
 
    cout<<"\n"<<endl;
    cout<<"[Mom resolution and binning correction ]========================================"<<endl;
 
-   TFile *fEVT = new TFile(file);
-   TH3F *hRes3D = (TH3F*) fEVT->Get("trkEffAnalyzer/hresStoR3D");
+   
+   TH1D *hCFMR = (TH1D*) hist_pre->Clone("hCFMR");
 
-   int binmaxeta = hRes3D->GetXaxis()->FindBin(feta);
-   int binmineta = hRes3D->GetXaxis()->FindBin(-1.0*feta);
-
-   hRes3D->GetXaxis()->SetRange(binmineta,binmaxeta);
-   TH2D *hRes2D = (TH2D*) hRes3D->Project3D("zy"); 
-
+   //==============  obtain fit 
    TF1* fitF = new TF1("fitpythia","[0]*(1+(x/[1])+(pow(x,2)/[2])+(pow(x,3)/[3])+(pow(x,4)/[4])+(pow(x,5)/[5]))^[6]",xmin,xmax);
    fitF->SetParameters(2.96361e+08,2.66339e-01,1.34086e-01,2.96428e-01,1.74015e+00,5.16931e+00,-1.70643e+00);
    fitF->SetLineColor(2);
    fitF->SetLineWidth(2);
-   hist->Fit(fitF,"NR");
 
-   int nbins = hist->GetNbinsX();
-   cout<<"nbins = "<<nbins<<endl;
+   hCFMR->Fit(fitF,"NRO");
 
-   for(int i=0;i<nbins;i++){
+   //==============  obtain mom res histograms
+   TH3F *hRes3D = 0;
+   TH2D *hRes2D = 0;
 
-      bool nullArea = false;
-
-      TH1D *hRes1D_temp = (TH1D*) hRes2D->ProjectionY("",i+1,i+1,"e");
-
-      // check if works..
-      int firstB = GetFirstNonEmptyBin(hRes1D_temp);
-      int lastB = GetLastNonEmptyBin(hRes1D_temp);
-
-      double area = hRes1D_temp->Integral();
-
-      if(area==0) nullArea =true;
-      else hRes1D_temp->Scale(1./area);
-
-      for(int j=firstB;j<lastB+1;j++){
-
-	 if(!nullArea) double corr = hRes1D_temp->GetBinContent(j);
-	 else double corr = 1.0; // no information on res-> no correction
-
-	 double pt = hRes1D_temp->GetBinCenter(j);
-
-	 int rpt_bin = hRes2D->GetYaxis()->FindBin(pt); // should be same as j!
-	 int spt_bin = i+1;
-	 double smeared = corr*(fitF->Eval(pt));
-
-	 hRes2D->SetBinContent(spt_bin,rpt_bin,smeared);
-	 hRes2D->SetBinError(spt_bin,rpt_bin,0);
-      }
-      delete hRes1D_temp;
+   if(!rebOnly){
+      TFile *fEVT = new TFile(file);
+      hRes3D = (TH3F*) fEVT->Get("trkEffAnalyzer/hresStoR3D");
+      
+      int binmaxeta = hRes3D->GetXaxis()->FindBin(feta);
+      int binmineta = hRes3D->GetXaxis()->FindBin(-1.0*feta);
+      
+      hRes3D->GetXaxis()->SetRange(binmineta,binmaxeta);
+      hRes2D = (TH2D*) hRes3D->Project3D("zy"); 
    }
-   
 
-   TH1D *histCorr = (TH1D*) hRes2D->ProjectionY("",1,hRes2D->GetXaxis()->GetLast(),"e");
+   //==============  convolute with res!
+   TH1D *hRes1D_temp = 0;
 
-   TH1D* hSPEC = (TH1D*) hist->Clone("hSPEC");
-   TH1D* hSPECR = (TH1D*) RebinIt(hist,true);
+   if(!rebOnly){
+      int nbins = hCFMR->GetNbinsX();
+      cout<<"nbins = "<<nbins<<endl;
+      
+      for(int i=0;i<nbins;i++){
+	 
+	 bool nullArea = false; // this is needed for emtpy mom res bin
+	 
+	 hRes1D_temp = (TH1D*) hRes2D->ProjectionY("",i+1,i+1,"e");
+	 
+	 // check if works..
+	 int firstB = GetFirstNonEmptyBin(hRes1D_temp);
+	 int lastB = GetLastNonEmptyBin(hRes1D_temp);
+	 
+	 double area = hRes1D_temp->Integral();
+	 
+	 if(area==0) nullArea =true;
+	 else hRes1D_temp->Scale(1./area);
+	 
+	 double corr;
 
-   TH1D* histC = (TH1D*) histCorr->Clone("histC");
-   TH1D* histCR = (TH1D*) RebinIt(histCorr,true);
+	 for(int j=firstB;j<lastB+1;j++){
+	    
+	    if(!nullArea) corr = hRes1D_temp->GetBinContent(j);
+	    else corr = 1.0; // no information on res-> no correction
+	    
+	    double pt = hRes1D_temp->GetBinCenter(j);
+	    
+	    int rpt_bin = hRes2D->GetYaxis()->FindBin(pt); // should be same as j!
+	    int spt_bin = i+1;
+	    double smeared = corr*(fitF->Eval(pt)); // weighted by the fit 
+	    
+	    hRes2D->SetBinContent(spt_bin,rpt_bin,smeared);
+	    hRes2D->SetBinError(spt_bin,rpt_bin,0);
+	 }
+	 delete hRes1D_temp;
+      }
+   }
 
+   TH1D* histCorr = 0;
+   TH1D* histC = 0;
+   TH1D* histCR = 0;
+
+   if(!rebOnly){
+      histCorr = (TH1D*) hRes2D->ProjectionY("",1,hRes2D->GetXaxis()->GetLast(),"e"); // convoluted and projected!
+      histC = (TH1D*) histCorr->Clone("histC");
+      histCR = (TH1D*) RebinIt(histCorr,true,"histCR");
+   }else{
+      histCorr = (TH1D*) hCFMR->Clone("histCorr");
+      histC = (TH1D*) hCFMR->Clone("histC");
+      histCR = (TH1D*) RebinIt(histCorr,true,"histCR");
+   }
+
+   TH1D* hSPEC = (TH1D*) hCFMR->Clone("hSPEC");
+   TH1D* hSPECR = (TH1D*) RebinIt(hCFMR,true,"hSPECR");
+
+   //cout<<"name = "<<hist->GetName()<<" && title = "<<hist->GetTitle()<<endl;  
+   //PrintNameAndTitle(hist);
    TH1D* histC_ratio = (TH1D*) ratio_hist_to_func(histC,fitF);
    TH1D* histCR_ratio = (TH1D*) ratio_hist_to_func(histCR,fitF);
 
@@ -102,18 +178,23 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist, double ieta, dou
    //To see how well spectra is fit and the correction factor
    TCanvas *cIn = new TCanvas("cIn","cIn",500,450);
    cIn->cd();
-   cIn->SetLogy();
+   //cIn->SetLogy();
 
-   hist->SetMarkerSize(0.8);
-   hist->Draw("pz");
-   fitF->Draw("same");
+   TH1D *dummyH = new TH1D("dummyH","",100,0.0,200);
+   dummyH->Draw("");
+   hCFMR->SetMarkerSize(0.8);
+   //cout<<"name = "<<hist->GetName()<<" && title = "<<hist->GetTitle()<<endl;
+   //hCFMR->Draw("histsame");
+   //histC_ratio->Draw("histsame");
+   //fitF->Draw("pzsame");
 
+   /*
    TCanvas *cIn2 = new TCanvas("cIn2","cIn2",500,450);
    cIn2->cd();
    histC_ratio->Draw("hist");
    histCR_ratio->SetLineColor(kRed);
    histCR_ratio->Draw("histsame");
-
+   */
    
 
    cout<<"[Mom resolution and binning correction ]========================================"<<endl;
@@ -121,6 +202,23 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist, double ieta, dou
 
    return  std::pair<TH1D*,TH1D*>(hSPEC,hSPECR);
 
+}
+
+
+TH1D* FillFromFunc(TH1D* hist, TF1* func){
+   int nbin = hist->GetNbinsX();
+   //hist->Sumw2();
+   for(int i = 0; i<nbin ;i++){
+      double low = hist->GetXaxis()->GetBinLowEdge(i+1);
+      double high = hist->GetXaxis()->GetBinUpEdge(i+1);
+      double deltaN = func->Integral(low,high);
+      double pt = hist->GetBinCenter(i+1);
+      double dbin = hist->GetBinWidth(i+1);
+      hist->Fill(pt,deltaN/dbin);
+      hist->SetBinError(i+1,0);
+   }
+
+   return hist;
 }
 
 
@@ -252,23 +350,25 @@ double CorrectNevtV2(TH1F* histDen, TH1F* histNum){
 std::pair<TH3F*,TH3F*> getEffHists(char *file, char *dirC, char *histN, char *histD){
 
    TFile *efile = new TFile(file,"read");
-   TDirectoryFile *efileDIR = efile->GetDirectory(dirC);
-   //cout<<"[getEffHists] File to be processed: "<<file<<" with directory "<<dirC<<endl;                                                                                  
+   TDirectoryFile *efileDIR = (TDirectoryFile*) efile->GetDirectory(dirC);
 
    TIter next(efileDIR->GetListOfKeys());
    TKey *key;
 
    Char_t name[100];
 
+   TH3F *hpneff3d=0;
+   TH3F *hpdeff3d=0;
+
    while ((key=(TKey*)next())) {
       sprintf(name,"%s",key->GetName());
       if(strcmp((key->GetName()),(histN))==0){
          //cout<<"[getEffHists] Your numerator for Eff "<<name<<endl;
-         TH3F *hpneff3d = (TH3F*) efileDIR->Get(name);
+         hpneff3d = (TH3F*) efileDIR->Get(name);
       }
       if(strcmp((key->GetName()),(histD))==0){
          //cout<<"[getEffHists] Your denominator for Eff "<<name<<endl; 
-         TH3F *hpdeff3d = (TH3F*) efileDIR->Get(name);
+         hpdeff3d = (TH3F*) efileDIR->Get(name);
       }
    }
    return std::pair<TH3F*,TH3F*>(hpneff3d,hpdeff3d);
@@ -314,105 +414,3 @@ void PrintDetailsOfHist(TH3F* hSpectra){
 
 
 
-/*
-TH1D* RebinIt(TH1D* hist, bool REBIN){
-
-   // ########################################### prepare variable bin ######                                                                                             
-   Double_t dBin = hist->GetBinWidth(1);//assume hist has constan bin width                                                                                               
-
-   Int_t NumBins = hist->GetNbinsX();
-   const Int_t Nlines = NumBins;
-
-   Int_t binTemp = 0;
-   Int_t nbins = 0;
-   Double_t binsTemp[Nlines+1];
-   Int_t totBins = Nlines;
-
-   for(Int_t i = 0; i < totBins ; i++){
-      binsTemp[i] = binTemp;
-      binTemp++;
-   }
-   binsTemp[totBins] = totBins;
-
-   Int_t bin = 0;
-   Double_t bins[Nlines+1];
-   Int_t nbins = 0;
-   Double_t binWidth = hist->GetBinWidth(1);
-   cout<<"bin width of original histogram "<<binWidth<<endl;
-
-   if(REBIN){
-      while (bin < totBins) {
-         bins[nbins] = binWidth*binsTemp[bin];
-         //cout<<"bins[nbins] = "<<bins[nbins]<<endl;                                                                                                                     
-         nbins++;
-	 // MC
-         //if (bin < 2)          bin += 1;
-         //else if(bin < 8)      bin += 2;
-         //else if (bin < 12)    bin += 4;
-         //else if (bin < 30)    bin += 6;
-         //else if (bin < 40)    bin += 8;
-         //else if (bin < 70)    bin += 10;
-         //else if (bin < 100)   bin += 15;
-         //else if (bin < 200)   bin += 20;
-         //else                  bin += 30;
-
-	 // DATA
-
-	 //if (bin < 2)          bin += 1;
-	 if (bin < 3)          bin += 1;      
-	 else if(bin < 8)      bin += 2;
-	 else if (bin < 12)    bin += 4;
-	 else if (bin < 30)    bin += 6;
-	 else if (bin < 40)    bin += 8;
-	 else if (bin < 70)    bin += 25;
-	 else if (bin < 100)   bin += 40;
-	 else if (bin < 200)   bin += 55;
-	 else                  bin += 100;
-
-      }
-      bins[nbins] = binWidth*binTemp[totBins];
-      //cout<<"bins[nbins] = "<<bins[nbins]<<endl;                                                                                                                        
-   }
-
-   cout<<"number of bins after rebinned = "<<nbins<<endl;
-
-   //################################################# Rebin ###################                                                                                          
-
-   Char_t hname[500];
-   sprintf(hname,"pre_hRInvX");
-   hist->Rebin(nbins,hname,bins);
-
-   pre_hRInvX->SetNameTitle(hname,hname);
-   cout<<"[RebinIt][check] name of the rebinned histogram  "<<pre_hRInvX->GetName()<<endl;
-
-   const Int_t RNlines = nbins;
-
-   Float_t ptR[RNlines], xsecR[RNlines];
-   Float_t err_ptR[RNlines], err_xsecR[RNlines];
-
-
-   for(Int_t j = 0; j<nbins; j++ ){
-
-      // In order to scale the content properly (due to rebinning)
-
-      Float_t dbin = pre_hRInvX->GetBinWidth(j+1);
-      Float_t ratio = dbin/dBin;
-      Float_t content = pre_hRInvX->GetBinContent(j+1);
-      Float_t err = pre_hRInvX->GetBinError(j+1);
-
-      pre_hRInvX->SetBinContent(j+1,(content/ratio));
-      pre_hRInvX->SetBinError(j+1,(err/ratio));
-
-      ptR[j] = pre_hRInvX->GetBinCenter(j+1);
-      xsecR[j] = (content/ratio);
-      err_ptR[j] = 0;
-      err_xsecR[j] = (err/ratio);
-
-   }
-
-   //data.hRInvX = (TH1D*) pre_hRInvX->Clone("hRInvX");                                                                                                                   
-   return pre_hRInvX;
-
-}
-
-*/

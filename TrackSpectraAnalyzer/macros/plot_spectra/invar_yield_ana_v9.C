@@ -5,11 +5,40 @@
 // - return various histograms/tgraph in struct
 //--------------------------------------------------------------------
 
+#include <utility>
+#include <iostream>
+
+#include "invar_yield_ana_v9.h"
+
+#include "/home/sungho/plots/common/utilities.h"
+
+#include <TROOT.h> 
+#include <TStyle.h>
+
+#include "TFile.h"
+#include "TCanvas.h"
+
+#include "TH1F.h"
+#include "TH1D.h"
+
+#include "TH2F.h"
+#include "TH2D.h"
+
+#include "TH3F.h"
+
+#include "TF1.h"
+
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+
+#include "TDirectory.h"
+#include "TDirectoryFile.h"
+
+#include "TChain.h"
+#include "TGraph.h"
 
 using namespace std;
-#include <utility>
-#include "invar_yield_ana_v9.h"
-#include "/home/sungho/plots/common/utilities.h"
+
 
 struct invar_yield_ana_v9_data {
    TH1D *hInvX;
@@ -20,7 +49,7 @@ struct invar_yield_ana_v9_data {
 };
 
 const float pi = 3.14159265358979323846;
-typedef pair<TH3D*, TH3D*> 3DHistPair;
+//typedef pair<TH3D*, TH3D*> 3DHistPair;
 
 const int NHIST = 5;
 
@@ -31,10 +60,19 @@ const int NHIST = 5;
 //                   spectra as a cross section or number of particles, 
 //------------------------------------------------------------------------------------------------------------------------------- 
 
-invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, char *cFileTRK1, char *cFileTRK2, char *cFileTRK3, char *cFileTRK4, char *cFileTRK5,
-						  char *dir, char *dir_corr, bool gen, bool trkeffcrct, bool multcrct, bool seccrct, bool mc, bool jetcrct, 
-						  bool evteffcorr, bool zerobin, bool onetwothreebin, bool cross, bool oneoverpt, bool rescrct,
-						  double ieta, double feta)
+invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *cFileEVT="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *cFileTRK1="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *cFileTRK2="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *cFileTRK3="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *cFileTRK4="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *cFileTRK5="../root_files/TrkHistMC_june09_qcdMB.root",
+					    char *dir="trackAna_STD", 
+					    char *dir_corr="trkEffAnalyzer", 
+					    bool gen=false, bool trkeffcrct=false, bool multcrct=false, bool seccrct=false, bool mc=true, bool jetcrct=false,
+					    bool evteffcorr=false, bool zerobin=false, bool onetwothreebin=false, bool cross=false, bool oneoverpt=true, 
+					    bool rescrct=false,
+					    double ieta=0, double feta=2.4)
    
 {
    cout<<"\n"<<endl;
@@ -120,18 +158,19 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
 
    cout<<"[Get number of evetns ]========================================"<<endl;
-   //-------- Get Number for evt sel correction
    TFile *fEVT = new TFile(cFileEVT);
+   double zerobinFraction;
+   double zottbinFraction;
 
    if(zerobin){
       TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");    
-      double zerobinFraction = GetZeroBinFraction(hNSD_GEN);
+      zerobinFraction = GetZeroBinFraction(hNSD_GEN);
       cout<<"ZERO bin fractiosn (from ??) : "<<zerobinFraction<<endl;
    }
 
    if(onetwothreebin){
       TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");
-      double zottbinFraction = GetZOTTBinFraction(hNSDvtx_CORR_123);
+      zottbinFraction = GetZOTTBinFraction(hNSDvtx_CORR_123);
       cout<<"0, 1,2,3 bin fraction (from ??) : "<<zottbinFraction<<endl;
 
       TH3F *hSpectra3D_mult1 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult1");
@@ -150,13 +189,20 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    char dirMult[100];
    if(strcmp(dir,"looseTrackAna_STD")==0) sprintf(dirMult,"looseTrackAna_STD/hRecMult_STD_corr");
    else sprintf(dirMult,"trackAna_STD/hRecMult_STD_corr");
-   
+
    TH1F *hNSDvtx_CORR = (TH1F*) f1->Get(dirMult);
 
-   TDirectoryFile *dSpec = f1->GetDirectory(dir);
-   cout<<"Directory to be looked at "<<dir<<endl;
+   TDirectoryFile *dSpec = (TDirectoryFile*)f1->GetDirectory(dir);
 
-   dSpec->cd();
+   cout<<"directory (evt eff correction) to be looked at "<<dirMult<<endl;
+   cout<<"directory (spectra analysis) to be looked at "<<dir<<endl;
+
+   //dSpec->cd();
+
+   TH1F* hGenNevt = (TH1F*) dSpec->Get("hGenNevt");
+   TH1F* hNevt = (TH1F*) dSpec->Get("hNevt");
+   
+   cout<<"flags gen: "<<gen<<" mc: "<<mc<<" evteffcorr: "<<evteffcorr<<" zerobin: "<<zerobin<<" onetwothreebin: "<<onetwothreebin<<endl;
 
    if(gen && mc){
       NumEvt = hGenNevt->GetEntries();
@@ -194,8 +240,13 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
 
    cout<<"[Correcting and analyzing ]========================================"<<endl;
-   threeDHist->cd();    
+   char dir3D[100];
+   sprintf(dir3D,"%s/threeDHist",dir);
+   cout<<"directory (spectra analysis 3D) to be looked at "<<dir3D<<endl;
 
+   TDirectoryFile *threeDHist = (TDirectoryFile*)f1->GetDirectory(dir3D);
+   threeDHist->cd();
+      
    TIter next(gDirectory->GetListOfKeys());
    TKey *key;
 
@@ -208,10 +259,11 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
       else sprintf(nameHist,"hTrkPtEtaJetEt");
    }
    
-
+   
+   TH3F *hSpectra3D = 0;
    while ((key=(TKey*)next())) {
       if( strcmp((key->GetName()),(nameHist))==0) {
-	 TH3F *hSpectra3D = (TH3F*) gDirectory->Get(nameHist);
+	 hSpectra3D = (TH3F*) gDirectory->Get(nameHist);
 	 cout<<"Name of Histogram matched is "<<nameHist<<endl;
 	 break;
       }
@@ -271,6 +323,9 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
 
       float var_for_corr = 0;
 
+      double eff, fak;
+      double mlt, sec;
+
       if(jetcrct) {
 	 var_for_corr = jet;
 	 var_1st = jet_1st, var_2nd = jet_2nd, var_3rd = jet_3rd, var_4th = jet_4th;
@@ -282,30 +337,30 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
       if(trkeffcrct && (!gen)) {
 	
 	 if(var_for_corr<var_1st){
-	    double eff = GetEffFactor(hPNEff3D[0],hPDEff3D[0],pt,eta,jet);
-	    double fak = GetFakFactor(hPNFake3D[0],hPDFake3D[0],pt,eta,jet);
-	    if(multcrct) double mlt = GetFakFactor(hPNMult3D[0],hPDMult3D[0],pt,eta,jet);
-	    if(seccrct)  double sec = GetFakFactor(hPNSec3D[0],hPDSec3D[0],pt,eta,jet);
+	    eff = GetEffFactor(hPNEff3D[0],hPDEff3D[0],pt,eta,jet);
+	    fak = GetFakFactor(hPNFake3D[0],hPDFake3D[0],pt,eta,jet);
+	    if(multcrct) mlt = GetFakFactor(hPNMult3D[0],hPDMult3D[0],pt,eta,jet);
+	    if(seccrct)  sec = GetFakFactor(hPNSec3D[0],hPDSec3D[0],pt,eta,jet);
 	 }else if(var_for_corr>=var_1st && var_for_corr<var_2nd){
-	    double eff = GetEffFactor(hPNEff3D[1],hPDEff3D[1],pt,eta,jet);
-            double fak = GetFakFactor(hPNFake3D[1],hPDFake3D[1],pt,eta,jet);
-	    if(multcrct) double mlt = GetFakFactor(hPNMult3D[1],hPDMult3D[1],pt,eta,jet);
-	    if(seccrct)  double sec = GetFakFactor(hPNSec3D[1],hPDSec3D[1],pt,eta,jet);
+	    eff = GetEffFactor(hPNEff3D[1],hPDEff3D[1],pt,eta,jet);
+            fak = GetFakFactor(hPNFake3D[1],hPDFake3D[1],pt,eta,jet);
+	    if(multcrct) mlt = GetFakFactor(hPNMult3D[1],hPDMult3D[1],pt,eta,jet);
+	    if(seccrct)  sec = GetFakFactor(hPNSec3D[1],hPDSec3D[1],pt,eta,jet);
 	 }else if(var_for_corr>=var_2nd && var_for_corr<var_3rd){
-	    double eff = GetEffFactor(hPNEff3D[2],hPDEff3D[2],pt,eta,jet);
-            double fak = GetFakFactor(hPNFake3D[2],hPDFake3D[2],pt,eta,jet);
-	    if(multcrct) double mlt = GetFakFactor(hPNMult3D[2],hPDMult3D[2],pt,eta,jet);
-	    if(seccrct)  double sec = GetFakFactor(hPNSec3D[2],hPDSec3D[2],pt,eta,jet);
+	    eff = GetEffFactor(hPNEff3D[2],hPDEff3D[2],pt,eta,jet);
+            fak = GetFakFactor(hPNFake3D[2],hPDFake3D[2],pt,eta,jet);
+	    if(multcrct) mlt = GetFakFactor(hPNMult3D[2],hPDMult3D[2],pt,eta,jet);
+	    if(seccrct)  sec = GetFakFactor(hPNSec3D[2],hPDSec3D[2],pt,eta,jet);
 	 }else if(var_for_corr>=var_3rd && var_for_corr<var_4th){
-	    double eff = GetEffFactor(hPNEff3D[3],hPDEff3D[3],pt,eta,jet);
-            double fak = GetFakFactor(hPNFake3D[3],hPDFake3D[3],pt,eta,jet);
-	    if(multcrct) double mlt = GetFakFactor(hPNMult3D[3],hPDMult3D[3],pt,eta,jet);
-	    if(seccrct)  double sec = GetFakFactor(hPNSec3D[3],hPDSec3D[3],pt,eta,jet);
+	    eff = GetEffFactor(hPNEff3D[3],hPDEff3D[3],pt,eta,jet);
+            fak = GetFakFactor(hPNFake3D[3],hPDFake3D[3],pt,eta,jet);
+	    if(multcrct) mlt = GetFakFactor(hPNMult3D[3],hPDMult3D[3],pt,eta,jet);
+	    if(seccrct)  sec = GetFakFactor(hPNSec3D[3],hPDSec3D[3],pt,eta,jet);
 	 }else{
-	    double eff = GetEffFactor(hPNEff3D[4],hPDEff3D[4],pt,eta,jet);
-            double fak = GetFakFactor(hPNFake3D[4],hPDFake3D[4],pt,eta,jet);
-	    if(multcrct) double mlt = GetFakFactor(hPNMult3D[4],hPDMult3D[4],pt,eta,jet);
-	    if(seccrct)  double sec = GetFakFactor(hPNSec3D[4],hPDSec3D[4],pt,eta,jet);
+	    eff = GetEffFactor(hPNEff3D[4],hPDEff3D[4],pt,eta,jet);
+            fak = GetFakFactor(hPNFake3D[4],hPDFake3D[4],pt,eta,jet);
+	    if(multcrct) mlt = GetFakFactor(hPNMult3D[4],hPDMult3D[4],pt,eta,jet);
+	    if(seccrct)  sec = GetFakFactor(hPNSec3D[4],hPDSec3D[4],pt,eta,jet);
 	 }
 
 	 // efficiency and fake rate !
@@ -370,7 +425,8 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile, char *cFileEVT, c
    
    if(rescrct) {
       TH1D* hRInvX_pre = (TH1D*) hInvX_pre->Clone("hRInvX_pre");
-      std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[0],hInvX_pre,ieta,feta,0.5,15);
+      //std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[0],hInvX_pre,ieta,feta,0.5,15);
+      std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[0],hInvX_pre,true,ieta,feta,0.5,100);
       data.hInvX = (TH1D*) correctedSPEC.first;
       data.hRInvX = (TH1D*) correctedSPEC.second;
    }else{
