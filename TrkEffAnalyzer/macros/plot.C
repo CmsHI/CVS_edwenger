@@ -4,9 +4,17 @@ void plot() {
 
   set_plot_style();
 
-  TFile *f = new TFile("../test/hists.root");
-  TTree *tsim = (TTree*) f->Get("trkEffAnalyzer/simTrackTree");
-  TTree *trec = (TTree*) f->Get("trkEffAnalyzer/recTrackTree");
+  //TFile *f = new TFile("../test/hists.root");
+  TChain *tsim = new TChain("trkEffAnalyzer/simTrackTree");
+  TChain *trec = new TChain("trkEffAnalyzer/recTrackTree");
+  
+  int nfiles = tsim->Add("dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinBias/MB-S10-357-TRKANASKIM-v1/4addbb78ddff117c63c16d9a48f17d13/ROOTupleMC_HighPurity_1*_*.root");
+  
+  cout << "added " << nfiles  << " file(s) to SIM chain" << endl;
+  
+  int nfiles2 = trec->Add("dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/edwenger/MinBias/MB-S10-357-TRKANASKIM-v1/4addbb78ddff117c63c16d9a48f17d13/ROOTupleMC_HighPurity_1*_*.root");
+  
+  cout << "added " << nfiles2  << " file(s) to RECO chain" << endl;
 
   TString trksel = "1";
   trksel += " && abs(d0/d0err)<3.0 && abs(dz/dzerr)<3.0";

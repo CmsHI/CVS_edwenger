@@ -6,7 +6,9 @@ void plotHist() {
 
   set_plot_style();
 
-  TFile *f = new TFile("~/andre_root_files/TrkHistMC_june04_QCD_10M.root");
+  TFile *f = new TFile("~/scratch/py8/all/mergePY8.root");
+  //TFile *f = new TFile("~/scratch/TrkHistMC_june04_QCD_10M.root");
+
 
   // sim-to-reco hists
   TH2F *hSim = (TH2F*) f->Get("trkEffAnalyzer/hsim"); hSim->GetYaxis()->SetRangeUser(0,10);
@@ -136,26 +138,26 @@ void plotHist() {
   TH1D* hDumPt3 = (TH1D*) hDumPt->Clone("hDumPt3"); hDumPt3->SetMaximum(0.00049); 
 
   // Acceptance
-  TGraphAsymmErrors *gAccEta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gAccEta = new TGraphAsymmErrors(); gAccEta->SetName("gAccEta");
   gAccEta->BayesDivide(hAccEta,hSimEta);
   gAccEta->SetMarkerStyle(25);
   gAccEta->SetLineStyle(2);
   gAccEta->SetLineColor(2);
   gAccEta->SetMarkerColor(2);
 
-  TGraphAsymmErrors *gAccPt = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gAccPt = new TGraphAsymmErrors(); gAccPt->SetName("gAccPt");
   gAccPt->BayesDivide(hAccPt,hSimPt);
   gAccPt->SetMarkerStyle(24);
   gAccPt->SetLineColor(4);
   gAccPt->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gAccEta2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gAccEta2 = new TGraphAsymmErrors(); gAccEta2->SetName("gAccEta2");
   gAccEta2->BayesDivide(hAccEta2,hSimEta2);
   gAccEta2->SetMarkerStyle(24);
   gAccEta2->SetLineColor(4);
   gAccEta2->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gAccPt2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gAccPt2 = new TGraphAsymmErrors(); gAccPt2->SetName("gAccPt2");
   gAccPt2->BayesDivide(hAccPt2,hSimPt2);
   gAccPt2->SetMarkerStyle(25);
   gAccPt2->SetLineStyle(2);
@@ -183,26 +185,26 @@ void plotHist() {
 
 
   // Efficiency
-  TGraphAsymmErrors *gEffEta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gEffEta = new TGraphAsymmErrors(); gEffEta->SetName("gEffEta");
   gEffEta->BayesDivide(hEffEta,hAccEta);
   gEffEta->SetMarkerStyle(25);
   gEffEta->SetLineStyle(2);
   gEffEta->SetLineColor(2);
   gEffEta->SetMarkerColor(2);
 
-  TGraphAsymmErrors *gEffPt = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gEffPt = new TGraphAsymmErrors(); gEffPt->SetName("gEffPt");
   gEffPt->BayesDivide(hEffPt,hAccPt);
   gEffPt->SetMarkerStyle(24);
   gEffPt->SetLineColor(4);
   gEffPt->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gEffEta2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gEffEta2 = new TGraphAsymmErrors(); gEffEta2->SetName("gEffEta2");
   gEffEta2->BayesDivide(hEffEta2,hAccEta2);
   gEffEta2->SetMarkerStyle(24);
   gEffEta2->SetLineColor(4);
   gEffEta2->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gEffPt2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gEffPt2 = new TGraphAsymmErrors(); gEffPt2->SetName("gEffPt2");
   gEffPt2->BayesDivide(hEffPt2,hAccPt2);
   gEffPt2->SetMarkerStyle(25);
   gEffPt2->SetLineStyle(2);
@@ -219,26 +221,26 @@ void plotHist() {
   c7->cd(2); hDumPtEff->Draw(); gEffPt->Draw("pc"); gEffPt2->Draw("pc"); legPt->Draw();
 
   // Multiple Reco
-  TGraphAsymmErrors *gMulEta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gMulEta = new TGraphAsymmErrors(); gMulEta->SetName("gMulEta");
   gMulEta->BayesDivide(hMulEta,hAccEta);
   gMulEta->SetMarkerStyle(25);
   gMulEta->SetLineStyle(2);
   gMulEta->SetLineColor(2);
   gMulEta->SetMarkerColor(2);
 
-  TGraphAsymmErrors *gMulPt = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gMulPt = new TGraphAsymmErrors(); gMulPt->SetName("gMulPt");
   gMulPt->BayesDivide(hMulPt,hAccPt);
   gMulPt->SetMarkerStyle(24);
   gMulPt->SetLineColor(4);
   gMulPt->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gMulEta2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gMulEta2 = new TGraphAsymmErrors(); gMulEta2->SetName("gMulEta2");
   gMulEta2->BayesDivide(hMulEta2,hAccEta2);
   gMulEta2->SetMarkerStyle(24);
   gMulEta2->SetLineColor(4);
   gMulEta2->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gMulPt2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gMulPt2 = new TGraphAsymmErrors(); gMulPt2->SetName("gMulPt2");
   gMulPt2->BayesDivide(hMulPt2,hAccPt2);
   gMulPt2->SetMarkerStyle(25);
   gMulPt2->SetLineStyle(2);
@@ -257,26 +259,26 @@ void plotHist() {
   c8->cd(2); hDumPtMul->Draw(); gMulPt->Draw("pc"); gMulPt2->Draw("pc"); legPt2->Draw();
 
   // Fakes
-  TGraphAsymmErrors *gFakEta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gFakEta = new TGraphAsymmErrors();  gFakEta->SetName("gFakEta");
   gFakEta->BayesDivide(hFakEta,hRecEta);
   gFakEta->SetMarkerStyle(25);
   gFakEta->SetLineStyle(2);
   gFakEta->SetLineColor(2);
   gFakEta->SetMarkerColor(2);
 
-  TGraphAsymmErrors *gFakPt = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gFakPt = new TGraphAsymmErrors(); gFakPt->SetName("gFakPt");
   gFakPt->BayesDivide(hFakPt,hRecPt);
   gFakPt->SetMarkerStyle(24);
   gFakPt->SetLineColor(4);
   gFakPt->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gFakEta2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gFakEta2 = new TGraphAsymmErrors(); gFakEta2->SetName("gFakEta2");
   gFakEta2->BayesDivide(hFakEta2,hRecEta2);
   gFakEta2->SetMarkerStyle(24);
   gFakEta2->SetLineColor(4);
   gFakEta2->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gFakPt2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gFakPt2 = new TGraphAsymmErrors();  gFakPt2->SetName("gFakPt2");
   gFakPt2->BayesDivide(hFakPt2,hRecPt2);
   gFakPt2->SetMarkerStyle(25);
   gFakPt2->SetLineStyle(2);
@@ -293,26 +295,26 @@ void plotHist() {
   c9->cd(2); hDumPtFak->Draw(); gFakPt->Draw("pc"); gFakPt2->Draw("pc"); legPt2->Draw();
 
   // Secondaries
-  TGraphAsymmErrors *gSecEta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gSecEta = new TGraphAsymmErrors(); gSecEta->SetName("gSecEta");
   gSecEta->BayesDivide(hSecEta,hRecEta);
   gSecEta->SetMarkerStyle(25);
   gSecEta->SetLineStyle(2);
   gSecEta->SetLineColor(2);
   gSecEta->SetMarkerColor(2);
 
-  TGraphAsymmErrors *gSecPt = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gSecPt = new TGraphAsymmErrors(); gSecPt->SetName("gSecPt");
   gSecPt->BayesDivide(hSecPt,hRecPt);
   gSecPt->SetMarkerStyle(24);
   gSecPt->SetLineColor(4);
   gSecPt->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gSecEta2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gSecEta2 = new TGraphAsymmErrors(); gSecEta2->SetName("gSecEta2");
   gSecEta2->BayesDivide(hSecEta2,hRecEta2);
   gSecEta2->SetMarkerStyle(24);
   gSecEta2->SetLineColor(4);
   gSecEta2->SetMarkerColor(4);
 
-  TGraphAsymmErrors *gSecPt2 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *gSecPt2 = new TGraphAsymmErrors();  gSecPt2->SetName("gSecPt2");
   gSecPt2->BayesDivide(hSecPt2,hRecPt2);
   gSecPt2->SetMarkerStyle(25);
   gSecPt2->SetLineStyle(2);
@@ -327,6 +329,15 @@ void plotHist() {
   hDumPtSec->GetYaxis()->SetTitle("Non-Primary Reconstruction Fraction");
   c10->cd(1); hDumEtaSec->Draw(); gSecEta->Draw("pc"); gSecEta2->Draw("pc"); legEta2->Draw();
   c10->cd(2); hDumPtSec->Draw(); gSecPt->Draw("pc"); gSecPt2->Draw("pc"); legPt2->Draw();
+
+
+  TFile *f = new TFile("trkEffPY8.root","RECREATE");
+  gAccPt->Write(); gAccPt2->Write(); gAccEta->Write(); gAccEta2->Write();
+  gEffPt->Write(); gEffPt2->Write(); gEffEta->Write(); gEffEta2->Write();
+  gMulPt->Write(); gMulPt2->Write(); gMulEta->Write(); gMulEta2->Write();
+  gFakPt->Write(); gFakPt2->Write(); gFakEta->Write(); gFakEta2->Write();
+  gSecPt->Write(); gSecPt2->Write(); gSecEta->Write(); gSecEta2->Write();
+  f->Close();
 }
 
 
