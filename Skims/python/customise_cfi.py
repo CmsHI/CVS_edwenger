@@ -16,6 +16,8 @@ def enableSIM(process):
     process.loosetrkEffAnalyzer.hasSimInfo=True
     process.extraReco *= process.trackingParticleRecoTrackAsssociation
     process.preTrgTest *= process.preTrackAna
+    process.postVtxAna.vtxWeight=cms.untracked.bool(True)
+    process.postTrkVtxAna.vtxWeight=cms.untracked.bool(True)
     return process
 
 
