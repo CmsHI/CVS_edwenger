@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.13 2010/06/14 10:01:08 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.14 2010/06/14 19:46:31 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -96,7 +96,7 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   float dndvz_data = 0, dndvz_mc = 0;
   float Wvtx = 0;
 
-  if(vtxWeight_){
+  if(isGEN_ && vtxWeight_){
      edm::Handle<reco::VertexCollection> vtxsH;
      iEvent.getByLabel(vtxlabel_,vtxsH);
      
@@ -140,7 +140,7 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   hRecMult_SPEC->Fill(nREC_SPEC);
   hRecMult_AGR->Fill(nREC_AGR);
 
-  if(vtxWeight_) hRecMult_STD_W->Fill(nREC_STD,Wvtx), hGenRecMultNSDvsZvtx_STD->Fill(nREC_STD,Zvtx);
+  if(isGEN_ && vtxWeight_) hRecMult_STD_W->Fill(nREC_STD,Wvtx), hGenRecMultNSDvsZvtx_STD->Fill(nREC_STD,Zvtx);
   
   //----- selectTracks--------------------
   if(includeSelTrk_){
@@ -217,7 +217,7 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultNSD_SPEC->Fill(nREC_SPEC);
       hGenRecMultNSD_AGR->Fill(nREC_AGR);
       
-      if(vtxWeight_) hGenRecMultNSD_STD_W->Fill(nREC_STD,Wvtx);
+      if(isGEN_ && vtxWeight_) hGenRecMultNSD_STD_W->Fill(nREC_STD,Wvtx);
 
       if(nREC_STD==0) hGenToRecZeroBinNSD_STD->Fill(nGEN_STD);
       if(nREC_STD<4) hGenToRec0123BinNSD_STD->Fill(nGEN_STD);
@@ -235,7 +235,7 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hGenRecMultSD_SPEC->Fill(nREC_SPEC);
       hGenRecMultSD_AGR->Fill(nREC_AGR);
 
-      if(vtxWeight_) hGenRecMultSD_STD_W->Fill(nREC_STD,Wvtx);
+      if(isGEN_ && vtxWeight_) hGenRecMultSD_STD_W->Fill(nREC_STD,Wvtx);
       break;
     case 11:
     case 12:
@@ -350,14 +350,14 @@ EvtSelAnalyzer::beginJob()
     hGenRecMultSD_SPEC = f->make<TH1D>("hGenRecMultSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
     hGenRecMultSD_AGR = f->make<TH1D>("hGenRecMultSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
 
-    if(vtxWeight_) hGenRecMultSD_STD_W = f->make<TH1D>("hGenRecMultSD_STD_W","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    if(isGEN_ && vtxWeight_) hGenRecMultSD_STD_W = f->make<TH1D>("hGenRecMultSD_STD_W","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
 
     hGenToRecZeroBinNSD_STD = f->make<TH1D>("hGenToRecZeroBinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
     hGenToRec0123BinNSD_STD = f->make<TH1D>("hGenToRec0123BinNSD_STD","GEN mult. for REC mult. of zero",numBins,-0.5,xmax_STD);
     hGenVsRecMultNSD_STD = f->make<TH2F>("hGenVsRecMultNSD_STD","GEN vs REC;GEN mult.;REC mult.",numBins,-0.5,xmax_STD,
 				      numBins,-0.5,xmax_STD);
 
-    if(vtxWeight_) hGenRecMultNSDvsZvtx_STD = f->make<TH2F>("hGenRecMultNSDvsZvtx_STD","Mult vs Zvtx;mult.;V_{z}",numBins,-0.5,xmax_STD,
+    if(isGEN_ && vtxWeight_) hGenRecMultNSDvsZvtx_STD = f->make<TH2F>("hGenRecMultNSDvsZvtx_STD","Mult vs Zvtx;mult.;V_{z}",numBins,-0.5,xmax_STD,
 							      80,-20,20);
     
   }
