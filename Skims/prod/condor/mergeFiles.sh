@@ -24,7 +24,7 @@ echo "outfile: $outfile"
 
 mkdir -p $outdir/log
 logfile=${outfile%.root}.txt
-mergecmd="echo hadd -T $outdir/$outfile $infiles"
+mergecmd="hadd -T $outdir/$outfile $infiles"
 runcmd="(time $mergecmd >& $outdir/log/$logfile) 2>> $outdir/log/$logfile"
 #echo $runcmd
 eval $runcmd

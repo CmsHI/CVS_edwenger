@@ -5,7 +5,7 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
-script=/net/hisrv0001/home/frankma/work/HI/jet/sw/trkAnaCMSSW_3_5_7/src/edwenger/Skims/prod/condor/mergeFiles.sh
+script=mergeFiles.sh
 topDir=$1
 job=$2
 
@@ -19,9 +19,10 @@ for job in `ls $topDir/$job/trkhists*.root | head -n $N`; do
   subi=`expr $ct % $nPerMerge`
   if [ $subi -eq 0 ]; then
     if [ -n "$cmd" ]; then
+      #echo $cmd
       eval $cmd
     fi
-    cmd="$script $outdir trkhists_sub$ct.root"
+    cmd="./condor64Basic.sh $script $outdir trkhists_sub$ct.root"
   else
     #echo $ct: $job
     cmd="$cmd $job"
