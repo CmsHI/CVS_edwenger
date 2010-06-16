@@ -5,6 +5,12 @@
 //EAW
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 #include "DataFormats/ParticleFlowReco/interface/PFClusterFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "edwenger/VertexAnalyzer/interface/VertexComparator.h"
+
+#include <Math/DistFunc.h>
+#include "TMath.h"
 //
 
 
@@ -26,6 +32,9 @@ PFCandidateAnalyzer::PFCandidateAnalyzer(const edm::ParameterSet& iConfig) {
 
   inputTagPFCandidates_ 
     = iConfig.getParameter<InputTag>("PFCandidates");
+
+  inputTagVertices_ 
+    = iConfig.getParameter<InputTag>("Vertices");
 
   verbose_ = 
     iConfig.getUntrackedParameter<bool>("verbose",false);
@@ -71,6 +80,11 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 			 <<" in run "<<iEvent.id().run()<<endl;
   
   
+  // get vertices
+
+  edm::Handle<reco::VertexCollection> vtxsH;
+  iEvent.getByLabel(inputTagVertices_,vtxsH);
+  reco::VertexCollection vtxs = *vtxsH;
   
   // get PFCandidates
 
@@ -119,6 +133,32 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 	if(type==PFBlockElement::TRACK) {
 	  cout << "TRK:";
 	  reco::TrackRef trackRef = elements[ie].trackRef();
+
+	  //----- track quality selections
+	  if(trackRef->numberOfValidHits()<5) continue;
+	  if(trackRef->ptError()/trackRef->pt() > 0.05) continue;
+	  if(trackRef->algo() > 7) continue;
+
+	  double d0 = trackRef->dxy(vtxs[0].position());
+	  double dz = trackRef->dz(vtxs[0].position());
+
+	  if(fabs(d0) > 0.2) continue;
+	  if(fabs(dz) > 0.2) continue;
+
+	  double d0err = sqrt(trackRef->d0Error()*trackRef->d0Error()+vtxs[0].xError()*vtxs[0].yError());
+	  double dzerr = sqrt(trackRef->dzError()*trackRef->dzError()+vtxs[0].zError()*vtxs[0].zError());
+
+	  if(fabs(d0/d0err) > 3) continue;
+	  if(fabs(dz/dzerr) > 3) continue;
+
+	  cout << "d0= " << d0 
+	       << ", dz = " << dz 
+	       << ", d0err = " << d0err
+	       << ", dzerr = " << dzerr
+	       << endl;
+
+	  //-----
+
 	  double trkpt = trackRef->pt();
 	  cout << "pt=" << trkpt << endl;
 	  sum_trk+=trkpt;

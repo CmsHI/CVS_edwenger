@@ -57,6 +57,9 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
   
   /// PFCandidates in which we'll look for pile up particles 
   edm::InputTag   inputTagPFCandidates_;
+
+  /// Vertices for track selection
+  edm::InputTag   inputTagVertices_;
   
   /// verbose ?
   bool   verbose_;
