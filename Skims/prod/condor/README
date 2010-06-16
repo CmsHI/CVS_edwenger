@@ -10,9 +10,9 @@
 ../../scripts/listDuplicates.sh . | sort | uniq > log/duplicates.txt
 cat log/duplicates.txt | sed 's/^/rm /'
 cat log/duplicates.txt | sed 's/^/rm /' | bash +x
-for i in `find . -size -10 | grep AOD.*root$`; do ll $i; done
+for i in `find . -size -10 | grep trkhists.*root$`; do ll $i; done
 mkdir bad
-for i in `find . -size -10 | grep AOD.*root$`; do mv $i bad/; done
+for i in `find . -size -10 | grep trkhists.*root$`; do mv $i bad/; done
 ../../scripts/listBadFiles.sh log
 cat log/badFileList.txt
 ../../scripts/cleanBadFiles.sh log/badFileList.txt
