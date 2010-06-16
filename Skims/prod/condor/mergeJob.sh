@@ -1,6 +1,13 @@
+#~/bin/bash -
+if [ $# -lt 2 ]; then
+  echo Usage:
+  echo "  $0 <topDir> <job>"
+  exit 1
+fi
+
 script=/net/hisrv0001/home/frankma/work/HI/jet/sw/trkAnaCMSSW_3_5_7/src/edwenger/Skims/prod/condor/mergeFiles.sh
-topDir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias
-job=MB-C10-A20RR-TRKANASKIM-v2_proc0615_TrkCutV3
+topDir=$1
+job=$2
 
 outdir=$topDir/$job/merge
 ct=0
