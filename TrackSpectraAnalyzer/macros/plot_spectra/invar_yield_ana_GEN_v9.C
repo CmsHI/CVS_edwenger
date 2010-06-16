@@ -6,9 +6,40 @@
 //--------------------------------------------------------------------
 
 
+#include <utility>
+#include <iostream>
+
+//#include "invar_yield_ana_GEN_v9.h"
+
+#include "/home/sungho/plots/common/utilities.h"
+
+#include <TROOT.h>
+#include <TStyle.h>
+
+#include "TFile.h"
+#include "TCanvas.h"
+
+#include "TH1F.h"
+#include "TH1D.h"
+
+#include "TH2F.h"
+#include "TH2D.h"
+
+#include "TH3F.h"
+
+#include "TF1.h"
+
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+
+#include "TDirectory.h"
+#include "TDirectoryFile.h"
+
+#include "TChain.h"
+#include "TGraph.h"
+
 using namespace std;
-//#include <utility>
-#include "invar_yield_ana_GEN_v9.h"
+
 
 struct invar_yield_ana_GEN_v9_data {
    TH1D *hInvX;
@@ -18,10 +49,10 @@ struct invar_yield_ana_GEN_v9_data {
    double integratedLum;
 };
 
-const float pi = 3.14159265358979323846;
+const float gpi = 3.14159265358979323846;
 //typedef pair<TH3D*, TH3D*> 3DHistPair;
 
-const int NHIST = 10;
+const int GNHIST = 10;
 
 //-------------------------------------------------------------------------------------------------------------------------------
 // 1. 
@@ -35,14 +66,14 @@ invar_yield_ana_GEN_v9_data  invar_yield_ana_GEN_v9_graph(char *cFile1, char *cF
    
 {
 
-   char* cFileArray[NHIST];
+   char* cFileArray[GNHIST];
    cFileArray[0] = cFile1, cFileArray[1] = cFile2, cFileArray[2] = cFile3, cFileArray[3] = cFile4;
    cFileArray[4] = cFile5, cFileArray[5] = cFile6, cFileArray[6] = cFile7, cFileArray[7] = cFile8;
    cFileArray[8] = cFile9, cFileArray[9] = cFile10;
 
-   TH3F *hSpect3D_pre[NHIST];
-   TH1D *hSpect1D_pre[NHIST];
-   TH1F *hEVT[NHIST];
+   TH3F *hSpect3D_pre[GNHIST];
+   TH1D *hSpect1D_pre[GNHIST];
+   TH1F *hEVT[GNHIST];
 
    char nameHist[200];
    sprintf(nameHist,"hGenTrkPtEtaJetEtW");
@@ -54,7 +85,7 @@ invar_yield_ana_GEN_v9_data  invar_yield_ana_GEN_v9_graph(char *cFile1, char *cF
 
    cout<<"\n"<<endl;
    cout<<"[GEN spectra extracting..]======================================="<<endl;
-   for(int i=0;i<NHIST;i++){
+   for(int i=0;i<GNHIST;i++){
       TFile *fEVT = new TFile(cFileArray[i]);
       hSpect3D_pre[i] = (TH3F*) fEVT->Get("preTrackAna/threeDHist/hGenTrkPtEtaJetEtW");
       hEVT[i] = (TH1F*) fEVT->Get("preTrackAna/hGenNevt");
@@ -87,8 +118,8 @@ invar_yield_ana_GEN_v9_data  invar_yield_ana_GEN_v9_graph(char *cFile1, char *cF
       double  edn  = hSpect1D_pre[0]->GetBinError(xbin+1);
       double  dbin = hSpect1D_pre[0]->GetXaxis()->GetBinWidth(xbin+1);
 
-      dn = dn/(2*pi*deta*dbin);
-      edn=  edn/(2*pi*deta*dbin);
+      dn = dn/(2*gpi*deta*dbin);
+      edn=  edn/(2*gpi*deta*dbin);
       
       hSpect1D_pre[0]->SetBinContent(xbin+1,dn);
       hSpect1D_pre[0]->SetBinError(xbin+1,edn);
@@ -98,7 +129,8 @@ invar_yield_ana_GEN_v9_data  invar_yield_ana_GEN_v9_graph(char *cFile1, char *cF
    invar_yield_ana_GEN_v9_data data;
 
    data.hInvX = (TH1D*) hSpect1D_pre[0]->Clone("hInvX");
-   //hInvX->Draw("axl");
+   TH1D *hInvX_dum_pre = (TH1D*) data.hInvX->Clone("hInvX_dum_pre");
+   data.InvX = (TGraphErrors*) TgraphIt(hInvX_dum_pre);
 
    TH1D *hInvX_dum = (TH1D*) data.hInvX->Clone("hInvX_dum");
    data.hRInvX = (TH1D*) RebinIt(hInvX_dum,true);       
