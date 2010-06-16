@@ -61,18 +61,20 @@ const int NHIST = 5;
 //------------------------------------------------------------------------------------------------------------------------------- 
 
 invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *cFileEVT="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *cFileTRK1="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *cFileTRK2="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *cFileTRK3="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *cFileTRK4="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *cFileTRK5="../root_files/TrkHistMC_june09_qcdMB.root",
-					    char *dir="trackAna_STD", 
-					    char *dir_corr="trkEffAnalyzer", 
-					    bool gen=false, bool trkeffcrct=false, bool multcrct=false, bool seccrct=false, bool mc=true, bool jetcrct=false,
-					    bool evteffcorr=false, bool zerobin=false, bool onetwothreebin=false, bool cross=false, bool oneoverpt=true, 
-					    bool rescrct=false,
-					    double ieta=0, double feta=2.4)
+						  char *cFileEVT="../root_files/TrkHistMC_june09_qcdMB.root",
+						  char *cFileTRK1="../root_files/TrkHistMC_june09_qcdMB.root",
+						  char *cFileTRK2="../root_files/TrkHistMC_june09_qcdMB.root",
+						  char *cFileTRK3="../root_files/TrkHistMC_june09_qcdMB.root",
+						  char *cFileTRK4="../root_files/TrkHistMC_june09_qcdMB.root",
+						  char *cFileTRK5="../root_files/TrkHistMC_june09_qcdMB.root",
+						  char *dir="trackAna_STD", 
+						  char *dir_corr="trkEffAnalyzer", 
+						  bool gen=false, bool trkeffcrct=false, bool multcrct=false, bool seccrct=false, bool mc=true, bool jetcrct=false,
+						  bool evteffcorr=false, bool zerobin=false, bool onetwothreebin=false, bool cross=false, bool oneoverpt=true, 
+						  bool rescrct=false, bool rebOnly=false,
+						  int mom_index = 0,
+						  double jet_min = 0, double jet_max = 2000,
+						  double ieta=0, double feta=2.4)
    
 {
    cout<<"\n"<<endl;
@@ -159,8 +161,8 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
 
    cout<<"[Get number of evetns ]========================================"<<endl;
    TFile *fEVT = new TFile(cFileEVT);
-   double zerobinFraction;
-   double zottbinFraction;
+   double zerobinFraction=0;
+   double zottbinFraction=0;
 
    if(zerobin){
       TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");    
@@ -323,8 +325,9 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
 
       float var_for_corr = 0;
 
-      double eff, fak;
-      double mlt, sec;
+      //make sure initialization with 0 is okay
+      double eff=0, fak=0;
+      double mlt=0, sec=0;
 
       if(jetcrct) {
 	 var_for_corr = jet;
@@ -417,16 +420,40 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
    // bin edges have to be matched to max eta and min eta!
    //if(minpt) hSpectra3D->GetYaxis()->SetRange(2,200);
    //data.hInvX = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
+
+   int jet_min_bin = 0;
+   int jet_max_bin = 0;
+
+   if(jet_min<0) jet_min_bin = 1;
+   else jet_min_bin = hSpectra3D->GetZaxis()->FindBin(jet_min);
+
+   if(jet_min_bin!=1) jet_min_bin = jet_min_bin + 1; // now to overlap with the lower bound
+
+   cout<<"for input min pt = "<<jet_min<<endl;
+   cout<<"jet min pt (low edge) = "<<hSpectra3D->GetZaxis()->GetBinLowEdge(jet_min_bin)<<endl;
+
+   if(jet_max>1200) jet_max_bin = hSpectra3D->GetZaxis()->GetLast(); // hardcoded now
+   else jet_max_bin = hSpectra3D->GetZaxis()->FindBin(jet_max);
+
+   cout<<"for input max pt = "<<jet_max<<endl;
+   cout<<"jet min pt (up edge) = "<<hSpectra3D->GetZaxis()->GetBinUpEdge(jet_max_bin)<<endl;
+
+   
+   
+   TH1D* hInvX_pre = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
+						     jet_min_bin,jet_max_bin,
+                                                     "e");
+   /*
    TH1D* hInvX_pre = (TH1D*) hSpectra3D->ProjectionY("hInvX",binMinEta,binMaxEta,
 						     hSpectra3D->GetZaxis()->GetFirst(),
 						     hSpectra3D->GetZaxis()->GetLast(),
 						     "e");    
-
+   */
    
    if(rescrct) {
       TH1D* hRInvX_pre = (TH1D*) hInvX_pre->Clone("hRInvX_pre");
       //std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[0],hInvX_pre,ieta,feta,0.5,15);
-      std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[0],hInvX_pre,true,ieta,feta,0.5,100);
+      std::pair<TH1D*,TH1D*> correctedSPEC = CorrectForMomRes(cFileTRKArray[mom_index],hInvX_pre,rebOnly,ieta,feta,0.5,100);
       data.hInvX = (TH1D*) correctedSPEC.first;
       data.hRInvX = (TH1D*) correctedSPEC.second;
    }else{

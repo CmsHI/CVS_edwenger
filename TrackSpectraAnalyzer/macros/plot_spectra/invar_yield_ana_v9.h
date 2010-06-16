@@ -42,6 +42,7 @@
 
 using namespace std;
 
+const int NHISTR = 5;
 
 TH1D* FillFromFunc(TH1D* hist, TF1* func);
 int GetFirstNonEmptyBin(TH1D* hist);
@@ -56,31 +57,39 @@ double GetOTTBinFraction(TH1F* hist);
 double CorrectNevtV2(TH1F* histDen, TH1F* histNum);
 std::pair<TH3F*,TH3F*> getEffHists(char *file, char *dirC, char *histN, char *histD);
 void PrintDetailsOfHist(TH3F* hSpectra);
-std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly, double ieta, double feta, double xmin, double xmax);
+std::pair<TH1D*,TH1D*> CorrectForMomRes(char** file, TH1D* hist_pre, bool rebOnly, double ieta, double feta, double xmin, double xmax);
 
 
 std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly, double ieta, double feta, double xmin, double xmax){ 
+//std::pair<TH1D*,TH1D*> CorrectForMomRes(char** afile, TH1D* hist_pre, bool rebOnly, double ieta, double feta, double xmin, double xmax){ 
 
 
    cout<<"\n"<<endl;
    cout<<"[Mom resolution and binning correction ]========================================"<<endl;
+   
+   double pts_1st, pts_2nd, pts_3rd, pts_4th;
+   pts_1st = 10, pts_2nd = 20, pts_3rd = 30, pts_4th = 70;
 
    
    TH1D *hCFMR = (TH1D*) hist_pre->Clone("hCFMR");
 
    //==============  obtain fit 
+   cout<<"fitting from the spectra"<<endl;
    TF1* fitF = new TF1("fitpythia","[0]*(1+(x/[1])+(pow(x,2)/[2])+(pow(x,3)/[3])+(pow(x,4)/[4])+(pow(x,5)/[5]))^[6]",xmin,xmax);
    fitF->SetParameters(2.96361e+08,2.66339e-01,1.34086e-01,2.96428e-01,1.74015e+00,5.16931e+00,-1.70643e+00);
    fitF->SetLineColor(2);
    fitF->SetLineWidth(2);
 
    hCFMR->Fit(fitF,"NRO");
+   TH1D* hFit = (TH1D*) FillFromFunc(hCFMR,fitF);
+
 
    //==============  obtain mom res histograms
    TH3F *hRes3D = 0;
    TH2D *hRes2D = 0;
 
    if(!rebOnly){
+      cout<<"file to be processed = "<<file<<endl;
       TFile *fEVT = new TFile(file);
       hRes3D = (TH3F*) fEVT->Get("trkEffAnalyzer/hresStoR3D");
       
@@ -95,15 +104,20 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
    TH1D *hRes1D_temp = 0;
 
    if(!rebOnly){
+
       int nbins = hCFMR->GetNbinsX();
       cout<<"nbins = "<<nbins<<endl;
       
+      int index = 0;
+
       for(int i=0;i<nbins;i++){
 	 
 	 bool nullArea = false; // this is needed for emtpy mom res bin
-	 
+
+	 double pts = hCFMR->GetBinCenter(i);
+
 	 hRes1D_temp = (TH1D*) hRes2D->ProjectionY("",i+1,i+1,"e");
-	 
+
 	 // check if works..
 	 int firstB = GetFirstNonEmptyBin(hRes1D_temp);
 	 int lastB = GetLastNonEmptyBin(hRes1D_temp);
@@ -120,12 +134,14 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
 	    if(!nullArea) corr = hRes1D_temp->GetBinContent(j);
 	    else corr = 1.0; // no information on res-> no correction
 	    
-	    double pt = hRes1D_temp->GetBinCenter(j);
+	    double ptr = hRes1D_temp->GetBinCenter(j);
 	    
-	    int rpt_bin = hRes2D->GetYaxis()->FindBin(pt); // should be same as j!
+	    int rpt_bin = hRes2D->GetYaxis()->FindBin(ptr); // should be same as j!
 	    int spt_bin = i+1;
-	    double smeared = corr*(fitF->Eval(pt)); // weighted by the fit 
+	    //double smeared = corr*(fitF->Eval(ptr)); // weighted by the fit 
+	    double smeared = corr*(hFit->GetBinContent(rpt_bin));// weighted by filled histogram (from fit)  
 	    
+
 	    hRes2D->SetBinContent(spt_bin,rpt_bin,smeared);
 	    hRes2D->SetBinError(spt_bin,rpt_bin,0);
 	 }
@@ -137,13 +153,15 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
    TH1D* histC = 0;
    TH1D* histCR = 0;
 
+   // correction sould be like corr1 (res) * corr2 (rebin) 
+   // instead of separate!
    if(!rebOnly){
       histCorr = (TH1D*) hRes2D->ProjectionY("",1,hRes2D->GetXaxis()->GetLast(),"e"); // convoluted and projected!
       histC = (TH1D*) histCorr->Clone("histC");
       histCR = (TH1D*) RebinIt(histCorr,true,"histCR");
    }else{
-      histCorr = (TH1D*) hCFMR->Clone("histCorr");
-      histC = (TH1D*) hCFMR->Clone("histC");
+      histCorr = (TH1D*) FillFromFunc(hCFMR,fitF);
+      histC = (TH1D*) histCorr->Clone("histC"); 
       histCR = (TH1D*) RebinIt(histCorr,true,"histCR");
    }
 
@@ -154,7 +172,6 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
    //PrintNameAndTitle(hist);
    TH1D* histC_ratio = (TH1D*) ratio_hist_to_func(histC,fitF);
    TH1D* histCR_ratio = (TH1D*) ratio_hist_to_func(histCR,fitF);
-
 
    for(int i=0;i<histC_ratio->GetNbinsX();i++){
       double yield    = hSPEC->GetBinContent(i+1);
@@ -176,13 +193,14 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
 
    
    //To see how well spectra is fit and the correction factor
-   TCanvas *cIn = new TCanvas("cIn","cIn",500,450);
-   cIn->cd();
+   //TCanvas *cIn = new TCanvas("cIn","cIn",500,450);
+   //cIn->cd();
    //cIn->SetLogy();
+   
+   //TH1D *dummyH = new TH1D("dummyH","",100,0.0,200);
+   //dummyH->Draw("");
+   //hCFMR->SetMarkerSize(0.8);
 
-   TH1D *dummyH = new TH1D("dummyH","",100,0.0,200);
-   dummyH->Draw("");
-   hCFMR->SetMarkerSize(0.8);
    //cout<<"name = "<<hist->GetName()<<" && title = "<<hist->GetTitle()<<endl;
    //hCFMR->Draw("histsame");
    //histC_ratio->Draw("histsame");
@@ -194,8 +212,7 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
    histC_ratio->Draw("hist");
    histCR_ratio->SetLineColor(kRed);
    histCR_ratio->Draw("histsame");
-   */
-   
+   */   
 
    cout<<"[Mom resolution and binning correction ]========================================"<<endl;
    cout<<"\n"<<endl;
@@ -204,7 +221,7 @@ std::pair<TH1D*,TH1D*> CorrectForMomRes(char* file, TH1D* hist_pre, bool rebOnly
 
 }
 
-
+/*
 TH1D* FillFromFunc(TH1D* hist, TF1* func){
    int nbin = hist->GetNbinsX();
    //hist->Sumw2();
@@ -220,7 +237,7 @@ TH1D* FillFromFunc(TH1D* hist, TF1* func){
 
    return hist;
 }
-
+*/
 
 int GetFirstNonEmptyBin(TH1D* hist){
    int bin = 0;
@@ -371,6 +388,10 @@ std::pair<TH3F*,TH3F*> getEffHists(char *file, char *dirC, char *histN, char *hi
          hpdeff3d = (TH3F*) efileDIR->Get(name);
       }
    }
+
+   //efileDIR->Close();
+   //efile->Close();
+
    return std::pair<TH3F*,TH3F*>(hpneff3d,hpdeff3d);
 }
 

@@ -37,7 +37,7 @@
 
 using namespace std;
 
-void PlotAll_DATA_MTG_JUNE15()
+void PlotAll_DATA_MTG_JUNE15(bool print=false)
 {
 
    gROOT->LoadMacro("invar_yield_ana_v9.C+");
@@ -62,16 +62,24 @@ void PlotAll_DATA_MTG_JUNE15()
    bool oneoverpt=true;
    bool minpt=true;
    bool rescrct=false;
+   bool rebOnly=false;
 
+   bool log_scale = true;
+
+   int mom_index = 0;
+
+   double jet_min=0;
+   double jet_max=2000;
 
    double eta_max;
+
    float pt_max;
    float ymin, ymax;
    float ymin_r, ymax_r;
 
    if(entire_range){
       if(MC) pt_max = 55,  ymin = 3e-13, ymax = 9e1, ymin_r = 0.30, ymax_r = 1.65;
-      else pt_max = 100, ymin = 3e-14, ymax = 9e1, ymin_r = 0.6, ymax_r = 1.65;
+      else pt_max = 100, ymin = 3e-14, ymax = 9e1, ymin_r = 0.55, ymax_r = 1.25;
    }else{
       if(MC) pt_max = 10, ymin = 5e-7, ymax = 2e1, ymin_r = 0.7, ymax_r = 1.4;       
       //else pt_max = 10, ymin = 5e-7, ymax = 5e1, ymin_r = 0.97, ymax_r = 1.03;
@@ -85,54 +93,78 @@ void PlotAll_DATA_MTG_JUNE15()
 
    char file1[100], file2[100], file3[100], file4[100], file5[100], file6[100], file7[100];
 
-   sprintf(file1,"../root_files/MB-C10-A20RR-TRKANASKIM-MERGED.root");
+   //sprintf(file1,"../root_files/MB-C10-A20RR-TRKANASKIM-MERGED.root");
    //sprintf(file1,"../root_files/MB-C10-MERGED.root");
    //sprintf(file1,"../root_files/MB-C10-A20RR-TRKANASKIM-v3_proc0607.root");
+   sprintf(file1,"../root_files/MB-C10-M6RR-MBskim-v0_0615.root");
+   sprintf(file2,"../root_files/mergeD6T.root");
+   sprintf(file3,"../root_files/mergeD6T.root");
+   //sprintf(file2,"../root_files/TrkHistMC_june09_qcdMB.root");
+   //sprintf(file3,"../root_files/TrkHistMC_june09_qcdMB.root");
+   sprintf(file4,"../root_files/TrkHistMC_june09_qcdPt15.root");
+   sprintf(file5,"../root_files/TrkHistMC_june09_qcdPt30v3.root");
+   sprintf(file6,"../root_files/TrkHistMC_june09_qcdPt80v3.root");
+   sprintf(file7,"../root_files/TrkHistMC_june09_qcdPt170v3.root");
+
+   /*
    sprintf(file2,"../root_files/TrkHistMC_june09_qcdMB.root");
    sprintf(file3,"../root_files/TrkHistMC_june09_qcdMB.root");
    sprintf(file4,"../root_files/TrkHistMCv10_QCD_Pt15v3.root");
    sprintf(file5,"../root_files/TrkHistMCv11_qcdPt30.root");
    sprintf(file6,"../root_files/TrkHistMCv11_qcdPt80.root");
    sprintf(file7,"../root_files/TrkHistMCv11_qcdPt170v2.root");
+   */
 
-   MC = false, GEN = false, CORRECT = true, multcrct = true, seccrct = true, evteffcorr = true, zerobin = true, onetwothreebin = true;
+   MC = false, GEN = false, CORRECT = true, multcrct = true, seccrct = true, evteffcorr = true, zerobin = true, onetwothreebin = true, rescrct= true;
    sprintf(dir,"trackAna_STD");
    sprintf(dir_corr,"trkEffAnalyzer");
+
+   mom_index = 0;
 
    invar_yield_ana_v9_data spec_rec_tight =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,0,eta_max);
+			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
 
 
    MC = false, GEN = false, CORRECT = true, multcrct = true, seccrct = true, evteffcorr = true, zerobin = true, onetwothreebin = true, rescrct= true;
    sprintf(dir,"trackAna_STD");
    sprintf(dir_corr,"trkEffAnalyzer");
 
+   mom_index = 4;
+
    invar_yield_ana_v9_data spec_rec_tight_res =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
    
 
-   MC = false, GEN = false, CORRECT = true, multcrct = true, seccrct = true, evteffcorr = true, zerobin = true, onetwothreebin = true, rescrct= true;
+   MC = false, GEN = false, CORRECT = true, multcrct = true, seccrct = true, evteffcorr = true, zerobin = true, onetwothreebin = true, rescrct= true, rebOnly = true;
+
    sprintf(dir,"trackAna_STD");
    sprintf(dir_corr,"trkEffAnalyzer");
 
    invar_yield_ana_v9_data spec_rec_tight_resR =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
 
 
    //GEN MC
    sprintf(file1,"../root_files/TrkHistMC_june09_qcdMB.root");
    sprintf(file2,"../root_files/TrkHistMC_june09_qcdMB.root");
    sprintf(file3,"../root_files/TrkHistMC_june09_qcdMB.root");
+   sprintf(file4,"../root_files/TrkHistMC_june09_qcdPt15.root");
+   sprintf(file5,"../root_files/TrkHistMC_june09_qcdPt30v3.root");
+   sprintf(file6,"../root_files/TrkHistMC_june09_qcdPt80v3.root");
+   sprintf(file7,"../root_files/TrkHistMC_june09_qcdPt170v3.root");
+   /*
+   sprintf(file3,"../root_files/TrkHistMC_june09_qcdMB.root");
    sprintf(file4,"../root_files/TrkHistMCv10_QCD_Pt15v3.root");
    sprintf(file5,"../root_files/TrkHistMCv11_qcdPt30.root");
    sprintf(file6,"../root_files/TrkHistMCv11_qcdPt80.root");
    sprintf(file7,"../root_files/TrkHistMCv11_qcdPt170v2.root");
+   */
 
    MC = true, GEN = true, CORRECT = false, multcrct = false, seccrct = false, evteffcorr = false, zerobin = false, onetwothreebin = false, rescrct= false;
    sprintf(dir,"preTrackAna");
@@ -141,7 +173,7 @@ void PlotAll_DATA_MTG_JUNE15()
    invar_yield_ana_v9_data spec_rec_tight_MC =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
 
 
 
@@ -152,9 +184,10 @@ void PlotAll_DATA_MTG_JUNE15()
    //f2->SetParameters(1.81426e+01,1.08477e+00,1,1,1,1,-9.48034e+00);
    //cms_7000GeV->Fit(f2,"RN");
 
-   TF1 *f2 = new TF1("fitTsallis","[0]*(1+(sqrt(0.1396**2+x**2)-0.1396)/([1]*[2]))**(-[2])",0.2,6);
+   TF1 *f2 = new TF1("fitTsallis","[0]*(1+(sqrt(0.1396**2+x**2)-0.1396)/([1]*[2]))**(-[2])",0.5,100);
    //f2->SetParameters(1.32522e+01,1.67841e-01,7.26036e+00); // fit the measurement
    f2->SetParameters(1.82045e+01,1.53540e-01,7.06942e+00); // fit the fit (used in paper)
+   //->Fit(f2,"RN");
    f2->SetLineColor(1);
 
 
@@ -205,11 +238,11 @@ void PlotAll_DATA_MTG_JUNE15()
       //dndpt_gen_nsd = gen_nsd_spect.hRInvX;
       //dndpt_gen_nsd_tg = gen_nsd_spect.RInvX;
    }else{
-      dndpt_rec_tight = spec_rec_tight.hInvX;
+      dndpt_rec_tight = spec_rec_tight.hRInvX;
       intLum = spec_rec_tight.integratedLum;
       dndpt_rec_tight->Scale(1./intLum);
 
-      dndpt_rec_tight_res = spec_rec_tight_res.hInvX;
+      dndpt_rec_tight_res = spec_rec_tight_res.hRInvX;
       intLum = spec_rec_tight_res.integratedLum;
       dndpt_rec_tight_res->Scale(1./intLum);
 
@@ -225,6 +258,8 @@ void PlotAll_DATA_MTG_JUNE15()
    }
    
    
+   dndpt_rec_tight_resR->Fit(f2,"RN");
+
    // Basic canvas and dummy histogram 
    TCanvas *call = new TCanvas("call","call",510,670);       
    call->cd();
@@ -252,7 +287,8 @@ void PlotAll_DATA_MTG_JUNE15()
    // ----- pad 1 
    pp1->cd();
    pp1->SetLogy();
-   if(entire_range) pp1->SetLogx();
+   if(log_scale && entire_range) pp1->SetLogx();
+
 
    Char_t xTitle[100],yTitle[100];
 
@@ -290,25 +326,26 @@ void PlotAll_DATA_MTG_JUNE15()
    th1Style1(dndpt_rec_tight,1,20,1.0,1,1.5,1,1);
    th1Style1(dndpt_rec_tight_res,2,24,1.0,2,1.5,1,1);
    th1Style1(dndpt_rec_tight_resR,6,25,1.0,6,1.5,1,1);
-
+   
 
 
    TLegend *leg2=0;
-   if(entire_range) leg2 = new TLegend(0.21,0.09,0.58,0.47);
-   else leg2 = new TLegend(0.37,0.47,0.74,0.85);
+   if(log_scale && entire_range) leg2 = new TLegend(0.21,0.09,0.58,0.47);
+   else leg2 = new TLegend(0.45,0.47,0.82,0.85);
    leg2->SetMargin(0.3);
    leg2->SetBorderSize(0);
    leg2->SetFillColor(kWhite);
    leg2->SetFillStyle(0);
-   leg2->SetTextSize(0.039);
+   //leg2->SetTextSize(0.039);
+   leg2->SetTextSize(0.035);
    leg2->SetMargin(0.3);
    
 
    if(full_eta) leg2->SetHeader("pp #rightarrow h+X, 7 TeV DATA, |#eta|<2.4");
    else leg2->SetHeader("pp #rightarrow h+X, 7 TeV DATA, |#eta|<1.0");               
-   leg2->AddEntry(dndpt_rec_tight,"RECO (TRK+EVT corrected)","pl");
-   leg2->AddEntry(dndpt_rec_tight_res,"RECO (TRK+EVT+RES corrected)","pl");
-   leg2->AddEntry(dndpt_rec_tight_resR,"RECO (TRK+EVT+RES+REBIN corrected)","pl");
+   leg2->AddEntry(dndpt_rec_tight,"RECO (Mom. Res. with MB)","pl");
+   leg2->AddEntry(dndpt_rec_tight_res,"RECO (Mom. Res. with Pt170)","pl");
+   leg2->AddEntry(dndpt_rec_tight_resR,"RECO (No Mom. Res.)","pl");
    leg2->AddEntry(cms_7000GeV,"CMS 7 TeV |#eta|<2.4","pl");
    //leg2->AddEntry(dndpt_gen_nsd_tg,"PYTHIA D6T","l");
    leg2->AddEntry(f2,"Tsallis fit","l");
@@ -327,7 +364,7 @@ void PlotAll_DATA_MTG_JUNE15()
 
    // ------ pad2
    pp1_1->cd();
-   if(entire_range) pp1_1->SetLogx();
+   if(log_scale && entire_range) pp1_1->SetLogx();
 
    sprintf(yTitle,"Ratio");
 
@@ -359,10 +396,17 @@ void PlotAll_DATA_MTG_JUNE15()
    TH1D *dndpt_rec_tight_MC_dum = (TH1D*) dndpt_rec_tight_MC->Clone("dndpt_rec_tight_MC_dum");
    //TH1D *dndpt_gen_nsd_dum = (TH1D*) dndpt_gen_nsd->Clone("dndpt_gen_nsd_dum");
 
-   TH1D *dndpt1_dum_div_cms7000 = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_dum,f2,0.4,6.0);
-   TH1D *dndpt1_dum_div_cms7000_res = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_res_dum,f2,0.4,6.0);
-   TH1D *dndpt1_dum_div_cms7000_resR = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_resR_dum,f2,0.4,6.0);
+   TH1D *dndpt1_dum_div_cms7000 = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_dum,f2,0.4,100.0);
+   TH1D *dndpt1_dum_div_cms7000_res = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_res_dum,f2,0.4,100.0);
+   TH1D *dndpt1_dum_div_cms7000_resR = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_resR_dum,f2,0.4,100.0);
    TGraphErrors *cms7000_div_fit = (TGraphErrors*) ratio_func_to_func(cms_7000GeV,f2,0.4,6.0);
+
+   /*
+   TH1D *dndpt1_dum_div_cms7000 = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_dum,f2,0.4,200.0);
+   TH1D *dndpt1_dum_div_cms7000_res = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_res_dum,f2,0.4,200.0);
+   TH1D *dndpt1_dum_div_cms7000_resR = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_resR_dum,f2,0.4,200.0);
+   TGraphErrors *cms7000_div_fit = (TGraphErrors*) ratio_func_to_func(cms_7000GeV,f2,0.4,200.0);
+   */
    
 
    //dndpt_gen_nsd_dum->Sumw2();
@@ -380,7 +424,7 @@ void PlotAll_DATA_MTG_JUNE15()
    dndpt_rec_tight_dum->Divide(dndpt_rec_tight_MC_dum);
 
 
-   th1Style1(dndpt_rec_tight_dum,96,20,1,96,1.5,9,3);
+   //th1Style1(dndpt_rec_tight_dum,96,20,1,96,1.5,9,3);
    th1Style1(dndpt1_dum_div_cms7000,1,20,1.0,1,1.5,1,1);
    th1Style1(dndpt1_dum_div_cms7000_res,2,24,1.0,2,1.5,1,1);
    th1Style1(dndpt1_dum_div_cms7000_resR,6,25,1.0,6,1.5,1,1);
@@ -390,16 +434,21 @@ void PlotAll_DATA_MTG_JUNE15()
    //PrintXsection(dndpt_rec_tight,117.);
    //PrintXsection(dndpt_rec_tight,1.); 
 
-   /*
-   if(entire_range){  
-      if(full_eta) printCanvases(call,"spectra_DATA_MOM_RES_fullEta",2,1);
-      else printCanvases(call,"spectra_DATA_MOM_RES",2,1);
+   if(print){
+      if(entire_range){  
+	 if(log_scale){
+	    if(full_eta) printCanvases(call,"spectra_PlotAll_DATA_MTG_JUNE15_fullEta_logx",2,1);
+	    else printCanvases(call,"spectra_PlotAll_DATA_MTG_JUNE15_logx",2,1);
+      }else{
+	    if(full_eta) printCanvases(call,"spectra_PlotAll_DATA_MTG_JUNE15_fullEta",2,1);
+	    else printCanvases(call,"spectra_PlotAll_DATA_MTG_JUNE15",2,1);
+	 }
    }else{
-      if(full_eta) printCanvases(call,"spectra_DATA_MOM_RES_narrow_fullEta",1,1);
-      else printCanvases(call,"spectra_DATA_MOM_RES_narrow",1,1);
+	 if(full_eta) printCanvases(call,"spectra_PlotAll_DATA_MTG_JUNE15_narrow_fullEta",1,1);
+	 else printCanvases(call,"spectra_PlotAll_DATA_MTG_JUNE15_narrow",1,1);
+      }
    }
-   */
-
+   
 }
 
 
