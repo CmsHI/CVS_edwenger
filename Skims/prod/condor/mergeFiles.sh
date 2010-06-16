@@ -13,11 +13,11 @@ infiles=$@
 
 echo "outdir: $outdir"
 echo "outfile: $outfile"
-echo "infiles: $infiles"
+#echo "infiles: $infiles"
 
 mkdir -p $outdir/log
 logfile=${outfile%.root}.txt
-mergecmd="echo hadd $outdir/$outfile $infiles"
+mergecmd="echo hadd -T $outdir/$outfile $infiles"
 runcmd="(time $mergecmd >& $outdir/log/$logfile) 2>> $outdir/log/$logfile"
-echo $runcmd
-#eval $runcmd
+#echo $runcmd
+eval $runcmd
