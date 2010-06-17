@@ -41,10 +41,38 @@ TH1D* RebinIt(TH1D* hist_pre, bool REBIN);
 TH1D* GetDummyHist(Float_t xmax, Float_t min, Float_t max,Char_t *xttl,Char_t *yttl);
 void PrintXsection(TH1D* hist, float scale);
 void PrintNameAndTitle(TH1D* hPNAT);
+TH1D* FillFromFunc(TH1D* hist, TF1* func);
+void CheckNumberOfBinEntries(TH1D* hCNOBE);
 // In case any of these are called in this file =====================================    
+
+void CheckNumberOfBinEntries(TH1D* hCNOBE){
+   int nbin = hCNOBE->GetNbinsX();
+   for(int i=0;i<nbin;i++){
+      cout<<"x value : "<<hCNOBE->GetBinCenter(i+1)<<" entries (from (err*err)) : "<<hCNOBE->GetBinError(i+1)*hCNOBE->GetBinError(i+1)<<endl;
+   }
+}
 
 void PrintNameAndTitle(TH1D* hPNAT){
    cout<<"name = "<<hPNAT->GetName()<<" && title = "<<hPNAT->GetTitle()<<endl;
+}
+
+TH1D* FillFromFunc(TH1D* hFFF_pre, TF1* fFFF){
+
+   TH1D* hFFF = (TH1D*) hFFF_pre->Clone("hFFF");
+   hFFF->Reset();
+
+   int nbin = hFFF->GetNbinsX();
+   //hist->Sumw2(); 
+   for(int i = 0; i<nbin ;i++){
+      double low = hFFF->GetXaxis()->GetBinLowEdge(i+1);
+      double high = hFFF->GetXaxis()->GetBinUpEdge(i+1);
+      double deltaN = fFFF->Integral(low,high);
+      double pt = hFFF->GetBinCenter(i+1);
+      double dbin = hFFF->GetBinWidth(i+1);
+      hFFF->Fill(pt,deltaN/dbin);
+      hFFF->SetBinError(i+1,0);
+   }
+   return hFFF;
 }
 
 TH1D* ratio_hist_to_func(TH1D* num, TF1* f3){
@@ -52,12 +80,15 @@ TH1D* ratio_hist_to_func(TH1D* num, TF1* f3){
    cout<<"[Ratio to fit used]"<<endl;
 
    TH1D *hRatio = (TH1D*) num->Clone("hRatio");
+   //hRatio->Reset();
 
-   int nbin = num->GetNbinsX();
+   int nbin = hRatio->GetNbinsX();
 
    for(int i=0;i<nbin;i++){
 
       double cms_value = (double) f3->Eval(hRatio->GetBinCenter(i+1));
+      //double ratio = num->GetBinContent(i+1)/cms_value; 
+      //double ratio_err =  (num->GetBinError(i+1)/num->GetBinContent(i+1))*ratio;
       double ratio = hRatio->GetBinContent(i+1)/cms_value;                                                                                                   
       double ratio_err =  (hRatio->GetBinError(i+1)/hRatio->GetBinContent(i+1))*ratio;
 
@@ -261,6 +292,7 @@ TH1D* RebinIt(TH1D* hist_pre, bool REBIN, char *name){
 	 nbins++;
 	 // DATA
 
+	 /*
 	 if (bin < 3)          bin += 1;
 	 else if(bin < 8)      bin += 2;
 	 else if (bin < 12)    bin += 4;
@@ -270,6 +302,18 @@ TH1D* RebinIt(TH1D* hist_pre, bool REBIN, char *name){
 	 else if (bin < 100)   bin += 40;
 	 else if (bin < 200)   bin += 55;
 	 else                  bin += 100;
+	 */
+
+	 if (bin < 3)          bin += 1;
+         else if(bin < 8)      bin += 2;
+         else if (bin < 12)    bin += 4;
+         else if (bin < 30)    bin += 6;
+         else if (bin < 40)    bin += 8;
+         else if (bin < 70)    bin += 25;
+         else if (bin < 100)   bin += 45;
+         else if (bin < 200)   bin += 65;
+         else                  bin += 150;
+
 
 	 //bin += 2;
       }
@@ -352,6 +396,7 @@ TH1D* RebinIt(TH1D* hist_pre, bool REBIN){
 	 nbins++;
 	 // DATA
 
+	 /*
 	 if (bin < 3)          bin += 1;
 	 else if(bin < 8)      bin += 2;
 	 else if (bin < 12)    bin += 4;
@@ -361,6 +406,17 @@ TH1D* RebinIt(TH1D* hist_pre, bool REBIN){
 	 else if (bin < 100)   bin += 40;
 	 else if (bin < 200)   bin += 55;
 	 else                  bin += 100;
+	 */
+
+         if (bin < 3)          bin += 1;
+         else if(bin < 8)      bin += 2;
+         else if (bin < 12)    bin += 4;
+         else if (bin < 30)    bin += 6;
+         else if (bin < 40)    bin += 8;
+         else if (bin < 70)    bin += 25;
+         else if (bin < 100)   bin += 45;
+         else if (bin < 200)   bin += 65;
+         else                  bin += 150;
 
 	 //bin += 2;
       }
