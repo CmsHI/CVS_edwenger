@@ -34,6 +34,7 @@ def enableREDIGI(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
+    process.eventFilter.remove(process.hltMinBias)     # 
     return process
 
 
@@ -52,4 +53,9 @@ def enableHLTJet15U(process):
     process.minBiasBscFilter.remove(process.hltMinBias)
     process.hltJets.HLTPaths = ['HLT_Jet15U']
     process.minBiasBscFilter = cms.Sequence(process.hltJets*process.minBiasBscFilter)
+    return process
+
+### this is for GEN analyzer for Pt_hat: 0 ~ 15
+def enableMinPtHatCut(process):
+    process.preTrackAna.pthatCut=cms.untracked.double(15.0)
     return process
