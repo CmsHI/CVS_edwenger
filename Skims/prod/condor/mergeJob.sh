@@ -6,7 +6,7 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
-script=./mergeFiles.sh
+script=mergeFiles.sh
 inDir=$1
 tag=$2
 
@@ -24,7 +24,7 @@ for job in `ls $inDir/*.root | grep $tag | head -n $N`; do
   # -- build subgroup --
   if [ $subi -eq 0 ]; then
     cmd="./condor64Basic.sh $script $outdir trkhists_sub$ct.root"
-    #cmd="$script $outdir trkhists_sub$ct.root"
+    #cmd="$./script $outdir trkhists_sub$ct.root"
   else
     #echo $ct: $job
     cmd="$cmd $job"
