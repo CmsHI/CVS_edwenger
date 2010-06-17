@@ -21,7 +21,7 @@ for i in $jobs; do
   echo $i
   cd $i
   echo "  # of files:" `ls trkhists*.root | wc -l`
-  cmd=../scripts/cleanJob.sh
+  cmd=../../scripts/cleanJob.sh
   echo "  run: $cmd"
   eval $cmd
   cd $startdir
