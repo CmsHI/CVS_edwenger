@@ -1,20 +1,20 @@
 #!/bin/bash -
 startdir=$PWD
 
-scratch=/net/hibat0003/d00/scratch/frankma/data/MinimumBias
+topDir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias
 jobs="\
-$scratch/MB-C10-A20RR-TRKANASKIM-v2_proc0615_nt \
-$scratch/MB-C10-A20RR-TRKANASKIM-v3_proc0615_nt \
-$scratch/MB-C10-M6RR-JMTskim-v0_proc0615_nt \
-$scratch/MB-C10-M6RR-MBskim-v0_proc0615_nt \
-$scratch/MB-C10-PR9-JMTskim-v0_proc0615_nt \
-$scratch/MB-C10-PR9-MBskim-v0_proc0615_nt \
-$scratch/MB-C10-PR9-TRKANASKIM-v3_proc0615_nt \
+$topDir/MB-C10-A20RR-TRKANASKIM-v2_proc0615_nt \
+$topDir/MB-C10-A20RR-TRKANASKIM-v3_proc0615_nt \
+$topDir/MB-C10-M6RR-JMTskim-v0_proc0615_nt \
+$topDir/MB-C10-M6RR-MBskim-v0_proc0615_nt \
+$topDir/MB-C10-PR9-JMTskim-v0_proc0615_nt \
+$topDir/MB-C10-PR9-MBskim-v0_proc0615_nt \
+$topDir/MB-C10-PR9-TRKANASKIM-v3_proc0615_nt \
 "
 
-scratch=/net/hibat0003/d00/scratch/frankma/data/JetMETTau
+topDir=/net/hibat0003/d00/scratch/frankma/data/JetMETTau
 jobs=$jobs"\
-$scratch/JMT-R10A-PR1-JMTskim-v0_proc0615_nt \
+$topDir/JMT-R10A-PR1-JMTskim-v0_proc0615_nt \
 "
 
 for i in $jobs; do
