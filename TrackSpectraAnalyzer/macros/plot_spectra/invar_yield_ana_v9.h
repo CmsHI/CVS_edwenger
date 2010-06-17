@@ -52,6 +52,9 @@ double GetFakFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
 double CorrectNevt(TH1F* histEVT);
 double CorrectNevtWithMult(TH1F* histEVT);
 double GetZeroBinFraction(TH1F* hist);
+double GetOneBinFraction(TH1F* hist);
+double GetTwoBinFraction(TH1F* hist);
+double GetThreeBinFraction(TH1F* hist);
 double GetZOTTBinFraction(TH1F* hist);
 double GetOTTBinFraction(TH1F* hist);
 double CorrectNevtV2(TH1F* histDen, TH1F* histNum);
@@ -305,7 +308,8 @@ double CorrectNevtWithMult(TH1F* histEVT){
 
 
 
-// defined differently
+// fraction is defined as a fraction of event with mult =x out of N_{tot}
+// not out of N_{i} (where i = 4,5,6.. (summed implicitly))
 
 double GetZeroBinFraction(TH1F* hist){
 
@@ -317,14 +321,36 @@ double GetZeroBinFraction(TH1F* hist){
    return fraction;
 }
 
+double GetOneBinFraction(TH1F* hist){
+
+   double total = hist->Integral();
+   double zerobin = hist->Integral(2,2);
+   double fraction = (zerobin)/total;
+   return fraction;
+}
+
+double GetTwoBinFraction(TH1F* hist){
+
+   double total = hist->Integral();
+   double zerobin = hist->Integral(3,3);
+   double fraction = (zerobin)/total;
+   return fraction;
+}
+
+double GetThreeBinFraction(TH1F* hist){
+
+   double total = hist->Integral();
+   double zerobin = hist->Integral(4,4);
+   double fraction = (zerobin)/total;
+   return fraction;
+}
+
+
 double GetZOTTBinFraction(TH1F* hist){
 
    double total = hist->Integral();
-   //double non_zerobin = hist->Integral(5,hist->GetNbinsX());// i - {0,1,2,3}
-   //double fraction = (total-non_zerobin)/total;
    double zerobin = hist->Integral(1,4);
    double fraction = (zerobin)/total;
-
    return fraction;
 }
 

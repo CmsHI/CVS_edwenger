@@ -46,6 +46,7 @@ struct invar_yield_ana_v9_data {
    TGraphErrors *InvX;
    TGraphErrors *RInvX; // rebinned   
    double integratedLum;
+   double nbinFraction;
 };
 
 const float pi = 3.14159265358979323846;
@@ -73,6 +74,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
 						  bool evteffcorr=false, bool zerobin=false, bool onetwothreebin=false, bool cross=false, bool oneoverpt=true, 
 						  bool rescrct=false, bool rebOnly=false,
 						  int mom_index = 0,
+						  int mult_bin = 0,
 						  double jet_min = 0, double jet_max = 2000,
 						  double ieta=0, double feta=2.4)
    
@@ -163,6 +165,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
    TFile *fEVT = new TFile(cFileEVT);
    double zerobinFraction=0;
    double zottbinFraction=0;
+   double onebinFraction=0, twobinFraction=0, threebinFraction=0;
 
    if(zerobin){
       TH1F *hNSD_GEN = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");    
@@ -174,10 +177,12 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
       TH1F *hNSDvtx_CORR_123 = (TH1F*) fEVT->Get("preTrgAna/hGenRecMultNSD_STD");
       zottbinFraction = GetZOTTBinFraction(hNSDvtx_CORR_123);
       cout<<"0, 1,2,3 bin fraction (from ??) : "<<zottbinFraction<<endl;
-
-      TH3F *hSpectra3D_mult1 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult1");
-      TH3F *hSpectra3D_mult2 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult2");
-      TH3F *hSpectra3D_mult3 = (TH3F*) fEVT->Get("looseTrackAna_STD/threeDHist/hTrkPtEtaJetEt_mult3");
+      onebinFraction = GetOneBinFraction(hNSDvtx_CORR_123);
+      cout<<" 1 bin fraction : "<<onebinFraction<<endl;
+      twobinFraction = GetTwoBinFraction(hNSDvtx_CORR_123);
+      cout<<" 2 bin fraction : "<<twobinFraction<<endl;
+      threebinFraction = GetThreeBinFraction(hNSDvtx_CORR_123);
+      cout<<" 3 bin fraction : "<<threebinFraction<<endl;
    }
    //cout<<"[Get numbers for evt sel correction]========================================"<<endl;
 
@@ -202,7 +207,12 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
    //dSpec->cd();
 
    TH1F* hGenNevt = (TH1F*) dSpec->Get("hGenNevt");
-   TH1F* hNevt = (TH1F*) dSpec->Get("hNevt");
+   TH1F* hNevt = 0;
+
+   if(mult_bin==0) hNevt = (TH1F*) dSpec->Get("hNevt");
+   else if(mult_bin==1) hNevt = (TH1F*) dSpec->Get("hNevt_mult1");
+   else if(mult_bin==2) hNevt = (TH1F*) dSpec->Get("hNevt_mult2");
+   else if(mult_bin==3) hNevt = (TH1F*) dSpec->Get("hNevt_mult3");
    
    cout<<"flags gen: "<<gen<<" mc: "<<mc<<" evteffcorr: "<<evteffcorr<<" zerobin: "<<zerobin<<" onetwothreebin: "<<onetwothreebin<<endl;
 
@@ -221,8 +231,6 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
       cout<<"Corrected for ZERO bin only !"<<endl;
    }else if(evteffcorr && zerobin && onetwothreebin){
       NumEvtCorrectedMult = NumEvtCorrectedMult/(1-zottbinFraction);
-      cout<<"temporary correction"<<endl;
-      NumEvtCorrectedMult = NumEvtCorrectedMult*(6.98903/6.97963);
       cout<<"Corrected for ZERO bin,1,2,3 bin!"<<endl;
    }
 
@@ -233,8 +241,12 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
 
    Double_t totMB_xsec = 71.26; // mb
    Double_t intLum = NumEvt/totMB_xsec;
-   if(!cross && evteffcorr) intLum = NumEvtCorrectedMult;      
+   if(!cross && evteffcorr) {
+      if(mult_bin==0) intLum = NumEvtCorrectedMult;      
+      else intLum =  NumEvtCorrected;
+   }
    if(!cross && !evteffcorr) intLum =  NumEvt;
+   
    
    cout<<"Int. LUM is "<<intLum<<endl;
    cout<<"[Get number of evetns ]========================================"<<endl;
@@ -255,7 +267,15 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
    char nameHist[200];
    if(oneoverpt){
       if(gen) sprintf(nameHist,"hGenTrkPtEtaJetEtW");
-      else sprintf(nameHist,"hTrkPtEtaJetEtW");
+      else if(mult_bin==0) {
+	 sprintf(nameHist,"hTrkPtEtaJetEtW");
+      }else if(mult_bin==1){
+	 sprintf(nameHist,"hTrkPtEtaJetEtW_mult1");
+      }else if(mult_bin==2){
+         sprintf(nameHist,"hTrkPtEtaJetEtW_mult2");
+      }else if(mult_bin==3){
+         sprintf(nameHist,"hTrkPtEtaJetEtW_mult3");
+      }
    }else{
       if(gen) sprintf(nameHist,"hGenTrkPtEtaJetEt");
       else sprintf(nameHist,"hTrkPtEtaJetEt");
@@ -298,8 +318,6 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
    float deta = feta + feta; // symmetric case       
 
    bool invariant = true;
-   int entries1K = 0;
-   int entries10K = 0;
 
    float var_1st, var_2nd, var_3rd, var_4th;
 
@@ -318,10 +336,8 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
       float  edn = hSpectra3D->GetBinError(xbin+1,ybin+1,zbin+1);
 
       //int entries = hSpectra3D->GetEntries();
-      int entries = (int) dn; // true for dn/dpt 
-
-      if(entries<1000) entries1K++;
-      if(entries<10000) entries10K++;
+      //int entries = (int) dn; // true for dn/dpt 
+      //int entries = edn*edn;
 
       float var_for_corr = 0;
 
@@ -409,8 +425,6 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
    }
 
    if(trkeffcrct && (!gen)) cout<<"correction applied !!!!!"<<endl;
-   cout<<"number of entry with entries < 1000 : "<<entries1K<<endl;
-   cout<<"number of entry with entries < 10000 : "<<entries10K<<endl;
    cout<<"[Correcting and analyzing ]========================================"<<endl;
    cout<<"\n"<<endl;
 
@@ -449,6 +463,7 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
 						     hSpectra3D->GetZaxis()->GetLast(),
 						     "e");    
    */
+
    
    if(rescrct) {
       TH1D* hRInvX_pre = (TH1D*) hInvX_pre->Clone("hRInvX_pre");
@@ -461,9 +476,17 @@ invar_yield_ana_v9_data  invar_yield_ana_v9_graph(char *cFile="../root_files/Trk
       TH1D *hInvX_dum = (TH1D*) data.hInvX->Clone("hInvX_dum");
       data.hRInvX = (TH1D*) RebinIt(hInvX_dum,true);
    }
-
+   
+   CheckNumberOfBinEntries(data.hInvX);
+   //CheckNumberOfBinEntries(data.hRInvX);
 
    data.integratedLum = intLum;
+
+   if(mult_bin==0) data.nbinFraction = intLum;
+   else if(mult_bin==1) data.nbinFraction = onebinFraction;
+   else if(mult_bin==2) data.nbinFraction = twobinFraction;
+   else if(mult_bin==3) data.nbinFraction = threebinFraction;
+
    return (data);
 
 }
