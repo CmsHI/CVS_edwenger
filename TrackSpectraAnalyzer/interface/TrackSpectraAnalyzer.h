@@ -119,7 +119,6 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::InputTag triglabel_;
    
    std::vector<int32_t> neededTrigSpectra_;
-   //std::vector<bool> neededTrigSpectra_;
    std::vector<double> etaBins, ptBins, jetBins;
       
 };

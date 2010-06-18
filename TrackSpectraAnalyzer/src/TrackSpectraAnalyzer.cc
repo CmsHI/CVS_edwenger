@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.46 2010/06/16 16:21:44 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.47 2010/06/18 23:00:49 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -37,7 +37,6 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    evtMultCut_ = iConfig.getUntrackedParameter<int>("evtMultCut", 0);
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<int> >("neededTrigSpectra");
-   //neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<bool> >("neededTrigSpectra"); 
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
 }
 
@@ -161,10 +160,10 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
 	    hTrkPtEtaJetEtW_vbin->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
 
-	    unsigned index=0;
+	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(neededTrigSpectra_[i]!=1) continue;
-               if(hltAccept_[i]) hTrkPtEtaJetEtW_Trig[index]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
+               if(hltAccept_[i]) hTrkPtEtaJetEtW_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
 	       index++;
             }
 
