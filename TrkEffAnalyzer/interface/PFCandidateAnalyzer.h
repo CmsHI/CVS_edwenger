@@ -60,9 +60,15 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
 
   /// Vertices for track selection
   edm::InputTag   inputTagVertices_;
+
+  /// SimTracks for track association
+  edm::InputTag   inputTagSimTracks_;
   
   /// verbose ?
   bool   verbose_;
+
+  /// contains tracking particles
+  bool   hasSimInfo_;
 
   /// print the blocks associated to a given candidate ?
   bool   printBlocks_;
@@ -80,6 +86,8 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
   float sum_ecal;
   float max_hcal;
   float sum_hcal;
+
+  float max_nhits,max_relpterr,max_algo,max_nd0,max_ndz,max_fake;
 
   //vector<pair<float,float>> elements; // type, pt 
 

@@ -8,7 +8,15 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "edwenger/VertexAnalyzer/interface/VertexComparator.h"
-
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
+#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
+#include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
+#include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include <Math/DistFunc.h>
 #include "TMath.h"
 //
@@ -45,6 +53,12 @@ PFCandidateAnalyzer::PFCandidateAnalyzer(const edm::ParameterSet& iConfig) {
   thePtMin_ = 
     iConfig.getUntrackedParameter<double>("ptMin",3.0);
 
+  inputTagSimTracks_
+    = iConfig.getParameter<InputTag>("SimTracks");
+
+  hasSimInfo_ = 
+    iConfig.getUntrackedParameter<bool>("hasSimInfo");
+
 
   LogDebug("PFCandidateAnalyzer")
     <<" input collection : "<<inputTagPFCandidates_ ;
@@ -67,7 +81,7 @@ PFCandidateAnalyzer::beginRun(const edm::Run& run,
 void 
 PFCandidateAnalyzer::beginJob() {
 
-  nt = f->make<TNtuple>("nt","PF Testing","type:pt:tkptmax:tkptsum:eetmax:eetsum:hetmax:hetsum");
+  nt = f->make<TNtuple>("nt","PF Testing","type:pt:tkptmax:tkptsum:eetmax:eetsum:hetmax:hetsum:nhits:relpterr:algo:nd0:ndz:fake");
 
 }
 
@@ -78,7 +92,7 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
   
   LogDebug("PFCandidateAnalyzer")<<"START event: "<<iEvent.id().event()
 			 <<" in run "<<iEvent.id().run()<<endl;
-  
+
   
   // get vertices
 
@@ -86,6 +100,22 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
   iEvent.getByLabel(inputTagVertices_,vtxsH);
   reco::VertexCollection vtxs = *vtxsH;
   
+  // do reco-to-sim association
+
+  edm::Handle<TrackingParticleCollection>  TPCollectionHfake;
+  edm::Handle<edm::View<reco::Track> >  trackCollection;
+  edm::ESHandle<TrackAssociatorBase> theAssociator;
+  const TrackAssociatorByHits *theAssociatorByHits;
+  reco::RecoToSimCollection recSimColl;
+  
+  if(hasSimInfo_) {
+    iEvent.getByLabel(inputTagSimTracks_,TPCollectionHfake);
+    iEvent.getByLabel("generalTracks",trackCollection);
+    iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
+    theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();  
+    recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
+  }
+
   // get PFCandidates
 
   Handle<PFCandidateCollection> pfCandidates;
@@ -93,6 +123,13 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 
   for( unsigned i=0; i<pfCandidates->size(); i++ ) {
     
+    max_nhits=0.0;
+    max_relpterr=0.0;
+    max_algo=0.0;
+    max_nd0=0.0;
+    max_ndz=0.0;
+    max_fake=0.0;
+
     const reco::PFCandidate& cand = (*pfCandidates)[i];
     
     cand_type = cand.particleId();
@@ -118,11 +155,12 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 
       PFBlockRef blockRef = cand.elementsInBlocks()[i].first;
      
-      if(i) {
+      if(i && verbose_) {
 	cout << "WARNING: more than one block in this candidate" << endl; 
 	continue;
       }
 
+      cout << "\nCandidate Type #" << cand_type << endl;
       const edm::OwnVector< reco::PFBlockElement >& elements = (*blockRef).elements();
       
       max_trk=0.0, sum_trk=0.0, max_ecal=0.0, sum_ecal=0.0, max_hcal=0.0, sum_hcal=0.0;
@@ -135,9 +173,15 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 	  reco::TrackRef trackRef = elements[ie].trackRef();
 
 	  //----- track quality selections
-	  if(trackRef->numberOfValidHits()<5) continue;
-	  if(trackRef->ptError()/trackRef->pt() > 0.05) continue;
-	  if(trackRef->algo() > 7) continue;
+
+	  double nhits = trackRef->numberOfValidHits();
+	  if(nhits<5) continue;
+
+	  double relpterr = trackRef->ptError()/trackRef->pt();
+	  if(relpterr > 0.05) continue;
+
+	  double algo = trackRef->algo();
+	  if(algo > 7) continue;
 
 	  double d0 = trackRef->dxy(vtxs[0].position());
 	  double dz = trackRef->dz(vtxs[0].position());
@@ -151,18 +195,27 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 	  if(fabs(d0/d0err) > 3) continue;
 	  if(fabs(dz/dzerr) > 3) continue;
 
-	  cout << "d0= " << d0 
-	       << ", dz = " << dz 
-	       << ", d0err = " << d0err
-	       << ", dzerr = " << dzerr
-	       << endl;
+	  bool fake=false;
+
+	  if(hasSimInfo_)
+	    if(recSimColl.find(edm::RefToBase<reco::Track>(trackRef)) == recSimColl.end())
+	      fake=true;
 
 	  //-----
 
 	  double trkpt = trackRef->pt();
 	  cout << "pt=" << trkpt << endl;
 	  sum_trk+=trkpt;
-	  if(trkpt>max_trk) max_trk=trkpt;
+	  if(trkpt>max_trk) {
+	    max_trk=trkpt;
+	    max_nhits=nhits;
+	    max_relpterr=relpterr;
+	    max_algo=algo;
+	    max_nd0=d0/d0err;
+	    max_ndz=dz/dzerr;
+	    max_fake=fake;
+	  }
+
 	} 
 	else if(type==PFBlockElement::ECAL) {
 	  cout << "ECAL:";
@@ -185,7 +238,7 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
  
     } //end loop over blocks
 
-    nt->Fill(cand_type,cand_pt,max_trk,sum_trk,max_ecal,sum_ecal,max_hcal,sum_hcal);
+    nt->Fill(cand_type,cand_pt,max_trk,sum_trk,max_ecal,sum_ecal,max_hcal,sum_hcal,max_nhits,max_relpterr,max_algo,max_nd0,max_ndz,max_fake);
 
     //---------
   }
