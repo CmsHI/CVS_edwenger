@@ -77,9 +77,16 @@ process.pfCandidateAnalyzer = cms.EDAnalyzer("PFCandidateAnalyzer",
     Vertices = cms.InputTag("sortedGoodVertices"),                                         
     verbose = cms.untracked.bool(False), ## print candidate info
     printBlocks = cms.untracked.bool(False), ## print block/element info
-    ptMin = cms.untracked.double(5.0),
+    ptMin = cms.untracked.double(5.0), ## of PF candidate
     SimTracks = cms.InputTag("mergedtruth","MergedTrackTruth"),
-    hasSimInfo = cms.untracked.bool(False)                                         
+    hasSimInfo = cms.untracked.bool(False),
+    minHits = cms.untracked.double(5),
+    maxPtErr = cms.untracked.double(0.05),
+    maxD0 = cms.untracked.double(0.2),                                         
+    maxDZ = cms.untracked.double(0.2),
+    maxD0Norm = cms.untracked.double(3.0),
+    maxDZNorm = cms.untracked.double(3.0),
+    pixelSeedOnly = cms.untracked.bool(True)                                         
 )
 
 # edm output
@@ -107,14 +114,16 @@ process.p = cms.Path(process.eventFilter
 
 # Schedule
 process.schedule = cms.Schedule(process.filter,
-                                process.p)
-                                #process.outpath)
+                                process.p,
+                                #process.outpath
+                                )
 
 
 def customiseMC(process):
     process.eventFilter.remove(process.physDeclFilter) # always false in MC
     process.eventFilter.remove(process.bptxAnd)        # always false in MC
-    process.eventFilter.remove(process.bscOrBptxOr)    
+    process.eventFilter.remove(process.bscOrBptxOr)
+    process.eventFilter.remove(process.hltMinBias)
     process.TFileService.fileName="pftupleMC.root"     # new ntuple name
     process.source.fileNames= [                        # QCD Pt80 files
         '/store/mc/Spring10/QCD_Pt80/GEN-SIM-RECO/START3X_V26_S09-v1/0011/FC7F52EF-2F45-DF11-869F-E41F13181D30.root',
@@ -123,7 +132,7 @@ def customiseMC(process):
         '/store/mc/Spring10/QCD_Pt80/GEN-SIM-RECO/START3X_V26_S09-v1/0011/F2D274EA-2D45-DF11-8E2B-E41F13181A74.root',
         '/store/mc/Spring10/QCD_Pt80/GEN-SIM-RECO/START3X_V26_S09-v1/0011/F23800E9-2E45-DF11-ACCF-E41F1318162C.root'
         ]
-
+    
     process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange('1:1-999999:max')
     
     process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
@@ -133,12 +142,12 @@ def customiseMC(process):
     return process
 
 
-def enableHLTJet15U(process):
+def customiseJet15U(process):
     process.minBiasBscFilter.remove(process.bscOrBptxOr)
     process.minBiasBscFilter.remove(process.hltMinBias)
     process.hltJets.HLTPaths = ['HLT_Jet15U']
-    process.minBiasBscFilter = cms.Sequence(process.hltJets*process.minBiasBscFilter)
-
+    process.minBiasBscFilter *= process.hltJets
+    
     process.source.fileNames= [
         # JetMetTau PD
         '/store/data/Run2010A/JetMETTau/RECO/v1/000/136/066/C6338C7C-7466-DF11-B48C-0030487A322E.root',
@@ -156,5 +165,18 @@ def enableHLTJet15U(process):
     
     return process
 
+def customiseLooseCuts(process):
+    process.pfCandidateAnalyzer.minHits=0
+    process.pfCandidateAnalyzer.maxPtErr=1.0
+    process.pfCandidateAnalyzer.maxD0=10.0
+    process.pfCandidateAnalyzer.maxDZ=10.0
+    process.pfCandidateAnalyzer.maxD0Norm=100.0
+    process.pfCandidateAnalyzer.maxDZNorm=100.0
+    process.pfCandidateAnalyzer.pixelSeedOnly=False
+
+    return process
+
+
 #process = customiseMC(process)
-process = enableHLTJet15U(process)
+process = customiseJet15U(process)
+process = customiseLooseCuts(process)

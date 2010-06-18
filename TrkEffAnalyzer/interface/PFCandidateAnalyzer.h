@@ -75,6 +75,9 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
 
   double thePtMin_;
 
+  double minHits_, maxPtErr_, maxD0_, maxDZ_, maxD0Norm_, maxDZNorm_;
+  bool pixelSeedOnly_;
+
   TNtuple *nt;
   edm::Service<TFileService> f;
 

@@ -38,27 +38,22 @@ PFCandidateAnalyzer::PFCandidateAnalyzer(const edm::ParameterSet& iConfig) {
   
 
 
-  inputTagPFCandidates_ 
-    = iConfig.getParameter<InputTag>("PFCandidates");
+  inputTagPFCandidates_ = iConfig.getParameter<InputTag>("PFCandidates");
+  inputTagVertices_ = iConfig.getParameter<InputTag>("Vertices");
+  inputTagSimTracks_ = iConfig.getParameter<InputTag>("SimTracks");
 
-  inputTagVertices_ 
-    = iConfig.getParameter<InputTag>("Vertices");
+  verbose_ = iConfig.getUntrackedParameter<bool>("verbose",false);
+  printBlocks_ = iConfig.getUntrackedParameter<bool>("printBlocks",false);
+  thePtMin_ = iConfig.getUntrackedParameter<double>("ptMin",3.0);
+  hasSimInfo_ = iConfig.getUntrackedParameter<bool>("hasSimInfo");
 
-  verbose_ = 
-    iConfig.getUntrackedParameter<bool>("verbose",false);
-
-  printBlocks_ = 
-    iConfig.getUntrackedParameter<bool>("printBlocks",false);
-
-  thePtMin_ = 
-    iConfig.getUntrackedParameter<double>("ptMin",3.0);
-
-  inputTagSimTracks_
-    = iConfig.getParameter<InputTag>("SimTracks");
-
-  hasSimInfo_ = 
-    iConfig.getUntrackedParameter<bool>("hasSimInfo");
-
+  minHits_ = iConfig.getUntrackedParameter<double>("minHits");
+  maxPtErr_ = iConfig.getUntrackedParameter<double>("maxPtErr");
+  maxD0_ = iConfig.getUntrackedParameter<double>("maxD0");
+  maxDZ_ = iConfig.getUntrackedParameter<double>("maxDZ");
+  maxD0Norm_ = iConfig.getUntrackedParameter<double>("maxD0Norm");
+  maxDZNorm_ = iConfig.getUntrackedParameter<double>("maxDZNorm");
+  pixelSeedOnly_ = iConfig.getUntrackedParameter<bool>("pixelSeedOnly");
 
   LogDebug("PFCandidateAnalyzer")
     <<" input collection : "<<inputTagPFCandidates_ ;
@@ -175,25 +170,25 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 	  //----- track quality selections
 
 	  double nhits = trackRef->numberOfValidHits();
-	  if(nhits<5) continue;
+	  if(nhits<minHits_) continue;
 
 	  double relpterr = trackRef->ptError()/trackRef->pt();
-	  if(relpterr > 0.05) continue;
+	  if(relpterr > maxPtErr_) continue;
 
 	  double algo = trackRef->algo();
-	  if(algo > 7) continue;
+	  if(algo > 7 && pixelSeedOnly_) continue;
 
 	  double d0 = trackRef->dxy(vtxs[0].position());
 	  double dz = trackRef->dz(vtxs[0].position());
 
-	  if(fabs(d0) > 0.2) continue;
-	  if(fabs(dz) > 0.2) continue;
+	  if(fabs(d0) > maxD0_) continue;
+	  if(fabs(dz) > maxDZ_) continue;
 
 	  double d0err = sqrt(trackRef->d0Error()*trackRef->d0Error()+vtxs[0].xError()*vtxs[0].yError());
 	  double dzerr = sqrt(trackRef->dzError()*trackRef->dzError()+vtxs[0].zError()*vtxs[0].zError());
 
-	  if(fabs(d0/d0err) > 3) continue;
-	  if(fabs(dz/dzerr) > 3) continue;
+	  if(fabs(d0/d0err) > maxD0Norm_) continue;
+	  if(fabs(dz/dzerr) > maxDZNorm_) continue;
 
 	  bool fake=false;
 
