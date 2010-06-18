@@ -26,7 +26,6 @@ from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
 trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
 trackAna.vsrc = cms.untracked.InputTag("sortedGoodVertices")
-trackAna.lowPtStudyHist = cms.untracked.bool(False)
 
 preTrackAna = trackAna.clone(isGEN=cms.untracked.bool(True),
                              pureGENmode=cms.untracked.bool(True),
@@ -60,7 +59,6 @@ trkEffAnalyzer.tracks = cms.untracked.InputTag("selectTracks")
 trkEffAnalyzer.vertices = cms.untracked.InputTag("sortedGoodVertices")
 trkEffAnalyzer.fillNtuples = cms.bool(False)
 trkEffAnalyzer.constPtBins = cms.bool(True)
-trkEffAnalyzer.lowPtMode   = cms.bool(False)
 
 loosetrkEffAnalyzer = trkEffAnalyzer.clone(tracks=cms.untracked.InputTag("looseSelectTracks"),
                                            vertices = cms.untracked.InputTag('selectedVertex',''),

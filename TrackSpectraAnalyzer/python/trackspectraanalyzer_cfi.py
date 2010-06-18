@@ -13,7 +13,6 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                           doJet = cms.untracked.bool(True),
                           histOnly = cms.untracked.bool(True),
                           includeExtra = cms.untracked.bool(True),
-                          lowPtStudyHist = cms.untracked.bool(False),
                           etaMax = cms.untracked.double(2.5),
                           ptMin = cms.untracked.double(0.0),
                           applyEvtEffCorr = cms.untracked.bool(False),
@@ -27,6 +26,8 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                                                            'HLT_Jet15U',
                                                            'HLT_Jet30U',
                                                            'HLT_Jet50U'),
+                          #neededTrigSpectra = cms.untracked.vbool
+                          neededTrigSpectra = cms.untracked.vint32(1,0,1,1,0), # 1st, 3rd, in the hltNames list 
                           triglabel = cms.untracked.InputTag('TriggerResults','','HLT')
                           )
 

@@ -74,16 +74,18 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    
    TH3F *hTrkPtEtaJetEt;
    TH3F *hTrkPtEtaJetEtW;
-   TH3F *hTrkLowPtEtaJetEtW;
-   TH3F *hTrkPtEtaJetEtW_Trig[6];  // not an automatic pickup yet
+   
+   TH3F *hTrkPtEtaJetEt_vbin;
+   TH3F *hTrkPtEtaJetEtW_vbin;
 
+   std::vector<TH3F*> hTrkPtEtaJetEtW_Trig;
+   
    TH3F *hTrkPtEtaJetEtW_mult1;
    TH3F *hTrkPtEtaJetEtW_mult2;
    TH3F *hTrkPtEtaJetEtW_mult3;
    
    TH3F *hGenTrkPtEtaJetEt;
    TH3F *hGenTrkPtEtaJetEtW;
-   TH3F *hGenTrkLowPtEtaJetEtW;
 
    //evt sel eff. correction
    TF1 *evtSelEff;
@@ -91,15 +93,17 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    // Jets
    TH1F *hNumJets;
    TH1F *hJet0Pt;
-   TH1F *hJet0Pt_Trig[6];
+   std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;
    
    bool isGEN_, doJet_, pureGENmode_, nsdOnly_;
-   bool histOnly_, includeExtra_, lowPtStudyHist_;
+   bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool pthatCut_;
+
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;
+
    double  etaMax_, ptMin_;
    double  leadJetEt_, leadJetEta_, leadGJetEt_, leadGJetEta_;
 
@@ -114,4 +118,8 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    std::vector<std::string> hltNames_;
    edm::InputTag triglabel_;
    
+   std::vector<int32_t> neededTrigSpectra_;
+   //std::vector<bool> neededTrigSpectra_;
+   std::vector<double> etaBins, ptBins, jetBins;
+      
 };
