@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.47 2010/06/18 23:00:49 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.48 2010/06/18 23:29:09 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -24,6 +24,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    nsdOnly_ = iConfig.getUntrackedParameter<bool>("nsdOnly", false);
+   pythia6_ = iConfig.getUntrackedParameter<bool>("pythia6", true);
    pthatCut_ = iConfig.getUntrackedParameter<double>("pthatCut_", 0.0);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
@@ -212,7 +213,12 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       bool isWanted = false;
       
       if(nsdOnly_){
-	 if( ((pid>=11) && (pid<=68)) || (pid==94) || (pid==95)) isWanted = true;
+	 if(pythia6_){
+	    if( ((pid>=11) && (pid<=68)) || (pid==94) || (pid==95)) isWanted = true;
+	 }else{
+	    // SD - 103, 104, DD - 105, MB - 101
+	    if(!(pid==103||pid==104)) isWanted = true;
+	 }
       }else{
 	 isWanted = true;
       }

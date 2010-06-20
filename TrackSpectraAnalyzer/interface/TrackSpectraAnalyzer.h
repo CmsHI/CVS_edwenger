@@ -97,7 +97,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    edm::Service<TFileService> fs;
    
-   bool isGEN_, doJet_, pureGENmode_, nsdOnly_;
+   bool isGEN_, doJet_, pureGENmode_, nsdOnly_, pythia6_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool pthatCut_;
