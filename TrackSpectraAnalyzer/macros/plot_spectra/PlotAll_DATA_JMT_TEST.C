@@ -38,7 +38,7 @@
 
 using namespace std;
 
-void PlotAll_DATA_JMT_TEST()
+void PlotAll_DATA_JMT_TEST(bool print=false)
 {
 
    gROOT->LoadMacro("invar_yield_ana_v9.C+");
@@ -68,9 +68,11 @@ void PlotAll_DATA_JMT_TEST()
    bool rescrct=false;
    bool rebOnly=false;
 
-   bool log_scale = false;
+   bool log_scale = true;
 
    int mom_index = 4;
+   int mult_bin = 0;
+
 
    double jet_min=0;
    double jet_max=2000;
@@ -81,7 +83,7 @@ void PlotAll_DATA_JMT_TEST()
 
    if(entire_range){
       if(MC) pt_max = 55,  ymin = 3e-13, ymax = 9e1, ymin_r = 0.30, ymax_r = 1.65;
-      else pt_max = 170, ymin = 3e-16, ymax = 9e1, ymin_r = 0.35, ymax_r = 1.25;
+      else pt_max = 170, ymin = 3e-16, ymax = 9e1, ymin_r = 0.35, ymax_r = 1.65;
    }else{
       if(MC) pt_max = 10, ymin = 5e-7, ymax = 2e1, ymin_r = 0.7, ymax_r = 1.4;       
       else pt_max = 6.5, ymin = 5e-6, ymax = 5e1, ymin_r = 0.75, ymax_r = 1.25;  
@@ -91,7 +93,7 @@ void PlotAll_DATA_JMT_TEST()
    else eta_max = 1.0;
 
 
-   char file1[100], file2[100], file3[100], file4[100], file5[100], file6[100], file7[100];
+   char file1[200], file2[200], file3[200], file4[200], file5[200], file6[200], file7[200];
 
    //sprintf(file1,"../root_files/MB-C10-A20RR-TRKANASKIM-MERGED.root");
    //sprintf(file1,"../root_files/MB-C10-M6RR-JMTskim-v0_0615.root");
@@ -114,7 +116,7 @@ void PlotAll_DATA_JMT_TEST()
    invar_yield_ana_v9_data spec_rec_tight =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
 			       dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
+			       evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,mult_bin,jet_min,jet_max,0,eta_max);
 
    MC = false, GEN = false, CORRECT = true, multcrct = true, seccrct = true, evteffcorr = true, zerobin = true, onetwothreebin = true, rescrct= true;
 
@@ -127,7 +129,7 @@ void PlotAll_DATA_JMT_TEST()
    invar_yield_ana_v9_data spec_rec_tight_res =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,mult_bin,jet_min,jet_max,0,eta_max);
    
 
    //sprintf(file1,"../root_files/MB-C10-PR9-JMTskim-v0_v2_0615.root");     
@@ -145,7 +147,7 @@ void PlotAll_DATA_JMT_TEST()
    invar_yield_ana_v9_data spec_rec_tight_resR =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,mult_bin,jet_min,jet_max,0,eta_max);
 
 
    //GEN MC
@@ -156,13 +158,6 @@ void PlotAll_DATA_JMT_TEST()
    sprintf(file5,"../root_files/TrkHistMC_june09_qcdPt30v3.root");
    sprintf(file6,"../root_files/TrkHistMC_june09_qcdPt80v3.root");
    sprintf(file7,"../root_files/TrkHistMC_june09_qcdPt170v3.root");
-   /*
-   sprintf(file3,"../root_files/TrkHistMC_june09_qcdMB.root");
-   sprintf(file4,"../root_files/TrkHistMCv10_QCD_Pt15v3.root");
-   sprintf(file5,"../root_files/TrkHistMCv11_qcdPt30.root");
-   sprintf(file6,"../root_files/TrkHistMCv11_qcdPt80.root");
-   sprintf(file7,"../root_files/TrkHistMCv11_qcdPt170v2.root");
-   */
 
    MC = true, GEN = true, CORRECT = false, multcrct = false, seccrct = false, evteffcorr = false, zerobin = false, onetwothreebin = false, rescrct= false;
 
@@ -175,8 +170,64 @@ void PlotAll_DATA_JMT_TEST()
    invar_yield_ana_v9_data spec_rec_tight_MC =
       invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
                                dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
-                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,jet_min,jet_max,0,eta_max);
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,mult_bin,jet_min,jet_max,0,eta_max);
 
+
+   
+   // P0
+   sprintf(file1,"../root_files/mergePY8.root");
+   sprintf(file2,"../root_files/mergePY8.root");
+   sprintf(file3,"../root_files/mergePY8.root");
+   sprintf(file4,"../root_files/mergePY8.root");
+   sprintf(file5,"../root_files/mergePY8.root");
+   sprintf(file6,"../root_files/mergePY8.root");
+   sprintf(file7,"../root_files/mergePY8.root");
+
+   /*
+   sprintf(file1,"../root_files/mergeP0.root");
+   sprintf(file2,"../root_files/mergeP0.root");
+   sprintf(file3,"../root_files/mergeP0.root");
+   sprintf(file4,"../root_files/mergeP0.root");
+   sprintf(file5,"../root_files/mergeP0.root");
+   sprintf(file6,"../root_files/mergeP0.root");
+   sprintf(file7,"../root_files/mergeP0.root");
+   */
+
+   MC = true, GEN = true, CORRECT = false, multcrct = false, seccrct = false, evteffcorr = false, zerobin = false, onetwothreebin = false, rescrct= false;
+
+   sprintf(dir,"preTrackAna");
+   sprintf(dir_corr,"trkEffAnalyzer");
+
+   jet_min = 0;
+   jet_max = 2000;
+
+   invar_yield_ana_v9_data spec_rec_tight_MC_p0 =
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
+                               dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,mult_bin,jet_min,jet_max,0,eta_max);
+
+
+   // Pythia 8
+   sprintf(file1,"../root_files/mergePY8.root");
+   sprintf(file2,"../root_files/mergePY8.root");
+   sprintf(file3,"../root_files/mergePY8.root");
+   sprintf(file4,"../root_files/mergePY8.root");
+   sprintf(file5,"../root_files/mergePY8.root");
+   sprintf(file6,"../root_files/mergePY8.root");
+   sprintf(file7,"../root_files/mergePY8.root");
+
+   MC = true, GEN = true, CORRECT = false, multcrct = false, seccrct = false, evteffcorr = false, zerobin = false, onetwothreebin = false, rescrct= false;
+
+   sprintf(dir,"preTrackAna");
+   sprintf(dir_corr,"trkEffAnalyzer");
+
+   jet_min = 0;
+   jet_max = 2000;
+
+   invar_yield_ana_v9_data spec_rec_tight_MC_py8 =
+      invar_yield_ana_v9_graph(file1,file2,file3,file4,file5,file6,file7,
+                               dir,dir_corr,GEN,CORRECT,multcrct,seccrct,MC,jet_based_correction,
+                               evteffcorr,zerobin,onetwothreebin,cross,oneoverpt,rescrct,rebOnly,mom_index,mult_bin,jet_min,jet_max,0,eta_max);
 
 
    //--------------------------- CMS measurement ---------------------------
@@ -186,11 +237,13 @@ void PlotAll_DATA_JMT_TEST()
    //f2->SetParameters(1.81426e+01,1.08477e+00,1,1,1,1,-9.48034e+00);
    //cms_7000GeV->Fit(f2,"RN");
 
-   TF1 *f2 = new TF1("fitTsallis","[0]*(1+(sqrt(0.1396**2+x**2)-0.1396)/([1]*[2]))**(-[2])",0.5,200);
+   //TF1 *f2 = new TF1("fitTsallis","[0]*(1+(sqrt(0.1396**2+x**2)-0.1396)/([1]*[2]))**(-[2])",0.5,200);
    //f2->SetParameters(1.32522e+01,1.67841e-01,7.26036e+00); // fit the measurement
-   f2->SetParameters(1.82045e+01,1.53540e-01,7.06942e+00); // fit the fit (used in paper)
-   f2->SetLineColor(1);
+   //f2->SetParameters(1.82045e+01,1.53540e-01,7.06942e+00); // fit the fit (used in paper)
+   //f2->SetLineColor(1);
 
+   TF1* f2 = new TF1("fitPythia","[0]*(1+(x/[1])+(pow(x,2)/[2])+(pow(x,3)/[3])+(pow(x,4)/[4])+(pow(x,5)/[5]))^[6]",0.5,180);
+   f2->SetParameters(2.96361e+01,2.66339e-01,1.34086e-01,2.96428e-01,1.74015e+00,5.16931e+00,-1.70643e+00);
 
 
    //--------------------------------------------------- PYTHIA truth GEN------------------------
@@ -225,6 +278,8 @@ void PlotAll_DATA_JMT_TEST()
    TH1D *dndpt_rec_tight_added=0;
 
    TH1D *dndpt_rec_tight_MC=0;
+   TH1D *dndpt_rec_tight_MC_p0=0;
+   TH1D *dndpt_rec_tight_MC_py8=0;
    TH1D *dndpt_gen_nsd=0;
 
    TGraphErrors *dndpt_gen_nsd_tg=0;
@@ -253,7 +308,9 @@ void PlotAll_DATA_JMT_TEST()
       dndpt_rec_tight_resR = spec_rec_tight_resR.hRInvX;
       intLum = spec_rec_tight_resR.integratedLum;
       dndpt_rec_tight_resR->Scale(1./intLum);
+      float scale = 1.15223531582625199e-04/5.06700000000000000e+04;
 
+      //dndpt_rec_tight_resR->Scale(scale);
       //dndpt_rec_tight_resR->Scale(1./8.5E1);
       //dndpt_rec_tight_resR->Scale(1./7.5E2);
       dndpt_rec_tight_resR->Scale(1./4E2);     
@@ -262,8 +319,18 @@ void PlotAll_DATA_JMT_TEST()
       intLum = spec_rec_tight_MC.integratedLum;
       dndpt_rec_tight_MC->Scale(1./intLum);
       
+      dndpt_rec_tight_MC_p0 = spec_rec_tight_MC_p0.hRInvX;
+      intLum = spec_rec_tight_MC_p0.integratedLum;
+      dndpt_rec_tight_MC_p0->Scale(1./intLum);
+
+      dndpt_rec_tight_MC_py8 = spec_rec_tight_MC_py8.hRInvX;
+      intLum = spec_rec_tight_MC_py8.integratedLum;
+      dndpt_rec_tight_MC_py8->Scale(1./intLum);
+      
+      //dndpt_rec_tight_MC_py8->Draw("hist");
+
       dndpt_gen_nsd = gen_nsd_spect.hRInvX;
-      dndpt_gen_nsd_tg = gen_nsd_spect.InvX;
+      dndpt_gen_nsd_tg = gen_nsd_spect.RInvX;
 
       dndpt_rec_tight_added = (TH1D*) dndpt_rec_tight_res->Clone("dndpt_rec_tight_added");
       dndpt_rec_tight_added->Add(dndpt_rec_tight_resR);
@@ -313,6 +380,8 @@ void PlotAll_DATA_JMT_TEST()
    dum->GetXaxis()->SetNdivisions(908);
    dum->GetYaxis()->SetNdivisions(407);
 
+   dndpt_rec_tight_MC_py8->Draw("histsame");
+
    TPad *call_pd = (TPad*)gPad;
    call_pd->cd();
    gPad->SetLogy();
@@ -322,24 +391,32 @@ void PlotAll_DATA_JMT_TEST()
       dndpt_rec_tight_res->GetXaxis()->SetRange(3,dndpt_rec_tight_res->GetXaxis()->GetLast());
       dndpt_rec_tight_resR->GetXaxis()->SetRange(3,dndpt_rec_tight_resR->GetXaxis()->GetLast());
       dndpt_rec_tight_MC->GetXaxis()->SetRange(3,dndpt_rec_tight_MC->GetXaxis()->GetLast());
+      dndpt_rec_tight_MC_p0->GetXaxis()->SetRange(3,dndpt_rec_tight_MC_p0->GetXaxis()->GetLast());
+      //dndpt_rec_tight_MC_p0->GetXaxis()->SetRange(3,
+						  //dndpt_rec_tight_MC_p0->GetXaxis()->FindBin(19));
+      //dndpt_rec_tight_MC_py8->GetXaxis()->SetRange(3,
+      //dndpt_rec_tight_MC_py8->GetXaxis()->GetLast());
       dndpt_rec_tight_added->GetXaxis()->SetRange(3,dndpt_rec_tight_added->GetXaxis()->GetLast());
-      //dndpt_gen_nsd->GetXaxis()->SetRange(3,dndpt_gen_nsd->GetXaxis()->GetLast());
+      dndpt_gen_nsd->GetXaxis()->SetRange(3,dndpt_gen_nsd->GetXaxis()->GetLast());
    }
 
 
    //plotting 
+
    f2->SetLineStyle(1);
    f2->SetLineWidth(1.5);
-   f2->Draw("same");
+   //f2->Draw("same");
    th1Style1(cms_7000GeV,13,30,1.0,13,1,1,1);
    //th1Style1(dndpt_gen_nsd,96,20,1,96,2,1,2);
-   th1Style1(dndpt_gen_nsd_tg,96,20,1.0,96,1.5,9,2); 
-   //th1Style1(dndpt_rec_tight_MC,2,20,1.0,2,1.5,1,3);
-
-   th1Style1(dndpt_rec_tight,6,25,1.0,6,1.5,1,1);
-   th1Style1(dndpt_rec_tight_res,2,24,1.0,2,1.5,1,1);
-   th1Style1(dndpt_rec_tight_resR,4,24,1.0,4,1.5,1,1);
+   th1Style1(dndpt_gen_nsd_tg,96,20,1.0,96,1.5,1,2); 
+   //th1Style1(dndpt_rec_tight_MC_p0,2,20,1.0,2,1.5,2,3);
+   //th1Style1(dndpt_rec_tight_MC_py8,4,20,1.0,4,1.5,2,3);
+   //th1Style1(dndpt_rec_tight,6,25,1.0,6,1.5,1,1);
+   //th1Style1(dndpt_rec_tight_res,2,24,1.0,2,1.5,1,1);
+   //th1Style1(dndpt_rec_tight_resR,4,24,1.0,4,1.5,1,1);
    th1Style1(dndpt_rec_tight_added,1,20,1.0,1,1.5,1,1);
+
+
 
 
    TLegend *leg2=0;
@@ -356,13 +433,15 @@ void PlotAll_DATA_JMT_TEST()
 
    if(full_eta) leg2->SetHeader("pp #rightarrow h+X, 7 TeV DATA, |#eta|<2.4");
    else leg2->SetHeader("pp #rightarrow h+X, 7 TeV DATA, |#eta|<1.0");               
-   leg2->AddEntry(dndpt_rec_tight,"MB full","pl");
-   leg2->AddEntry(dndpt_rec_tight_res,"MB (E_{T}<60 GeV/c)","pl");
-   leg2->AddEntry(dndpt_rec_tight_resR,"Jet15U (E_{T}>60 GeV/c)","pl");
+   //leg2->AddEntry(dndpt_rec_tight,"MB full","pl");
+   //leg2->AddEntry(dndpt_rec_tight_res,"MB (E_{T}<60 GeV/c)","pl");
+   //leg2->AddEntry(dndpt_rec_tight_resR,"Jet15U (E_{T}>60 GeV/c)","pl");
    leg2->AddEntry(dndpt_rec_tight_added,"MB + Jet15U ","pl");
    leg2->AddEntry(cms_7000GeV,"CMS 7 TeV |#eta|<2.4","pl");
    leg2->AddEntry(dndpt_gen_nsd_tg,"PYTHIA D6T","l");
-   leg2->AddEntry(f2,"Tsallis fit","l");
+   leg2->AddEntry(dndpt_rec_tight_MC_p0,"PYTHIA P0","l");
+   leg2->AddEntry(dndpt_rec_tight_MC_py8,"PYTHIA 8","l");
+   leg2->AddEntry(f2,"power-law fit","l");
    leg2->Draw();
    
 
@@ -408,11 +487,16 @@ void PlotAll_DATA_JMT_TEST()
    TH1D *dndpt_rec_tight_res_dum = (TH1D*) dndpt_rec_tight_res->Clone("dndpt_rec_tight_res_dum");
    TH1D *dndpt_rec_tight_resR_dum = (TH1D*) dndpt_rec_tight_resR->Clone("dndpt_rec_tight_resR_dum");
    TH1D *dndpt_rec_tight_MC_dum = (TH1D*) dndpt_rec_tight_MC->Clone("dndpt_rec_tight_MC_dum");
+   TH1D *dndpt_rec_tight_MC_p0_dum = (TH1D*) dndpt_rec_tight_MC_p0->Clone("dndpt_rec_tight_MC_p0_dum");
+   
    TH1D *dndpt_rec_tight_added_dum = (TH1D*) dndpt_rec_tight_added->Clone("dndpt_rec_tight_added_dum");
+   TH1D *dndpt_rec_tight_added_dum2 = (TH1D*) dndpt_rec_tight_added->Clone("dndpt_rec_tight_added_dum2");
 
-   //TH1D *dndpt_gen_nsd_dum = (TH1D*) dndpt_gen_nsd->Clone("dndpt_gen_nsd_dum");
 
-   TH1D *dndpt1_dum_div_cms7000 = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_dum,f2,0.4,6.0);
+
+   TH1D *dndpt_gen_nsd_dum = (TH1D*) dndpt_gen_nsd->Clone("dndpt_gen_nsd_dum");
+
+   TH1D *dndpt1_dum_div_cms7000 = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_added_dum,f2,0.4,200.0);
    TH1D *dndpt1_dum_div_cms7000_res = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_res_dum,f2,0.4,6.0);
    TH1D *dndpt1_dum_div_cms7000_resR = (TH1D*) ratio_hist_to_func(dndpt_rec_tight_resR_dum,f2,0.4,6.0);
    TGraphErrors *cms7000_div_fit = (TGraphErrors*) ratio_func_to_func(cms_7000GeV,f2,0.4,6.0);
@@ -425,49 +509,60 @@ void PlotAll_DATA_JMT_TEST()
    */
    
 
-   //dndpt_gen_nsd_dum->Sumw2();
+   dndpt_gen_nsd_dum->Sumw2();
    dndpt_rec_tight_dum->Sumw2();
    dndpt_rec_tight_res_dum->Sumw2();
    dndpt_rec_tight_resR_dum->Sumw2();
    dndpt_rec_tight_MC_dum->Sumw2();
+   dndpt_rec_tight_MC_p0_dum->Sumw2();
    dndpt_rec_tight_added_dum->Sumw2();
+   dndpt_rec_tight_added_dum2->Sumw2();
+
 
    if(minpt){
       dndpt_rec_tight_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_dum->GetXaxis()->GetLast());
+      dndpt_rec_tight_added_dum2->GetXaxis()->SetRange(3,dndpt_rec_tight_added_dum2->GetXaxis()->GetLast());
+
       dndpt_rec_tight_added_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_added_dum->GetXaxis()->GetLast());
       dndpt_rec_tight_MC_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_MC_dum->GetXaxis()->GetLast());
+      dndpt_rec_tight_MC_p0_dum->GetXaxis()->SetRange(3,dndpt_rec_tight_MC_p0_dum->GetXaxis()->GetLast());
+
    }
 
-   //dndpt_rec_tight_dum->Divide(dndpt_gen_nsd_dum);
-   dndpt_rec_tight_dum->Divide(dndpt_rec_tight_MC_dum);
-   dndpt_rec_tight_added_dum->Divide(dndpt_rec_tight_dum);
+   dndpt_rec_tight_added_dum2->Divide(dndpt_gen_nsd_dum);
+   //dndpt_rec_tight_dum->Divide(dndpt_rec_tight_MC_dum);
+   //dndpt_rec_tight_added_dum->Divide(dndpt_rec_tight_dum);
+   dndpt_rec_tight_added_dum->Divide(dndpt_rec_tight_MC_p0_dum);      
+   
 
-   //th1Style1(dndpt_rec_tight_dum,96,20,1,96,1.5,9,3);
-   //th1Style1(dndpt1_dum_div_cms7000,1,20,1.0,1,1.5,1,1);
+   th1Style1(dndpt_rec_tight_added_dum,2,20,1.0,2,1.5,2,3);
+   th1Style1(dndpt_rec_tight_added_dum2,96,20,1.0,96,1.5,2,3);
+
+   th1Style1(dndpt1_dum_div_cms7000,1,20,1.0,1,1.5,1,1);
    //th1Style1(dndpt1_dum_div_cms7000_res,2,24,1.0,2,1.5,1,1);
    //th1Style1(dndpt1_dum_div_cms7000_resR,6,25,1.0,6,1.5,1,1);
    //th1Style1(cms7000_div_fit,13,30,1.0,13,1.5,1,1);
-   th1Style1(dndpt_rec_tight_added_dum,1,20,1.0,1,1.5,1,1);
+   //th1Style1(dndpt_rec_tight_added_dum,1,20,1.0,1,1.5,1,1);
 
 
    // Print the values!!
    //PrintXsection(dndpt_rec_tight,117.);
-   //PrintXsection(dndpt_rec_tight,1.); 
+   //PrintXsection(dndpt_rec_tight_added,1.); 
 
-
-   if(entire_range){  
-      if(log_scale){
-	 if(full_eta) printCanvases(call,"spectra_DATA_JMT_TEST_fullEta_logx_v3",2,1);
-         else printCanvases(call,"spectra_DATA_JMT_TEST_logx_v3",2,1);
+   if(print){
+      if(entire_range){  
+	 if(log_scale){
+	    if(full_eta) printCanvases(call,"spectra_DATA_JMT_TEST_fullEta_logx_v4",2,1);
+	    else printCanvases(call,"spectra_DATA_JMT_TEST_logx_v4",2,1);
+	 }else{
+	    if(full_eta) printCanvases(call,"spectra_DATA_JMT_TEST_fullEta_v4",2,1);
+	    else printCanvases(call,"spectra_DATA_JMT_TEST_v4",2,1);
+	 }
       }else{
-	 if(full_eta) printCanvases(call,"spectra_DATA_JMT_TEST_fullEta_v3",2,1);
-	 else printCanvases(call,"spectra_DATA_JMT_TEST_v3",2,1);
+	 if(full_eta) printCanvases(call,"spectra_DATA_JMT_TEST_narrow_fullEta_v4",1,1);
+	 else printCanvases(call,"spectra_DATA_JMT_TEST_narrow_v4",1,1);
       }
-   }else{
-      if(full_eta) printCanvases(call,"spectra_DATA_JMT_TEST_narrow_fullEta_v2",1,1);
-      else printCanvases(call,"spectra_DATA_JMT_TEST_narrow_v2",1,1);
    }
-
 
 }
 
