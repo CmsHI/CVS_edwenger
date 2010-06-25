@@ -23,7 +23,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/prod/condor/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -50,8 +50,8 @@ removeMCMatching(process, ['All']) # turn off MC matching for data
 
 from edwenger.Skims.customise_cfi import *
 process = enableAOD(process)
-process.trackAna.histOnly = False
-process.trkEffAnalyzer.fillNtuples = True
+#process.trackAna.histOnly = False
+#process.trkEffAnalyzer.fillNtuples = True
 
 # =============== Final Paths =====================
 

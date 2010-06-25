@@ -1,7 +1,7 @@
 #!/bin/bash -
 ./create_custom_python_cfg.sh
 
-jobTag=proc0615_nt
+jobTag=proc0625
 
 # ===================== 357 =====================
 # === A20RR v2 ===
