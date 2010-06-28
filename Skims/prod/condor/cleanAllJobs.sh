@@ -1,7 +1,8 @@
 #!/bin/bash -
 startdir=$PWD
 
-jobTag=proc0625
+jobTag=proc0628_trkAnaNoFilter
+jobTagFilter=proc0628_trkAnaFilter
 topDir=/net/hibat0003/d00/scratch/frankma/data/MinimumBias
 jobs="\
 $topDir/MB-C10-A20RR-TRKANASKIM-v2_$jobTag \
@@ -11,6 +12,7 @@ $topDir/MB-C10-M6RR-MBskim-v0_$jobTag \
 $topDir/MB-C10-PR9-JMTskim-v0_$jobTag \
 $topDir/MB-C10-PR9-MBskim-v0_$jobTag \
 $topDir/MB-C10-PR9-TRKANASKIM-v3_$jobTag \
+$topDir/MB-C10-PR9-TRKANASKIM-v3_$jobTagFilter \
 "
 
 topDir=/net/hibat0003/d00/scratch/frankma/data/JetMETTau
