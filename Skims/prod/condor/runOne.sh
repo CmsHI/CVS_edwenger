@@ -55,4 +55,4 @@ echo $cmd
 
 # run!
 eval $cmd
-rm /tmp/$inputFile
+#rm /tmp/$inputFile
