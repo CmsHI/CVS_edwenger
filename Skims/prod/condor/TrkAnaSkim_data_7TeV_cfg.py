@@ -23,7 +23,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.6 $'),
+    version = cms.untracked.string('$Revision: 1.7 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/prod/condor/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -54,8 +54,8 @@ process = enableAOD(process)
 # =============== Final Paths =====================
 
 process.eventFilter_step = cms.Path(process.eventFilter)
-process.extraReco_step   = cms.Path(process.eventFilter * process.extraReco)
-process.ana_step         = cms.Path(process.eventFilter * process.analysisSeq)
+process.extraReco_step   = cms.Path(process.extraReco)
+process.ana_step         = cms.Path(process.analysisSeq)
 
 # === Simplify for Standard Data processing ===
 process.ana_step.remove(process.looseTrackAna)
