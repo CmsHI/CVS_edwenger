@@ -1,7 +1,7 @@
 #!/bin/bash -
 ./create_custom_python_cfg.sh
 
-jobTag=proc0628_trkAnaNoFilter
+jobTag=proc0628_trkAnaNoFilter_v2
 
 # ===================== 357 =====================
 # === A20RR v2 ===

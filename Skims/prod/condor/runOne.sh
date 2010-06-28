@@ -36,17 +36,18 @@ logFile=$logDir/${outputFileName%.root}.txt
 . $swenv
 
 mkdir -p $logDir
-for itry in {1..5}; do
-  if [ -e /tmp/$inputFile ]; then
-    echo Copied $inputDir/$inputFile
-    break
-  else
-    sleep 10
-    echo "dccp $inputDir/$inputFile /tmp/"
-    dccp $inputDir/$inputFile /tmp/
-  fi
-done
-cmd="cmsRun $cfg maxEvents=$nperjob files=file:/tmp/$inputFile output=$outputFile >& $logFile"
+cmd="cmsRun $cfg maxEvents=$nperjob files=dcache:$inputDir/$inputFile output=$outputFile >& $logFile"
+#for itry in {1..5}; do
+#  if [ -e /tmp/$inputFile ]; then
+#    echo Copied $inputDir/$inputFile
+#    break
+#  else
+#    sleep 10
+#    echo "dccp $inputDir/$inputFile /tmp/"
+#    dccp $inputDir/$inputFile /tmp/
+#  fi
+#done
+#cmd="cmsRun $cfg maxEvents=$nperjob files=file:/tmp/$inputFile output=$outputFile >& $logFile"
 
 # review
 which cmsRun
