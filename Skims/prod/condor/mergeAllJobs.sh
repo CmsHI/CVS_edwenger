@@ -16,8 +16,8 @@ $topDir/JMT-R10A-PR1-JMTskim-v0_$jobTag \
 "
 
 # merge level
-level=
-#level="/merge"
+#level=
+level="/merge"
 for i in $jobs; do
   #echo $i
   cmd="./mergeJob.sh ${i}${level} trkhists"
