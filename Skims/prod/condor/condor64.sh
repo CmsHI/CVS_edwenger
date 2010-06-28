@@ -18,7 +18,7 @@ Notification = Error
 Executable   = $dir/$1
 Arguments    = $2 $3 $4 $5 $6 $7 $8 $9
 Requirements = (Mips > 900) && (ARCH=="X86_64")
-Image_Size = 1800 Meg
+Image_Size = 2400 Meg
 Rank         = Mips
 GetEnv       = True
 
