@@ -1,7 +1,7 @@
 #!/bin/bash -
 ./create_custom_python_cfg.sh
 
-jobTag=proc0625
+jobTag=proc0628_trkAna
 
 # ===================== 357 =====================
 # === A20RR v2 ===
