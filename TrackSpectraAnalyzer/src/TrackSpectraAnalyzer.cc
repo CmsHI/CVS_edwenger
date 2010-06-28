@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.48 2010/06/18 23:29:09 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.49 2010/06/20 20:15:15 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -25,14 +25,14 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    nsdOnly_ = iConfig.getUntrackedParameter<bool>("nsdOnly", false);
    pythia6_ = iConfig.getUntrackedParameter<bool>("pythia6", true);
-   pthatCut_ = iConfig.getUntrackedParameter<double>("pthatCut_", 0.0);
+   pthatCut_ = iConfig.getUntrackedParameter<double>("pthatCut", 0.0);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
    ptMin_ = iConfig.getUntrackedParameter<double>("ptMin", 0.5);
    applyEvtEffCorr_ = iConfig.getUntrackedParameter<bool>("applyEvtEffCorr", true);
-   evtEffCorrType_ = iConfig.getUntrackedParameter<int>("evtEffCorrType_", 0);
+   evtEffCorrType_ = iConfig.getUntrackedParameter<int>("evtEffCorrType", 0);
    efit_type_ = iConfig.getUntrackedParameter<int>("efit_type", 0);
    evtSelEffv_ = iConfig.getUntrackedParameter< std::vector<double> >("evtSelEffv");
    evtMultCut_ = iConfig.getUntrackedParameter<int>("evtMultCut", 0);

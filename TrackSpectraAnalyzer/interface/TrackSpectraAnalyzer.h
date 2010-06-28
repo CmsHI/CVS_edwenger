@@ -100,7 +100,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool isGEN_, doJet_, pureGENmode_, nsdOnly_, pythia6_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
-   bool pthatCut_;
+   double pthatCut_;
 
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;
 
