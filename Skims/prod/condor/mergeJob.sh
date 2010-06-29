@@ -11,10 +11,10 @@ inDir=$1
 tag=$2
 
 # initialize
-outdir=$inDir/merge
+outdir=$inDir/mergeAll
 ct=0
 cmd=
-nPerMerge=30
+nPerMerge=500
 N=`ls $inDir/*.root | grep $tag | wc -l`
 echo $inDir: $N files
 
