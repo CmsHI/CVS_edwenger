@@ -1,4 +1,0 @@
-=== Examples ===
-root -l anaHltJetEff_simple.C+\(\"plots/V0531_v3_fromNt/anahlt.root\",\"plots/V0531_v3_histFromNt\",true,\"\",1\)
-root -l  anaTrigSpectra_simple.C+\(\"../anasimplehlt/plots/V0531_v3_fromNt/anahlt.root\",\"/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-TRKANASKIM-v3_proc0531/trkhists_trkAnaSkimAOD_*.root\"\,\"plots/trigSpectra/proc0531_v3\"\)
-root -l  finalTrigSpectra.C+\(\"plots/trigSpectra/proc0531_v3/anaspec.root\",\"plots/trigSpectra/proc0531_v3\"\)
