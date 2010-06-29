@@ -43,11 +43,12 @@ void anaHltJetEff_simple(TString sampleName="Data",
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
 
     TCut baseJetSel="mb";
+    //TCut baseJetSel="jet15";
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("MB")->GetName()),baseJetSel,"goff");
-    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet15U")->GetName()),baseJetSel&&"mb && jet15 && jet>10","goff");
+    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
     baseJetSel="jet15";
-    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet30U")->GetName()),baseJetSel&&"jet15 && jet30 && jet>20","goff");
-    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet50U")->GetName()),baseJetSel&&"jet15 && jet50 && jet>30","goff");
+    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
+    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
   }
 
 
