@@ -80,6 +80,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cpJetPt.AddHist1D(hgJet0Et.H("HltJet50U"),"HLT: Jet50^{Raw}","E",kRed-2);
   cpJetPt.SetLegendHeader(sampleName);
   cpJetPt.SetLegend(0.58,0.54,0.98,0.82);
+  cpJetPt.SetLegendStyle(0.035);
   cpJetPt.SetAxisLabeling(15,63,18,63,4,2);
   cpJetPt.Draw(pUpper,false);
 
@@ -103,7 +104,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
 
   pLower->cd();
   CPlot::sPlotStyle = 0;
-  CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","ratio");
+  CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","Ratio");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-3);
