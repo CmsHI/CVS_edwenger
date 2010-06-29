@@ -21,6 +21,7 @@ void finalTrigSpectra(TString sampleName = "Data",
     TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a2")
 {
   CPlot::sOutDir = outdir;
+  CPlot::sPlotStyle = 50;
   Float_t histJetEtMax = 300;
   Int_t numPtBins=75;
   TFile * inFile = new TFile(inFileName);
@@ -48,12 +49,12 @@ void finalTrigSpectra(TString sampleName = "Data",
   cpPSTrigSpec.SetXRange(0,70);
   cpPSTrigSpec.AddHist1D(inFile,"hTrigSpecMB","MinBias All","E",kBlack,kFullCircle);
   cpPSTrigSpec.AddHist1D(hgTrigSpec.H("MBJet"),"MinBias All and E_{T}^{jet1} < 38GeV","E",kViolet+2);
-  cpPSTrigSpec.AddHist1D(hgTrigSpec.H("15U"),"HLT: Jet15^{Raw} and E_{T}^{jet1} = 38-66GeV","E",kGreen-3);
-  cpPSTrigSpec.AddHist1D(hgTrigSpec.H("30U"),"HLT: Jet30^{Raw} and E_{T}^{jet1} = 66-90GeV","E",kOrange-5);
+  cpPSTrigSpec.AddHist1D(hgTrigSpec.H("15U"),"HLT: Jet15^{Raw} and E_{T}^{jet1} = 38-62GeV","E",kGreen-3);
+  cpPSTrigSpec.AddHist1D(hgTrigSpec.H("30U"),"HLT: Jet30^{Raw} and E_{T}^{jet1} = 62-90GeV","E",kOrange-5);
   cpPSTrigSpec.AddHist1D(hgTrigSpec.H("50U"),"HLT: Jet50^{Raw} and E_{T}^{jet1} > 90GeV","E",kRed-2);
   cpPSTrigSpec.AddHist1D(hgTrigSpec.R("Sum"),"Triggered Classes Combined","hist",kRed,0);
   cpPSTrigSpec.SetLegendHeader(sampleName);
-  cpPSTrigSpec.SetLegend(0.35,0.66,0.86,0.93);
+  cpPSTrigSpec.SetLegend(0.35,0.60,0.86,0.87);
   cpPSTrigSpec.Draw(cPSTrigSpec,true,"all");
 
   // Ratio Plot
@@ -64,9 +65,4 @@ void finalTrigSpectra(TString sampleName = "Data",
   cpMBTrigSpecRatio.AddHist1D(hgCompSpec.R("CombDivMB"),"#frac{Triggered Classes Combined}{MB_HF}","E",kViolet+2);
   cpMBTrigSpecRatio.SetLegend(0.18,0.18,0.72,0.36);
   cpMBTrigSpecRatio.Draw(cMBTrigSpecRatio,true,"gif");
-  
-  // All done, save hists
-  //gSystem->mkdir(outdir,true);
-  //TFile * outf = new TFile(Form("%s/finalspec.root",outdir.Data()),"RECREATE");
-  //psTrigSpec.Save();
 }
