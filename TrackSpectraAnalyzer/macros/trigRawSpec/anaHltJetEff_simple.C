@@ -69,6 +69,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
   pLower->SetNumber(2);
 
   // === Begin Ana ===
+  CPlot::sPlotStyle = 50;
   pUpper->cd();
   CPlot cpJetPt("JetPt","Jet Pt","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
   cpJetPt.SetLogy(1);
@@ -100,6 +101,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
   }
 
   pLower->cd();
+  CPlot::sPlotStyle = 0;
   CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","ratio");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);

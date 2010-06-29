@@ -731,6 +731,18 @@ void CPlot::Draw(TPad *c, bool doSave, TString format)
     fTextBoxes[i]->Draw();    
   
   //
+  // Draw Styles
+  //
+  if (sPlotStyle==50) {
+    TLatex * styleTex;
+    styleTex = new TLatex(0.62,0.88,"CMS Preliminary");
+    styleTex->SetTextSize(0.04);
+    styleTex->SetLineWidth(2);
+    styleTex->SetNDC();
+    styleTex->Draw();
+  }
+
+  //
   // Set log scale if necessary
   // 
   c->SetLogx(fLogx);

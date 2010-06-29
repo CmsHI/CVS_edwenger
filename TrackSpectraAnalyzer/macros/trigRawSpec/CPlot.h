@@ -175,9 +175,11 @@ protected:
 //  RooPlot *fRooPlot;
   
   static int sCount;               // number of CPlot instances
+  static int sPlotStyle;
 };
 
 int CPlot::sCount = 0;
+int CPlot::sPlotStyle = 0;
 TString CPlot::sOutDir = ".";
 
 #endif
