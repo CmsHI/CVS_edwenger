@@ -120,6 +120,8 @@ public:
     assert(fLeg);
     fLeg->SetHeader(header);
   }
+  // Legend Style
+  void SetLegendStyle(double tsize, double tfont=0) { fLegendLabelSize=tsize; fLegendLabelFont=tfont; }
   
   // Set stats box position
   void SetStats(double x, double y) { fStatsX = x; fStatsY = y; }
@@ -170,6 +172,7 @@ protected:
   TLegend *fLeg;                   // legend object
   int fShowStats;                  // whether to display statistics
   int fShowLegend;                  // whether to display legend
+  double fLegendLabelFont, fLegendLabelSize;
   double fStatsX, fStatsY;         // x,y coordinates of top left corner of stats box
   
 //  RooPlot *fRooPlot;
