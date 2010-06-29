@@ -74,11 +74,12 @@ void anaHltJetEff_simple(TString sampleName="Data",
   CPlot cpJetPt("JetPt","Jet Pt","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
-  cpJetPt.AddHist1D(hgJet0Et.H("MB"),"MinBias All","",kViolet+2);
-  cpJetPt.AddHist1D(hgJet0Et.H("HltJet15U"),"HLT: Jet15^{Raw}","",kGreen-3);
-  cpJetPt.AddHist1D(hgJet0Et.H("HltJet30U"),"HLT: Jet30^{Raw}","",kOrange-5);
-  cpJetPt.AddHist1D(hgJet0Et.H("HltJet50U"),"HLT: Jet50^{Raw}","",kRed-2);
+  cpJetPt.AddHist1D(hgJet0Et.H("MB"),"MinBias All","E",kViolet+2);
+  cpJetPt.AddHist1D(hgJet0Et.H("HltJet15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
+  cpJetPt.AddHist1D(hgJet0Et.H("HltJet30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
+  cpJetPt.AddHist1D(hgJet0Et.H("HltJet50U"),"HLT: Jet50^{Raw}","E",kRed-2);
   cpJetPt.SetLegendHeader(sampleName);
+  cpJetPt.SetLegend(0.58,0.54,0.98,0.82);
   cpJetPt.SetAxisLabeling(15,63,18,63,4,2);
   cpJetPt.Draw(pUpper,false);
 
@@ -109,7 +110,6 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2);
   cpHltEff.SetLegendHeader(sampleName);
-  cpHltEff.SetLegend(0.58,0.21,0.91,0.50);
   cpHltEff.ShowLegend(0);
   cpHltEff.SetAxisLabeling(15,63,18,63,4,2);
   cpHltEff.Draw(pLower,false);
