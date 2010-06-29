@@ -121,7 +121,7 @@ void anaTrigSpectra_simple(TString sampleName="Data",
   CPlot cpTrigSpec("TrigSpec","Jet triggered spectra","p_{T}^{trk} [GeV/c]","# evt");
   cpTrigSpec.SetLogy(1);
   cpTrigSpec.SetXRange(0,hgTrigSpec.xmax_);
-  cpTrigSpec.AddHist1D(hgTrigSpec.H("MB"),"MB_HF","hist",kBlack);
+  cpTrigSpec.AddHist1D(hgTrigSpec.H("MB"),"MB","hist",kBlack);
   cpTrigSpec.AddHist1D(hgTrigSpec.H("MBJet"),"MB+Jet","",kViolet+2);
   cpTrigSpec.AddHist1D(hgTrigSpec.H("15U"),"HLT_Jet15U","",kGreen-3);
   cpTrigSpec.AddHist1D(hgTrigSpec.H("30U"),"HLT_Jet30U","",kOrange-5);
