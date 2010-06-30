@@ -31,3 +31,9 @@ hadd -T all/trkhists_histOnly_all.root trkhists_*.root >& log/hadd.txt &
 === Examples of Checking Logs ===
 grep '^TrigReport.*eventFilter_step$' log/trkhists_trkAnaSkimAOD_*.txt | awk '{print $4, $5, $4/$5}' | awk '{print $1}' | addfloats.py | grep sum
 grep '^TrigReport.*ana_step$' log/trkhists_trkAnaSkimAOD_*.txt | awk '{print $4, $5, $4/$5}' | awk '{print $1}' | addfloats.py | grep sum
+
+
+=== Useful Checks on scripts ===
+- mergeJob.sh
+  * turn off "eval" 
+  * ./mergeJob.sh /net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2 trkhists | tr " " "\n" | grep trkAnaSkimAOD
