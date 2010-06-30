@@ -27,3 +27,7 @@ for i in `ls *.root | sed 's/trkhists//'`; do grep $i $pub_list; done > log/in_p
 # finished cleaning now merge
 mkdir all
 hadd -T all/trkhists_histOnly_all.root trkhists_*.root >& log/hadd.txt &
+
+=== Examples of Checking Logs ===
+grep '^TrigReport.*eventFilter_step$' log/trkhists_trkAnaSkimAOD_*.txt | awk '{print $4, $5, $4/$5}' | awk '{print $1}' | addfloats.py | grep sum
+grep '^TrigReport.*ana_step$' log/trkhists_trkAnaSkimAOD_*.txt | awk '{print $4, $5, $4/$5}' | awk '{print $1}' | addfloats.py | grep sum
