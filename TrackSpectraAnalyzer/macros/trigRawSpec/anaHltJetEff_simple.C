@@ -15,6 +15,31 @@
 #include <cassert>
 using namespace std;
 
+Double_t countEvt(const char * inFileName, TString want="All", TString histDir="trackAna/", TString trigHistName="hJet0Pt_HLT_Jet15U")
+{
+  HisTGroup<TH1F> hgCt("Ct");
+  TFile * inFile = new TFile(inFileName);
+  hgCt.Add(inFile,histDir+trigHistName,"Trig0");
+  hgCt.Add(inFile,histDir+"hNumJets","NJ");
+  hgCt.Add(inFile,histDir+"hJet0Pt","JEt");
+
+  // checks
+  Double_t numEvt = hgCt.GetH("NJ")->GetEntries();
+  Double_t numJets = hgCt.GetH("NJ")->Integral(2,1000);
+  Double_t numGt60GeV = hgCt.GetH("JEt")->Integral(121,1000);
+  cout << "Total Number of Events: " << (Int_t)numEvt << endl;
+  cout << "Total Number of Selected Jets: " << (Int_t)numJets << endl;
+  cout << "Total Number of Selected Jets Above 60GeV: " << (Int_t)numGt60GeV << endl;
+
+  // count
+  Double_t numGt60GeVTrig = hgCt.GetH("Trig0")->Integral(121,1000);
+
+  Double_t ans=0;
+  if (want.Contains("All")) ans = numEvt;
+  if (want.Contains("Gt60Trig")) ans = numGt60GeVTrig;
+  return ans;
+}
+
 void anaHltJetEff_simple(TString sampleName="Data",
     const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a2",
