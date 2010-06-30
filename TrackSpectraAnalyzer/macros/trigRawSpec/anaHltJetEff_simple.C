@@ -41,8 +41,9 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
 }
 
 void anaHltJetEff_simple(TString sampleName="Data",
-    const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
-    TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a2",
+    const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
+    TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a3",
+    const char * mergedFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/all/trkhists_histOnly_all.root",
     TString histDir = "trackAna/",
     Bool_t useHist = false)
 {
@@ -74,6 +75,10 @@ void anaHltJetEff_simple(TString sampleName="Data",
     baseJetSel="jet15";
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
+
+    // Scale Histograms
+    Double_t numSelEvt = countEvt(mergedFileName,"All",histDir);
+    cout << "Normalize # of events with: " << numSelEvt << endl;
   }
 
 
