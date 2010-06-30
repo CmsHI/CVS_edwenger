@@ -1,7 +1,7 @@
 #~/bin/bash -
-if [ $# -lt 2 ]; then
+if [ $# -lt 3 ]; then
   echo Usage:
-  echo "  $0 <inDir> <tag>"
+  echo "  $0 <inDir> <tag> <outDir>"
   echo "  * inDir is a dir containing the root files you want to merge"
   exit 1
 fi
@@ -9,9 +9,9 @@ fi
 script=mergeFiles.sh
 inDir=$1
 tag=$2
+outdir=$3
 
 # initialize
-outdir=$inDir/mergeAll_v2
 ct=0
 cmd=
 nPerMerge=500

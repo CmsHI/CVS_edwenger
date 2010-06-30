@@ -16,12 +16,12 @@ jobs=$jobs"\
 $topDir/JMT-R10A-PR1-JMTskim-v0_$jobTag \
 "
 
-# merge level
-level=
-#level="/merge"
+# merge inFolder
+inFolder="."
+outFolder="mergeAll_v2"
 for i in $jobs; do
   #echo $i
-  cmd="./mergeJob.sh ${i}${level} trkhists"
+  cmd="./mergeJob.sh ${i}/${inFolder} trkhists ${i}/${outFolder}"
   echo $cmd
   eval $cmd
 done
