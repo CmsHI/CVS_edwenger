@@ -23,16 +23,16 @@ for job in `ls $inDir/*.root | grep $tag | head -n $N`; do
   #echo $job, subi: $subi
   # -- build subgroup --
   if [ $subi -eq 0 ]; then
-    cmd="./condor64Basic.sh $script $outdir trkhists_sub$ct.root"
-    #cmd="$./script $outdir trkhists_sub$ct.root"
+    cmd="./condor64Basic.sh $script $outdir trkhists_sub$ct.root $job"
+    #cmd="$./script $outdir trkhists_sub$ct.root $job"
   else
     #echo $ct: $job
     cmd="$cmd $job"
   fi
   # -- merge subgroup --
   if [ $subi -eq $((nPerMerge-1)) -o $ct -eq $((N-1)) ]; then
-    #echo $cmd
-    eval $cmd
+    echo $cmd
+    #eval $cmd
   fi
   ct=$((ct+1))
 done
