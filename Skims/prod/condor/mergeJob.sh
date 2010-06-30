@@ -11,7 +11,7 @@ inDir=$1
 tag=$2
 
 # initialize
-outdir=$inDir/mergeAll
+outdir=$inDir/mergeAll_v2
 ct=0
 cmd=
 nPerMerge=500
@@ -32,7 +32,7 @@ for job in `ls $inDir/*.root | grep $tag | head -n $N`; do
   # -- merge subgroup --
   if [ $subi -eq $((nPerMerge-1)) -o $ct -eq $((N-1)) ]; then
     echo $cmd
-    #eval $cmd
+    eval $cmd
   fi
   ct=$((ct+1))
 done
