@@ -67,7 +67,9 @@ void anaHltJetEff_simple(TString sampleName="Data",
     hgJet0Et.Add1D("15U");
     hgJet0Et.Add1D("30U");
     hgJet0Et.Add1D("50U");
-    cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
+    cout << "Tree Analysis on " << nt_jet->GetEntries() << " events" << endl;
+    cout << "Tree Analysis - Jets > 60GeV: " << nt_jet->GetEntries("jet>60") << " events" << endl;
+    cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_jet->GetEntries("jet>60 && jet15") << " events" << endl;
 
     TCut baseJetSel="mb";
     //TCut baseJetSel="jet15";
