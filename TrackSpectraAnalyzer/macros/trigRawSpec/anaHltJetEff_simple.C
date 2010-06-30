@@ -53,6 +53,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
   TH1::SetDefaultSumw2();
 
   HisTGroup<TH1D> hgJet0Et("Jet0Et",numPtBins,0,histJetEtMax);
+  HisTGroup<TH1D> hgScJet0Et("ScJet0Et",numPtBins,0,histJetEtMax);
   // === Checks ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
@@ -63,22 +64,26 @@ void anaHltJetEff_simple(TString sampleName="Data",
     nt_jet->Add(inFileName);
     //nt_jet->Print();
     hgJet0Et.Add1D("MB");
-    hgJet0Et.Add1D("HltJet15U");
-    hgJet0Et.Add1D("HltJet30U");
-    hgJet0Et.Add1D("HltJet50U");
+    hgJet0Et.Add1D("15U");
+    hgJet0Et.Add1D("30U");
+    hgJet0Et.Add1D("50U");
     cout << "Analysis on " << nt_jet->GetEntries() << " events" << endl;
 
     TCut baseJetSel="mb";
     //TCut baseJetSel="jet15";
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("MB")->GetName()),baseJetSel,"goff");
-    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
+    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
     baseJetSel="jet15";
-    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
-    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("HltJet50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
+    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
+    nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
 
     // Scale Histograms
     Double_t numSelEvt = countEvt(mergedFileName,"All",histDir);
     cout << "Normalize # of events with: " << numSelEvt << endl;
+    hgScJet0Et.Add(hgJet0Et.H("MB"),"MB",1./numSelEvt);
+    hgScJet0Et.Add(hgJet0Et.H("15U"),"15U",1./numSelEvt);
+    hgScJet0Et.Add(hgJet0Et.H("30U"),"30U",1./numSelEvt);
+    hgScJet0Et.Add(hgJet0Et.H("50U"),"50U",1./numSelEvt);
   }
 
 
@@ -105,9 +110,9 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cpJetPt.SetLogy(1);
   cpJetPt.SetXRange(0,histJetEtMax);
   cpJetPt.AddHist1D(hgJet0Et.H("MB"),"MinBias All","E",kViolet+2);
-  cpJetPt.AddHist1D(hgJet0Et.H("HltJet15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
-  cpJetPt.AddHist1D(hgJet0Et.H("HltJet30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
-  cpJetPt.AddHist1D(hgJet0Et.H("HltJet50U"),"HLT: Jet50^{Raw}","E",kRed-2);
+  cpJetPt.AddHist1D(hgJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
+  cpJetPt.AddHist1D(hgJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
+  cpJetPt.AddHist1D(hgJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
   cpJetPt.SetLegendHeader(sampleName);
   cpJetPt.SetLegend(0.58,0.54,0.98,0.82);
   cpJetPt.SetLegendStyle(0.035);
@@ -120,9 +125,9 @@ void anaHltJetEff_simple(TString sampleName="Data",
   gAEs["gHltEff_HltJet30U"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet50U"] = new TGraphAsymmErrors();
   // Calc Hlt Eff
-  gAEs["gHltEff_HltJet15U"]->BayesDivide(hgJet0Et.H("HltJet15U"),hgJet0Et.H("MB"));
-  gAEs["gHltEff_HltJet30U"]->BayesDivide(hgJet0Et.H("HltJet30U"),hgJet0Et.H("HltJet15U"));
-  gAEs["gHltEff_HltJet50U"]->BayesDivide(hgJet0Et.H("HltJet50U"),hgJet0Et.H("HltJet30U"));
+  gAEs["gHltEff_HltJet15U"]->BayesDivide(hgJet0Et.H("15U"),hgJet0Et.H("MB"));
+  gAEs["gHltEff_HltJet30U"]->BayesDivide(hgJet0Et.H("30U"),hgJet0Et.H("15U"));
+  gAEs["gHltEff_HltJet50U"]->BayesDivide(hgJet0Et.H("50U"),hgJet0Et.H("30U"));
   map<TString, TGraphAsymmErrors*>::iterator ig;
   for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
     // check
