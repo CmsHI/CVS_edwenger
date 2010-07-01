@@ -57,7 +57,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
 
   HisTGroup<TH1D> hgJet0Et("Jet0Et",numPtBins,0,histJetEtMax);
   HisTGroup<TH1D> hgTrigJet0Et("TrigJet0Et",numPtBins,0,histJetEtMax);
-  Double_t numSelMBEvt=0, numJet15UGt60MB=0, fracJet15UGt60MB=0;
+  Double_t numSelMBEvt=0, numJet15UGt60MB=0, fracJet15UGt60MB=0, numJet15UGt60Trig=0;
   // === Inputs ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
@@ -101,8 +101,8 @@ void anaHltJetEff_simple(TString sampleName="Data",
     hgTrigJet0Et.Add1D("50U");
     cout << endl << "===== HLT Jet15U =====" << endl;
     cout << "Tree Analysis on " << nt_trigjet->GetEntries() << " events" << endl;
-    cout << "Tree Analysis - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60") << " events" << endl;
-    cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60 && jet15") << " events" << endl;
+    numJet15UGt60Trig = nt_trigjet->GetEntries("jet>60 && jet15");
+    cout << "Tree Analysis 15U - Jets > 60GeV: " << numJet15UGt60Trig << " events" << endl;
     // Get Histograms
     TCut baseTrigJetSel="jet15";
     nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("15U")->GetName()),baseTrigJetSel&&"jet15 && jet>10","goff");
@@ -120,13 +120,22 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cout << endl << "===== Begin Jet Turn-on Ana =====" << endl;
   // Scale Histograms
   HisTGroup<TH1D> hgScJet0Et("ScJet0Et",numPtBins,0,histJetEtMax);
-  cout << "Normalize # of events with: " << numSelMBEvt << endl;
+  cout << "MB Trig Data: Normalize # of events with: " << numSelMBEvt << endl;
   hgScJet0Et.Add(hgJet0Et.H("MB"),"MB",1./(numSelMBEvt*hgJet0Et.H("MB")->GetBinWidth(1)));
   hgScJet0Et.Add(hgJet0Et.H("15U"),"15U",1./(numSelMBEvt*hgJet0Et.H("15U")->GetBinWidth(1)));
   hgScJet0Et.Add(hgJet0Et.H("30U"),"30U",1./(numSelMBEvt*hgJet0Et.H("30U")->GetBinWidth(1)));
   hgScJet0Et.Add(hgJet0Et.H("50U"),"50U",1./(numSelMBEvt*hgJet0Et.H("50U")->GetBinWidth(1)));
   // check number
   cout << "15U: Frac of Jets above 60GeV: " << hgScJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000)*hgScJet0Et.GetH("15U")->GetBinWidth(1) << endl;
+
+  Double_t numSelTrigEvt = numJet15UGt60Trig/fracJet15UGt60MB;
+  HisTGroup<TH1D> hgScTrigJet0Et("ScTrigJet0Et",numPtBins,0,histJetEtMax);
+  cout << "Jet15U Trig Data: Normalize # of events with: " << numSelTrigEvt << endl;
+  hgScTrigJet0Et.Add(hgTrigJet0Et.H("15U"),"15U",1./(numSelTrigEvt*hgTrigJet0Et.H("15U")->GetBinWidth(1)));
+  hgScTrigJet0Et.Add(hgTrigJet0Et.H("30U"),"30U",1./(numSelTrigEvt*hgTrigJet0Et.H("30U")->GetBinWidth(1)));
+  hgScTrigJet0Et.Add(hgTrigJet0Et.H("50U"),"50U",1./(numSelTrigEvt*hgTrigJet0Et.H("50U")->GetBinWidth(1)));
+  // check number
+  cout << "15U: Frac of Jets above 60GeV: " << hgScTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000)*hgScTrigJet0Et.GetH("15U")->GetBinWidth(1) << endl;
 
   // === Check Histograms ===
   TCanvas * cJet0Et = new TCanvas("cJet0Et","cJet0Et",510,510);
@@ -177,10 +186,14 @@ void anaHltJetEff_simple(TString sampleName="Data",
   CPlot cpScJet0Et("ScJet0Et","Lead Jet Et","E_{T}^{corr jet} [GeV/c]","#frac{1}{N_{Evt}^{MB}} #frac{dN_{Evt}^{MB}}{dE_{T}}");
   cpScJet0Et.SetLogy(1);
   cpScJet0Et.SetXRange(0,histJetEtMax);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"MinBias All","E",kViolet+2);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
+  cpScJet0Et.SetYRange(1e-10,1e-1);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"MB: HLT MinBias","E",kViolet+2);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"MB: HLT Jet15^{Raw}","E",kGreen-3);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30^{Raw}","E",kOrange-5);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50^{Raw}","E",kRed-2);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"HLT Jet15: HLT Jet15^{Raw}","E",kGreen-1,kOpenSquare);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"HLT Jet15: HLT Jet30^{Raw}","E",kOrange-1,kOpenSquare);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"HLT Jet15: HLT Jet50^{Raw}","E",kRed-1,kOpenSquare);
   cpScJet0Et.SetLegendHeader(sampleName);
   cpScJet0Et.SetLegend(0.58,0.54,0.98,0.82);
   cpScJet0Et.SetLegendStyle(0.035);
@@ -192,10 +205,14 @@ void anaHltJetEff_simple(TString sampleName="Data",
   gAEs["gHltEff_HltJet15U"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet30U"] = new TGraphAsymmErrors();
   gAEs["gHltEff_HltJet50U"] = new TGraphAsymmErrors();
+  gAEs["gTrigHltEff_HltJet30U"] = new TGraphAsymmErrors();
+  gAEs["gTrigHltEff_HltJet50U"] = new TGraphAsymmErrors();
   // Calc Hlt Eff
   gAEs["gHltEff_HltJet15U"]->BayesDivide(hgJet0Et.H("15U"),hgJet0Et.H("MB"));
   gAEs["gHltEff_HltJet30U"]->BayesDivide(hgJet0Et.H("30U"),hgJet0Et.H("15U"));
   gAEs["gHltEff_HltJet50U"]->BayesDivide(hgJet0Et.H("50U"),hgJet0Et.H("30U"));
+  gAEs["gTrigHltEff_HltJet30U"]->BayesDivide(hgTrigJet0Et.H("30U"),hgTrigJet0Et.H("15U"));
+  gAEs["gTrigHltEff_HltJet50U"]->BayesDivide(hgTrigJet0Et.H("50U"),hgTrigJet0Et.H("30U"));
   map<TString, TGraphAsymmErrors*>::iterator ig;
   for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
     // check
@@ -213,6 +230,8 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-3);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2);
+  cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-1,kOpenSquare);
+  cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-1,kOpenSquare);
   cpHltEff.SetLegendHeader(sampleName);
   cpHltEff.ShowLegend(0);
   cpHltEff.SetAxisLabeling(15,63,18,63,4,2.5);
