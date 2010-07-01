@@ -183,7 +183,7 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
   // === Begin Ana ===
   CPlot::sPlotStyle = 50;
   pUpper->cd();
-  CPlot cpScJet0Et("ScJet0Et","Lead Jet Et","E_{T}^{corr jet} [GeV/c]","#frac{1}{N_{Evt}^{MB}} #frac{dN_{Evt}^{MB}}{dE_{T}}");
+  CPlot cpScJet0Et("ScJet0Et","Lead Jet Et","E_{T}^{corr jet} [GeV/c]","#frac{1}{N_{MB}^{Evt}} #frac{dN^{Leading Jet}}{dE_{T}}");
   cpScJet0Et.SetLogy(1);
   cpScJet0Et.SetXRange(0,histJetEtMax);
   cpScJet0Et.SetYRange(1e-10,1e-1);
