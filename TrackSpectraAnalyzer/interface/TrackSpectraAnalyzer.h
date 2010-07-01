@@ -87,6 +87,9 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hGenTrkPtEtaJetEt;
    TH3F *hGenTrkPtEtaJetEtW;
 
+   TH3F *hGenTrkPtEtaJetEt_vbin;
+   TH3F *hGenTrkPtEtaJetEtW_vbin;
+
    //evt sel eff. correction
    TF1 *evtSelEff;
 

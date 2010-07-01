@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.49 2010/06/20 20:15:15 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.50 2010/06/28 04:15:19 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -242,8 +242,12 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 		hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]);
 	    
 	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
+
 	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),leadGJetEt_); 
 	    hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),leadGJetEt_,(1./gen.pt())); // weighted by pT
+
+	    hGenTrkPtEtaJetEt_vbin->Fill(gen.eta(),gen.pt(),leadGJetEt_);
+	    hGenTrkPtEtaJetEtW_vbin->Fill(gen.eta(),gen.pt(),leadGJetEt_,(1./gen.pt()));
 	 }
 	 hGenNevt->Fill(nevtGEN);
       }
@@ -268,13 +272,13 @@ TrackSpectraAnalyzer::beginJob()
        
    for(ptb =   0; ptb <   1-small; ptb +=  0.05) ptBins.push_back(ptb);
    for(ptb =   1; ptb <   2-small; ptb +=  0.1 ) ptBins.push_back(ptb);
-   for(ptb =   2; ptb <   5-small; ptb +=  0.2 ) ptBins.push_back(ptb);
-   for(ptb =   5; ptb <  10-small; ptb +=  0.5 ) ptBins.push_back(ptb);
+   for(ptb =   2; ptb <   6-small; ptb +=  0.2 ) ptBins.push_back(ptb);
+   for(ptb =   6; ptb <  10-small; ptb +=  0.5 ) ptBins.push_back(ptb);
    for(ptb =  10; ptb <  20-small; ptb +=  1.0 ) ptBins.push_back(ptb);
-   for(ptb =  20; ptb <  50-small; ptb +=  2.0 ) ptBins.push_back(ptb);
+   for(ptb =  20; ptb <  50-small; ptb +=  3.0 ) ptBins.push_back(ptb);
    for(ptb =  50; ptb < 100-small; ptb +=  5.0 ) ptBins.push_back(ptb);
    for(ptb = 100; ptb < 200-small; ptb += 10.0 ) ptBins.push_back(ptb);
-   for(ptb = 200; ptb < 500-small; ptb += 20.0 ) ptBins.push_back(ptb);
+   for(ptb = 200; ptb < 400-small; ptb += 20.0 ) ptBins.push_back(ptb);
 
    // eta bins
    static float etaMin   = -2.4;
@@ -364,6 +368,12 @@ TrackSpectraAnalyzer::beginJob()
 					    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
       hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					     nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0);
+
+      hGenTrkPtEtaJetEt_vbin = subDir.make<TH3F>("hGenTrkPtEtaJetEt_vbin","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						 etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]);
+      hGenTrkPtEtaJetEtW_vbin = subDir.make<TH3F>("hGenTrkPtEtaJetEtW_vbin","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+						  etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]);
+
 
       // Set Sumw2()
       /*
