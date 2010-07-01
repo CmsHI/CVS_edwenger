@@ -41,7 +41,7 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
   return ans;
 }
 
-void anaHltJetEff_simple(TString sampleName="Data 7TeV",
+void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
     const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a3",
     const char * mergedFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/mergeAll_v2/trkhists_sub0.root",
@@ -187,18 +187,24 @@ void anaHltJetEff_simple(TString sampleName="Data 7TeV",
   cpScJet0Et.SetLogy(1);
   cpScJet0Et.SetXRange(0,histJetEtMax);
   cpScJet0Et.SetYRange(1e-10,1e-1);
+  TH1D * hTemp = (TH1D*)hgScJet0Et.GetH("MB")->Clone("hTemp");
+  hTemp->Scale(0);
+  hTemp->SetTitle("");
+  cpScJet0Et.AddHist1D(hTemp,"Dataset: MB Triggered","E",0,0);
   cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"HLT MB","E",kViolet,kOpenSquare,1.1);
   cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT Jet15^{Raw} (from HLT MB)","E",kGreen-1,kOpenSquare,1.1);
   //cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30^{Raw}","E",kOrange-5);
   //cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50^{Raw}","E",kRed-2);
+  cpScJet0Et.AddHist1D(hTemp,"","E",0,0);
+  cpScJet0Et.AddHist1D(hTemp,"Dataset: HLT Jet15^{Raw} Triggered","E",0,0);
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"HLT Jet15^{Raw}","E",kGreen-3,kFullCircle);
   //cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"Triggered: HLT Jet30^{Raw}","E",kOrange-5,kFullCircle);
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"HLT Jet50^{Raw}(from HLT Jet15^{Raw})","E",kRed-2,kFullCircle);
-  cpScJet0Et.SetLegendHeader(sampleName);
-  cpScJet0Et.SetLegend(0.40,0.56,0.80,0.84);
+  cpScJet0Et.SetLegend(0.41,0.50,0.81,0.78);
   cpScJet0Et.SetLegendStyle(0.035);
   cpScJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
   cpScJet0Et.Draw(pUpper,false);
+  cpScJet0Et.AddText(sampleName,0.66,0.83);
 
   // === HLT Eff Ana ===
   map<TString, TGraphAsymmErrors* > gAEs;
@@ -232,7 +238,6 @@ void anaHltJetEff_simple(TString sampleName="Data 7TeV",
   //cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2);
   //cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5,kFullCircle);
   cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2,kFullCircle);
-  cpHltEff.SetLegendHeader(sampleName);
   cpHltEff.ShowLegend(0);
   cpHltEff.SetAxisLabeling(15,63,18,63,4,2.5);
   cpHltEff.Draw(pLower,false);
