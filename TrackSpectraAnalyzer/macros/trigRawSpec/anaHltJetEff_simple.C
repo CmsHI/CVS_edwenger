@@ -43,7 +43,7 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
 
 void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
     const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
-    TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a3",
+    TString outdir="plots/MB-C10-PR9-MnJ-v0_p0628_v2_a3",
     const char * mergedFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/mergeAll_v2/trkhists_sub0.root",
     const char * trigFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
     TString histDir = "trackAna/",
