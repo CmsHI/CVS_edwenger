@@ -33,6 +33,7 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
 
   // count
   Double_t numGt60GeVTrig = hgCt.GetH("Trig0")->Integral(121,1000);
+  inFile->Close();
 
   Double_t ans=0;
   if (want.Contains("All")) ans = numEvt;
@@ -76,7 +77,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
     cout << "Tree Analysis - Jets > 60GeV: " << nt_jet->GetEntries("jet>60") << " events" << endl;
     numJet15UGt60MB = nt_jet->GetEntries("jet>60 && jet15");
     cout << "Tree Analysis 15U - Jets > 60GeV: " << numJet15UGt60MB << " events" << endl;
-
+    // Get Histograms
     TCut baseJetSel="mb";
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("MB")->GetName()),baseJetSel,"goff");
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
@@ -84,9 +85,9 @@ void anaHltJetEff_simple(TString sampleName="Data",
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
     // check number
-    cout << "15U: # of Jets above 60GeV: " << hgJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
-
+    cout << "Hist 15U check: # of Jets above 60GeV: " << hgJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
     // Get MB Event Normalization
+    cout << " -- Normalization --" << endl;
     numSelMBEvt = countEvt(mergedFileName,"All",histDir);
     fracJet15UGt60MB=numJet15UGt60MB/numSelMBEvt;
     cout << "Tree Analysis 15U - frac Jets > 60GeV: " << fracJet15UGt60MB << " events" << endl;
@@ -102,13 +103,13 @@ void anaHltJetEff_simple(TString sampleName="Data",
     cout << "Tree Analysis on " << nt_trigjet->GetEntries() << " events" << endl;
     cout << "Tree Analysis - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60") << " events" << endl;
     cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60 && jet15") << " events" << endl;
-
+    // Get Histograms
     baseJetSel="jet15";
     nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
     nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
     nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
     // check number
-    cout << "15U: # of Jets above 60GeV: " << hgTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
+    cout << "Hist 15U check: # of Jets above 60GeV: " << hgTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
   }
 
   // === Define Output ===
