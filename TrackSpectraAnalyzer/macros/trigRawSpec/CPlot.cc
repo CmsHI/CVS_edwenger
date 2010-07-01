@@ -338,6 +338,14 @@ void CPlot::AddTextBox(double x1, double y1, double x2, double y2,
   fTextBoxes.push_back(tb);  
 }
 
+void CPlot::AddText(TString text,double x1, double y1, double txtsz, double lnwd)
+{
+  TLatex * tex = new TLatex(x1,y1,text);
+  tex->SetNDC();
+  tex->SetTextSize(txtsz);
+  tex->SetLineWidth(lnwd);
+  tex->Draw();
+}
 //--------------------------------------------------------------------------------------------------
 void CPlot::AddLine(double x1, double y1, double x2, double y2, int color, int style)
 {

@@ -95,6 +95,7 @@ public:
                   int bordersize=1, int textcolor=kBlack, int fillcolor=kWhite);
   void AddTextBox(double x1, double y1, double x2, double y2, 
                   int bordersize, int textcolor, int fillcolor, int nlines, ...);		  
+  void AddText(TString text,double x1, double y1, double txtsz=0.04, double lnwd=2);
   
   // Add a line between two points (x1,y1) and (x2,y2)
   void AddLine(double x1, double y1, double x2, double y2, int color=kBlack, int style=1);
