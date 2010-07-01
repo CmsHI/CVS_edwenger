@@ -210,9 +210,9 @@ void anaHltJetEff_simple(TString sampleName="Data 7TeV",
   // Calc Hlt Eff
   gAEs["gHltEff_HltJet15U"]->BayesDivide(hgJet0Et.H("15U"),hgJet0Et.H("MB"));
   gAEs["gHltEff_HltJet30U"]->BayesDivide(hgJet0Et.H("30U"),hgJet0Et.H("15U"));
-  gAEs["gHltEff_HltJet50U"]->BayesDivide(hgJet0Et.H("50U"),hgJet0Et.H("30U"));
+  gAEs["gHltEff_HltJet50U"]->BayesDivide(hgJet0Et.H("50U"),hgJet0Et.H("15U"));
   gAEs["gTrigHltEff_HltJet30U"]->BayesDivide(hgTrigJet0Et.H("30U"),hgTrigJet0Et.H("15U"));
-  gAEs["gTrigHltEff_HltJet50U"]->BayesDivide(hgTrigJet0Et.H("50U"),hgTrigJet0Et.H("30U"));
+  gAEs["gTrigHltEff_HltJet50U"]->BayesDivide(hgTrigJet0Et.H("50U"),hgTrigJet0Et.H("15U"));
   map<TString, TGraphAsymmErrors*>::iterator ig;
   for (ig=gAEs.begin(); ig != gAEs.end(); ++ig) {
     // check
