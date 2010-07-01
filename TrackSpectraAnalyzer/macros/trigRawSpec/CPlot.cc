@@ -65,7 +65,7 @@ fRooPlot(frame)
 */
 
 //--------------------------------------------------------------------------------------------------
-void CPlot::AddHist1D(TH1D *h, TString drawopt, int color, int mksty, int mksz, int linesty, int fillsty)
+void CPlot::AddHist1D(TH1D *h, TString drawopt, int color, int mksty, float mksz, int linesty, int fillsty)
 {
   if(!h)
     return;
@@ -84,7 +84,7 @@ void CPlot::AddHist1D(TH1D *h, TString drawopt, int color, int mksty, int mksz, 
   fItems.push_back(item);
 }
 
-void CPlot::AddHist1D(TH1D *h, TString label, TString drawopt, int color, int mksty, int mksz, int linesty, int fillsty)
+void CPlot::AddHist1D(TH1D *h, TString label, TString drawopt, int color, int mksty, float mksz, int linesty, int fillsty)
 {
   if(!h)
     return;
@@ -105,7 +105,7 @@ void CPlot::AddHist1D(TH1D *h, TString label, TString drawopt, int color, int mk
   AddHist1D(h,drawopt,color,mksty,mksz,linesty,fillsty);
 }
 
-void CPlot::AddHist1D(TFile *f, TString histName, TString drawopt, int color, int mksty, int mksz, int linesty, int fillsty)
+void CPlot::AddHist1D(TFile *f, TString histName, TString drawopt, int color, int mksty, float mksz, int linesty, int fillsty)
 {
   if(!f)
     return;
@@ -114,7 +114,7 @@ void CPlot::AddHist1D(TFile *f, TString histName, TString drawopt, int color, in
   AddHist1D(h,drawopt,color,mksty,mksz,linesty,fillsty);
 }
 
-void CPlot::AddHist1D(TFile *f, TString histName, TString label, TString drawopt, int color, int mksty, int mksz, int linesty, int fillsty)
+void CPlot::AddHist1D(TFile *f, TString histName, TString label, TString drawopt, int color, int mksty, float mksz, int linesty, int fillsty)
 {
   if(!f)
     return;
@@ -133,7 +133,7 @@ void CPlot::AddToStack(TH1D *h, int color)
     fStack = new THStack(fName+TString("_stack"),"");
   
   fStack->Add(h);
-  AddHist1D(h,"",color,20,1,1001);
+  AddHist1D(h,"",color,20,-1.,1,1001);
 }
 
 void CPlot::AddToStack(TH1D *h, TString label, int color)
@@ -145,7 +145,7 @@ void CPlot::AddToStack(TH1D *h, TString label, int color)
     fStack = new THStack(fName+TString("_stack"),"");
   
   fStack->Add(h);
-  AddHist1D(h,label,"",color,20,1,1001);
+  AddHist1D(h,label,"",color,20,-1.,1,1001);
 }
 
 void CPlot::AddToStack(TFile *f, TString histName, int color)
@@ -192,7 +192,7 @@ void CPlot::AddHist2D(TFile *f, TString histName, TString drawopt, int fillcolor
 }
 
 //--------------------------------------------------------------------------------------------------
-void CPlot::AddGraph(TGraph *gr, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddGraph(TGraph *gr, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!gr)
     return;
@@ -210,7 +210,7 @@ void CPlot::AddGraph(TGraph *gr, TString drawopt, int color, int marksty, int mk
   fItems.push_back(item);
 }
 
-void CPlot::AddGraph(TGraph *gr, TString label, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddGraph(TGraph *gr, TString label, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!gr)
     return;
@@ -229,7 +229,7 @@ void CPlot::AddGraph(TGraph *gr, TString label, TString drawopt, int color, int 
   AddGraph(gr,drawopt,color,marksty,mksz,linesty);
 }
 
-void CPlot::AddGraph(TFile *f, TString grName, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddGraph(TFile *f, TString grName, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!f)
     return;
@@ -238,7 +238,7 @@ void CPlot::AddGraph(TFile *f, TString grName, TString drawopt, int color, int m
   AddGraph(gr,drawopt,color,marksty,mksz,linesty);
 }
 
-void CPlot::AddGraph(TFile *f, TString grName, TString label, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddGraph(TFile *f, TString grName, TString label, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!f)
     return;
@@ -248,7 +248,7 @@ void CPlot::AddGraph(TFile *f, TString grName, TString label, TString drawopt, i
 }
 
 //--------------------------------------------------------------------------------------------------
-void CPlot::AddProfile(TProfile *pr, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddProfile(TProfile *pr, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!pr)
     return;
@@ -266,7 +266,7 @@ void CPlot::AddProfile(TProfile *pr, TString drawopt, int color, int marksty, in
   fItems.push_back(item);
 }
 
-void CPlot::AddProfile(TProfile *pr, TString label, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddProfile(TProfile *pr, TString label, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!pr)
     return;
@@ -281,7 +281,7 @@ void CPlot::AddProfile(TProfile *pr, TString label, TString drawopt, int color, 
   AddProfile(pr,drawopt,color,marksty,mksz,linesty);
 }
 
-void CPlot::AddProfile(TFile *f, TString prName, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddProfile(TFile *f, TString prName, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!f)
     return;
@@ -290,7 +290,7 @@ void CPlot::AddProfile(TFile *f, TString prName, TString drawopt, int color, int
   AddProfile(pr,drawopt,color,marksty,mksz,linesty);
 }
 
-void CPlot::AddProfile(TFile *f, TString prName, TString label, TString drawopt, int color, int marksty, int mksz, int linesty)
+void CPlot::AddProfile(TFile *f, TString prName, TString label, TString drawopt, int color, int marksty, float mksz, int linesty)
 {
   if(!f)
     return;
