@@ -41,7 +41,7 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
   return ans;
 }
 
-void anaHltJetEff_simple(TString sampleName="Data",
+void anaHltJetEff_simple(TString sampleName="Data 7TeV",
     const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a3",
     const char * mergedFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/mergeAll_v2/trkhists_sub0.root",
@@ -142,7 +142,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
   CPlot cpJet0Et("Jet0Et","Jet Et","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
   cpJet0Et.SetLogy(1);
   cpJet0Et.SetXRange(0,histJetEtMax);
-  cpJet0Et.AddHist1D(hgJet0Et.H("MB"),"MinBias All","E",kViolet+2);
+  cpJet0Et.AddHist1D(hgJet0Et.H("MB"),"MinBias All","E",kViolet);
   cpJet0Et.AddHist1D(hgJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
   cpJet0Et.AddHist1D(hgJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
   cpJet0Et.AddHist1D(hgJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
@@ -187,15 +187,15 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cpScJet0Et.SetLogy(1);
   cpScJet0Et.SetXRange(0,histJetEtMax);
   cpScJet0Et.SetYRange(1e-10,1e-1);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"MB: HLT MinBias","E",kViolet+2);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"MB: HLT Jet15^{Raw}","E",kGreen-3);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30^{Raw}","E",kOrange-5);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50^{Raw}","E",kRed-2);
-  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"HLT Jet15: HLT Jet15^{Raw}","E",kGreen-1,kOpenSquare);
-  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"HLT Jet15: HLT Jet30^{Raw}","E",kOrange-1,kOpenSquare);
-  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"HLT Jet15: HLT Jet50^{Raw}","E",kRed-1,kOpenSquare);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"HLT MB","E",kViolet,kOpenSquare);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT Jet15^{Raw} (from HLT MB)","E",kGreen-1,kOpenSquare);
+  //cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30^{Raw}","E",kOrange-5);
+  //cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50^{Raw}","E",kRed-2);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"HLT Jet15^{Raw}","E",kGreen-3,kFullCircle);
+  //cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"Triggered: HLT Jet30^{Raw}","E",kOrange-5,kFullCircle);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"HLT Jet50^{Raw}(from HLT Jet15^{Raw})","E",kRed-2,kFullCircle);
   cpScJet0Et.SetLegendHeader(sampleName);
-  cpScJet0Et.SetLegend(0.58,0.54,0.98,0.82);
+  cpScJet0Et.SetLegend(0.40,0.56,0.80,0.84);
   cpScJet0Et.SetLegendStyle(0.035);
   cpScJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
   cpScJet0Et.Draw(pUpper,false);
@@ -227,11 +227,11 @@ void anaHltJetEff_simple(TString sampleName="Data",
   CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","Ratio");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);
-  cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-3);
-  cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5);
-  cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2);
-  cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-1,kOpenSquare);
-  cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-1,kOpenSquare);
+  cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-1,kOpenSquare);
+  //cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5);
+  //cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2);
+  //cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5,kFullCircle);
+  cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2,kFullCircle);
   cpHltEff.SetLegendHeader(sampleName);
   cpHltEff.ShowLegend(0);
   cpHltEff.SetAxisLabeling(15,63,18,63,4,2.5);
