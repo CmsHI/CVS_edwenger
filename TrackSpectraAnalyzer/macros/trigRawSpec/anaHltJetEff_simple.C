@@ -187,8 +187,8 @@ void anaHltJetEff_simple(TString sampleName="Data 7TeV",
   cpScJet0Et.SetLogy(1);
   cpScJet0Et.SetXRange(0,histJetEtMax);
   cpScJet0Et.SetYRange(1e-10,1e-1);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"HLT MB","E",kViolet,kOpenSquare);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT Jet15^{Raw} (from HLT MB)","E",kGreen-1,kOpenSquare);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"HLT MB","E",kViolet,kOpenSquare,1.1);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT Jet15^{Raw} (from HLT MB)","E",kGreen-1,kOpenSquare,1.1);
   //cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30^{Raw}","E",kOrange-5);
   //cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50^{Raw}","E",kRed-2);
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"HLT Jet15^{Raw}","E",kGreen-3,kFullCircle);
@@ -227,7 +227,7 @@ void anaHltJetEff_simple(TString sampleName="Data 7TeV",
   CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","Ratio");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);
-  cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-1,kOpenSquare);
+  cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-1,kOpenSquare,1.1);
   //cpHltEff.AddGraph(gAEs["gHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5);
   //cpHltEff.AddGraph(gAEs["gHltEff_HltJet50U"],"HLT: Jet50U","pz",kRed-2);
   //cpHltEff.AddGraph(gAEs["gTrigHltEff_HltJet30U"],"HLT: Jet30U","pz",kOrange-5,kFullCircle);
