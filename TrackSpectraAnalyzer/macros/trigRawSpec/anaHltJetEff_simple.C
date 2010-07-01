@@ -44,6 +44,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
     const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MBskim-v0_p0628_a3",
     const char * mergedFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/mergeAll_v2/trkhists_sub0.root",
+    const char * trigFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
     TString histDir = "trackAna/",
     Bool_t useHist = false)
 {
@@ -54,12 +55,15 @@ void anaHltJetEff_simple(TString sampleName="Data",
   TH1::SetDefaultSumw2();
 
   HisTGroup<TH1D> hgJet0Et("Jet0Et",numPtBins,0,histJetEtMax);
+  HisTGroup<TH1D> hgTrigJet0Et("TrigJet0Et",numPtBins,0,histJetEtMax);
+  Double_t numSelMBEvt=0;
   // === Inputs ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
     TFile * inFile = new TFile(inFileName);
     return;
   } else {
+    // === HLT Min Bias ===
     TChain * nt_jet = new TChain(histDir+"nt_jet","ntuple: jets");
     nt_jet->Add(inFileName);
     //nt_jet->Print();
@@ -67,12 +71,12 @@ void anaHltJetEff_simple(TString sampleName="Data",
     hgJet0Et.Add1D("15U");
     hgJet0Et.Add1D("30U");
     hgJet0Et.Add1D("50U");
+    cout << "===== HLT Min Bias =====" << endl;
     cout << "Tree Analysis on " << nt_jet->GetEntries() << " events" << endl;
     cout << "Tree Analysis - Jets > 60GeV: " << nt_jet->GetEntries("jet>60") << " events" << endl;
     cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_jet->GetEntries("jet>60 && jet15") << " events" << endl;
 
     TCut baseJetSel="mb";
-    //TCut baseJetSel="jet15";
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("MB")->GetName()),baseJetSel,"goff");
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
     baseJetSel="jet15";
@@ -80,22 +84,42 @@ void anaHltJetEff_simple(TString sampleName="Data",
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
     // check number
     cout << "15U: # of Jets above 60GeV: " << hgJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
-  }
-  // Get Normalization
-  Double_t numSelEvt = countEvt(mergedFileName,"All",histDir);
+    // Get MB Event Normalization
+    numSelMBEvt = countEvt(mergedFileName,"All",histDir);
 
-  // Define Output
+    // === HLT Jet15U ===
+    TChain * nt_trigjet = new TChain(histDir+"nt_jet","ntuple: jets in triggered events");
+    nt_trigjet->Add(trigFileName);
+    //nt_trigjet->Print();
+    hgTrigJet0Et.Add1D("15U");
+    hgTrigJet0Et.Add1D("30U");
+    hgTrigJet0Et.Add1D("50U");
+    cout << endl << "===== HLT Jet15U =====" << endl;
+    cout << "Tree Analysis on " << nt_trigjet->GetEntries() << " events" << endl;
+    cout << "Tree Analysis - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60") << " events" << endl;
+    cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60 && jet15") << " events" << endl;
+
+    baseJetSel="jet15";
+    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
+    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
+    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
+    // check number
+    cout << "15U: # of Jets above 60GeV: " << hgTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
+  }
+
+  // === Define Output ===
   gSystem->mkdir(outdir.Data(),true);
   TFile * outf = new TFile(Form("%s/anahlt.root",outdir.Data()),"RECREATE");
 
   // ======= Begin Jet Turnon Ana =======
+  cout << endl << "===== Begin Jet Turn-on Ana =====" << endl;
   // Scale Histograms
   HisTGroup<TH1D> hgScJet0Et("ScJet0Et",numPtBins,0,histJetEtMax);
-  cout << "Normalize # of events with: " << numSelEvt << endl;
-  hgScJet0Et.Add(hgJet0Et.H("MB"),"MB",1./(numSelEvt*hgJet0Et.H("MB")->GetBinWidth(1)));
-  hgScJet0Et.Add(hgJet0Et.H("15U"),"15U",1./(numSelEvt*hgJet0Et.H("15U")->GetBinWidth(1)));
-  hgScJet0Et.Add(hgJet0Et.H("30U"),"30U",1./(numSelEvt*hgJet0Et.H("30U")->GetBinWidth(1)));
-  hgScJet0Et.Add(hgJet0Et.H("50U"),"50U",1./(numSelEvt*hgJet0Et.H("50U")->GetBinWidth(1)));
+  cout << "Normalize # of events with: " << numSelMBEvt << endl;
+  hgScJet0Et.Add(hgJet0Et.H("MB"),"MB",1./(numSelMBEvt*hgJet0Et.H("MB")->GetBinWidth(1)));
+  hgScJet0Et.Add(hgJet0Et.H("15U"),"15U",1./(numSelMBEvt*hgJet0Et.H("15U")->GetBinWidth(1)));
+  hgScJet0Et.Add(hgJet0Et.H("30U"),"30U",1./(numSelMBEvt*hgJet0Et.H("30U")->GetBinWidth(1)));
+  hgScJet0Et.Add(hgJet0Et.H("50U"),"50U",1./(numSelMBEvt*hgJet0Et.H("50U")->GetBinWidth(1)));
   // check number
   cout << "15U: Frac of Jets above 60GeV: " << hgScJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000)*hgScJet0Et.GetH("15U")->GetBinWidth(1) << endl;
 
