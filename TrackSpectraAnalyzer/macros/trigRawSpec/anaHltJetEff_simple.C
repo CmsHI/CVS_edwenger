@@ -56,7 +56,7 @@ void anaHltJetEff_simple(TString sampleName="Data",
 
   HisTGroup<TH1D> hgJet0Et("Jet0Et",numPtBins,0,histJetEtMax);
   HisTGroup<TH1D> hgTrigJet0Et("TrigJet0Et",numPtBins,0,histJetEtMax);
-  Double_t numSelMBEvt=0;
+  Double_t numSelMBEvt=0, numJet15UGt60MB=0, fracJet15UGt60MB=0;
   // === Inputs ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
@@ -74,7 +74,8 @@ void anaHltJetEff_simple(TString sampleName="Data",
     cout << "===== HLT Min Bias =====" << endl;
     cout << "Tree Analysis on " << nt_jet->GetEntries() << " events" << endl;
     cout << "Tree Analysis - Jets > 60GeV: " << nt_jet->GetEntries("jet>60") << " events" << endl;
-    cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_jet->GetEntries("jet>60 && jet15") << " events" << endl;
+    numJet15UGt60MB = nt_jet->GetEntries("jet>60 && jet15");
+    cout << "Tree Analysis 15U - Jets > 60GeV: " << numJet15UGt60MB << " events" << endl;
 
     TCut baseJetSel="mb";
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("MB")->GetName()),baseJetSel,"goff");
@@ -84,8 +85,11 @@ void anaHltJetEff_simple(TString sampleName="Data",
     nt_jet->Draw(Form("jet>>%s",hgJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
     // check number
     cout << "15U: # of Jets above 60GeV: " << hgJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
+
     // Get MB Event Normalization
     numSelMBEvt = countEvt(mergedFileName,"All",histDir);
+    fracJet15UGt60MB=numJet15UGt60MB/numSelMBEvt;
+    cout << "Tree Analysis 15U - frac Jets > 60GeV: " << fracJet15UGt60MB << " events" << endl;
 
     // === HLT Jet15U ===
     TChain * nt_trigjet = new TChain(histDir+"nt_jet","ntuple: jets in triggered events");
