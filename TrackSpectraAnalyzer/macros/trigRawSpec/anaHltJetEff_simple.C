@@ -104,10 +104,10 @@ void anaHltJetEff_simple(TString sampleName="Data",
     cout << "Tree Analysis - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60") << " events" << endl;
     cout << "Tree Analysis 15U - Jets > 60GeV: " << nt_trigjet->GetEntries("jet>60 && jet15") << " events" << endl;
     // Get Histograms
-    baseJetSel="jet15";
-    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("15U")->GetName()),baseJetSel&&"jet15 && jet>10","goff");
-    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("30U")->GetName()),baseJetSel&&"jet30 && jet>20","goff");
-    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("50U")->GetName()),baseJetSel&&"jet50 && jet>30","goff");
+    TCut baseTrigJetSel="jet15";
+    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("15U")->GetName()),baseTrigJetSel&&"jet15 && jet>10","goff");
+    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("30U")->GetName()),baseTrigJetSel&&"jet30 && jet>20","goff");
+    nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("50U")->GetName()),baseTrigJetSel&&"jet50 && jet>30","goff");
     // check number
     cout << "Hist 15U check: # of Jets above 60GeV: " << hgTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
   }
@@ -129,17 +129,28 @@ void anaHltJetEff_simple(TString sampleName="Data",
   cout << "15U: Frac of Jets above 60GeV: " << hgScJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000)*hgScJet0Et.GetH("15U")->GetBinWidth(1) << endl;
 
   // === Check Histograms ===
-  TCanvas * cScJet0Et = new TCanvas("cScJet0Et","cScJet0Et",510,510);
-  CPlot cpScJet0Et("ScJet0Et","Jet Et","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
-  cpScJet0Et.SetLogy(1);
-  cpScJet0Et.SetXRange(0,histJetEtMax);
-  cpScJet0Et.AddHist1D(hgJet0Et.H("MB"),"MinBias All","E",kViolet+2);
-  cpScJet0Et.AddHist1D(hgJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
-  cpScJet0Et.AddHist1D(hgJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
-  cpScJet0Et.AddHist1D(hgJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
-  cpScJet0Et.SetLegendHeader(sampleName);
-  cpScJet0Et.SetLegend(0.58,0.54,0.98,0.82);
-  cpScJet0Et.Draw(cScJet0Et,false);
+  TCanvas * cJet0Et = new TCanvas("cJet0Et","cJet0Et",510,510);
+  CPlot cpJet0Et("Jet0Et","Jet Et","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
+  cpJet0Et.SetLogy(1);
+  cpJet0Et.SetXRange(0,histJetEtMax);
+  cpJet0Et.AddHist1D(hgJet0Et.H("MB"),"MinBias All","E",kViolet+2);
+  cpJet0Et.AddHist1D(hgJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
+  cpJet0Et.AddHist1D(hgJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
+  cpJet0Et.AddHist1D(hgJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
+  cpJet0Et.SetLegendHeader(sampleName);
+  cpJet0Et.SetLegend(0.58,0.54,0.98,0.82);
+  cpJet0Et.Draw(cJet0Et,false);
+
+  TCanvas * cTrigJet0Et = new TCanvas("cTrigJet0Et","cTrigJet0Et",510,510);
+  CPlot cpTrigJet0Et("TrigJet0Et","Jet Et","E_{T}^{corr jet} [GeV/c]","# Events/4 GeV");
+  cpTrigJet0Et.SetLogy(1);
+  cpTrigJet0Et.SetXRange(0,histJetEtMax);
+  cpTrigJet0Et.AddHist1D(hgTrigJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
+  cpTrigJet0Et.AddHist1D(hgTrigJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
+  cpTrigJet0Et.AddHist1D(hgTrigJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
+  cpTrigJet0Et.SetLegendHeader(sampleName);
+  cpTrigJet0Et.SetLegend(0.58,0.54,0.98,0.82);
+  cpTrigJet0Et.Draw(cTrigJet0Et,false);
 
   // ===== Final Plot =====
   // ===Plotting Pad ===
@@ -163,18 +174,18 @@ void anaHltJetEff_simple(TString sampleName="Data",
   // === Begin Ana ===
   CPlot::sPlotStyle = 50;
   pUpper->cd();
-  CPlot cpJet0Et("Jet0Et","Lead Jet Et","E_{T}^{corr jet} [GeV/c]","#frac{1}{N_{Evt}^{MB}} #frac{dN_{Evt}^{MB}}{dE_{T}}");
-  cpJet0Et.SetLogy(1);
-  cpJet0Et.SetXRange(0,histJetEtMax);
-  cpJet0Et.AddHist1D(hgScJet0Et.H("MB"),"MinBias All","E",kViolet+2);
-  cpJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
-  cpJet0Et.AddHist1D(hgScJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
-  cpJet0Et.AddHist1D(hgScJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
-  cpJet0Et.SetLegendHeader(sampleName);
-  cpJet0Et.SetLegend(0.58,0.54,0.98,0.82);
-  cpJet0Et.SetLegendStyle(0.035);
-  cpJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
-  cpJet0Et.Draw(pUpper,false);
+  CPlot cpScJet0Et("ScJet0Et","Lead Jet Et","E_{T}^{corr jet} [GeV/c]","#frac{1}{N_{Evt}^{MB}} #frac{dN_{Evt}^{MB}}{dE_{T}}");
+  cpScJet0Et.SetLogy(1);
+  cpScJet0Et.SetXRange(0,histJetEtMax);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"MinBias All","E",kViolet+2);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"HLT: Jet15^{Raw}","E",kGreen-3);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"HLT: Jet30^{Raw}","E",kOrange-5);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"HLT: Jet50^{Raw}","E",kRed-2);
+  cpScJet0Et.SetLegendHeader(sampleName);
+  cpScJet0Et.SetLegend(0.58,0.54,0.98,0.82);
+  cpScJet0Et.SetLegendStyle(0.035);
+  cpScJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
+  cpScJet0Et.Draw(pUpper,false);
 
   // === HLT Eff Ana ===
   map<TString, TGraphAsymmErrors* > gAEs;
