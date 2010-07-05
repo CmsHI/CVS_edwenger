@@ -22,7 +22,7 @@ process.load('Configuration.EventContent.EventContentHeavyIons_cff')
 process.Timing = cms.Service("Timing")
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.182 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('hiRecoJEX nevts:2'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -30,7 +30,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(10)
 )
 process.options = cms.untracked.PSet(
-
+    wantSummary = cms.untracked.bool(True)
 )
 # Input source
 process.source = cms.Source("PoolSource",
