@@ -22,19 +22,28 @@ process.load('Configuration.EventContent.EventContentHeavyIons_cff')
 process.Timing = cms.Service("Timing")
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('hiRecoJEX nevts:2'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(-1)
 )
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/net/hisrv0001/home/edwenger/scratch/jex/0004/62485CB2-F786-DF11-AA24-001EC94BA3E0.root')
+    fileNames = cms.untracked.vstring(
+    
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/44FB7814-0C87-DF11-A682-0026B93785F5.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/62485CB2-F786-DF11-AA24-001EC94BA3E0.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/649E7D7F-E386-DF11-AA50-A4BADB22B414.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/72E5F9D3-0887-DF11-8328-0019B9CABE48.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/A8629E90-0887-DF11-821C-001C23BED7DE.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/B2F8D9FB-0787-DF11-9DAA-001EC94BFB57.root"
+
+    )
 )
 
 # Output definition

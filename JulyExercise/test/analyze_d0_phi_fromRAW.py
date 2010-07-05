@@ -25,11 +25,18 @@ process.GlobalTag.globaltag = 'MC_37Y_V4::All'
 
 process.load("RecoVertex.BeamSpotProducer.d0_phi_analyzer_cff")
 #process.load("RecoVertex.BeamSpotProducer.d0_phi_analyzer_pixelLess_cff")
-process.d0_phi_analyzer.BeamFitter.Debug=cms.untracked.bool(True)
-process.d0_phi_analyzer.PVFitter.Debug=cms.untracked.bool(True)
+process.d0_phi_analyzer.BeamFitter.Debug=True
+process.d0_phi_analyzer.BeamFitter.MinimumInputTracks = 2
+process.d0_phi_analyzer.BeamFitter.MinimumTotalLayers = 6
+process.d0_phi_analyzer.BeamFitter.MinimumPixelLayers = -1
+process.d0_phi_analyzer.BeamFitter.MaximumNormChi2 = 10
+process.d0_phi_analyzer.BeamFitter.MinimumPt = 1.0
+process.d0_phi_analyzer.BeamFitter.MaximumImpactParameter = 1.0
+process.d0_phi_analyzer.BeamFitter.InputBeamWidth = -1
+
+process.d0_phi_analyzer.PVFitter.Debug=True
 process.d0_phi_analyzer.PVFitter.minNrVerticesForFit = 10
 process.d0_phi_analyzer.PVFitter.minVertexNdf = 4
-process.d0_phi_analyzer.BeamFitter.MinimumInputTracks = 10
 process.d0_phi_analyzer.BSAnalyzerParameters.RunBeamWidthFit=True
 process.MessageLogger.debugModules = ['BeamSpotAnalyzer','PVFitter','BeamFitter']
 
@@ -43,14 +50,20 @@ readFiles.extend( [
     #'/store/mc/Spring10/MinimumBiasHI/RAW/JulyAnalysisExercise_MC_37Y_V4-v3/0002/485FD26A-8C85-DF11-ADBB-001C23C0B763.root',
     #'/store/mc/Spring10/MinimumBiasHI/RAW/JulyAnalysisExercise_MC_37Y_V4-v3/0002/50AB285B-FB85-DF11-81F4-001EC94BFDB6.root'
 
-    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/62485CB2-F786-DF11-AA24-001EC94BA3E0.root"
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/44FB7814-0C87-DF11-A682-0026B93785F5.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/62485CB2-F786-DF11-AA24-001EC94BA3E0.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/649E7D7F-E386-DF11-AA50-A4BADB22B414.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/72E5F9D3-0887-DF11-8328-0019B9CABE48.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/A8629E90-0887-DF11-821C-001C23BED7DE.root",
+    "file:/net/hisrv0001/home/edwenger/scratch/jex/0004/B2F8D9FB-0787-DF11-9DAA-001EC94BFB57.root"
+
     
 ] );
 
 process.source = source
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5000)
+    input = cms.untracked.int32(-1)
 )
 
 # Centrality Producer
