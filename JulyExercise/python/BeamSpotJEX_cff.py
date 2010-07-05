@@ -7,7 +7,7 @@ BeamSpotDBSource = cms.ESSource("PoolDBESSource",
                                 toGet = cms.VPSet(cms.PSet(
     record = cms.string('BeamSpotObjectsRcd'),
     tag = cms.string('JEX_BeamSpot_Preliminary'))),
-                                connect = cms.string('sqlite_file:../test/JEX_BeamSpot_Preliminary.db')
+                                connect = cms.string('sqlite_file:PreliminaryBeamSpot.db')
                                 )
 es_prefer_beamspot = cms.ESPrefer("PoolDBESSource","BeamSpotDBSource")
 
