@@ -5,19 +5,7 @@ process = cms.Process("TEST")
 
 #process.load("RecoHI.HiCentralityAlgos.HiTrivialCondRetriever_cfi")
 
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-
-process.CondDBCommon.connect = 'sqlite_file:CentralityTables.db'
-#process.CondDBCommon.connect = 'sqlite_file:CentralityTablesMC.db'
-
-process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-                                       process.CondDBCommon,
-                                       DumpStat=cms.untracked.bool(True),
-                                       toGet = cms.VPSet(cms.PSet(
-                                               record = cms.string('HeavyIonRcd'),
-                                               tag = cms.string('HFhits40_DataJulyExercise_Hydjet2760GeV_MC_37Y_V5_v0')
-                                                )),
-                                      )
+process.load("edwenger.JulyExercise.CentralityFilter_cff")
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)

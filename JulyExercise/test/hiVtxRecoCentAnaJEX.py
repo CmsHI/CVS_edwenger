@@ -22,7 +22,7 @@ process.load('Configuration.EventContent.EventContentHeavyIons_cff')
 process.Timing = cms.Service("Timing")
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('hiRecoJEX nevts:2'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -63,18 +63,7 @@ process.load("edwenger.JulyExercise.BeamSpotJEX_cff")
 process.hiCentrality.produceHFtowers=cms.bool(False)
 process.hiCentrality.produceBasicClusters=cms.bool(False)
 
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-
-process.CondDBCommon.connect = 'sqlite_file:CentralityTables.db'
-
-process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-                                       process.CondDBCommon,
-                                       DumpStat=cms.untracked.bool(True),
-                                       toGet = cms.VPSet(cms.PSet(
-                                               record = cms.string('HeavyIonRcd'),
-                                               tag = cms.string('HFhits40_MC_Hydjet2760GeV_MC_3XY_V24_v0')
-                                                )),
-                                      )
+process.load("edwenger.JulyExercise.CentralityFilter_cff")
 
 process.analyze = cms.EDAnalyzer("AnalyzerWithCentrality")
 process.TFileService = cms.Service("TFileService",

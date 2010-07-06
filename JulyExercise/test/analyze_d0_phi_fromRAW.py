@@ -72,17 +72,7 @@ process.hiCentrality.produceHFtowers=cms.bool(False)
 process.hiCentrality.produceBasicClusters=cms.bool(False)
 
 # Centrality Filter
-process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
-
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-process.CondDBCommon.connect = "sqlite_file:CentralityTables.db"
-process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-                                        process.CondDBCommon,
-                                        toGet = cms.VPSet(cms.PSet(record = cms.string('HeavyIonRcd'),
-                                             tag = cms.string('HFhits40_MC_Hydjet2760GeV_MC_3XY_V24_v0'))
-                                        )
-                                      )
-
+process.load("edwenger.JulyExercise.CentralityFilter_cff")
 process.centralityFilter.selectedBins = [25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]
 
 
