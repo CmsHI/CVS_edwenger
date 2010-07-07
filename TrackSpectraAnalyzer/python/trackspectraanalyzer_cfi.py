@@ -6,7 +6,8 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                           jsrc = cms.untracked.InputTag("selectedPatJets"),
                           gjsrc = cms.untracked.InputTag("ak5GenJets"),
                           src_evtCorr = cms.untracked.InputTag("generalTracks"),
-                          isGEN = cms.untracked.bool(False),
+                          setQualityBit = cms.untracked.bool(True),
+                          isGEN = cms.untracked.bool(True),
                           pureGENmode = cms.untracked.bool(False),
                           nsdOnly = cms.untracked.bool(False), # look at only NSD GEN
                           pythia6 = cms.untracked.bool(True), # false => pythia8

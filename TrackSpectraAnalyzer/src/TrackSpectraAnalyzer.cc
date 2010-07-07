@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.51 2010/07/01 22:34:54 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.52 2010/07/02 22:08:15 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -21,6 +21,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    jsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("jsrc",edm::InputTag("ak5CaloJets"));
    gjsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gjsrc",edm::InputTag("ak5GenJets"));
    src_evtCorr_ = iConfig.getUntrackedParameter<edm::InputTag>("src_evtCorr",edm::InputTag("generalTracks"));
+   setQualityBit_ = iConfig.getUntrackedParameter<bool>("setQualityBit", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    nsdOnly_ = iConfig.getUntrackedParameter<bool>("nsdOnly", false);
@@ -122,7 +123,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       
       for(unsigned it=0; it<etracks->size(); ++it){
 	 const reco::Track & etrk = (*etracks)[it];
-	 if(!etrk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
+	 if(setQualityBit_ && !etrk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 	 if(fabs(etrk.eta())<etaCut_evtSel && etrk.pt()>ptMin_) mult++;
       }
       
@@ -149,7 +150,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 for(unsigned it=0; it<tracks->size(); ++it){
 	    const reco::Track & trk = (*tracks)[it];
 	    
-	    if(!trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
+	    if(setQualityBit_ && !trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 	    
 	    if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
 	    if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),leadJetEt_,
@@ -271,16 +272,17 @@ TrackSpectraAnalyzer::beginJob()
    // pt bins
    const double small = 1e-3;
    double ptb;
-       
-   for(ptb =   0; ptb <   1-small; ptb +=  0.05) ptBins.push_back(ptb);
-   for(ptb =   1; ptb <   2-small; ptb +=  0.1 ) ptBins.push_back(ptb);
-   for(ptb =   2; ptb <   6-small; ptb +=  0.2 ) ptBins.push_back(ptb);
-   for(ptb =   6; ptb <  10-small; ptb +=  0.5 ) ptBins.push_back(ptb);
-   for(ptb =  10; ptb <  20-small; ptb +=  1.0 ) ptBins.push_back(ptb);
-   for(ptb =  20; ptb <  50-small; ptb +=  3.0 ) ptBins.push_back(ptb);
-   for(ptb =  50; ptb < 100-small; ptb +=  5.0 ) ptBins.push_back(ptb);
-   for(ptb = 100; ptb < 200-small; ptb += 10.0 ) ptBins.push_back(ptb);
-   for(ptb = 200; ptb < 400-small; ptb += 20.0 ) ptBins.push_back(ptb);
+
+   // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
+   for(ptb =   0  ; ptb <   1.2-small; ptb +=  0.05) ptBins.push_back(ptb); // 24 bins
+   for(ptb =   1.2; ptb <   2.4-small; ptb +=  0.1 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.2 ) ptBins.push_back(ptb); // 24 bins
+   for(ptb =   7.2; ptb <  13.2-small; ptb +=  0.5 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb =  13.2; ptb <  25.2-small; ptb +=  1.0 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb =  25.2; ptb <  61.2-small; ptb +=  3.0 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb =  61.2; ptb < 121.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb = 121.2; ptb < 241.2-small; ptb += 10.0 ) ptBins.push_back(ptb); // 12 bins
+
 
    // eta bins
    static float etaMin   = -2.4;
