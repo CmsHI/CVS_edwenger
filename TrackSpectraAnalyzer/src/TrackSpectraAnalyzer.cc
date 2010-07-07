@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.52 2010/07/02 22:08:15 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.53 2010/07/07 10:17:09 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -19,6 +19,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    src_ = iConfig.getUntrackedParameter<edm::InputTag>("src",edm::InputTag("generalTracks"));
    vsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("vsrc",edm::InputTag("offlinePrimaryVertices"));
    jsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("jsrc",edm::InputTag("ak5CaloJets"));
+   gsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gsrc",edm::InputTag("genParticles"));
    gjsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gjsrc",edm::InputTag("ak5GenJets"));
    src_evtCorr_ = iConfig.getUntrackedParameter<edm::InputTag>("src_evtCorr",edm::InputTag("generalTracks"));
    setQualityBit_ = iConfig.getUntrackedParameter<bool>("setQualityBit", true);
@@ -230,7 +231,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       // Gen track
       if(isWanted){
 	 Handle<GenParticleCollection> genParticles;
-	 iEvent.getByLabel("genParticles", genParticles);
+	 iEvent.getByLabel(gsrc_, genParticles);
 	 const GenParticleCollection *genCollect = genParticles.product();
 	 
 	 for(unsigned i=0; i<genCollect->size();i++){

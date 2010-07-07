@@ -117,6 +117,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::InputTag src_;
    edm::InputTag vsrc_;
    edm::InputTag jsrc_;
+   edm::InputTag gsrc_;
    edm::InputTag gjsrc_;
    edm::InputTag src_evtCorr_;
    std::vector<std::string> hltNames_;
