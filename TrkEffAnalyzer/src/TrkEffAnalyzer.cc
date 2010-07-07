@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.13 2010/05/20 15:50:40 sungho Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.14 2010/06/02 14:20:07 edwenger Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -30,6 +30,7 @@
 TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
 :
   trackTags_(iConfig.getUntrackedParameter<edm::InputTag>("tracks")),
+  jetTags_(iConfig.getUntrackedParameter<edm::InputTag>("jets")),
   label_tp_effic_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_effic")),
   label_tp_fake_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_fake")),
   associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap")),
@@ -72,7 +73,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   float jet_et = 0.0;
 
   edm::Handle<std::vector<pat::Jet> > jets;
-  iEvent.getByLabel("selectedPatJets", jets);
+  iEvent.getByLabel(jetTags_, jets);
 
   std::vector<const pat::Jet *> sortedJets;
 

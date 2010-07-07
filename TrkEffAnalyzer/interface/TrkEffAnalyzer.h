@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.h,v 1.8 2010/05/13 19:44:53 edwenger Exp $
+// $Id: TrkEffAnalyzer.h,v 1.9 2010/05/20 15:51:24 sungho Exp $
 //
 
 // user include files
@@ -40,6 +40,7 @@ class TrkEffAnalyzer : public edm::EDAnalyzer {
 
       // ----------member data ---------------------------
       edm::InputTag trackTags_; 
+      edm::InputTag jetTags_;
       edm::InputTag label_tp_effic_;
       edm::InputTag label_tp_fake_;
       edm::InputTag associatorMap_;
