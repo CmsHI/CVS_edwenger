@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.53 2010/07/07 10:17:09 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.54 2010/07/07 14:00:27 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -55,6 +55,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
    float etaCut_evtSel = 0.0;
    bool skipEvt = false;
+   bool warningM = false;
 
    if(evtEffCorrType_==0)
       etaCut_evtSel = 2.4;
@@ -77,7 +78,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	 unsigned index = triggerNames.triggerIndex(hltNames_[i]);
 	 if(index < triggerResults->size())
 	    hltAccept_[i] = triggerResults->accept(index);
-	 else 
+	 else if(warningM)
 	    edm::LogWarning("TrackSpectraAnalyzer")
 	       << "Index returned by TriggerNames object for trigger '"
 	       << hltNames_[i]
