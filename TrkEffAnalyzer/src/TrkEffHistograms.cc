@@ -48,14 +48,14 @@ TrkEffHistograms::declareHistograms()
        double pt;
 
        // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
-       for(ptb =   0  ; ptb <   1.2-small; ptb +=  0.05) ptBins.push_back(ptb); // 24 bins
-       for(ptb =   1.2; ptb <   2.4-small; ptb +=  0.1 ) ptBins.push_back(ptb); // 12 bins
-       for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.2 ) ptBins.push_back(ptb); // 24 bins
-       for(ptb =   7.2; ptb <  13.2-small; ptb +=  0.5 ) ptBins.push_back(ptb); // 12 bins
-       for(ptb =  13.2; ptb <  25.2-small; ptb +=  1.0 ) ptBins.push_back(ptb); // 12 bins
-       for(ptb =  25.2; ptb <  61.2-small; ptb +=  3.0 ) ptBins.push_back(ptb); // 12 bins
-       for(ptb =  61.2; ptb < 121.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 12 bins
-       for(ptb = 121.2; ptb < 241.2-small; ptb += 10.0 ) ptBins.push_back(ptb); // 12 bins
+       for(pt =   0  ; pt <   1.2-small; pt +=  0.05) ptBins.push_back(pt); // 24 bins
+       for(pt =   1.2; pt <   2.4-small; pt +=  0.1 ) ptBins.push_back(pt); // 12 bins
+       for(pt =   2.4; pt <   7.2-small; pt +=  0.2 ) ptBins.push_back(pt); // 24 bins
+       for(pt =   7.2; pt <  13.2-small; pt +=  0.5 ) ptBins.push_back(pt); // 12 bins
+       for(pt =  13.2; pt <  25.2-small; pt +=  1.0 ) ptBins.push_back(pt); // 12 bins
+       for(pt =  25.2; pt <  61.2-small; pt +=  3.0 ) ptBins.push_back(pt); // 12 bins
+       for(pt =  61.2; pt < 121.2-small; pt +=  5.0 ) ptBins.push_back(pt); // 12 bins
+       for(pt = 121.2; pt < 241.2-small; pt += 10.0 ) ptBins.push_back(pt); // 12 bins
 
     }else if(lowPtMode){
 
