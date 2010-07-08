@@ -8,7 +8,7 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
-# =============== 2.36 TeV MC Sample =====================
+# =============== 2.76 TeV MC Sample =====================
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
@@ -16,7 +16,7 @@ process.source = cms.Source("PoolSource",
 
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'MC_37Y_V4::All'
 
@@ -29,6 +29,23 @@ process.configurationMetadata = cms.untracked.PSet(
 process.TFileService = cms.Service("TFileService", 
                                    fileName = cms.string('trkhistsMC.root')
                                    )
+# =============== Centrality info =======================
+process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff') # needed for 
+process.load("RecoHI.HiCentralityAlgos.HiCentrality_cfi") 
+process.load("CondCore.DBCommon.CondDBCommon_cfi")
+process.CondDBCommon.connect = 'sqlite_file:/net/hisrv0001/home/y_alive/cmssw/CMSSW_370p4_SpectraPbPb_TEST5/src/CmsHi/JulyExercise/data/CentralityTables.db'
+
+process.PoolDBESSource = cms.ESSource("PoolDBESSource",
+   process.CondDBCommon,
+   DumpStat=cms.untracked.bool(True),
+   toGet = cms.VPSet(cms.PSet(
+    record = cms.string('HeavyIonRcd'),
+    #tag = cms.string('HFhits40_DataJulyExercise_Hydjet2760GeV_MC_37Y_V5_NZS_v0')
+    tag = cms.string('HFhits40_DataJulyExercise_Hydjet2760GeV_MC_37Y_V5_v0')
+    )),
+)
+
+process.hicentProd = cms.Sequence(process.siPixelRecHits*process.hiCentrality)
 
 # =============== Import Sequences =====================
 process.load("edwenger.Skims.HiAnalysis_cff")
@@ -44,12 +61,13 @@ configureHeavyIons(process)
 from PhysicsTools.PatAlgos.tools.jetTools import *
 #switchJECSet( process, "Spring10") # Spring10 is the new default
 
+from Saved.JulyExercise.customise_cfi import *
+#disableMC(process)
+
 # =============== Final Paths =====================
-process.extraReco_step   = cms.Path(process.makeHeavyIonJets)
+process.extraReco_step   = cms.Path(process.hicentProd + process.makeHeavyIonJets)
 process.ana_step         = cms.Path(process.hiAnalysisSeq)
 
-from Saved.JulyExercise.customise_cfi import *
-#disableMC(process) 
 
 # =============== Output ================================
 #process.load("edwenger.Skims.analysisSkimContent_cff")
