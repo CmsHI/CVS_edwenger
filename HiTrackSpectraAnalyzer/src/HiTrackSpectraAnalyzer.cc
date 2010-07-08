@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.1 2010/07/07 16:48:30 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.2 2010/07/08 14:06:16 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -9,10 +9,13 @@
 #include <TF1.h>
 
 HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
+  pixelMult_(0),
   leadJetEt_(0),
   leadJetEta_(0),
   leadGJetEt_(0),
   leadGJetEta_(0),
+  occHandle_(0),
+  occGENHandle_(0),
   hltAccept_(5,false)
 {
    //now do what ever initialization is needed
@@ -42,6 +45,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<int> >("neededTrigSpectra");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
+   pixelMultMode_ = iConfig.getUntrackedParameter<bool>("pixelMultMode",true);
 }
 
 // ------------ method called to for each event  ------------
@@ -87,6 +91,14 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 		  << "' is out of range (" 
 		  << index << " >= " << triggerResults->size() << ")";
 	 } 
+      }
+
+      //----- centrality information ----------------------
+      if(pixelMultMode_){
+	 edm::Handle<reco::Centrality> cent;
+	 iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
+	 pixelMult_ = cent->multiplicityPixel();
+	 pixelMult_ = pixelMult_/100. // scale it (120K -> 1200)
       }
 
       //----- loop over pat jets and store in a vector -----
@@ -145,10 +157,14 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    hRecMult_STD_corr->Fill(mult,(1./evt_sel_eff));
 	 }
       }
-      
+
+      // occupancy handle
+      if(pixelMultMode_) occHandle_ = pixelMult_;
+      else occHandle_ = leadJetEt_;
+
       // get track collection                
       if(!skipEvt){
-
+	 
 	 Handle<vector<Track> > tracks;
 	 iEvent.getByLabel(src_, tracks);
 	 
@@ -161,23 +177,23 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),leadJetEt_,
 							 hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 	    
-	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
-	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
+	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(neededTrigSpectra_[i]!=1) continue;
-               if(hltAccept_[i]) hTrkPtEtaJetEtW_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
+               if(hltAccept_[i]) hTrkPtEtaJetEtW_Trig[ind]->Fill(trk.eta(),trk.pt(),occHandle_,1./(evt_sel_eff*trk.pt()));
 	       index++;
             }
 
 	    if(includeExtra_) {
 	       hTrkPtEta->Fill(trk.eta(),trk.pt(),1./evt_sel_eff);
-	       if(mult==1) hTrkPtEtaJetEtW_mult1->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
-	       if(mult==2) hTrkPtEtaJetEtW_mult2->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
-	       if(mult==3) hTrkPtEtaJetEtW_mult3->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
-	       hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt())); // weighted by pT  
-	       hTrkPtEtaJetEtW_vbin->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+	       if(mult==1) hTrkPtEtaJetEtW_mult1->Fill(trk.eta(),trk.pt(),occHandle_,1./(evt_sel_eff*trk.pt()));
+	       if(mult==2) hTrkPtEtaJetEtW_mult2->Fill(trk.eta(),trk.pt(),occHandle_,1./(evt_sel_eff*trk.pt()));
+	       if(mult==3) hTrkPtEtaJetEtW_mult3->Fill(trk.eta(),trk.pt(),occHandle_,1./(evt_sel_eff*trk.pt()));
+	       hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),occHandle_,1./(evt_sel_eff*trk.pt())); // weighted by pT  
+	       hTrkPtEtaJetEtW_vbin->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 	    }
 	 }
 	 
@@ -232,6 +248,11 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 if(pthat>pthatCut_) isWanted = false;
       }
 
+      // occupancy handle 
+      if(pixelMultMode_) occGENHandle_ = pixelMult_;
+      else occGENHandle_ = leadJetEt_;
+
+
       // Gen track
       if(isWanted){
 	 Handle<GenParticleCollection> genParticles;
@@ -248,12 +269,12 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    
 	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
 
-	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),leadGJetEt_); 
-	    hGenTrkPtEtaJetEt_vbin->Fill(gen.eta(),gen.pt(),leadGJetEt_);
+	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),occGENHandle_); 
+	    hGenTrkPtEtaJetEt_vbin->Fill(gen.eta(),gen.pt(),occGENHandle_);
 
 	    if(includeExtra_) {
-	       hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),leadGJetEt_,(1./gen.pt())); // weighted by pT
-	       hGenTrkPtEtaJetEtW_vbin->Fill(gen.eta(),gen.pt(),leadGJetEt_,(1./gen.pt()));
+	       hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),occGENHandle_,(1./gen.pt())); // weighted by pT
+	       hGenTrkPtEtaJetEtW_vbin->Fill(gen.eta(),gen.pt(),occGENHandle_,(1./gen.pt()));
 	    }
 	    
 	 }
@@ -308,10 +329,6 @@ HiTrackSpectraAnalyzer::beginJob()
 
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
-
-   //TH1::SetDefaultSumw2(true);
-   //TH2::SetDefaultSumw2(true);
-   //TH3::SetDefaultSumw2(true);
 
    if(!pureGENmode_){
 
