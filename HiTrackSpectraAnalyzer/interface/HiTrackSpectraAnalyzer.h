@@ -29,6 +29,8 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/HeavyIonEvent/interface/Centrality.h"
+
 
 // ROOT includes
 #include "TNtuple.h"
@@ -105,12 +107,15 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool applyEvtEffCorr_;
    bool setQualityBit_;
    bool triggerNeeded_;
+   bool pixelMultMode_;
    double pthatCut_;
 
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;
 
    double  etaMax_, ptMin_;
+   double  pixelMult_;
    double  leadJetEt_, leadJetEta_, leadGJetEt_, leadGJetEta_;
+   double  occHandle_, occGENHandle_;
 
    std::vector<bool> hltAccept_;
    std::vector<double> evtSelEffv_;

@@ -31,6 +31,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                                                            'HLT_Jet30U',
                                                            'HLT_Jet50U'),
                           neededTrigSpectra = cms.untracked.vint32(0,0,0,0,0), # 1st, 3rd, in the hltNames list 
-                          triglabel = cms.untracked.InputTag('TriggerResults','','HLT')
+                          triglabel = cms.untracked.InputTag('TriggerResults','','HLT'),
+                          pixelMultMode = cms.untracked.bool(False)
                           )
 
