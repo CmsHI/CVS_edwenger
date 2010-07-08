@@ -8,6 +8,8 @@
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/JetReco>
 <use name=DataFormats/Common>
+<use name=DataFormats/HeavyIonEvent>
+<use name=CondFormats/HIObjects>
 <use name=SimDataFormats/GeneratorProducts>
 <flags EDM_PLUGIN=1>
 <export>
