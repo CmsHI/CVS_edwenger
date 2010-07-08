@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.2 2010/07/08 14:06:16 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.3 2010/07/08 15:48:29 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -98,7 +98,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 edm::Handle<reco::Centrality> cent;
 	 iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
 	 pixelMult_ = cent->multiplicityPixel();
-	 pixelMult_ = pixelMult_/100. // scale it (120K -> 1200)
+	 pixelMult_ = pixelMult_/100.; // scale it (120K -> 1200)
       }
 
       //----- loop over pat jets and store in a vector -----
