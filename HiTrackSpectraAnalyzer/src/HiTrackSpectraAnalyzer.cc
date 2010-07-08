@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.55 2010/07/07 15:03:52 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.1 2010/07/07 16:48:30 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -38,6 +38,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    efit_type_ = iConfig.getUntrackedParameter<int>("efit_type", 0);
    evtSelEffv_ = iConfig.getUntrackedParameter< std::vector<double> >("evtSelEffv");
    evtMultCut_ = iConfig.getUntrackedParameter<int>("evtMultCut", 0);
+   triggerNeeded_ = iConfig.getUntrackedParameter<bool>("triggerNeeded",false);
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<int> >("neededTrigSpectra");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
@@ -69,22 +70,24 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
      //float nevt = 1.0; // comment out unused variable (EAW)
       
       // get hlt bit
-      Handle<edm::TriggerResults> triggerResults;
-      iEvent.getByLabel(triglabel_, triggerResults);
-      
-      const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
-      
-      for(unsigned i=0; i<hltNames_.size(); i++) { 
-	 unsigned index = triggerNames.triggerIndex(hltNames_[i]);
-	 if(index < triggerResults->size())
-	    hltAccept_[i] = triggerResults->accept(index);
-	 else if(warningM)
-	    edm::LogWarning("HiTrackSpectraAnalyzer")
-	       << "Index returned by TriggerNames object for trigger '"
-	       << hltNames_[i]
-	       << "' is out of range (" 
-	       << index << " >= " << triggerResults->size() << ")";
-      } 
+      if(triggerNeeded_){
+	 Handle<edm::TriggerResults> triggerResults;
+	 iEvent.getByLabel(triglabel_, triggerResults);
+	 
+	 const edm::TriggerNames triggerNames = iEvent.triggerNames(*triggerResults); 
+	 
+	 for(unsigned i=0; i<hltNames_.size(); i++) { 
+	    unsigned index = triggerNames.triggerIndex(hltNames_[i]);
+	    if(index < triggerResults->size())
+	       hltAccept_[i] = triggerResults->accept(index);
+	    else if(warningM)
+	       edm::LogWarning("HiTrackSpectraAnalyzer")
+		  << "Index returned by TriggerNames object for trigger '"
+		  << hltNames_[i]
+		  << "' is out of range (" 
+		  << index << " >= " << triggerResults->size() << ")";
+	 } 
+      }
 
       //----- loop over pat jets and store in a vector -----
       edm::Handle<reco::CandidateView> jets;

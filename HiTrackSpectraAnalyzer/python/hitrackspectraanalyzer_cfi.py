@@ -24,6 +24,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           evtMultCut = cms.untracked.int32(3), # skip events with mult <= evtMultCut
                           evtSelEffv = cms.untracked.vdouble(19,0.0119454,0.212963,0.376093,0.450549,0.535354,0.607345,0.684058,0.723837,0.805643,0.83391,
                                                              0.880702,0.93007,0.959839,0.972656,0.966942,0.965812,0.982609,0.985646,0.978495),
+                          triggerNeeded = cms.untracked.bool(False),
                           hltNames = cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus', # the 1st 5 paths are hardcoded in nt, please add more HLT paths after these
                                                            'HLT_L1Jet6U',
                                                            'HLT_Jet15U',
