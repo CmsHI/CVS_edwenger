@@ -21,34 +21,18 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'MC_37Y_V4::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/ASYoon/JulyExercise/test/HiTrkAnaSkim_mc_2TeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/HiTrkAnaSkim_mc_2TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
 process.TFileService = cms.Service("TFileService", 
                                    fileName = cms.string('trkhistsMC.root')
                                    )
-# =============== Centrality info =======================
-process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff') # needed for 
-process.load("RecoHI.HiCentralityAlgos.HiCentrality_cfi") 
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-process.CondDBCommon.connect = 'sqlite_file:/net/hisrv0001/home/y_alive/cmssw/CMSSW_370p4_SpectraPbPb_TEST5/src/CmsHi/JulyExercise/data/CentralityTables.db'
-
-process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-   process.CondDBCommon,
-   DumpStat=cms.untracked.bool(True),
-   toGet = cms.VPSet(cms.PSet(
-    record = cms.string('HeavyIonRcd'),
-    #tag = cms.string('HFhits40_DataJulyExercise_Hydjet2760GeV_MC_37Y_V5_NZS_v0')
-    tag = cms.string('HFhits40_DataJulyExercise_Hydjet2760GeV_MC_37Y_V5_v0')
-    )),
-)
-
-process.hicentProd = cms.Sequence(process.siPixelRecHits*process.hiCentrality)
 
 # =============== Import Sequences =====================
 process.load("edwenger.Skims.HiAnalysis_cff")
+process.load("edwenger.Skims.HiExtraReco_cff")
 
 from edwenger.Skims.hicustomise_cfi import *
 process = enableSIM(process)    # activate isGEN in analyzers
@@ -65,9 +49,11 @@ from Saved.JulyExercise.customise_cfi import *
 #disableMC(process)
 
 # =============== Final Paths =====================
-process.extraReco_step   = cms.Path(process.hicentProd + process.makeHeavyIonJets)
+process.extraReco_step   = cms.Path(process.hiextraReco + process.makeHeavyIonJets)
 process.ana_step         = cms.Path(process.hiAnalysisSeq)
 
+process = disableLowPt(process) # disable low pt pixel 
+#process = disableEffAna(process) # disable eff 
 
 # =============== Output ================================
 #process.load("edwenger.Skims.analysisSkimContent_cff")
@@ -81,8 +67,6 @@ process.ana_step         = cms.Path(process.hiAnalysisSeq)
 #    )
 
 #process.output_step = cms.EndPath(process.output)
-
-
 
 # =============== Schedule =====================
 
