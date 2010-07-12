@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.3 2010/07/08 15:48:29 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.4 2010/07/08 21:00:26 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -99,6 +99,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
 	 pixelMult_ = cent->multiplicityPixel();
 	 pixelMult_ = pixelMult_/100.; // scale it (120K -> 1200)
+	 hPxlMultDist->Fill(pixelMult_);
       }
 
       //----- loop over pat jets and store in a vector -----
@@ -161,6 +162,8 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       // occupancy handle
       if(pixelMultMode_) occHandle_ = pixelMult_;
       else occHandle_ = leadJetEt_;
+
+      std::cout<<"Occ handle = "<<occHandle_<<std::endl;
 
       // get track collection                
       if(!skipEvt){
@@ -336,6 +339,8 @@ HiTrackSpectraAnalyzer::beginJob()
       hNevt_mult1 = fs->make<TH1F>("hNevt_mult1","evt sel eff", 102, -0.02, 2.02);
       hNevt_mult2 = fs->make<TH1F>("hNevt_mult2","evt sel eff", 102, -0.02, 2.02);
       hNevt_mult3 = fs->make<TH1F>("hNevt_mult3","evt sel eff", 102, -0.02, 2.02);
+
+      if(pixelMultMode_) hPxlMultDist = fs->make<TH1F>("hPxlMultDist","pixel mult dist",60, 0.0, 1200.0);
 
       hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
       hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);

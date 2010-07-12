@@ -65,6 +65,8 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH1F *hNevt_mult2;
    TH1F *hNevt_mult3;
 
+   TH1F *hPxlMultDist;
+
    TH1F *hRecMult_STD;
    TH1F *hRecMult_STD_corr;
 
