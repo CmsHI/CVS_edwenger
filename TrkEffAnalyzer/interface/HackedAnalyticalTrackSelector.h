@@ -8,9 +8,9 @@
  * 
  * \author Paolo Azzurri, Giovanni Petrucciani 
  *
- * \version $Revision: 1.12 $
+ * \version $Revision: 1.1 $
  *
- * $Id: AnalyticalTrackSelector.h,v 1.12 2009/08/21 16:25:52 wmtan Exp $
+ * $Id: HackedAnalyticalTrackSelector.h,v 1.1 2010/05/13 11:50:46 edwenger Exp $
  *
  */
 
@@ -22,7 +22,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
