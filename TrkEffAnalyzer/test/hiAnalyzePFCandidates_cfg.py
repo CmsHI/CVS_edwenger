@@ -7,12 +7,15 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.GeometryExtended_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load('Configuration/StandardSequences/ReconstructionHeavyIons_cff')
+process.load("RecoHI.Configuration.Reconstruction_hiPF_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'MC_37Y_V5::All'
 
 process.MessageLogger.cerr.FwkReport.reportEvery=100
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
 
+process.Timing = cms.Service("Timing")
 
 #Input source
 process.source = cms.Source (
@@ -26,13 +29,13 @@ process.source = cms.Source (
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input = cms.untracked.int32(-1)
 )
 
 # Filter on PF candidate pt
 process.clones = cms.EDFilter("PtMinCandViewCloneSelector",
     src=cms.InputTag("particleFlow",""),
-    ptMin=cms.double(5.0),
+    ptMin=cms.double(15.0),
     filter=cms.bool(True)
 )
 
@@ -42,6 +45,10 @@ process.trkfilter = cms.EDFilter("PtMinTrackSelector",
                                  ptMin = cms.double(15.0),
                                  filter = cms.bool(True),
                                  )
+
+process.rechits = cms.Sequence(process.siPixelRecHits * process.siStripMatchedRecHits)
+process.pfreco = cms.Sequence(process.rechits * process.heavyIonTracking * process.HiParticleFlowReco)
+process.filter_seq = cms.Sequence(process.trkfilter * process.pfreco * process.clones)
 
 # track association
 from SimTracker.TrackAssociation.TrackAssociatorByHits_cfi import *
@@ -54,7 +61,7 @@ process.pfCandidateAnalyzer = cms.EDAnalyzer("PFCandidateAnalyzer",
     Vertices = cms.InputTag("hiSelectedVertex"),                                         
     verbose = cms.untracked.bool(False), ## print candidate info
     printBlocks = cms.untracked.bool(False), ## print block/element info
-    ptMin = cms.untracked.double(5.0), ## of PF candidate
+    ptMin = cms.untracked.double(15.0), ## of PF candidate
     SimTracks = cms.InputTag("mergedtruth","MergedTrackTruth"),
     Tracks = cms.InputTag("hiSelectedTracks"),                                         
     hasSimInfo = cms.untracked.bool(False),
@@ -83,8 +90,9 @@ process.TFileService = cms.Service("TFileService",
                                   fileName=cms.string("pftuple.root"))
 
 # Paths
-process.filter = cms.Path(process.trkfilter * process.clones)
-process.p = cms.Path(process.trkfilter * process.clones
+
+process.filter = cms.Path(process.filter_seq)
+process.p = cms.Path(process.filter_seq
                      *process.pfCandidateAnalyzer)
 #process.outpath = cms.EndPath(process.aod)
 
@@ -99,7 +107,8 @@ def customiseMC(process):
     process.TFileService.fileName="pftupleMC.root"     # new ntuple name
     process.source.fileNames= [
         #'/store/relval/CMSSW_3_7_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-RECO/MC_37Y_V4-v1/0026/88958F00-8F69-DF11-846A-00261894383C.root'
-        'file:../../../RecoHI/Configuration/test/hydjetMB_PFRECO.root'
+        '/store/relval/CMSSW_3_7_0/RelValPyquen_DiJet_pt80to120_2760GeV/GEN-SIM-RECO/MC_37Y_V4-v1/0026/E61F5D5C-726A-DF11-B4BE-002618943807.root'
+        #'file:../../../RecoHI/Configuration/test/hydjetMB_PFRECO.root'
         ]
         
     #process.pfCandidateAnalyzer.hasSimInfo=cms.untracked.bool(True)
