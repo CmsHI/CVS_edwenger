@@ -79,6 +79,7 @@ process.pfCandidateAnalyzer = cms.EDAnalyzer("PFCandidateAnalyzer",
     printBlocks = cms.untracked.bool(False), ## print block/element info
     ptMin = cms.untracked.double(5.0), ## of PF candidate
     SimTracks = cms.InputTag("mergedtruth","MergedTrackTruth"),
+    Tracks = cms.InputTag("generalTracks"),
     hasSimInfo = cms.untracked.bool(False),
     minHits = cms.untracked.double(5),
     maxPtErr = cms.untracked.double(0.05),

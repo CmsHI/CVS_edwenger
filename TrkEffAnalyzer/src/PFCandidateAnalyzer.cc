@@ -41,6 +41,7 @@ PFCandidateAnalyzer::PFCandidateAnalyzer(const edm::ParameterSet& iConfig) {
   inputTagPFCandidates_ = iConfig.getParameter<InputTag>("PFCandidates");
   inputTagVertices_ = iConfig.getParameter<InputTag>("Vertices");
   inputTagSimTracks_ = iConfig.getParameter<InputTag>("SimTracks");
+  inputTagTracks_ = iConfig.getParameter<InputTag>("Tracks");
 
   verbose_ = iConfig.getUntrackedParameter<bool>("verbose",false);
   printBlocks_ = iConfig.getUntrackedParameter<bool>("printBlocks",false);
@@ -105,7 +106,7 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
   
   if(hasSimInfo_) {
     iEvent.getByLabel(inputTagSimTracks_,TPCollectionHfake);
-    iEvent.getByLabel("generalTracks",trackCollection);
+    iEvent.getByLabel(inputTagTracks_,trackCollection);
     iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
     theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();  
     recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);

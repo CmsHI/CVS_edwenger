@@ -63,6 +63,9 @@ class PFCandidateAnalyzer : public edm::EDAnalyzer {
 
   /// SimTracks for track association
   edm::InputTag   inputTagSimTracks_;
+
+  /// Tracks for track association
+  edm::InputTag   inputTagTracks_;
   
   /// verbose ?
   bool   verbose_;
