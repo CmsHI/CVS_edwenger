@@ -28,8 +28,8 @@
 #include <utility>
 #include <iostream>
 
-#include "/home/sungho/plots/common/utilities.h"
-#include "/home/sungho/plots/common/commonStyle.h"
+#include "utilities.h"
+#include "commonStyle.h"
 
 #include <TROOT.h>
 #include <TStyle.h>
@@ -133,6 +133,8 @@ std::pair<TH3F*,TH3F*> getEffHists(const char *file, const char *dirC,
 double GetEffFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
 double GetFakFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
 void drawDebugPlots();
+TH1D * hackedProjectionY(TH3F* me, const char *name, Int_t ixmin, Int_t ixmax, 
+			 Int_t izmin, Int_t izmax );
 //-----------------------------------------------------------------------------
 
 
@@ -213,18 +215,22 @@ void CorrectTypeOneNSaveHi(const char *cDir="../root_files/",
    hdndptdetadet_full = (TH3F*) hdndptdetadet->Clone("hdndptdetadet_full");
    hdndptdetadet_full->Reset();
 
+   
+
    // First decide eta and jet et range -----------------------------
+   float small = 0.01; // when the eta value is at the edge (1.0 and 2.4 is at the edges!)
+
    int eta_min_bin = (ieta<=hdndptdetadet->GetXaxis()->GetXmin()) ?
       hdndptdetadet->GetXaxis()->GetFirst() : hdndptdetadet->GetXaxis()->FindBin(-1.0*feta);
-   int eta_max_bin = (feta>=hdndptdetadet->GetXaxis()->GetXmax()) ?
-      hdndptdetadet->GetXaxis()->GetLast() : hdndptdetadet->GetXaxis()->FindBin(feta);
-   
+   int eta_max_bin = (feta>hdndptdetadet->GetXaxis()->GetXmax()) ?
+      hdndptdetadet->GetXaxis()->GetLast() : hdndptdetadet->GetXaxis()->FindBin(feta-small);
+
    checkEtaRange(ieta,feta,eta_min_bin,eta_max_bin);
 
    int jet_min_bin = (ijet<=hdndptdetadet->GetZaxis()->GetXmin()) ? 
       hdndptdetadet->GetZaxis()->GetFirst() : hdndptdetadet->GetZaxis()->FindBin(ijet); 
    int jet_max_bin = (fjet>=hdndptdetadet->GetZaxis()->GetXmax()) ?
-      hdndptdetadet->GetZaxis()->GetLast() : hdndptdetadet->GetZaxis()->FindBin(fjet);
+      hdndptdetadet->GetZaxis()->GetLast() : hdndptdetadet->GetZaxis()->FindBin(fjet-small);
 
    checkEtRange(ijet,fjet,jet_min_bin,jet_max_bin);
 
@@ -247,12 +253,9 @@ void CorrectTypeOneNSaveHi(const char *cDir="../root_files/",
    
    float var_1st, var_2nd, var_3rd, var_4th; // var can be pt, Et, etc..
    
-   int count = 0;
-   int count2= 0, count3=0;
-   int count2_pre = 0;
+   cout<<"number of x bin = "<<nbinX<<" y bin = "<<nbinY<<" z bin = "<<nbinZ<<endl;
+   cout<<"total number of bins = "<<nbinX*nbinY*nbinZ<<endl;
 
-   cout<<"x bin = "<<nbinX<<" y bin "<<nbinY<<" z bin "<<nbinZ<<endl;
-   cout<<" total number of bins = "<<nbinX*nbinY*nbinZ<<endl;
 
    for(int j=0;j<(nbinX*nbinY*nbinZ);j++){
       
@@ -341,13 +344,23 @@ void CorrectTypeOneNSaveHi(const char *cDir="../root_files/",
       }
    }
    
-   //hdndptdet_raw = (TH2D*) hdndptdetadet_raw->Project3D("yz");
-   //hdndptdet_raw->Draw("COLZ");
-
+   // ProjectionY is supported in a root version 5.4 or later. If no root version available, use hackedProjectionY below! 
    hdndpt_raw = (TH1D*) hdndptdetadet_raw->ProjectionY("hdndpt_raw",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
    hdndpt_lev1 = (TH1D*) hdndptdetadet_lev1->ProjectionY("hdndpt_lev1",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
    hdndpt_lev2 = (TH1D*) hdndptdetadet_lev2->ProjectionY("hdndpt_lev2",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
    hdndpt_full = (TH1D*) hdndptdetadet_full->ProjectionY("hdndpt_full",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
+
+   /*
+   hdndpt_raw = (TH1D*)
+      hackedProjectionY(hdndptdetadet_raw,"hdndpt_raw",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   hdndpt_lev1 = (TH1D*)
+      hackedProjectionY(hdndptdetadet_lev1,"hdndpt_lev1",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   hdndpt_lev2 = (TH1D*)
+      hackedProjectionY(hdndptdetadet_lev2,"hdndpt_lev2",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   hdndpt_full = (TH1D*)
+      hackedProjectionY(hdndptdetadet_full,"hdndpt_full",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   */
+
 
    if(scale){
       hdndpt_raw->Scale(1./scaleF);
@@ -492,6 +505,7 @@ void checkEtaRange(float iEta, float fEta, int EtaMin, int EtaMax){
    cout<<"for input eta "<<-1.0*fEta<<" found min eta (bin center): "<<hdndptdetadet->GetXaxis()->GetBinCenter(EtaMin)<<endl;
    cout<<"for input eta "<<fEta<<" found max eta (bin up edge): "<<hdndptdetadet->GetXaxis()->GetBinUpEdge(EtaMax)<<endl;
    cout<<"for input eta "<<-1.0*fEta<<" found min eta (bin low edge): "<<hdndptdetadet->GetXaxis()->GetBinLowEdge(EtaMin)<<endl;
+   cout<<"**INTEGRATION RANGE** : "<<hdndptdetadet->GetXaxis()->GetBinLowEdge(EtaMin)<<" to "<<hdndptdetadet->GetXaxis()->GetBinUpEdge(EtaMax)<<endl;
    cout<<"[checkEtaRange]-------------------------------------------------"<<endl;
    cout<<"\n"<<endl;
 
@@ -581,4 +595,27 @@ double GetFakFactor(TH3F* num, TH3F* den, double pt, double eta, double jet){
    //if(n_den == 0) return 1; // meaing nothing is reconstructed. 
    //if(n_num == 0) return 0;
    //else return n_num/n_den; // be careful with def, with MTV, its 1-(n_num/n_den)
+}
+
+
+TH1D * hackedProjectionY(TH3F* me, const char *name, Int_t ixmin,
+			 Int_t ixmax, Int_t izmin, Int_t izmax )
+{
+
+   Int_t pixmin = me->GetXaxis()->GetFirst();
+   Int_t pixmax = me->GetXaxis()->GetLast();
+   Int_t pizmin = me->GetZaxis()->GetFirst();
+   Int_t pizmax = me->GetZaxis()->GetLast();
+
+   me->GetXaxis()->SetRange(ixmin,ixmax);
+   me->GetZaxis()->SetRange(izmin,izmax);
+
+   TH1D * h1 =  (TH1D*) me->Project3D("ye");
+   h1->SetName( name );
+
+   // restore axis range
+   me->GetXaxis()->SetRange(pixmin,pixmax);
+   me->GetZaxis()->SetRange(pizmin,pizmax);
+
+   return h1;
 }
