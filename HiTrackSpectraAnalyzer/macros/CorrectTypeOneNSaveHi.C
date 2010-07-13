@@ -518,8 +518,9 @@ void checkEtRange(float iJet, float fJet, int EtMin, int EtMax){
    cout<<"jet min Et (low edge) = "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMin)<<endl;
    cout<<"jet min Et (up edge) = "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMin)<<endl;
    cout<<"for input max Et = "<<fJet<<endl;
-   cout<<"jet min Et (low edge) = "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMax)<<endl;
-   cout<<"jet min Et (up edge) = "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMax)<<endl;
+   cout<<"jet max Et (low edge) = "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMax)<<endl;
+   cout<<"jet max Et (up edge) = "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMax)<<endl;
+   cout<<"**INTEGRATION RANGE** : "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMin)<<" to "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMax)<<endl;
    cout<<"[checkEtRange]--------------------"<<endl;
    cout<<"\n"<<endl;
 
