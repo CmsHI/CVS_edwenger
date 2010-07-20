@@ -242,6 +242,14 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
   cpHltEff.SetAxisLabeling(15,63,18,63,4,2.5);
   cpHltEff.Draw(pLower,false);
 
+  // === Xcheck comparison ===
+  HisTGroup<TH1D> hgCompJetSc("CompJetSc");
+  hgCompJetSc.Add(hgScJet0Et.H("15U"),"TrigMB");
+  hgCompJetSc.Add(hgScTrigJet0Et.H("15U"),"TrigJet");
+  hgCompJetSc.Divide("TrigMB","TrigJet");
+  TCanvas * cCompJetSc = new TCanvas("cCompJetSc","cCompJetSc",510,510);
+  hgCompJetSc.R("TrigMBDivTrigJet")->Draw();
+
   // All done, save hists
   cJetTurnOn->Print(Form("%s/cJetTurnOn.gif",outdir.Data()));
   cJetTurnOn->Print(Form("%s/cJetTurnOn.pdf",outdir.Data()));
