@@ -79,6 +79,7 @@
 #include "TKey.h"
 #include "TString.h"
 
+#include <vector>
 using namespace std;
 
 #endif
@@ -123,7 +124,7 @@ TLegend *leg4=0;
 TDirectory *dTypeTwo=0;
 
 //------------------------------------------------------------------------------
-void doSmearing();
+void doSmearing(vector<TH1D*> & vhRes1D);
 void fitdNdpT(float ix, float fx);
 void obtainFitInv(float ix, float fx, float deta);
 TH3F *makeItdNdpT(TH3F *h3Dhist);
@@ -232,7 +233,8 @@ void CorrectTypeTwoNSave(const char *cDir="../root_files/",
    can6->cd();
    hRes2D->Draw("COLZ");
 
-   doSmearing();
+   vector<TH1D*> vhMomRes1D;
+   doSmearing(vhMomRes1D);
 
    // "Measured" spectra -------------------------------------------------------
    hLev1Spec = (TH1D*) hfitF->Clone("hLev1Spec"); // rather than hLev1Spec = (TH1D*) hfitF_inv->Clone("hLev1Spec");
@@ -396,7 +398,7 @@ TH1D *correctedSpectra(TH1D *inputHist_pre, TH1D *corrF_pre){
    return inputHist;
 }
 
-void doSmearing(){
+void doSmearing(vector<TH1D*> & vhRes1D){
    //-----------------------------------------------------------------------
    // Q. does the binning of 2D response matrix have to be same as dN/dpT?
    // Yes. if the final correction is applied in the form of histogram
