@@ -42,10 +42,10 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
 }
 
 void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
-    const char * inFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
-    TString outdir="plots/MB-C10-PR9-MnJ-v0_p0628_v2_a3",
-    const char * mergedFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0628_trkAnaNoFilter_v2/mergeAll_v2/trkhists_sub0.root",
-    const char * trigFileName = "/net/hibat0003/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0628_trkAnaNoFilter_v2/trkhists_trkAnaSkimAOD_*.root",
+    const char * inFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
+    TString outdir="plots/MB-C10-PR9-MnJ-v0_p0710_a3",
+    const char * mergedFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/mergeAll/trkhists_sub0.root",
+    const char * trigFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
     TString histDir = "trackAna/",
     Bool_t useHist = false)
 {
@@ -73,6 +73,7 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
     hgJet0Et.Add1D("30U");
     hgJet0Et.Add1D("50U");
     cout << "===== HLT Min Bias =====" << endl;
+    cout << inFileName << endl;
     cout << "Tree Analysis on " << nt_jet->GetEntries() << " events" << endl;
     cout << "Tree Analysis - Jets > 60GeV: " << nt_jet->GetEntries("jet>60") << " events" << endl;
     numJet15UGt60MB = nt_jet->GetEntries("jet>60 && jet15");
@@ -100,6 +101,7 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
     hgTrigJet0Et.Add1D("30U");
     hgTrigJet0Et.Add1D("50U");
     cout << endl << "===== HLT Jet15U =====" << endl;
+    cout << trigFileName << endl;
     cout << "Tree Analysis on " << nt_trigjet->GetEntries() << " events" << endl;
     numJet15UGt60Trig = nt_trigjet->GetEntries("jet>60 && jet15");
     cout << "Tree Analysis 15U - Jets > 60GeV: " << numJet15UGt60Trig << " events" << endl;
