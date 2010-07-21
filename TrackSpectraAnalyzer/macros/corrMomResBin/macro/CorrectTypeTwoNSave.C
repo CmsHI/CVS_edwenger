@@ -437,6 +437,7 @@ void doSmearing(){
       */
 
       hRes1D_temp = (TH1D*) hRes2D->ProjectionY("",i+1,i+1,"e");
+      hRes1D_temp->SetName(Form("hRes1D_%d",i+1));
       //TH1D *hRes1D_temp  = (TH1D*) hRes2D->ProjectionY("hRes1D_temp",i+1,i+1,"e"); 
 
       //- normalize the distribution
@@ -475,7 +476,6 @@ void doSmearing(){
 	 hRes2D->SetBinContent(spt_bin,rpt_bin,smeared);
 	 hRes2D->SetBinError(spt_bin,rpt_bin,0);
       }
-      delete hRes1D_temp;
    }
 
 }
