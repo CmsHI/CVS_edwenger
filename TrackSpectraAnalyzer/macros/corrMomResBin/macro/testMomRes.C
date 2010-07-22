@@ -3,6 +3,7 @@
 #include "TH3.h"
 #include "TFile.h"
 #include "TString.h"
+#include "TCanvas.h"
 
 #include <iostream>
 #include <cmath>
@@ -16,8 +17,20 @@ void define_variable_pt_bins();
 void testMomRes(bool useRealSmearing=true, float momres=0.03, bool doVariableBins=false) {
 
   // parameterization of dN/dpt
+  TCanvas * cDnDpt = new TCanvas("cDnDpt","cDnDpt",500,500);
+  cDnDpt->SetLogy();
   TF1 *fDnDpt = new TF1("dndpt","[0]*([5]+(x/[1])+(pow(x,[2])/[3]))^[4]",0,250);
   fDnDpt->SetParameters(2.26959e+08,3.50661,1.56865,3.12002,-3.85260,6.86711e-01);
+  fDnDpt->SetMinimum(1e-5);
+  fDnDpt->SetMaximum(1e8);
+  fDnDpt->Draw();
+  // 1st iteration
+  TF1 * fResCorr = new TF1("fResCorr","[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4",0,250);
+  fResCorr->SetParameters(1.00418,-6.5107e-05,4.36783e-06,-4.29539e-08,1.50819e-10);
+  fResCorr->Draw("same");
+  fDnDpt = new TF1("dndptCorr0","dndpt/fResCorr",0,250);
+  fDnDpt->SetLineColor(kRed);
+  fDnDpt->Draw("same");
 
   // Either fill true vs. reco momentum by simple Gaussian with width from function argument
   TF2 *fMomRes = new TF2("fMomRes","[0]*exp(-0.5*(1-y/x)*(1-y/x)/[1]/[1])",0,250,0,250);
@@ -105,13 +118,15 @@ void testMomRes(bool useRealSmearing=true, float momres=0.03, bool doVariableBin
   hSmearCorr->Rebin(nrebin); hSmearCorr->Scale(1.0/nrebin);
 
   // cosmetics
+  TCanvas * cMomResCorr = new TCanvas("cMomResCorr","cMomResCorr",500,500);
   hSmearCorr->SetMaximum(1.1);
   hSmearCorr->SetMinimum(1.0);
   hSmearCorr->SetMarkerStyle(20);
   hSmearCorr->GetXaxis()->SetRangeUser(0,150);
   hSmearCorr->Draw("p");
 
-  hSmearCorr->Fit("pol4","","",2,150);
+  hSmearCorr->Fit("pol4","","",2,170);
+  hSmearCorr->GetFunction("pol4")->SetLineColor(kRed);
 }
 
 
