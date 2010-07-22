@@ -192,18 +192,18 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
   TH1D * hTemp = (TH1D*)hgScJet0Et.GetH("MB")->Clone("hTemp");
   hTemp->Scale(0);
   hTemp->SetTitle("");
-  cpScJet0Et.AddHist1D(hTemp,"Dataset: MB Triggered","E",0,0);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"  HLT MB","E",kViolet,kOpenSquare,1.1);
-  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"  HLT Jet15^{Raw}","E",kGreen-1,kOpenSquare,1.1);
-  //cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30^{Raw}","E",kOrange-5);
-  //cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50^{Raw}","E",kRed-2);
+  cpScJet0Et.AddHist1D(hTemp,"MinBias Triggered","E",0,0);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("MB"),"  HLT MinBias","E",kViolet,kOpenSquare,1.1);
+  cpScJet0Et.AddHist1D(hgScJet0Et.H("15U"),"  HLT Jet15U","E",kGreen-1,kOpenSquare,1.1);
+  //cpScJet0Et.AddHist1D(hgScJet0Et.H("30U"),"MB: HLT Jet30U","E",kOrange-5);
+  //cpScJet0Et.AddHist1D(hgScJet0Et.H("50U"),"MB: HLT Jet50U","E",kRed-2);
   cpScJet0Et.AddHist1D(hTemp,"","E",0,0);
-  cpScJet0Et.AddHist1D(hTemp,"Dataset: HLT Jet15^{Raw} Triggered","E",0,0);
-  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"  HLT Jet15^{Raw}","E",kGreen-3,kFullCircle);
-  //cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"Triggered: HLT Jet30^{Raw}","E",kOrange-5,kFullCircle);
-  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"  HLT Jet50^{Raw}","E",kRed-2,kFullCircle);
+  cpScJet0Et.AddHist1D(hTemp,"Jet15U Triggered","E",0,0);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"  HLT Jet15U","E",kGreen-3,kFullCircle);
+  //cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"Triggered: HLT Jet30U","E",kOrange-5,kFullCircle);
+  cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"  HLT Jet50U","E",kRed-2,kFullCircle);
   cpScJet0Et.SetLegend(0.41,0.50,0.81,0.78);
-  cpScJet0Et.SetLegendStyle(0.035);
+  cpScJet0Et.SetLegendStyle(0.045);
   cpScJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
   cpScJet0Et.Draw(pUpper,false);
   cpScJet0Et.AddText(sampleName,0.66,0.83);
@@ -232,7 +232,7 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
 
   pLower->cd();
   CPlot::sPlotStyle = 0;
-  CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","Ratio");
+  CPlot cpHltEff("HltEff","Hlt Eff","E_{T}^{corr jet} [GeV/c]","#frac{Trigger}{Lower Trigger}");
   cpHltEff.SetXRange(0,histJetEtMax);
   cpHltEff.SetYRange(0,1.1);
   cpHltEff.AddGraph(gAEs["gHltEff_HltJet15U"],"HLT: Jet15U","pz",kGreen-1,kOpenSquare,1.1);
