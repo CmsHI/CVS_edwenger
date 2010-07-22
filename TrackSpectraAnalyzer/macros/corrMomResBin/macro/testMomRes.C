@@ -25,8 +25,8 @@ void testMomRes(bool useRealSmearing=true, float momres=0.03, bool doVariableBin
   fDnDpt->SetMaximum(1e8);
   fDnDpt->Draw();
   // 1st iteration
-  TF1 * fResCorr = new TF1("fResCorr","[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4",0,250);
-  fResCorr->SetParameters(1.00418,-6.5107e-05,4.36783e-06,-4.29539e-08,1.50819e-10);
+  TF1 * fResCorr = new TF1("fResCorr","[0]+[1]*x+[2]*x^2",0,250);
+  fResCorr->SetParameters(1.00379,2.62093e-05,7.21870e-07);
   fResCorr->Draw("same");
   fDnDpt = new TF1("dndptCorr0","dndpt/fResCorr",0,250);
   fDnDpt->SetLineColor(kRed);
@@ -48,7 +48,7 @@ void testMomRes(bool useRealSmearing=true, float momres=0.03, bool doVariableBin
   }
   
   // ... or get true vs. reco momentum from QCD_Pt470 MC
-  TString dir = "/home/sungho/sctch101/mc/7TeV/crab/trkhistsMC_june09";
+  TString dir = "../root_files/trkhistsMC_june09";
   TFile *f = new TFile(Form("%s/TrkHistMC_june09_qcdPt470.root",dir.Data()));
   TH3F *hRes3D = (TH3F*) f->Get("trkEffAnalyzer/hresStoR3D");
   double feta = 2.4;
@@ -125,8 +125,19 @@ void testMomRes(bool useRealSmearing=true, float momres=0.03, bool doVariableBin
   hSmearCorr->GetXaxis()->SetRangeUser(0,150);
   hSmearCorr->Draw("p");
 
-  hSmearCorr->Fit("pol4","","",2,170);
-  hSmearCorr->GetFunction("pol4")->SetLineColor(kRed);
+  hSmearCorr->Fit("pol2","","",2,170);
+  hSmearCorr->GetFunction("pol2")->SetLineColor(kRed);
+
+  float ptMin=0,ptMax=170;
+  TF1 * fResCorrUpper = new TF1("fResCorrUpper","[0]+[1]*x+[2]*x^2",ptMin,ptMax);
+  fResCorrUpper->SetParameters(1.00379,6.58589e-05,1.3465e-06);
+  fResCorrUpper->SetLineColor(kBlue);
+  fResCorrUpper->Draw("same");
+
+  TF1 * fResCorrLower = new TF1("fResCorrLower","[0]+[1]*x+[2]*x^2",ptMin,ptMax);
+  fResCorrLower->SetParameters(1.00379,-2.58589e-05,5.3465e-07);
+  fResCorrLower->SetLineColor(kGreen+2);
+  fResCorrLower->Draw("same");
 }
 
 
