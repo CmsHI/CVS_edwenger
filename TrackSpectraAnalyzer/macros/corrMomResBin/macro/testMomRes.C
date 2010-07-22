@@ -110,7 +110,8 @@ void testMomRes(bool useRealSmearing=true, float momres=0.03, bool doVariableBin
   hSmearCorr->SetMarkerStyle(20);
   hSmearCorr->GetXaxis()->SetRangeUser(0,150);
   hSmearCorr->Draw("p");
-  
+
+  hSmearCorr->Fit("pol4","","",2,150);
 }
 
 
