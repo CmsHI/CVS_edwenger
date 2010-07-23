@@ -202,11 +202,12 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"  HLT Jet15U","E",kGreen-3,kFullCircle);
   //cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"Triggered: HLT Jet30U","E",kOrange-5,kFullCircle);
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"  HLT Jet50U","E",kRed-2,kFullCircle);
-  cpScJet0Et.SetLegend(0.41,0.50,0.81,0.78);
+  cpScJet0Et.SetLegend(0.49,0.50,0.89,0.77);
   cpScJet0Et.SetLegendStyle(0.045);
   cpScJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
   cpScJet0Et.Draw(pUpper,false);
-  cpScJet0Et.AddText(sampleName,0.66,0.83);
+  cpScJet0Et.AddText(sampleName,0.33,0.884);
+  cpScJet0Et.AddText("#intLdt = 10.2 nb^{-1}",0.285,0.824);
 
   // === HLT Eff Ana ===
   map<TString, TGraphAsymmErrors* > gAEs;
