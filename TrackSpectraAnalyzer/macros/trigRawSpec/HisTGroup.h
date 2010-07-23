@@ -27,18 +27,38 @@ class HisTGroup
 
     // Accessors
     TData * H(TString iname) const {
+      if (hm_.find(iname)==hm_.end()) {
+	cout << name_ << ": " << iname << " not found" << endl;
+	assert(false);
+      }
+      if (!hm_.find(iname)->second) cout << name_ << ": " << iname << " not found" << endl;
       assert(hm_.find(iname)->second);
       return hm_.find(iname)->second;
     }
     TData * R(TString iname) const {
+      if (hr_.find(iname)==hr_.end()) {
+	cout << name_ << ": " << iname << " not found" << endl;
+	assert(false);
+      }
+      if (!hr_.find(iname)->second) cout << name_ << ": " << iname << " not found" << endl;
       assert(hr_.find(iname)->second);
       return hr_.find(iname)->second;
     }
     const TData * GetH(TString iname) const {
+      if (hm_.find(iname)==hm_.end()) {
+	cout << name_ << ": " << iname << " not found" << endl;
+	assert(false);
+      }
+      if (!hm_.find(iname)->second) cout << name_ << ": " << iname << " not found" << endl;
       assert(hm_.find(iname)->second);
       return hm_.find(iname)->second;
     }
     const TData * GetR(TString iname) const {
+      if (hr_.find(iname)==hr_.end()) {
+	cout << name_ << ": " << iname << " not found" << endl;
+	assert(false);
+      }
+      if (!hr_.find(iname)->second) cout << name_ << ": " << iname << " not found" << endl;
       assert(hr_.find(iname)->second);
       return hr_.find(iname)->second;
     }
@@ -81,6 +101,7 @@ HisTGroup<TData>::HisTGroup(TString name,
 template <typename TData>
 void HisTGroup<TData>::Add(TData * h1, TString iname, Double_t sc)
 {
+  if (!h1) cout << name_ << ": " << iname << " hist not found" << endl;
   assert(h1);
   scales_[iname] = sc;
 
