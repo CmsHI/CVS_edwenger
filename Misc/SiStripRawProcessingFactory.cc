@@ -44,7 +44,7 @@ create_SubtractorCMN(const edm::ParameterSet& conf) {
   }
   
   throw cms::Exception("Unregistered Algorithm") 
-    << "SiStripCommonModeNoiseSubtractor possibilities: (Median, FastLinear, TT6)";
+    << "SiStripCommonModeNoiseSubtractor possibilities: (Median, Percentile, FastLinear, TT6)";
 }
 
 std::auto_ptr<SiStripFedZeroSuppression> SiStripRawProcessingFactory::
