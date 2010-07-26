@@ -51,19 +51,19 @@ def customiseStripCommon(process):
 
 
 def customiseStripCMN(process):
-    process = customiseStripVR(process)
+    process = customiseStripCommon(process)
     process.simSiStripDigis.CommonModeNoise = cms.bool(True)
 
 def customiseStripHIP(process):
-    process = customiseStripVR(process)
+    process = customiseStripCommon(process)
     process.simSiStripDigis.APVSaturationFromHIP = cms.bool(True)
 
 def customiseStripBaselineShift(process):
-    process = customiseStripVR(process)
+    process = customiseStripCommon(process)
     process.simSiStripDigis.BaselineShift = cms.bool(True)
 
 def customiseStripAll(process):
-    process = customiseStripVR(process)
+    process = customiseStripCommon(process)
     process.simSiStripDigis.BaselineShift = cms.bool(True)
     process.simSiStripDigis.APVSaturationFromHIP = cms.bool(True)
     process.simSiStripDigis.CommonModeNoise = cms.bool(True)
