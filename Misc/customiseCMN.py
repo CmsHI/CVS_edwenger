@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 ##############################################################################
-def customise(process):
+def customisePercentile(process):
 
     process = customiseStripDB(process)
     

@@ -1,23 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 ##############################################################################
-def customiseHcalNZS(process):
-    process.hcalRawData.HBHE = cms.untracked.InputTag("simHcalUnsuppressedDigis")
-    process.hcalRawData.HF = cms.untracked.InputTag("simHcalUnsuppressedDigis")
-    process.hcalRawData.HO = cms.untracked.InputTag("simHcalUnsuppressedDigis")
-    process.hcalRawData.ZDC = cms.untracked.InputTag("simHcalUnsuppressedDigis")
-
-    return process
-
-
-##############################################################################
-def customiseEcalNZS(process):
-    process.simEcalDigis.srpBarrelLowInterestChannelZS = cms.double(-1.e9)
-    process.simEcalDigis.srpEndcapLowInterestChannelZS = cms.double(-1.e9)
-
-    return process
-
-##############################################################################
 def customiseStripDB(process):
     process.poolDBESSource = cms.ESSource("PoolDBESSource",
                                           BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService'),
@@ -83,7 +66,7 @@ def customiseStripCommon(process):
 
 
 ##############################################################################
-def customiseStripCMN(process):
+def customiseStripCMNOnly(process):
     process = customiseStripCommon(process)
     process.simSiStripDigis.CommonModeNoise = cms.bool(True)
 
@@ -91,7 +74,7 @@ def customiseStripCMN(process):
 
 
 ##############################################################################
-def customiseStripHIP(process):
+def customiseStripHIPOnly(process):
     process = customiseStripCommon(process)
     process.simSiStripDigis.APVSaturationFromHIP = cms.bool(True)
 
@@ -99,7 +82,7 @@ def customiseStripHIP(process):
 
 
 ##############################################################################
-def customiseStripBaselineShift(process):
+def customiseStripBSOnly(process):
     process = customiseStripCommon(process)
     process.simSiStripDigis.BaselineShift = cms.bool(True)
 
