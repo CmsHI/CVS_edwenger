@@ -7,6 +7,7 @@ def customise(process):
     
     process.siStripZeroSuppression.Algorithms.CommonModeNoiseSubtractionMode=cms.string("Percentile")
     process.siStripZeroSuppression.Algorithms.Percentile=cms.double(0.25)
+    process.siStripZeroSuppression.storeCM = cms.bool(True)
 
     return process
 
