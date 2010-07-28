@@ -17,11 +17,15 @@ class SiStripCommonModeNoiseSubtractor {
   virtual void subtract(const uint32_t&, std::vector<int16_t>&) = 0;
   virtual void subtract(const uint32_t&, std::vector<float>&) = 0;
   
+  const std::vector< std::pair<short,float> >& getAPVsCM(){return _vmedians;}
+  
  protected:
 
   SiStripCommonModeNoiseSubtractor(){};
   template<typename T> float median(std::vector<T>&);
   template<typename T> float percentile(std::vector<T>&, double);
+
+  std::vector< std::pair<short,float> > _vmedians;
 };
 
 
