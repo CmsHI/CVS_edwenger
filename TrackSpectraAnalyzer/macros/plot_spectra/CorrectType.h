@@ -24,7 +24,8 @@ using namespace std;
 //----------------------------------------------------------------------------------
 TFile *loadFile(TFile *file, char *cfile);
 TFile *loadFile(TFile *file, char *cfile, char *option);
-TH1D *makeItInvHist(TH1D *hmIIH, float deta);
+TH1D *makeItInvHist(TH1D *hmIIH, double deta);
+TH1D *hackedProjectionY(TH3F *me, const char *name, int ixmin, int ixmax, int izmin, int izmax);
 //----------------------------------------------------------------------------------
 
 
@@ -136,19 +137,43 @@ TFile *loadFile(TFile *file, char *cfile){
 
 }
 
-TH1D *makeItInvHist(TH1D *hmIIH, float deta){
+TH1D *makeItInvHist(TH1D *hmIIH, double deta){
    //TH1D *hmIIH = (TH1D*) hmIIH_pre->Clone("hmIIH"); // is this necessary?
+  cout<<"Pi is "<<TMath::Pi()<<endl;
+  cout<<"Eta interval is "<<deta<<endl;
 
    for(int i=0;i<hmIIH->GetNbinsX();i++){
       double pt = hmIIH->GetBinCenter(i+1);
       double dndpt = hmIIH->GetBinContent(i+1);
       double err = hmIIH->GetBinError(i+1);
+      //cout<<" 2*TMath::Pi()*deta = "<<2*TMath::Pi()*deta<<endl;
       hmIIH->SetBinContent(i+1,dndpt*(1/(2*TMath::Pi()*pt*deta)));
       hmIIH->SetBinError(i+1,err*(1/(2*TMath::Pi()*pt*deta)));
    }
    return hmIIH;
 }
 
+
+TH1D *hackedProjectionY(TH3F *me, const char *name, int ixmin, int ixmax, int izmin, int izmax ){
+
+  int pixmin = me->GetXaxis()->GetFirst();
+  int pixmax = me->GetXaxis()->GetLast();
+  int pizmin = me->GetZaxis()->GetFirst();
+  int pizmax = me->GetZaxis()->GetLast();
+
+  me->GetXaxis()->SetRange(ixmin,ixmax);
+  me->GetZaxis()->SetRange(izmin,izmax);
+
+  TH1D * h1 =  (TH1D*) me->Project3D("ye");
+  h1->SetName( name );
+
+  // restore axis range
+  me->GetXaxis()->SetRange(pixmin,pixmax);
+  me->GetZaxis()->SetRange(pizmin,pizmax);
+
+  return h1;
+
+}
 
 
 #endif

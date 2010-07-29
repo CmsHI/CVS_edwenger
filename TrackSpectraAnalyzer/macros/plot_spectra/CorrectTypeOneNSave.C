@@ -25,8 +25,8 @@
 #include <utility>
 #include <iostream>
 
-#include "/home/sungho/plots/common/utilities.h"
-#include "/home/sungho/plots/common/commonStyle.h"
+#include "utilities.h"
+#include "commonStyle.h"
 
 #include <TROOT.h>
 #include <TStyle.h>
@@ -143,24 +143,32 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
                          bool isGEN=false, bool varBin=false,
                          float ijet=0, float fjet=2000,
                          float ieta=0, float feta=2.4,
+			 double scale_dum=1,
                          bool drawFig =true, bool saveFile=false
                          )
 {
-   bool scale = true;
-   //double scaleF = 33.6056;
-   //double scaleF = 33.6056*(1.0388/1.0746);   
-   double scaleF = 33.6056*(1.0746/1.0388);
 
    cout<<"\n"<<"\n"<<endl;
 
-   cout<<"scale factor = "<<scaleF<<" with scale turn "<<scale<<endl;
+   //double scaleF = 1.13643e+07;
+   //double scaleF = 3.79542505524861872e+08;
+
+   //double scaleF = 1.1805E+07;
+   //double scaleF = 4.0786E+08;
+   //double scaleF = 5.5917e+08;
+   double scaleF = 1;
+
+   //double scaleF = 2.3845e+07; //total N_nsd (MB in pr6 and m6rr)
+   //double scaleF = 5.5917e+08; 
+
+   cout<<">>>> scale factor = "<<scaleF<<endl;
    
    TH1::SetDefaultSumw2();
    TH2::SetDefaultSumw2();
    TH3::SetDefaultSumw2();
 
 
-   sprintf(outFile,"%sCORR_%s_eta_%1.1fto%1.1f_jet_%1.1fto%1.1f_%s_GEN%i_varBin%i.root",cDirOut,cFile,ieta,feta,ijet,fjet,dir_ana,isGEN,varBin);
+   sprintf(outFile,"%sCORR_TEST1_%s_eta_%1.1fto%1.1f_jet_%1.1fto%1.1f_%s_GEN%i_varBin%i.root",cDirOut,cFile,ieta,feta,ijet,fjet,dir_ana,isGEN,varBin);
    cout<<"Output file will be "<<outFile<<endl;
    cout<<"\n"<<endl;
 
@@ -210,17 +218,19 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
    hdndptdetadet_full->Reset();
 
    // First decide eta and jet et range -----------------------------
+   float small = 0.01; // when the eta value is at the edge (1.0 and 2.4 is at the edges!)  
+
    int eta_min_bin = (ieta<=hdndptdetadet->GetXaxis()->GetXmin()) ?
-      hdndptdetadet->GetXaxis()->GetFirst() : hdndptdetadet->GetXaxis()->FindBin(-1.0*feta);
+      hdndptdetadet->GetXaxis()->GetFirst() : hdndptdetadet->GetXaxis()->FindBin(-1.0*feta+small);
    int eta_max_bin = (feta>=hdndptdetadet->GetXaxis()->GetXmax()) ?
-      hdndptdetadet->GetXaxis()->GetLast() : hdndptdetadet->GetXaxis()->FindBin(feta);
+      hdndptdetadet->GetXaxis()->GetLast() : hdndptdetadet->GetXaxis()->FindBin(feta-small);
    
    checkEtaRange(ieta,feta,eta_min_bin,eta_max_bin);
 
    int jet_min_bin = (ijet<=hdndptdetadet->GetZaxis()->GetXmin()) ? 
-      hdndptdetadet->GetZaxis()->GetFirst() : hdndptdetadet->GetZaxis()->FindBin(ijet); 
+      hdndptdetadet->GetZaxis()->GetFirst() : hdndptdetadet->GetZaxis()->FindBin(ijet+small); 
    int jet_max_bin = (fjet>=hdndptdetadet->GetZaxis()->GetXmax()) ?
-      hdndptdetadet->GetZaxis()->GetLast() : hdndptdetadet->GetZaxis()->FindBin(fjet);
+      hdndptdetadet->GetZaxis()->GetLast() : hdndptdetadet->GetZaxis()->FindBin(fjet-small);
 
    checkEtRange(ijet,fjet,jet_min_bin,jet_max_bin);
 
@@ -234,11 +244,12 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
    int  nbinY = hdndptdetadet->GetNbinsY();
    int  nbinZ = hdndptdetadet->GetNbinsZ();
    
+   cout<<"number of bin in x axis = "<<nbinX<<" in y axis = "<<nbinY<<" in z axis = "<<nbinZ<<endl;
+
    // jet et range for different samples for trk correction
    // make sure jet et range is quantized with min et range of 20 GeV!
    // so the range has to be at n*20, where n = 1,2,3...
    float jet_1st, jet_2nd, jet_3rd, jet_4th;
-   //jet_1st = 40, jet_2nd = 60, jet_3rd = 80, jet_4th = 180;
    jet_1st = 41, jet_2nd = 61, jet_3rd = 81, jet_4th = 181;  
    
    float var_1st, var_2nd, var_3rd, var_4th; // var can be pt, Et, etc..
@@ -254,7 +265,7 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
       float  jet = hdndptdetadet->GetZaxis()->GetBinCenter(zbin+1);
       
       float  dbin = hdndptdetadet->GetYaxis()->GetBinWidth(ybin+1);
-      
+   
       float  dn = hdndptdetadet->GetBinContent(xbin+1,ybin+1,zbin+1);
       float  edn = hdndptdetadet->GetBinError(xbin+1,ybin+1,zbin+1);
       
@@ -337,19 +348,22 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
 	 hdndptdetadet_full->SetBinError(xbin+1,ybin+1,zbin+1,edn);
       }
    }
-   
-   
-   hdndpt_raw = (TH1D*) hdndptdetadet_raw->ProjectionY("hdndpt_raw",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
-   hdndpt_lev1 = (TH1D*) hdndptdetadet_lev1->ProjectionY("hdndpt_lev1",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
-   hdndpt_lev2 = (TH1D*) hdndptdetadet_lev2->ProjectionY("hdndpt_lev2",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
-   hdndpt_full = (TH1D*) hdndptdetadet_full->ProjectionY("hdndpt_full",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin,"e");
 
-   if(scale){
-      hdndpt_raw->Scale(1./scaleF);
-      hdndpt_lev1->Scale(1./scaleF);
-      hdndpt_lev2->Scale(1./scaleF);
-      hdndpt_full->Scale(1./scaleF);
-   }
+   // to avoid root projeciton bug
+   // ProjectionY is buggy when x axis full x-axis range (-2.4 to 2.4)
+   // However, the problem does not show up when the 3D histogram is reset, which is the case in this macro
+   // , but to make sure in any case, hackedProjectionY is used.
+   hdndpt_raw = (TH1D*) hackedProjectionY(hdndptdetadet_raw,"hdndpt_raw",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   hdndpt_lev1 = (TH1D*) hackedProjectionY(hdndptdetadet_lev1,"hdndpt_lev1",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   hdndpt_lev2 = (TH1D*) hackedProjectionY(hdndptdetadet_lev2,"hdndpt_lev2",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+   hdndpt_full = (TH1D*) hackedProjectionY(hdndptdetadet_full,"hdndpt_full",eta_min_bin,eta_max_bin,jet_min_bin,jet_max_bin);
+
+   hdndpt_raw->Scale(1./scaleF);
+   hdndpt_lev1->Scale(1./scaleF);
+   hdndpt_lev2->Scale(1./scaleF);
+   hdndpt_full->Scale(1./scaleF);
+
+
 
    hInv_raw = (TH1D*) hdndpt_raw->Clone("hInv_raw");
    hInv_lev1 = (TH1D*) hdndpt_lev1->Clone("hInv_lev1");
@@ -404,7 +418,7 @@ void drawDebugPlots(){
    call->cd(), call->SetLogx(), call->SetLogy();
    sprintf(yTitle,"dN/dp_{T}");
    sprintf(xTitle,"p_{T} [GeV/c]");
-   dum = GetDummyHist(150,1E-2,1E+9,xTitle,yTitle);
+   dum = GetDummyHist(200,1E-11,1E+2,xTitle,yTitle);
    dum->Draw();
 
    th1Style1(hdndpt_raw,14,28,1.0,14,1.0,1,1);
@@ -483,10 +497,12 @@ void checkEtaRange(float iEta, float fEta, int EtaMin, int EtaMax){
 
    cout<<"\n"<<endl;
    cout<<"[checkEtaRange]-------------------------------------------------"<<endl;
+   cout<<" bin number eta min = "<<EtaMin<<" eta max = "<<EtaMax<<endl;
    cout<<"for input eta "<<fEta<<" found max eta (bin center): "<<hdndptdetadet->GetXaxis()->GetBinCenter(EtaMax)<<endl;
    cout<<"for input eta "<<-1.0*fEta<<" found min eta (bin center): "<<hdndptdetadet->GetXaxis()->GetBinCenter(EtaMin)<<endl;
    cout<<"for input eta "<<fEta<<" found max eta (bin up edge): "<<hdndptdetadet->GetXaxis()->GetBinUpEdge(EtaMax)<<endl;
    cout<<"for input eta "<<-1.0*fEta<<" found min eta (bin low edge): "<<hdndptdetadet->GetXaxis()->GetBinLowEdge(EtaMin)<<endl;
+   cout<<"Integration range is from "<<hdndptdetadet->GetXaxis()->GetBinLowEdge(EtaMin)<<" to "<<hdndptdetadet->GetXaxis()->GetBinUpEdge(EtaMax)<<endl;
    cout<<"[checkEtaRange]-------------------------------------------------"<<endl;
    cout<<"\n"<<endl;
 
@@ -495,12 +511,14 @@ void checkEtaRange(float iEta, float fEta, int EtaMin, int EtaMax){
 void checkEtRange(float iJet, float fJet, int EtMin, int EtMax){
 
    cout<<"[checkEtRange]--------------------"<<endl;
+   cout<<" bin number jet min = "<<EtMin<<" jet max = "<<EtMax<<endl;
    cout<<"for input min Et = "<<iJet<<endl;
    cout<<"jet min Et (low edge) = "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMin)<<endl;
    cout<<"jet min Et (up edge) = "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMin)<<endl;
    cout<<"for input max Et = "<<fJet<<endl;
-   cout<<"jet min Et (low edge) = "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMax)<<endl;
-   cout<<"jet min Et (up edge) = "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMax)<<endl;
+   cout<<"jet max Et (low edge) = "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMax)<<endl;
+   cout<<"jet max Et (up edge) = "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMax)<<endl;
+   cout<<"Integration range is from "<<hdndptdetadet->GetZaxis()->GetBinLowEdge(EtMin)<<" to "<<hdndptdetadet->GetZaxis()->GetBinUpEdge(EtMax)<<endl;
    cout<<"[checkEtRange]--------------------"<<endl;
    cout<<"\n"<<endl;
 
@@ -564,7 +582,9 @@ double GetFakFactor(TH3F* num, TH3F* den, double pt, double eta, double jet){
 
    double n_num = num->GetBinContent(num_bin);
    double n_den = den->GetBinContent(den_bin);
+
    if(n_den == 0) return 1; // meaing nothing is reconstructed. 
    if(n_num == 0) return 0;
    else return n_num/n_den; // be careful with def, with MTV, its 1-(n_num/n_den)
 }
+
