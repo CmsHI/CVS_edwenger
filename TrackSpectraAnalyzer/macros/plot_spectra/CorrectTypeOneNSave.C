@@ -126,6 +126,7 @@ std::pair<TH3F*,TH3F*> getEffHists(const char *file, const char *dirC,
 				   const char *histN, const char *histD);
 double GetEffFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
 double GetFakFactor(TH3F* num, TH3F* den, double pt, double eta, double jet);
+void GetEffFactorDEBUG(TH3F* num, TH3F* den, double pt, double eta, double jet);
 void drawDebugPlots();
 //-----------------------------------------------------------------------------
 
@@ -144,6 +145,7 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
                          float ijet=0, float fjet=2000,
                          float ieta=0, float feta=2.4,
 			 double scale_dum=1,
+			 bool debug = true,
                          bool drawFig =true, bool saveFile=false
                          )
 {
@@ -250,9 +252,22 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
    // make sure jet et range is quantized with min et range of 20 GeV!
    // so the range has to be at n*20, where n = 1,2,3...
    float jet_1st, jet_2nd, jet_3rd, jet_4th;
-   jet_1st = 41, jet_2nd = 61, jet_3rd = 81, jet_4th = 181;  
-   
+   //jet_1st = 41, jet_2nd = 61, jet_3rd = 81, jet_4th = 181;  
+   jet_1st = 41, jet_2nd = 61, jet_3rd = 101, jet_4th = 181;
+
    float var_1st, var_2nd, var_3rd, var_4th; // var can be pt, Et, etc..
+
+   // Below is for the purpose of debugging, i.e. to find how many tracks are
+   // not corrected due to the lack of statistics or different fragmentation in the correction MC samples!
+   float recTracktotal = 0.0; // total rec tracks with a certain kinematic cut!
+   float recTrackNotCorrectedEff = 0.0; // total rec tracks with a certain kinematic cut but not corrected for eff!
+   float recTrackNotCorrectedFak = 0.0;
+   float pt_thres = 30.0; //
+
+   int recTracktotalBin = 0;
+   int recTrackNotCorrectedEffBin = 0;
+   int recTrackNotCorrectedFakBin = 0;
+
    
    for(int j=0;j<(nbinX*nbinY*nbinZ);j++){
       
@@ -283,29 +298,48 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
 	    fak = GetFakFactor(hPNFake3D[0],hPDFake3D[0],pt,eta,jet);
 	    mlt = GetFakFactor(hPNMult3D[0],hPDMult3D[0],pt,eta,jet);
 	    sec = GetFakFactor(hPNSec3D[0],hPDSec3D[0],pt,eta,jet);
+	    if(dn>0 && pt>pt_thres && fabs(eta)<feta) GetEffFactorDEBUG(hPNEff3D[0],hPDEff3D[0],pt,eta,jet);
 	 }else if(var_for_corr>=var_1st && var_for_corr<var_2nd){
 	    eff = GetEffFactor(hPNEff3D[1],hPDEff3D[1],pt,eta,jet);
 	    fak = GetFakFactor(hPNFake3D[1],hPDFake3D[1],pt,eta,jet);
 	    mlt = GetFakFactor(hPNMult3D[1],hPDMult3D[1],pt,eta,jet);
 	    sec = GetFakFactor(hPNSec3D[1],hPDSec3D[1],pt,eta,jet);
+	    if(dn>0 && pt>pt_thres && fabs(eta)<feta) GetEffFactorDEBUG(hPNEff3D[1],hPDEff3D[1],pt,eta,jet);
 	 }else if(var_for_corr>=var_2nd && var_for_corr<var_3rd){
 	    eff = GetEffFactor(hPNEff3D[2],hPDEff3D[2],pt,eta,jet);
 	    fak = GetFakFactor(hPNFake3D[2],hPDFake3D[2],pt,eta,jet);
 	    mlt = GetFakFactor(hPNMult3D[2],hPDMult3D[2],pt,eta,jet);
 	    sec = GetFakFactor(hPNSec3D[2],hPDSec3D[2],pt,eta,jet);
+	    if(dn>0 && pt>pt_thres && fabs(eta)<feta) GetEffFactorDEBUG(hPNEff3D[2],hPDEff3D[2],pt,eta,jet);
 	 }else if(var_for_corr>=var_3rd && var_for_corr<var_4th){
 	    eff = GetEffFactor(hPNEff3D[3],hPDEff3D[3],pt,eta,jet);
 	    fak = GetFakFactor(hPNFake3D[3],hPDFake3D[3],pt,eta,jet);
 	    mlt = GetFakFactor(hPNMult3D[3],hPDMult3D[3],pt,eta,jet);
 	    sec = GetFakFactor(hPNSec3D[3],hPDSec3D[3],pt,eta,jet);
+	    if(dn>0 && pt>pt_thres && fabs(eta)<feta) GetEffFactorDEBUG(hPNEff3D[3],hPDEff3D[3],pt,eta,jet);
 	 }else{
 	    eff = GetEffFactor(hPNEff3D[4],hPDEff3D[4],pt,eta,jet);
 	    fak = GetFakFactor(hPNFake3D[4],hPDFake3D[4],pt,eta,jet);
 	    mlt = GetFakFactor(hPNMult3D[4],hPDMult3D[4],pt,eta,jet);
 	    sec = GetFakFactor(hPNSec3D[4],hPDSec3D[4],pt,eta,jet);
+	    if(dn>0 && pt>pt_thres && fabs(eta)<feta) GetEffFactorDEBUG(hPNEff3D[4],hPDEff3D[4],pt,eta,jet);
 	 }
       }
-      
+
+      if(dn>0 && pt>pt_thres && fabs(eta)<feta){
+	recTracktotalBin++, recTracktotal = recTracktotal + dn;
+	if(eff==1 || eff==0){
+	  recTrackNotCorrectedEffBin++, recTrackNotCorrectedEff = recTrackNotCorrectedEff + dn;
+	  //if(pt>(jet+10.)) cout<<"[Not corrected for EFF and Pt>Jet] pt = "<<pt<<" and jet = "<<jet<<endl; 
+	  //cout<<"[Not corrected for EFF]"<<" pt = "<<pt<<" and eta = "<<eta<<" and jet = "<<jet<<endl; 
+	}
+	if(fak==1 || fak==0){
+	  recTrackNotCorrectedFakBin++, recTrackNotCorrectedFak = recTrackNotCorrectedFak + dn;
+	  //if(pt>(jet+10.)) cout<<"[Not corrected for EFF and Pt>Jet] pt = "<<pt<<" and jet = "<<jet<<endl;
+	  //cout<<"[Not corrected for FR]"<<" pt = "<<pt<<" and eta = "<<eta<<" and jet = "<<jet<<endl;
+	}
+      }
+
       // dn/dpt
       dn = dn/(dbin);
       edn = edn/(dbin);
@@ -349,6 +383,23 @@ void CorrectTypeOneNSave(const char *cDir="../root_files/",
       }
    }
 
+   cout<<"\n"<<endl;
+   cout<<"[Debugging summary]==================================================="<<endl;
+   cout<<"number of total tracks = "<<recTracktotal<<" above pT = "<<pt_thres<<" (GeV/c)"<<endl;
+   cout<<"number of total tracks no corrected for eff = "<<recTrackNotCorrectedEff<<endl;
+   cout<<"fraction = "<<(recTrackNotCorrectedEff/recTracktotal)<<endl;
+   cout<<"number of total tracks no corrected for fak = "<<recTrackNotCorrectedFak<<endl;
+   cout<<"fraction = "<<(recTrackNotCorrectedFak/recTracktotal)<<endl;
+   cout<<""<<endl;
+   cout<<"number of total bins = "<<recTracktotalBin<<" above pT = "<<pt_thres<<" (GeV/c)"<<endl;
+   cout<<"number of total bins no corrected for eff = "<<recTrackNotCorrectedEffBin<<endl;
+   cout<<"fraction = "<<((float)recTrackNotCorrectedEffBin)/((float)recTracktotalBin)<<endl;
+   cout<<"number of total bins no corrected for fak = "<<recTrackNotCorrectedFakBin<<endl;
+   cout<<"fraction = "<<((float)recTrackNotCorrectedFakBin)/((float)recTracktotalBin)<<endl;
+   cout<<"[Debugging summary]==================================================="<<endl;
+   cout<<"\n"<<endl;
+
+			  
    // to avoid root projeciton bug
    // ProjectionY is buggy when x axis full x-axis range (-2.4 to 2.4)
    // However, the problem does not show up when the 3D histogram is reset, which is the case in this macro
@@ -557,6 +608,22 @@ std::pair<TH3F*,TH3F*> getEffHists(const char *file, const char *dirC,
 }
 
 
+void GetEffFactorDEBUG(TH3F* num, TH3F* den, double pt, double eta, double jet){
+
+  int num_bin = num->FindBin(eta,pt,jet);
+  int den_bin = den->FindBin(eta,pt,jet);
+
+  double n_num = num->GetBinContent(num_bin);
+  double n_den = den->GetBinContent(den_bin);
+
+  if(n_den == 0) cout<<"[GetEffFactorDEBUG den=0] hist = "<<num->GetName()<<" pt = "<<pt<<" eta = "<<eta<<" jet = "<<jet<<endl; 
+  if(n_num == 0) cout<<"[GetEffFactorDEBUG num=0] hist = "<<den->GetName()<<" pt = "<<pt<<" eta = "<<eta<<" jet = "<<jet<<endl;
+
+  //if(n_den == 0  || n_num == 0 ) return 1;
+  //else return n_num/n_den;
+}
+
+
 double GetEffFactor(TH3F* num, TH3F* den, double pt, double eta, double jet){
 
    int num_bin = num->FindBin(eta,pt,jet);
@@ -567,6 +634,16 @@ double GetEffFactor(TH3F* num, TH3F* den, double pt, double eta, double jet){
 
    double n_num = num->GetBinContent(num_bin);
    double n_den = den->GetBinContent(den_bin);
+
+   /*
+   if(n_den == 0  || n_num == 0 ) {
+     if(fabs(eta)<2.4){ 
+	 cout<<"[GetEffFactor] correction factor 1 will be returned as n_den = "<<n_num
+	     <<" and n_den = "<<n_den<<endl;
+	 cout<<" pt = "<<pt<<" jet = "<<jet<<" and eta = "<<eta<<endl;
+     }
+   }
+   */
 
    if(n_den == 0  || n_num == 0 ) return 1;
    else return n_num/n_den;
