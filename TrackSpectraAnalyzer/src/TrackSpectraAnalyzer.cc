@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.54 2010/07/07 14:00:27 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.55 2010/07/07 15:03:52 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -160,6 +160,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    
 	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
 	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+	    if(mult<4 && (evtMultCut_<3)) hTrkPtEtaJetEtMult0to3_vbin->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
 
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
@@ -219,7 +220,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    if( ((pid>=11) && (pid<=68)) || (pid==94) || (pid==95)) isWanted = true;
 	 }else{
 	    // SD - 103, 104, DD - 105, MB - 101
-	    if(!(pid==103||pid==104)) isWanted = true;
+	    if( ((pid>=111) && (pid<=124)) || (pid==105) || (pid==101)) isWanted = true;
 	 }
       }else{
 	 isWanted = true;
@@ -327,7 +328,11 @@ TrackSpectraAnalyzer::beginJob()
 					 nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0); 
       hTrkPtEtaJetEt_vbin = subDir.make<TH3F>("hTrkPtEtaJetEt_vbin","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 					      etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]);
-      
+      if(evtMultCut_<3) hTrkPtEtaJetEtMult0to3_vbin = subDir.make<TH3F>("hTrkPtEtaJetEtMult0to3_vbin",
+									"eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+									etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],
+									jetBins.size()-1, &jetBins[0]);
+
       unsigned index=0;
       for(unsigned i=0;i<hltNames_.size();i++){
 	 if(neededTrigSpectra_[i]!=1) continue;
