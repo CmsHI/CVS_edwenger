@@ -34,11 +34,11 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
   typename std::vector<T>::iterator fs,ls;
   float offset = 0;  
   std::vector< std::pair<float,float> > subset;
-  subset.reserve(128); subset.clear();
+  subset.reserve(128); 
 
   for( uint16_t APV=0; APV< digis.size()/128; ++APV)
   {
-
+    subset.clear();
     // fill subset vector with all good strips and their noises
     for (uint16_t istrip=APV*128; istrip<(APV+1)*128; ++istrip)
     {
@@ -61,7 +61,7 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
       while(  si != subset.end() )
       {
         if( si->first-offset < cut_to_avoid_signal_*si->second )  
-          subset.erase(si);
+          si = subset.erase(si);
         else
           ++si;
       }
