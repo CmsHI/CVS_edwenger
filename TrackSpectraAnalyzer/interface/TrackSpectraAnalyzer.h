@@ -77,6 +77,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    
    TH3F *hTrkPtEtaJetEt_vbin;
    TH3F *hTrkPtEtaJetEtW_vbin;
+   TH3F *hTrkPtEtaJetEtMult0to3_vbin;
 
    std::vector<TH3F*> hTrkPtEtaJetEtW_Trig;
    
