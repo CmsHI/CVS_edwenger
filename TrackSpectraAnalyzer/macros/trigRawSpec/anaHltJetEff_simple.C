@@ -41,7 +41,7 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
   return ans;
 }
 
-void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7TeV",
+void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
     const char * inFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MnJ-v0_p0710_a3",
     const char * mergedFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/mergeAll/trkhists_sub0.root",
