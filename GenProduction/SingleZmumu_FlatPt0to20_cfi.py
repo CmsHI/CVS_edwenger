@@ -24,7 +24,9 @@ hiSignal = cms.EDProducer("Pythia6PtYDistGun",
 )
 
 configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/GenProduction/SingleZmumu_FlatPt0to20_cfi.py,v $'),
     annotation = cms.untracked.string('Pythia Gun Z -> mu mu')
     )
+
+ProductionFilterSequence = cms.Sequence(hiSignal)
