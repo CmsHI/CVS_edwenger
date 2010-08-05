@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sample="edwenger/GenProduction/Pyquen_DiJetEnrichedEM_Pt50_cfi.py"
+sample="Configuration/GenProduction/Pyquen_DiJetEnrichedEM_Pt50_cfi.py"
 infile="/store/relval/CMSSW_3_8_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_38Y_V7-v1/0005/DCAB6598-7B95-DF11-861B-0026189438F2.root"
 outfile="dijetEM50_RAW.root"
 
