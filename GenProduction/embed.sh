@@ -7,7 +7,7 @@ outfile="dijetEM50_RAW.root"
 cmsDriver.py $sample -n 1 \
 -s GEN:hiSignal,SIM,DIGI,DIGI2RAW,HLT:HIon \
 --conditions auto:mc --scenario HeavyIons --himix \
---datatier 'GEN-SIM-RAW-RECO' --eventcontent=FEVTDEBUGHLT \
+--datatier 'GEN-SIM-RAW' --eventcontent=FEVTDEBUGHLT \
 --filein=$infile --fileout=$outfile --processName 'HISIGNAL' \
 --customise edwenger/Misc/customiseCaloNZS.py \
 --cust_function customiseCaloNZS \
