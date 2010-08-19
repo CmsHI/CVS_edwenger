@@ -9,6 +9,7 @@ addpkg DQM/SiStripMonitorClient
 addpkg DQM/SiPixelCommon
 addpkg DQM/SiPixelMonitorClient
 addpkg Configuration/StandardSequences
+addpkg Configuration/PyReleaseValidation
 
 cd $dir
 cp DQMOfflineHeavyIons*.py $CMSSW_BASE/src/DQMOffline/Configuration/python
@@ -18,3 +19,4 @@ cp SiPixelOfflineDQM_HeavyIons_*_cff.py $CMSSW_BASE/src/DQM/SiPixelCommon/python
 cp sipixel_tier0_qualitytest_heavyions.xml $CMSSW_BASE/src/DQM/SiPixelMonitorClient/test
 cp sistrip_qualitytest_config_tier0_heavyions.xml $CMSSW_BASE/src/DQM/SiStripMonitorClient/data
 cp Harvesting*cff.py $CMSSW_BASE/src/Configuration/StandardSequences/python
+cp ConfigBuilder.py $CMSSW_BASE/src/Configuration/PyReleaseValidation/python
