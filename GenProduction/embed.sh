@@ -5,7 +5,7 @@ infile="/store/relval/CMSSW_3_8_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-DIGI-RAW-HLTD
 outfile="dijetEM50_RAW.root"
 
 cmsDriver.py $sample -n 1 \
--s GEN:hiSignal,SIM,DIGI,DIGI2RAW,HLT:HIon \
+-s GEN:hiSignal,SIM,DIGI,L1,DIGI2RAW,HLT:HIon \
 --conditions auto:mc --scenario HeavyIons --himix \
 --datatier 'GEN-SIM-RAW' --eventcontent=FEVTDEBUGHLT \
 --filein=$infile --fileout=$outfile --processName 'HISIGNAL' \
