@@ -19,3 +19,7 @@ hcalRawDataMonitor.FEDRawDataCollection = 'rawDataCollector'
 #l1tfed.rawTag = 'rawDataCollector'  # not needed until trigger DQM is enabled
 ecalPreshowerFEDIntegrityTask.FEDRawDataCollection = 'rawDataCollector'
 ecalPreshowerRawDataTask.FEDRawDataCollection = 'rawDataCollector'
+
+# is this still needed?
+hcalDigiMonitor.minDigiSize = 6 # was 10
+hcalMonitorTasksOfflineSequence.remove(hcalRawDataMonitor)
