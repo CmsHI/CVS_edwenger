@@ -1,6 +1,59 @@
 import FWCore.ParameterSet.Config as cms
 
-from DQMOffline.Configuration.DQMOffline_cff import *
+from DQMServices.Components.DQMMessageLogger_cfi import *
+from DQMServices.Components.DQMDcsInfo_cfi import *
+
+from DQMOffline.Ecal.ecal_dqm_source_offline_cff import *
+from DQM.HcalMonitorModule.hcal_dqm_source_fileT0_cff import *
+from DQM.SiStripMonitorClient.SiStripSourceConfigTier0_cff import *
+from DQM.SiPixelCommon.SiPixelOfflineDQM_source_cff import *
+from DQM.DTMonitorModule.dtDQMOfflineSources_cff import *
+from DQM.RPCMonitorClient.RPCTier0Source_cff import *
+from DQM.CSCMonitorModule.csc_dqm_sourceclient_offline_cff import *
+from DQM.EcalPreshowerMonitorModule.es_dqm_source_offline_cff import *
+
+DQMOfflineHeavyIonsPreDPG = cms.Sequence( dqmDcsInfo *
+                                          ecal_dqm_source_offline *
+                                          hcalOfflineDQMSource *
+                                          SiStripDQMTier0 *
+                                          siPixelOfflineDQM_source *
+                                          dtSources *
+                                          rpcTier0Source *
+                                          cscSources *
+                                          es_dqm_source_offline )
+
+DQMOfflineHeavyIonsDPG = cms.Sequence( DQMOfflineHeavyIonsPreDPG *
+                                       DQMMessageLogger )
+
+from DQMOffline.Muon.muonMonitors_cff import *
+#from DQMOffline.JetMET.jetMETDQMOfflineSource_cff import *
+#from DQMOffline.EGamma.egammaDQMOffline_cff import *
+#from DQMOffline.Trigger.DQMOffline_Trigger_cff import *
+#from DQMOffline.RecoB.PrimaryVertexMonitor_cff import *
+#from DQM.Physics.DQMPhysics_cff import *
+
+DQMOfflineHeavyIonsPrePOG = cms.Sequence( muonMonitors 
+                                          #* jetMETDQMOfflineSource
+                                          #* egammaDQMOffline
+                                          #* triggerOfflineDQMSource
+                                          #* pvMonitor
+                                          #* dqmPhysics
+                                          )
+
+DQMOfflineHeavyIonsPOG = cms.Sequence( DQMOfflineHeavyIonsPrePOG *
+                                       DQMMessageLogger )
+
+DQMOfflineHeavyIons = cms.Sequence( DQMOfflineHeavyIonsPreDPG *
+                                    DQMOfflineHeavyIonsPrePOG *
+                                    DQMMessageLogger )
+    
+#DQMOfflineHeavyIonsPhysics = cms.Sequence( dqmPhysics )
+
+
+
+
+
+
 
 # pixels
 #sipixelQTester.qtList = cms.untracked.FileInPath('')
@@ -22,11 +75,3 @@ hcalHotCellMonitor.energyThreshold = 50.0 # was 10.0
 hcalHotCellMonitor.energyThreshold_HF = 200.0 # was 20.0
 hcalDigiMonitor.minDigiSize = 6 # was 10
 hcalMonitorTasksOfflineSequence.remove(hcalRawDataMonitor)
-
-DQMOfflineHeavyIonsPreDPG = cms.Sequence(DQMOfflinePreDPG)
-
-DQMOfflineHeavyIonsPrePOG = cms.Sequence(muonMonitors) ## other POG not run yet
-
-DQMOfflineHeavyIons = cms.Sequence(DQMOfflineHeavyIonsPreDPG
-                                   * DQMOfflineHeavyIonsPrePOG
-                                   * DQMMessageLogger)
