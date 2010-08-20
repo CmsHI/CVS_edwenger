@@ -8,6 +8,6 @@ cmsDriver.py reDigi -n 1 \
 --conditions auto:mc \
 --datatier 'GEN-SIM-RAW-RECO' --eventcontent=FEVTDEBUGHLT \
 --filein=$infile --fileout=$outfile --processName 'reDIGI' \
---customise edwenger/Misc/customiseNZS.py \
+--customise edwenger/Misc/customiseStripDigiVR.py \
 --cust_function customiseStripAll \
 --no_exec
