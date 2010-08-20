@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Fri May  7 10:33:49 CEST 2010
-// $Id: EvtSelAnalyzer.cc,v 1.14 2010/06/14 19:46:31 sungho Exp $
+// $Id: EvtSelAnalyzer.cc,v 1.15 2010/06/15 14:59:47 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -198,6 +198,11 @@ EvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     hGenMultInel_SPEC->Fill(nGEN_SPEC);
     hGenMultInel_AGR->Fill(nGEN_AGR);
 
+    hGenRecMultInel->Fill(nREC);
+    hGenRecMultInel_STD->Fill(nREC_STD);
+    hGenRecMultInel_SPEC->Fill(nREC_SPEC);
+    hGenRecMultInel_AGR->Fill(nREC_AGR);
+
     switch(pid) {
     case 94:
       hGenMultDD->Fill(nGEN);
@@ -342,6 +347,11 @@ EvtSelAnalyzer::beginJob()
     hGenRecMultNSD_STD = f->make<TH1D>("hGenRecMultNSD_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
     hGenRecMultNSD_SPEC = f->make<TH1D>("hGenRecMultNSD_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
     hGenRecMultNSD_AGR = f->make<TH1D>("hGenRecMultNSD_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
+
+    hGenRecMultInel = f->make<TH1D>("hGenRecMultInel","Charged mult. |#eta|<2.5)",numBins,-0.5,xmax);
+    hGenRecMultInel_STD = f->make<TH1D>("hGenRecMultInel_STD","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
+    hGenRecMultInel_SPEC = f->make<TH1D>("hGenRecMultInel_SPEC","Charged mult. |#eta|<1.0 with min p_{T})",numBins,-0.5,xmax_SPEC);
+    hGenRecMultInel_AGR = f->make<TH1D>("hGenRecMultInel_AGR","Charged mult. |#eta|<0.8 with min p_{T})",numBins,-0.5,xmax_AGR);
 
     hGenRecMultNSD_STD_W = f->make<TH1D>("hGenRecMultNSD_STD_W","Charged mult. |#eta|<2.4 with min p_{T})",numBins,-0.5,xmax_STD);
 

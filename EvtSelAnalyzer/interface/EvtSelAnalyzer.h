@@ -99,6 +99,11 @@ class EvtSelAnalyzer : public edm::EDAnalyzer {
       TH1D *hGenRecMultNSD_STD;
       TH1D *hGenRecMultNSD_SPEC;
       TH1D *hGenRecMultNSD_AGR;
+      
+      TH1D *hGenRecMultInel;
+      TH1D *hGenRecMultInel_STD;
+      TH1D *hGenRecMultInel_SPEC;
+      TH1D *hGenRecMultInel_AGR;
 
       TH1D *hGenRecMultNSD_STD_W;
 
