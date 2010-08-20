@@ -7,7 +7,7 @@ def customiseMakeZSRaw(process):
         outputCommands = cms.untracked.vstring('keep *_hltTriggerSummaryAOD_*_*',
                                                'keep *_TriggerResults_*_*',
                                                'keep FEDRawDataCollection_*_*_RECO'),
-        fileName = cms.untracked.string('dijet80_ZS_RAW.root'),
+        fileName = cms.untracked.string('output_ZS_RAW.root'),
         dataset = cms.untracked.PSet(
             dataTier = cms.untracked.string('RAW'),
             filterName = cms.untracked.string('')
@@ -25,11 +25,11 @@ def customiseMakeZSRaw(process):
     process.load("EventFilter.RawDataCollector.rawDataCollector_cfi")
     process.rawDataCollector.currentProcessOnly = False
 
-    process.zsDigiToRaw = cms.Path(process.SiStripDigiToZSRaw *
-                                   process.rawDataCollector)
+    process.zsDigiToRaw_step = cms.Path(process.SiStripDigiToZSRaw *
+                                        process.rawDataCollector)
    
     # Extend schedule with ZS RAW + secondary RAW output 
-    process.schedule.extend([process.zsDigiToRaw,process.outZSraw_step])
+    process.schedule.extend([process.zsDigiToRaw_step,process.outZSraw_step])
 
     return process
 
