@@ -27,6 +27,7 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       // ----------member data ---------------------------
 
       edm::InputTag vtxlabel_;
+      int nTracksBins_;
 
       edm::Service<TFileService> f;
       TH1D *hVtxSize;

@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.2 2010/05/10 13:17:48 edwenger Exp $
+// $Id: VertexAnalyzer.cc,v 1.3 2010/05/13 09:26:48 edwenger Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -11,7 +11,8 @@
 
 VertexAnalyzer::VertexAnalyzer(const edm::ParameterSet& iConfig)
 :
-  vtxlabel_(iConfig.getUntrackedParameter<edm::InputTag>("vtxlabel"))
+  vtxlabel_(iConfig.getUntrackedParameter<edm::InputTag>("vtxlabel")),
+  nTracksBins_(iConfig.getUntrackedParameter<int>("nTracksBins"))
 {
 
 }
@@ -57,9 +58,9 @@ VertexAnalyzer::beginJob()
 {
 
   hVtxSize = f->make<TH1D>("hVtxSize","number of reconstructed vertices",10,-0.5,9.5);
-  hVtxTracks = f->make<TH1D>("hVtxTracks","number of tracks fitted to vertex",50,-0.5,49.5);
+  hVtxTracks = f->make<TH1D>("hVtxTracks","number of tracks fitted to vertex",nTracksBins_,-0.5,(float)nTracksBins_-0.5);
   hVtxZ = f->make<TH1D>("hVtxZ","z position of best reconstructed vertex",80,-20.0,20.0);
-  hMultVtxTracks = f->make<TH2D>("hMultVtxTracks","number of tracks fitted to vertex; most populated; 2nd most populated",50,-0.5,49.5,50,-0.5,49.5);
+  hMultVtxTracks = f->make<TH2D>("hMultVtxTracks","number of tracks fitted to vertex; most populated; 2nd most populated",nTracksBins_,-0.5,(float)nTracksBins_-0.5,nTracksBins_,-0.5,(float)nTracksBins_-0.5);
   hMultVtxZ = f->make<TH2D>("hMultVtxZ","z position of reconstructed vertex; most populated; 2nd most populated",80,-20.0,20.0,80,-20.0,20.0);
   hAllVtxZ = f->make<TH1D>("hAllVtxZ","z position of all reconstructed vertices",80,-20.0,20.0);
 }
