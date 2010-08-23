@@ -1,7 +1,7 @@
 #!/bin/bash -
 ./create_custom_python_cfg.sh
 
-scratch=/net/hibat0007/d00/scratch/frankma
+scratch=/net/hidsk0001/d00/scratch/frankma
 jobTag=proc0823_1ChPrimEvtSel
 
 # ===================== 358p3 =====================
