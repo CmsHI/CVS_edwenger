@@ -6,6 +6,12 @@
 #   * cf: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/SavedFMa/pp/HLT/sw/hlt/timing/test/bryanTimer.py?view=markup
 #
 
+# check spectra analyzer config
+print "=== trackAna_STD cfg: ==="
+print process.trackAna_STD.dumpPython()
+print "=== looseTrackAna_STD cfg: ==="
+print process.looseTrackAna_STD.dumpPython()
+
 # === Addition of Customization ===
 print "\nBegin My Customization\n"
 # command line inputs

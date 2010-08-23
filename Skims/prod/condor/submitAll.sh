@@ -2,7 +2,7 @@
 ./create_custom_python_cfg.sh
 
 scratch=/net/hibat0007/d00/scratch/frankma
-jobTag=proc0710_trkAnaNoFilter
+jobTag=proc0823_1ChPrimEvtSel
 
 # ===================== 358p3 =====================
 job=MB-C10-M6RR-MBskim-v0
