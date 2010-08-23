@@ -38,7 +38,7 @@ trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               applyEvtEffCorr=cms.untracked.bool(True),
                               #evtEffCorrType=cms.untracked.int32(0),  # STD
                               evtEffCorrType=cms.untracked.int32(2),   # AGR
-                              ptMin=cms.cms.untracked.double(0.5), # AGR
+                              ptMin=cms.untracked.double(0.5), # AGR
                               evtMultCut=cms.untracked.int32(3),
                               #evtSelEffv = cms.untracked.vdouble(30,0,9.0384e-05,0.00223004,0.0304791,0.217088,0.460085,0.673905,0.830166,0.92802,0.978678,1.00044,
                               #                                   1.00497,1.00382,1.00041,0.994874,0.99174,0.990136,0.989347,0.989595,0.989071,0.990078,0.990065,0.990801,
@@ -53,7 +53,7 @@ looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
 looseTrackAna_STD = looseTrackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
                                         #evtEffCorrType=cms.untracked.int32(0), # STD
                                         evtEffCorrType=cms.untracked.int32(2), # AGR
-                                        ptMin=cms.cms.untracked.double(0.5), # AGR
+                                        ptMin=cms.untracked.double(0.5), # AGR
                                         evtMultCut=cms.untracked.int32(0),
                                         #evtMultCut=cms.untracked.int32(3),
                                         #evtSelEffv = cms.untracked.vdouble(30,0.0266389,0.352064,0.55773,0.709436,0.821248,0.89875,0.956152,0.995745,1.01817,1.02657,1.02549,1.01831,
