@@ -9,5 +9,5 @@ cmsDriver.py vrReco -n 1 \
 --datatier 'RECO' --eventcontent=RECO \
 --filein=$infile --fileout=$outfile --processName 'RECO' \
 --customise edwenger/Misc/customiseCMN.py \
---cust_function customisePercentile \
+--cust_function usePercentileAlgo \
 --no_exec

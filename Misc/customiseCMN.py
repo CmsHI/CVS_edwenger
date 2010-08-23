@@ -2,29 +2,27 @@ import FWCore.ParameterSet.Config as cms
 
 from edwenger.Misc.customiseMakeZSRaw import *
 from edwenger.Misc.customiseStripDB import *
+from RecoLocalTracker.SiStripZeroSuppression.customiseCMN import *
 
 ##############################################################################
-def customiseIteratedMedian(process):
+def useIteratedMedianAlgo(process):
 
     process = customiseStripDB(process)
     process = customiseMakeZSRaw(process)
-    
-    process.siStripZeroSuppression.Algorithms.CommonModeNoiseSubtractionMode=cms.string("IteratedMedian")
-    process.siStripZeroSuppression.Algorithms.CutToAvoidSignal = cms.double(2.0)
-    process.siStripZeroSuppression.Algorithms.Iterations = cms.int32(3)
-    process.siStripZeroSuppression.storeCM = cms.bool(True)
+    process = customiseIteratedMedian(process)
+
+    process.outputZSraw.fileName = cms.untracked.string('dijet80_ZS_RAW.root')
 
     return process
 
 ##############################################################################
-def customisePercentile(process):
+def usePercentileAlgo(process):
 
     process = customiseStripDB(process)
     process = customiseMakeZSRaw(process)
+    process = cutomisePercentile(process)
 
-    process.siStripZeroSuppression.Algorithms.CommonModeNoiseSubtractionMode=cms.string("Percentile")
-    process.siStripZeroSuppression.Algorithms.Percentile=cms.double(25.0)
-    process.siStripZeroSuppression.storeCM = cms.bool(True)
+    process.outputZSraw.fileName = cms.untracked.string('dijet80_ZS_RAW.root')
 
     return process
 
