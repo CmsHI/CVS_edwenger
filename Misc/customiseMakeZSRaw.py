@@ -1,3 +1,5 @@
+import FWCore.ParameterSet.Config as cms
+
 ##############################################################################
 def customiseMakeZSRaw(process):
 
@@ -6,7 +8,8 @@ def customiseMakeZSRaw(process):
         splitLevel = cms.untracked.int32(0),
         outputCommands = cms.untracked.vstring('keep *_hltTriggerSummaryAOD_*_*',
                                                'keep *_TriggerResults_*_*',
-                                               'keep FEDRawDataCollection_*_*_RECO'),
+                                               'keep *_*_APVCM_*',
+                                               'keep FEDRawDataCollection_rawDataCollector_*_RECO'),
         fileName = cms.untracked.string('output_ZS_RAW.root'),
         dataset = cms.untracked.PSet(
             dataTier = cms.untracked.string('RAW'),
@@ -19,7 +22,9 @@ def customiseMakeZSRaw(process):
     # Remake RAW from ZS tracker digis
     process.load("EventFilter.SiStripRawToDigi.SiStripDigiToRaw_cfi")
     process.SiStripDigiToZSRaw=process.SiStripDigiToRaw.clone(
-        InputModuleLabel = 'siStripDigis'
+        InputModuleLabel = 'siStripZeroSuppression',
+        InputDigiLabel = cms.string('VirginRaw'),
+        FedReadoutMode = cms.string('ZERO_SUPPRESSED')
         )
 
     # Combine new ZS RAW from tracker with existing RAW for other FEDs
@@ -28,8 +33,8 @@ def customiseMakeZSRaw(process):
     process.rawDataCollector.preferLaterProcess = True
     process.rawDataCollector.verbose = False
 
-    process.zsDigiToRaw = cms.Path(process.SiStripDigiToZSRaw *
-                                   process.rawDataCollector)
+    process.zsDigiToRaw_step = cms.Path(process.SiStripDigiToZSRaw *
+                                        process.rawDataCollector)
    
     # Extend schedule with ZS RAW + secondary RAW output 
     process.schedule.extend([process.zsDigiToRaw_step,process.outZSraw_step])
