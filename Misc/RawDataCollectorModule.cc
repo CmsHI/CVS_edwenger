@@ -40,7 +40,7 @@ void RawDataCollectorModule::produce(Event & e, const EventSetup& c){
  std::vector< Handle<FEDRawDataCollection> > rawData;
  e.getManyByType(rawData);
 
- /// Sort so later processes come first
+ /// Sort vector so that later processes come first
  if(!useCurrentProcessOnly_ && preferLaterProcess_)
    std::sort(rawData.begin(),rawData.end(),LargerProcessIndex);
 
@@ -53,11 +53,6 @@ void RawDataCollectorModule::produce(Event & e, const EventSetup& c){
    if ( useCurrentProcessOnly_ &&
         ( rawData[i].provenance()->processName() != e.processHistory().rbegin()->processName() ) )
        continue ; // skip all raw collections not produced by the current process
-
-   /// test provenance info
-   //std::cout << "\nRAW collection #" << i+1 << std::endl;
-   //std::cout << "branch name = " << rawData[i].provenance()->branchName() << std::endl;
-   //std::cout << "process index = " << rawData[i].provenance()->productID().processIndex() << std::endl;
 
    for ( int j=0; j< FEDNumbering::MAXFEDID; ++j ) {
      const FEDRawData & fedData = rdc->FEDData(j);
