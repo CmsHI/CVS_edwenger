@@ -20,7 +20,7 @@ def usePercentileAlgo(process):
 
     process = customiseStripDB(process)
     process = customiseMakeZSRaw(process)
-    process = cutomisePercentile(process)
+    process = customisePercentile(process)
 
     process.outputZSraw.fileName = cms.untracked.string('dijet80_ZS_RAW.root')
 
