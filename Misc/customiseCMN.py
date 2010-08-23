@@ -83,13 +83,16 @@ def customiseMakeZSRaw(process):
         InputModuleLabel = 'siStripDigis'
         )
 
+    # Combine new ZS RAW from tracker with existing RAW for other FEDs
     process.load("EventFilter.RawDataCollector.rawDataCollector_cfi")
     process.rawDataCollector.currentProcessOnly = False
+    process.rawDataCollector.preferLaterProcess = True
+    process.rawDataCollector.verbose = False
 
     process.zsDigiToRaw = cms.Path(process.SiStripDigiToZSRaw *
                                    process.rawDataCollector)
    
     # Extend schedule with ZS RAW + secondary RAW output 
-    process.schedule.extend([process.zsDigiToRaw,process.outZSraw_step])
+    process.schedule.extend([process.zsDigiToRaw_step,process.outZSraw_step])
 
     return process
