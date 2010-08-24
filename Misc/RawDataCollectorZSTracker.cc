@@ -1,9 +1,9 @@
 /** \file
- * Implementation of class RawDataCollectorModule
+ * Implementation of class RawDataCollectorZSTracker
  *
  */
 
-#include "EventFilter/RawDataCollector/interface/RawDataCollectorModule.h"
+#include "EventFilter/RawDataCollector/interface/RawDataCollectorZSTracker.h"
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h> 
 #include <DataFormats/FEDRawData/interface/FEDRawData.h>
 #include <DataFormats/FEDRawData/interface/FEDNumbering.h>
@@ -20,7 +20,7 @@
 
 using namespace edm;
 
-RawDataCollectorModule::RawDataCollectorModule(const edm::ParameterSet& pset) {
+RawDataCollectorZSTracker::RawDataCollectorZSTracker(const edm::ParameterSet& pset) {
 
   useCurrentProcessOnly_ = pset.getParameter<bool>("currentProcessOnly") ; 
   preferLaterProcess_ = pset.getParameter<bool>("preferLaterProcess");
@@ -29,12 +29,12 @@ RawDataCollectorModule::RawDataCollectorModule(const edm::ParameterSet& pset) {
   produces<FEDRawDataCollection>();
 }
 
-RawDataCollectorModule::~RawDataCollectorModule(){
+RawDataCollectorZSTracker::~RawDataCollectorZSTracker(){
 
 }
 
 
-void RawDataCollectorModule::produce(Event & e, const EventSetup& c){
+void RawDataCollectorZSTracker::produce(Event & e, const EventSetup& c){
 
  /// Get Data from all FEDs
  std::vector< Handle<FEDRawDataCollection> > rawData;

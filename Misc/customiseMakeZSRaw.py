@@ -28,7 +28,7 @@ def customiseMakeZSRaw(process):
         )
 
     # Combine new ZS RAW from tracker with existing RAW for other FEDs
-    process.load("EventFilter.RawDataCollector.rawDataCollector_cfi")
+    process.load("EventFilter.RawDataCollector.rawDataCollectorZSTracker_cfi")
     process.rawDataCollector.currentProcessOnly = False
     process.rawDataCollector.preferLaterProcess = True
     process.rawDataCollector.verbose = False

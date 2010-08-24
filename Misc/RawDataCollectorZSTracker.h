@@ -1,8 +1,8 @@
-#ifndef RawDataCollectorModule_H
-#define RawDataCollectorModule_H
+#ifndef RawDataCollectorZSTracker_H
+#define RawDataCollectorZSTracker_H
 
 
-/** \class RawDataCollectorModule
+/** \class RawDataCollectorZSTracker
  *
  */
 
@@ -11,14 +11,14 @@
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h> 
 #include <DataFormats/Common/interface/Handle.h>
 
-class RawDataCollectorModule: public edm::EDProducer {
+class RawDataCollectorZSTracker: public edm::EDProducer {
 public:
     
     ///Constructor
-    RawDataCollectorModule(const edm::ParameterSet& pset);
+    RawDataCollectorZSTracker(const edm::ParameterSet& pset);
     
     ///Destructor
-    virtual ~RawDataCollectorModule();
+    virtual ~RawDataCollectorZSTracker();
     
     void produce(edm::Event & e, const edm::EventSetup& c); 
           
