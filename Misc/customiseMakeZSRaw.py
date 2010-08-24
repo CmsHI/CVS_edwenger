@@ -29,9 +29,7 @@ def customiseMakeZSRaw(process):
 
     # Combine new ZS RAW from tracker with existing RAW for other FEDs
     process.load("EventFilter.RawDataCollector.rawDataCollectorZSTracker_cfi")
-    process.rawDataCollector.currentProcessOnly = False
-    process.rawDataCollector.preferLaterProcess = True
-    process.rawDataCollector.verbose = False
+    process.rawDataCollector.verbose = 2
 
     process.zsDigiToRaw_step = cms.Path(process.SiStripDigiToZSRaw *
                                         process.rawDataCollector)

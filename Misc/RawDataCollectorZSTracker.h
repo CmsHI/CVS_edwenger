@@ -32,7 +32,7 @@ private:
 
     bool useCurrentProcessOnly_ ; 
     bool preferLaterProcess_;
-    bool verbose_ ;
+    int  verbose_ ;
 
 };
 

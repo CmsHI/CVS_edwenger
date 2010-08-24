@@ -24,7 +24,7 @@ RawDataCollectorZSTracker::RawDataCollectorZSTracker(const edm::ParameterSet& ps
 
   useCurrentProcessOnly_ = pset.getParameter<bool>("currentProcessOnly") ; 
   preferLaterProcess_ = pset.getParameter<bool>("preferLaterProcess");
-  verbose_ = pset.getUntrackedParameter<bool>("verbose",true);
+  verbose_ = pset.getUntrackedParameter<int>("verbose",0);
 
   produces<FEDRawDataCollection>();
 }
@@ -54,15 +54,22 @@ void RawDataCollectorZSTracker::produce(Event & e, const EventSetup& c){
         ( rawData[i].provenance()->processName() != e.processHistory().rbegin()->processName() ) )
        continue ; // skip all raw collections not produced by the current process
 
+   if ( verbose_ > 0 ) {
+     std::cout << "\nRAW collection #" << i+1 << std::endl;
+     std::cout << "branch name = " << rawData[i].provenance()->branchName() << std::endl;
+     std::cout << "process index = " << rawData[i].provenance()->productID().processIndex() << std::endl;
+   }
+
    for ( int j=0; j< FEDNumbering::MAXFEDID; ++j ) {
      const FEDRawData & fedData = rdc->FEDData(j);
      size_t size=fedData.size();
 
      if ( size > 0 ) {
        // this fed has data -- lets copy it
+       if(verbose_ > 1) std::cout << "Copying data from FED #" << j << std::endl;
        FEDRawData & fedDataProd = producedData->FEDData(j);
        if ( fedDataProd.size() != 0 ) {
-	 if(verbose_) {
+	 if(verbose_ > 1) {
 	   std::cout << " More than one FEDRawDataCollection with data in FED ";
 	   std::cout << j << " Skipping the 2nd\n";
 	 }
