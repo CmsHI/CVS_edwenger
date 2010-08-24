@@ -70,6 +70,8 @@ void MuonTrackingRegionBuilder::build(const edm::ParameterSet& par){
 
   thePhiMin = par.getParameter<double>("Phi_min");
   theEtaMin = par.getParameter<double>("Eta_min");
+  theDzMin  = par.getParameter<double>("Dz_min");
+  theMaxPt  = par.getParameter<double>("PtMin_max");
   theHalfZ  = par.getParameter<double>("DeltaZ_Region");
   theDeltaR = par.getParameter<double>("DeltaR");
 
@@ -147,10 +149,7 @@ MuonTrackingRegionBuilder::region(const reco::Track& staTrack) const {
       //vertexPos = GlobalPoint(0.0,0.0,vtx->z());
       vertexPos = GlobalPoint(vtx->x(),vtx->y(),vtx->z());
       // delta Z from vertex error
-      if (useFixedRegion)
-	deltaZatVTX = theHalfZ;
-      else
-	deltaZatVTX = vtx->zError() * theNsigmaDz;
+      deltaZatVTX = max(theDzMin,vtx->zError() * theNsigmaDz);
     }
   }
 
@@ -241,6 +240,7 @@ MuonTrackingRegionBuilder::region(const reco::Track& staTrack) const {
 
   float deltaR = theDeltaR;
   double minPt = max(theTkEscapePt,mom.perp()*0.6);
+  if(theMaxPt>0 && minPt>theMaxPt) minPt=theMaxPt;
 
   RectangularEtaPhiTrackingRegion* region = 0;  
 
