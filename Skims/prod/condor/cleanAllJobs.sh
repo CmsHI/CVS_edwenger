@@ -1,8 +1,8 @@
 #!/bin/bash -
 startdir=$PWD
 
-jobTag=proc0710_trkAnaNoFilter
-scratch=/net/hibat0007/d00/scratch/frankma
+jobTag=proc0823_1ChPrimEvtSel
+scratch=/net/hidsk0001/d00/scratch/frankma
 topDir=$scratch/data/MinimumBias
 jobs="\
 $topDir/MB-C10-M6RR-JMTskim-v0_$jobTag \
