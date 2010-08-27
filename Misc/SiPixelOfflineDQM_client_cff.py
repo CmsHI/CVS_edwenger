@@ -39,5 +39,5 @@ PixelOfflineDQMClientWithDataCertification = cms.Sequence(sipixelQTester+
 							  sipixelDcsInfo+
 							  sipixelCertification)
 
-PixelOfflineDQMClientWithDataCertificationHI = PixelOfflineDQMClientWithDataCertification.clone()
+PixelOfflineDQMClientWithDataCertificationHI = cms.Sequence(PixelOfflineDQMClientWithDataCertification)
 PixelOfflineDQMClientWithDataCertificationHI.replace(sipixelQTester,sipixelQTesterHI)
