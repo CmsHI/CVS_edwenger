@@ -7,7 +7,7 @@ from DQMServices.Components.DQMDcsInfoClient_cfi import *
 from DQMOffline.Ecal.ecal_dqm_client_offline_cff import *
 from DQM.HcalMonitorModule.hcal_dqm_client_fileT0_cff import *
 from DQM.SiStripMonitorClient.SiStripClientConfig_Tier0_HeavyIons_cff import *
-from DQM.SiPixelCommon.SiPixelOfflineDQM_HeavyIons_client_cff import *
+from DQM.SiPixelCommon.SiPixelOfflineDQM_client_cff import *
 from DQM.DTMonitorClient.dtDQMOfflineClients_cff import *
 from DQM.RPCMonitorClient.RPCTier0Client_cff import *
 from DQM.CSCMonitorModule.csc_dqm_offlineclient_collisions_cff import *
