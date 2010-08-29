@@ -28,34 +28,59 @@ subtract_(const uint32_t& id, const uint16_t& firstStrip, const input_t& input, 
     std::vector<int>::const_iterator ped = pedestals.begin() + firstStrip;  
     std::vector<int16_t>::iterator   outDigi = output.begin();
 
-    int inZeros  = 0;
-    int outZeros = 0;
-    int nDigis   = 0;
-    
-    while( inDigi != input.end() ) {
+    int ntries=0;
+    while(1) {
 
-      *outDigi = std::max(0,  ( *ped > 895 )        //FED bottoms out at 0
-	? eval(*inDigi) - *ped + 1024
-	: eval(*inDigi) - *ped	);
+      int inZeros=0, outZeros=0, nDigis=0;
       
-      if( eval(*inDigi)  == 0 )  inZeros++;
-      if( eval(*outDigi) == 0 )  outZeros++;
-      nDigis++;
+      while( inDigi != input.end() ) {
+	
+	*outDigi = std::max(0,  ( *ped > 895 )        //FED bottoms out at 0
+			    ? eval(*inDigi) - *ped + 1024 + ntries*addConstant_
+			    : eval(*inDigi) - *ped        + ntries*addConstant_	);
+	
+	if( eval(*inDigi)  == 0 )  inZeros++;
+	if( eval(*outDigi) == 0 )  outZeros++;
+	nDigis++;
+	
+	++inDigi; 
+	++ped; 
+	++outDigi;
+      }
+      
 
-      ++inDigi; 
-      ++ped; 
-      ++outDigi;
-    }
+      if(!outZeros && !inZeros) {
+	if(ntries) std::cout << "  --> Hooray :) \n" << std::endl;
+	break;
+      } else {
+	std::cout << "There were " << inZeros << " (" << outZeros 
+		  << ") out of " << nDigis 
+		  << " strips with ADC=0 before (after) pedestal subtraction"
+		  << std::endl;
 
-    if(outZeros) {
-      //edm::LogTrace("SiStripPedestalsSubtractor")
-      std::cout << "There were " << inZeros << " (" << outZeros 
-		<< ") out of " << nDigis 
-		<< " strips with ADC=0 before (after) pedestal subtraction"
-		<< std::endl;
-    }
+	if(outZeros-inZeros < minTruncStrips_) {
+	  std::cout << "  --> Not much to be done here.\n" << std::endl;
+	  break;
+	} else {
 
+	  if(++ntries < maxTries_) {
+	    std::cout << "  --> Add " << ntries*addConstant_ 
+		      << " and try again..." << std::endl;
+	    inDigi = input.begin();
+	    ped = pedestals.begin() + firstStrip;  
+	    outDigi = output.begin();
+	  } else {
+	    std::cout << "  --> I give up :( \n" << std::endl;
+	    break;
+	  } 
 
+	} //end else 'outZeros-inZeros > 64'
+	  
+      } //end else 'outZeros'
+      
+    } //end while loop
+    
+    
   } catch(cms::Exception& e){
     edm::LogError("SiStripPedestalsSubtractor")  
       << "[SiStripPedestalsSubtractor::subtract] DetId " << id << " propagating error from SiStripPedestal" << e.what();
