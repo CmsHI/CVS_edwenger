@@ -15,7 +15,7 @@ from DQM.EcalPreshowerMonitorModule.es_dqm_source_offline_cff import *
 DQMOfflineHeavyIonsPreDPG = cms.Sequence( dqmDcsInfo *
                                           ecal_dqm_source_offline *
                                           hcalOfflineDQMSource *
-                                          SiStripDQMTier0 *
+                                          SiStripDQMTier0_hi *
                                           siPixelOfflineDQM_heavyions_source *
                                           dtSources *
                                           rpcTier0Source *
