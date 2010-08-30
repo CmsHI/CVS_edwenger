@@ -8,3 +8,4 @@ hiTracks = "hiGlobalPrimTracks"
 MonitorTrackResiduals.Tracks                      = hiTracks
 MonitorTrackResiduals.trajectoryInput             = hiTracks
 SiStripMonitorTrack.TrackProducer                 = hiTracks
+SiStripMonitorTrack.AlgoName                      = "HeavyIonTk"
