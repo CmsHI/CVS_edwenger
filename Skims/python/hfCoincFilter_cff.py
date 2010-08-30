@@ -21,6 +21,7 @@ hfNegTowers = cms.EDProducer("EtaPtMinCandSelector",
     etaMax = cms.double(-3.0)
 )
 
+
 hfPosFilter = cms.EDFilter("CandCountFilter",
     src = cms.InputTag("hfPosTowers"),
     minNumber = cms.uint32(1)
@@ -31,9 +32,27 @@ hfNegFilter = cms.EDFilter("CandCountFilter",
     minNumber = cms.uint32(1)
 )
 
+hfEitherTowers = cms.EDProducer("CandMerger",
+    src = cms.VInputTag( "hfPosTowers", "hfNegTowers" )
+)
+
+hfEitherFilter = cms.EDFilter("CandCountFilter",
+    src = cms.InputTag("hfEitherTowers"),
+    minNumber = cms.uint32(1) 
+)
+
 hfCoincFilter = cms.Sequence(
+        towersAboveThreshold *
+        hfPosTowers *
+        hfNegTowers *
+        hfPosFilter *
+        hfNegFilter)
+
+
+hfEitherOfTwoFilter = cms.Sequence(
     towersAboveThreshold *
-    hfPosTowers * 
-    hfNegTowers * 
-    hfPosFilter * 
-    hfNegFilter)
+    hfPosTowers *
+    hfNegTowers *
+    hfEitherTowers* 
+    hfEitherFilter)
+
