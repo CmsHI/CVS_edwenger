@@ -39,9 +39,9 @@ subtract_(const uint32_t& id, const uint16_t& firstStrip, const input_t& input, 
 	  *outDigi = 0;
 	  inZeros++;
 	} else {
-	  *outDigi = std::max(0,  ( *ped > 895 )        //FED bottoms out at 0
+	  *outDigi = std::min(1023,std::max(0,  ( *ped > 895 )        //FED bottoms out at 0
 			      ? eval(*inDigi) - *ped + 1024 + ntries*addConstant_
-			      : eval(*inDigi) - *ped        + ntries*addConstant_ );
+			      : eval(*inDigi) - *ped        + ntries*addConstant_ ));
 	}	
 
 	if( eval(*outDigi) == 0 )  outZeros++;
