@@ -35,11 +35,15 @@ subtract_(const uint32_t& id, const uint16_t& firstStrip, const input_t& input, 
       
       while( inDigi != input.end() ) {
 	
-	*outDigi = std::max(0,  ( *ped > 895 )        //FED bottoms out at 0
-			    ? eval(*inDigi) - *ped + 1024 + ntries*addConstant_
-			    : eval(*inDigi) - *ped        + ntries*addConstant_	);
-	
-	if( eval(*inDigi)  == 0 )  inZeros++;
+	if( eval(*inDigi)  == 0 )  {
+	  *outDigi = 0;
+	  inZeros++;
+	} else {
+	  *outDigi = std::max(0,  ( *ped > 895 )        //FED bottoms out at 0
+			      ? eval(*inDigi) - *ped + 1024 + ntries*addConstant_
+			      : eval(*inDigi) - *ped        + ntries*addConstant_ );
+	}	
+
 	if( eval(*outDigi) == 0 )  outZeros++;
 	nDigis++;
 	
@@ -59,7 +63,7 @@ subtract_(const uint32_t& id, const uint16_t& firstStrip, const input_t& input, 
 		  << std::endl;
 
 	if(outZeros-inZeros < minTruncStrips_) {
-	  std::cout << "  --> Not much to be done here.\n" << std::endl;
+	  std::cout << "  --> Nothing more to do here.\n" << std::endl;
 	  break;
 	} else {
 
