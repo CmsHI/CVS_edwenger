@@ -30,7 +30,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V8B::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.6 $'),
+    version = cms.untracked.string('$Revision: 1.7 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -50,7 +50,7 @@ process.load("edwenger.Skims.EventFilter_cff")
 process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
 
-#from PhysicsTools.PatAlgos.tools.jetTools import *
+from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJECSet(process, "Summer09_7TeV_ReReco332") # get the 900 GeV jet corrections, for the moment use default 7TeV JEC
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
