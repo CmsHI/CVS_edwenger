@@ -21,7 +21,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.9 $'),
+    version = cms.untracked.string('$Revision: 1.11 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -47,8 +47,10 @@ switchJECSet( process, "Summer09_7TeV_ReReco332") # get the 7 TeV jet correction
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
 
-#from edwenger.Skims.customise_cfi import *
+from edwenger.Skims.customise_cfi import *
 #process = enableAOD(process)
+# Replace HF coinc with the looser any HF hit evt selection
+#enableEitherHFEvtSel(process)
 
 # =============== Final Paths =====================
 

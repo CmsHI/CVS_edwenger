@@ -55,6 +55,11 @@ def enableHLTJet15U(process):
     process.minBiasBscFilter = cms.Sequence(process.hltJets*process.minBiasBscFilter)
     return process
 
+### this is for make a single hit HF event selection for the AGR (1charged trk) evt selection
+def enableEitherHFEvtSel(process):
+    process.eventFilter.replace(process.hfCoincFilter,process.hfEitherOfTwoFilter)
+    return process
+
 ### this is for GEN analyzer for Pt_hat: 0 ~ 15
 def enableMinPtHatCut(process):
     process.preTrackAna.pthatCut=cms.untracked.double(15.0)
