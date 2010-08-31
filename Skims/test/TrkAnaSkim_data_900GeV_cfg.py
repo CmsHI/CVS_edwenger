@@ -12,25 +12,25 @@ process.load('Configuration/EventContent/EventContent_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-      # Run 134725
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/7E781D15-4380-DF11-902E-001A928116B2.root',
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/3A420F2A-4380-DF11-9B3E-0018F3D096F0.root',
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/103BCE28-4380-DF11-BE6B-00261894395F.root',
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0107/B44DBE51-437E-DF11-B273-002618FDA204.root',
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0107/A8D2D54D-437E-DF11-8712-0030486792DE.root'
+      # may6rr
+      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/60ED4BDC-BF5C-DF11-ABF4-002618943856.root',
+      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/608292E0-B25C-DF11-8047-001A928116DC.root',
+      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/60245B69-BF5C-DF11-A0D5-0018F3D09634.root',
+      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/5ECC499A-815C-DF11-9B24-0018F3D09688.root'
+      # jun14rr
+      #'/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/7E781D15-4380-DF11-902E-001A928116B2.root',
+      #'/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/3A420F2A-4380-DF11-9B3E-0018F3D096F0.root'
       ),
-    lumisToProcess = cms.untracked.VLuminosityBlockRange(
-      '134725:231-134725:700')
     )
 
 # =============== Other Statements =====================
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'GR_R_36X_V12A::All'
+process.GlobalTag.globaltag = 'GR_R_35X_V8B::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.5 $'),
+    version = cms.untracked.string('$Revision: 1.6 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -51,7 +51,7 @@ process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
 
 #from PhysicsTools.PatAlgos.tools.jetTools import *
-#switchJECSet(process, "900GeV") # get the 900 GeV jet corrections, for the moment use default 7TeV spring10 JEC
+switchJECSet(process, "Summer09_7TeV_ReReco332") # get the 900 GeV jet corrections, for the moment use default 7TeV JEC
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
