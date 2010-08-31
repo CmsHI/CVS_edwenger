@@ -30,7 +30,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_36X_V12A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.4 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -56,7 +56,10 @@ process.load("edwenger.Skims.Analysis_cff")
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
 
-#from edwenger.Skims.customise_cfi import *
+from edwenger.Skims.customise_cfi import *
+process.trackAna_STD.evtSelEffv = getEvtSelEff("STD_NSD_900GeV_TrkVtx")
+process.looseTrackAna_STD.evtSelEffv = getEvtSelEff("STD_NSD_900GeV_PixVtx")
+#enableHLTJet15U(process)
 #process = enableAOD(process)
 
 # =============== Final Paths =====================

@@ -41,7 +41,7 @@ trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               evtEffCorrType=cms.untracked.int32(2),   # AGR
                               ptMin=cms.untracked.double(0.5), # AGR
                               evtMultCut=cms.untracked.int32(3),
-                              evtSelEffv = getEvtSelEff('STD_NSD_900GeV_TrkVtx'))
+                              evtSelEffv = getEvtSelEff('STD_NSD_TrkVtx'))
 
 looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
                                vsrc=cms.untracked.InputTag("selectedVertex"))
@@ -52,7 +52,7 @@ looseTrackAna_STD = looseTrackAna.clone(applyEvtEffCorr=cms.untracked.bool(True)
                                         ptMin=cms.untracked.double(0.5), # AGR
                                         evtMultCut=cms.untracked.int32(0),
                                         #evtMultCut=cms.untracked.int32(3),
-				        evtSelEffv = getEvtSelEff('STD_NSD_900GeV_PixVtx'))
+				        evtSelEffv = getEvtSelEff('STD_NSD_PixVtx'))
 
                                         
 # tracking efficiency analyzer
