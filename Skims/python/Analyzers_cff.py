@@ -37,9 +37,7 @@ refitTrackAna = trackAna.clone(src=cms.untracked.InputTag("refitTracks"))
 
 trackAna_STD = trackAna.clone(src = cms.untracked.InputTag("selectTracks"),
                               applyEvtEffCorr=cms.untracked.bool(True),
-                              #evtEffCorrType=cms.untracked.int32(0),  # STD
-                              evtEffCorrType=cms.untracked.int32(2),   # AGR
-                              ptMin=cms.untracked.double(0.5), # AGR
+                              evtEffCorrType=cms.untracked.int32(0),  # STD
                               evtMultCut=cms.untracked.int32(3),
                               evtSelEffv = getEvtSelEff('STD_NSD_TrkVtx'))
 
@@ -47,9 +45,7 @@ looseTrackAna = trackAna.clone(src=cms.untracked.InputTag("looseSelectTracks"),
                                vsrc=cms.untracked.InputTag("selectedVertex"))
 
 looseTrackAna_STD = looseTrackAna.clone(applyEvtEffCorr=cms.untracked.bool(True),
-                                        #evtEffCorrType=cms.untracked.int32(0), # STD
-                                        evtEffCorrType=cms.untracked.int32(2), # AGR
-                                        ptMin=cms.untracked.double(0.5), # AGR
+                                        evtEffCorrType=cms.untracked.int32(0), # STD
                                         evtMultCut=cms.untracked.int32(0),
                                         #evtMultCut=cms.untracked.int32(3),
 				        evtSelEffv = getEvtSelEff('STD_NSD_PixVtx'))

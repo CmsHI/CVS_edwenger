@@ -79,3 +79,14 @@ def getEvtSelEff(evtSelType):
       'STD_NSD_900GeV_PixVtx': [30,0.051323,0.459641,0.654303,0.779912,0.862804,0.918859,0.955648,0.976691,0.987668,0.992159,0.993694,0.991707,0.989005,0.987004,0.985711,0.984101,0.984,0.984631,0.985698,0.987195,0.987634,0.989591,0.990561,0.991783,0.992561,0.993581,0.993937,0.994328,0.994914,0.995531]
 	}
     return eff[evtSelType]
+
+def updateEvtSelEff(ana,evtSelType):
+  # Set the eff sel mode
+  if evtSelType.find('STD') >= 0:
+    ana.ptMin = 0.0
+    ana.evtEffCorrType = 0
+  if evtSelType.find('AGR') >= 0:
+    ana.ptMin = 0.5
+    ana.evtEffCorrType = 2
+  # Set the eff sel eff numbers
+  ana.evtSelEffv = getEvtSelEff(evtSelType)
