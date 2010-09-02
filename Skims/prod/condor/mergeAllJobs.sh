@@ -16,12 +16,12 @@ $topDir/JMT-R10A-PR1-JMTskim-v0_$jobTag \
 jobTag=
 topDir=$scratch/data/MinimumBias
 jobs="\
-$topDir/MB-C10-May6RR-MB900GeVskim-v1 \
-$topDir/MB-C10-May6RR-JMT900GeVskim-v1 \
+$topDir/MB-C10-M6RR-MBHfLooseskim-v0 \
+$topDir/MB-C10-M6RR-JMTHfLooseskim-v0 \
 "
 
 # merge inFolder
-inFolder="."
+inFolder="merge"
 outFolder="mergeAll"
 for i in $jobs; do
   #echo $i

@@ -2,7 +2,8 @@ import os
 
 dcache  = "/pnfs/cmsaf.mit.edu/t2bat/cms"
 scratch = "/net/hidsk0001/d00/scratch/frankma/data/MinimumBias"
-sample  = "MB-C10-May6RR-JMT900GeVskim-v1"
+#sample  = "MB-C10-M6RR-MBHfLooseskim-v0"
+sample  = "MB-C10-M6RR-JMTHfLooseskim-v0"
 
 filelist = []
 
