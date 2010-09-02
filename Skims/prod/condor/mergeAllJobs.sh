@@ -13,6 +13,13 @@ jobs=$jobs"\
 $topDir/JMT-R10A-PR1-JMTskim-v0_$jobTag \
 "
 
+jobTag=
+topDir=$scratch/data/MinimumBias
+jobs="\
+$topDir/MB-C10-May6RR-MB900GeVskim-v1 \
+$topDir/MB-C10-May6RR-JMT900GeVskim-v1 \
+"
+
 # merge inFolder
 inFolder="."
 outFolder="mergeAll"
