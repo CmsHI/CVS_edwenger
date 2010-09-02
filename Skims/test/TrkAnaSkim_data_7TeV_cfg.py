@@ -11,17 +11,21 @@ process.load('Configuration/EventContent/EventContent_cff')
 # =============== 7 TeV Collision Data =====================
 
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring(
-   '/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
-   #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v4/38a0275e6a2a62980cf9b1868edbd493/trkAnaSkimAOD_97_1.root'))
-# =============== Other Statements =====================
+    fileNames = cms.untracked.vstring(
+      #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
+      #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v4/38a0275e6a2a62980cf9b1868edbd493/trkAnaSkimAOD_97_1.root'))
+      # jun14rr
+      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/7E781D15-4380-DF11-902E-001A928116B2.root',
+      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/3A420F2A-4380-DF11-9B3E-0018F3D096F0.root'
+      ))
+    # =============== Other Statements =====================
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
+process.GlobalTag.globaltag = 'GR_R_36X_V12A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.14 $'),
+    version = cms.untracked.string('$Revision: 1.15 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -42,16 +46,16 @@ process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Summer09_7TeV_ReReco332") # default is 7TeV JEC
+#switchJECSet( process, "Summer09_7TeV_ReReco332") # if not explicit then takes from Relesae default
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
 
 from edwenger.Skims.customise_cfi import *
-# Replace HF coinc with the looser any HF hit evt selection
-enableEitherHFEvtSel(process)
-updateEvtSelEff(process.trackAna_STD,"AGR_Inel_EitherHF_TrkVtx")
-updateEvtSelEff(process.looseTrackAna_STD,"AGR_Inel_EitherHF_PixVtx")
+#enableEitherHFEvtSel(process) # Replace HF coinc with the looser any HF hit evt selection
+#enableHLTJet15U(process)
+updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
+updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 #process = enableAOD(process)
 
 # =============== Final Paths =====================
