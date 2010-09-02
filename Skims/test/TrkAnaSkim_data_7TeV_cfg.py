@@ -15,8 +15,9 @@ process.source = cms.Source("PoolSource",
       #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
       #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v4/38a0275e6a2a62980cf9b1868edbd493/trkAnaSkimAOD_97_1.root'))
       # jun14rr
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/7E781D15-4380-DF11-902E-001A928116B2.root',
-      '/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/3A420F2A-4380-DF11-9B3E-0018F3D096F0.root'
+      '/store/data/Run2010A/JetMETTau/RECO/Jun14thReReco_v2/0000/5C4D249B-4179-DF11-8CE3-0025B3E06396.root',
+      '/store/data/Run2010A/JetMETTau/RECO/Jun14thReReco_v2/0000/56D1F17A-3979-DF11-A340-003048D476DA.root',
+      '/store/data/Run2010A/JetMETTau/RECO/Jun14thReReco_v2/0000/4A5A42A3-4379-DF11-A264-003048636198.root'
       ))
     # =============== Other Statements =====================
 
@@ -25,7 +26,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_36X_V12A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.15 $'),
+    version = cms.untracked.string('$Revision: 1.16 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
