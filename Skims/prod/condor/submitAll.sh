@@ -2,7 +2,20 @@
 ./create_custom_python_cfg.sh
 
 scratch=/net/hidsk0001/d00/scratch/frankma
-jobTag=proc0823_1ChPrimEvtSel
+jobTag=proc0902_looseSelectTracks
+
+# ================== 900GeV ===============
+job=MB-C10-M6RR-MBHfLooseskim-v0
+inputList=pub_list/$job.txt
+output_dir=$scratch/data/MinimumBias/${job}_${jobTag}
+./submitJob.sh $inputList $output_dir
+
+job=MB-C10-M6RR-JMTHfLooseskim-v0
+inputList=pub_list/$job.txt
+output_dir=$scratch/data/MinimumBias/${job}_${jobTag}
+./submitJob.sh $inputList $output_dir
+
+exit
 
 # ===================== 358p3 =====================
 job=MB-C10-M6RR-MBskim-v0

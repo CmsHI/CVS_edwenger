@@ -15,15 +15,17 @@ process.source = cms.Source("PoolSource",
      #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
      #'/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c/trkAnaSkimAOD_100_1.root'))
      #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2/86d28cd0599312fbc0b38fb077d9e1fc/trkAnaSkimAOD_10_1.root'))
-   '/store/user/edwenger/MinimumBias/MB-C10-PR9-MBskim-v0/41db2a25372977708462def4fd0d0a92/trkAnaSkimAOD_89_1.root'))
+     #'/store/user/edwenger/MinimumBias/MB-C10-PR9-MBskim-v0/41db2a25372977708462def4fd0d0a92/trkAnaSkimAOD_89_1.root'))
+   '/store/user/frankma/MinimumBias/MB-C10-M6RR-MBHfLooseskim-v0/731e11dd8899c883730fd3f1e4a373e3/trkAnaSkimAOD_282_2_hxv.root'))
+
 # =============== Other Statements =====================
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'GR_R_35X_V7A::All'
+process.GlobalTag.globaltag = 'GR_R_35X_V8B::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.9 $'),
+    version = cms.untracked.string('$Revision: 1.10 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/prod/condor/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -49,6 +51,9 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
 
 from edwenger.Skims.customise_cfi import *
+enableEitherHFEvtSel(process) # Replace HF coinc with the looser any HF hit evt selection
+updateEvtSelEff(process.trackAna_STD,"AGR_Inel_EitherHF_TrkVtx")
+updateEvtSelEff(process.looseTrackAna_STD,"AGR_Inel_EitherHF_PixVtx")
 process = enableAOD(process)
 
 # =============== Final Paths =====================
@@ -58,14 +63,13 @@ process.extraReco_step   = cms.Path(process.extraReco)
 process.ana_step         = cms.Path(process.analysisSeq)
 
 # === Simplify for Standard Data processing ===
-#process.ana_step.remove(process.looseTrackAna)
-#process.ana_step.remove(process.looseTrackAna_STD)
+process.ana_step.remove(process.trackAna)
+process.ana_step.remove(process.looseTrackAna)
 process.ana_step.remove(process.loosetrkEffAnalyzer)
 process.ana_step.remove(process.trkEffAnalyzer)
 process.ana_step.remove(process.refitTrackAna)
 
 # === Ana Ouput Content ===
-process.trackAna.histOnly = False
 process.trackAna_STD.histOnly = False
 #process.trkEffAnalyzer.fillNtuples = True
 
