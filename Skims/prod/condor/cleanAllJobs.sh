@@ -19,8 +19,8 @@ $topDir/JMT-R10A-PR1-JMTskim-v0_$jobTag \
 jobTag=
 topDir=$scratch/data/MinimumBias
 jobs="\
-$topDir/MB-C10-May6RR-MB900GeVskim-v1 \
-$topDir/MB-C10-May6RR-JMT900GeVskim-v1 \
+$topDir/MB-C10-M6RR-MBHfLooseskim-v0_proc0902_looseSelectTracks \
+$topDir/MB-C10-M6RR-JMTHfLooseskim-v0_proc0902_looseSelectTracks \
 "
 
 for i in $jobs; do
