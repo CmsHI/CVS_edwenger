@@ -30,7 +30,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_R_35X_V8B::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -59,7 +59,7 @@ removeMCMatching(process, ['All']) # turn off MC matching for data
 from edwenger.Skims.customise_cfi import *
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_900GeV_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_900GeV_PixVtx")
-#enableHLTJet15U(process)
+#enableHLTJet(process)
 #process = enableAOD(process)
 
 # =============== Final Paths =====================

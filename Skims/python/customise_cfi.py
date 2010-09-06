@@ -48,10 +48,10 @@ def enableAOD(process):
 
 
 ### this is for selecting jet events instead of prescaled MB
-def enableHLTJet15U(process):
+def enableHLTJet(process,hltname='HLT_Jet15U'):
     process.minBiasBscFilter.remove(process.bscOrBptxOr)
     process.minBiasBscFilter.remove(process.hltMinBias)
-    process.hltJets.HLTPaths = ['HLT_Jet15U']
+    process.hltJets.HLTPaths = [hltname]
     process.minBiasBscFilter = cms.Sequence(process.hltJets*process.minBiasBscFilter)
     return process
 
