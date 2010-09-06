@@ -53,6 +53,8 @@ def enableHLTJet(process,hltname='HLT_Jet15U'):
     process.minBiasBscFilter.remove(process.hltMinBias)
     process.hltJets.HLTPaths = [hltname]
     process.minBiasBscFilter = cms.Sequence(process.hltJets*process.minBiasBscFilter)
+    # check
+    print "Skim jet HLT path: ", process.hltJets.HLTPaths
     return process
 
 ### this is for make a single hit HF event selection for the AGR (1charged trk) evt selection
