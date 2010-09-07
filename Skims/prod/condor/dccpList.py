@@ -3,13 +3,14 @@ import os
 dcache  = "/pnfs/cmsaf.mit.edu/t2bat/cms"
 scratch = "/net/hidsk0001/d00/scratch/frankma/data"
 samples  = {
-    #"MinimumBias":"MB-R10A-Jun14RR-MBskim-v0",
-    #"JetMETTau":"JMT-R10A-Jun14RR-J15Uskim-v0"
-    "JetMETTau":"JMT-R10A-PR4-Jet50Uskim-v0",
-    "JetMETTau":"JMT-R10A-PR4-Jet15Uskim-v0"
+    #"MB-R10A-Jun14RR-MBskim-v0":"MinimumBias",
+    #"JMT-R10A-Jun14RR-J15Uskim-v0":"JetMETTau"
+    "JMT-R10A-PR4-Jet50Uskim-v0":"JetMETTau",
+    "JMT-R10A-PR4-Jet15Uskim-v0":"JetMETTau"
     }
 
-for PD,sample in samples.items():
+for sample,PD in samples.items():
+  print "===== sample: ",PD,sample," =====\n"
   outdir=scratch+"/"+PD+"/"+sample
   os.system('mkdir -p '+outdir)
 
