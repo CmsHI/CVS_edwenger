@@ -9,3 +9,4 @@ dqmHarvesting = cms.Path(DQMOfflineHeavyIons_SecondStep*DQMOfflineHeavyIons_Cert
 dqmHarvestingPOG = cms.Path(DQMOfflineHeavyIons_SecondStep_PrePOG)
 
 validationHarvesting = cms.Path(postValidationHI)
+validationHarvestingHI = cms.Path(postValidationHI) ## for backwards compatibility?
