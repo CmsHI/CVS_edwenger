@@ -20,6 +20,3 @@ hcalRawDataMonitor.FEDRawDataCollection = 'rawDataCollector'
 ecalPreshowerFEDIntegrityTask.FEDRawDataCollection = 'rawDataCollector'
 ecalPreshowerRawDataTask.FEDRawDataCollection = 'rawDataCollector'
 
-# is this still needed?
-hcalDigiMonitor.minDigiSize = 6 # was 10
-hcalMonitorTasksOfflineSequence.remove(hcalRawDataMonitor)
