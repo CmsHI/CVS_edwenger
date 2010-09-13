@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
-__version__ = "$Revision: 1.204 $"
-__source__ = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v $"
+__version__ = "$Revision: 1.9 $"
+__source__ = "$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Misc/ConfigBuilder.py,v $"
 
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.Modules import _Module
@@ -481,7 +481,7 @@ class ConfigBuilder(object):
             if self._options.isMC==True:
                 self.DQMOFFLINEDefaultCFF="DQMOffline/Configuration/DQMOfflineHeavyIonsMC_cff"
             self.HARVESTINGDefaultCFF="Configuration/StandardSequences/HarvestingHeavyIons_cff"
-
+            self.ALCADefaultCFF="Configuration/StandardSequences/AlCaRecoStreamsHeavyIons_cff"
 
         # the magnetic field
         if self._options.magField=='Default':
@@ -1015,7 +1015,7 @@ process.%s.visit(ConfigBuilder.MassSearchReplaceProcessNameVisitor("HLT", "%s", 
     def build_production_info(self, evt_type, evtnumber):
         """ Add useful info for the production. """
         prod_info=cms.untracked.PSet\
-              (version=cms.untracked.string("$Revision: 1.204 $"),
+              (version=cms.untracked.string("$Revision: 1.9 $"),
                name=cms.untracked.string("PyReleaseValidation"),
                annotation=cms.untracked.string(evt_type+ " nevts:"+str(evtnumber))
               )
