@@ -36,7 +36,7 @@ bscOrBptxOr = l1Filter.clone(
 from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 
 hltMinBias = hltHighLevel.clone(
-    HLTPaths = cms.vstring('L1_BscMinBiasOR_BptxPlusORMinus'),
+    HLTPaths = cms.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus'),
     andOr = cms.bool(True)
     )
 
