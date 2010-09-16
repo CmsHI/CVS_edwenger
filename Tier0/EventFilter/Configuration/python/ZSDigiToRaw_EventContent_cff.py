@@ -8,8 +8,8 @@ OutZSRAW = cms.PSet(
     ),
     outputCommands = cms.untracked.vstring(
       'drop FEDRawDataCollection_*_*_*',
-      'keep FEDRawDataCollection_source_ZSRAW_*', 
-      'keep FEDRawDataCollection_rawDataCollector_ZSRAW_*',
+      'keep FEDRawDataCollection_source_*_RECO', 
+      'keep FEDRawDataCollection_rawDataCollector_*_RECO',
       'keep *_*_APVCM_*')
     )
 
