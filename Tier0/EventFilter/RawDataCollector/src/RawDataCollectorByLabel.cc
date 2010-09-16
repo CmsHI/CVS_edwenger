@@ -25,7 +25,7 @@ RawDataCollectorByLabel::RawDataCollectorByLabel(const edm::ParameterSet& pset) 
   inputTags_ = pset.getParameter<std::vector<InputTag> >("RawCollectionList");
   verbose_ = pset.getUntrackedParameter<int>("verbose",0);
 
-  produces<FEDRawDataCollection>("ZSRAW");
+  produces<FEDRawDataCollection>();
 }
 
 RawDataCollectorByLabel::~RawDataCollectorByLabel(){
@@ -81,7 +81,7 @@ void RawDataCollectorByLabel::produce(Event & e, const EventSetup& c){
  }
 
  // Insert the new product in the event  
- e.put(producedData,"ZSRAW");  
+ e.put(producedData);  
 
 }
 
