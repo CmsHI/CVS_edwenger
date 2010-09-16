@@ -81,7 +81,7 @@ void RawDataCollectorByLabel::produce(Event & e, const EventSetup& c){
  }
 
  // Insert the new product in the event  
- e.put(producedData);  
+ e.put(producedData,"ZSRAW");  
 
 }
 
