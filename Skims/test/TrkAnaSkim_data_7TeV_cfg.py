@@ -19,18 +19,21 @@ process.source = cms.Source("PoolSource",
       #'/store/data/Run2010A/JetMETTau/RECO/Jun14thReReco_v2/0000/56D1F17A-3979-DF11-A340-003048D476DA.root',
       #'/store/data/Run2010A/JetMETTau/RECO/Jun14thReReco_v2/0000/4A5A42A3-4379-DF11-A264-003048636198.root'
       # jmt pr4: run >137436 (CMSSW_3_6_1_patch4) 
-      '/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/28ADC2FF-708E-DF11-B715-001D09F2527B.root',
-      '/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/24F181DC-8A8E-DF11-BCFE-003048F1183E.root',
-      '/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/22228061-A18E-DF11-9FAE-003048F1183E.root'
+      #'/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/28ADC2FF-708E-DF11-B715-001D09F2527B.root',
+      #'/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/24F181DC-8A8E-DF11-BCFE-003048F1183E.root',
+      #'/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/22228061-A18E-DF11-9FAE-003048F1183E.root'
+      # jm pr4: run > 141950
+      '/store/data/Run2010A/JetMET/RECO/v4/000/144/114/F4E53E34-31B4-DF11-9A2C-0030487CD6D8.root',
+      '/store/data/Run2010A/JetMET/RECO/v4/000/144/114/C8E66A3C-28B4-DF11-BA17-001D09F24763.root'
       ))
     # =============== Other Statements =====================
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'GR_R_36X_V12A::All'
+process.GlobalTag.globaltag = 'GR10_P_V7::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.17 $'),
+    version = cms.untracked.string('$Revision: 1.18 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
