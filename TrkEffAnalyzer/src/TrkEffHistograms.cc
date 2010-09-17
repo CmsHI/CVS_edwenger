@@ -55,7 +55,7 @@ TrkEffHistograms::declareHistograms()
        for(pt =  13.2; pt <  25.2-small; pt +=  1.0 ) ptBins.push_back(pt); // 12 bins
        for(pt =  25.2; pt <  61.2-small; pt +=  3.0 ) ptBins.push_back(pt); // 12 bins
        for(pt =  61.2; pt < 121.2-small; pt +=  5.0 ) ptBins.push_back(pt); // 12 bins
-       for(pt = 121.2; pt < 241.2-small; pt += 10.0 ) ptBins.push_back(pt); // 12 bins
+       for(pt = 121.2; pt < 361.2-small; pt += 10.0 ) ptBins.push_back(pt); // 12 bins
 
     }else if(lowPtMode){
 
@@ -88,7 +88,7 @@ TrkEffHistograms::declareHistograms()
 
     // jet et bins
     static float jetMin = 0.0;
-    static float jetMax = 1200; // good to be matched with ana 
+    static float jetMax = 2400; // good to be matched with ana 
     static float jetWidth = 20;
 
     for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
