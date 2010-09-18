@@ -417,8 +417,7 @@ class ConfigBuilder(object):
         self.ENDJOBDefaultCFF="Configuration/StandardSequences/EndOfProcess_cff"
         self.ConditionsDefaultCFF = "Configuration/StandardSequences/FrontierConditions_GlobalTag_cff"
         self.CFWRITERDefaultCFF = "Configuration/StandardSequences/CrossingFrameWriter_cff"
-	## EAW 16.09.10
-	self.ZSDIGI2RAWDefaultCFF="Configuration/StandardSequences/ZSDigiToRawStreams_cff"
+	self.ZSDIGI2RAWDefaultCFF="Configuration/StandardSequences/ZSDigiToRaw_Data_cff" ## EAW 16.09.10
 
         # synchronize the geometry configuration and the FullSimulation sequence to be used
         if self._options.geometry not in defaultOptions.geometryExtendedOptions:
@@ -451,8 +450,7 @@ class ConfigBuilder(object):
         self.VALIDATIONDefaultSeq='validation'
         self.PATLayer0DefaultSeq='all'
         self.ENDJOBDefaultSeq='endOfProcess'
-	## EAW 16.09.10
-	self.ZSDIGI2RAWDefaultSeq='ZSDigiToRaw'
+	self.ZSDIGI2RAWDefaultSeq='ZSDigiToRaw' ## EAW 16.09.10
 
         self.EVTCONTDefaultCFF="Configuration/EventContent/EventContent_cff"
         self.defaultMagField='38T'
@@ -467,7 +465,7 @@ class ConfigBuilder(object):
                 self.RAW2DIGIDefaultCFF="Configuration/StandardSequences/RawToDigi_cff"
                 self.DQMOFFLINEDefaultCFF="DQMOffline/Configuration/DQMOfflineMC_cff"
                 self.ALCADefaultCFF="Configuration/StandardSequences/AlCaRecoStreamsMC_cff"
-		self.ZSDIGI2RAWDefaultCFF="Configuration/StandardSequences/ZSDigiToRawStreamsMC_cff" ## EAW 16.09.10
+		self.ZSDIGI2RAWDefaultCFF="Configuration/StandardSequences/ZSDigiToRaw_cff" ## EAW 16.09.10
 
         # now for #%#$#! different scenarios
 
@@ -705,21 +703,12 @@ class ConfigBuilder(object):
         return
 
     ## EAW 16.09.10
-    def prepare_ZSDIGI2RAW(self, sequence = None, workflow='full'):
-        """ Enrich the process with zsraw streams """
-	zsrawConfig=self.loadDefaultOrSpecifiedCFF(sequence,self.ZSDIGI2RAWDefaultCFF)
-        sequence = sequence.split('.')[-1]
-        # decide which ZSDIGI2RAW paths to use
-        zsrawList = sequence.split("+")
-        for name in zsrawConfig.__dict__:
-            zsrawstream = getattr(zsrawConfig,name)
-            shortName = name.replace('ZSRAWStream','')
-            if shortName in zsrawList and isinstance(zsrawstream,cms.FilteredStream):
-                self.addExtraStream(name,zsrawstream, workflow = workflow)
-                zsrawList.remove(shortName)
-        if len(zsrawList) != 0:
-            raise Exception("The following zsdigi2raw streams could not be found"+str(zsrawList))
-
+    def prepare_ZSDIGI2RAW(self, sequence = None):
+        self.loadAndRemember(self.ZSDIGI2RAWDefaultCFF)
+	self.process.zsdigi2raw_step = cms.Path( self.process.ZSDigiToRaw )
+	self.schedule.append(self.process.zsdigi2raw_step)
+	return
+	    
     def prepare_L1(self, sequence = None):
         """ Enrich the schedule with the L1 simulation step"""
         if not sequence:
