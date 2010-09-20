@@ -4,6 +4,6 @@ ZSDigiToRawContent = cms.PSet(
     outputCommands = cms.untracked.vstring(
       'drop FEDRawDataCollection_*_*_*',
       'keep FEDRawDataCollection_source_*_RECO', 
-      'keep FEDRawDataCollection_rawDataCollector_*_RECO',
-      'keep *_*_APVCM_*')
+      'keep FEDRawDataCollection_rawDataCollector_*_RECO'
+      )
     )

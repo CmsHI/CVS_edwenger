@@ -54,7 +54,9 @@ RECODEBUGEventContent.outputCommands.extend(RecoHIRECO.outputCommands)
 #now define ZSRAW as an extension of RAW
 ZSRAWEventContent = RAWEventContent.clone()
 ZSRAWEventContent.outputCommands.extend(ZSDigiToRawContent.outputCommands)
+ZSRAWEventContent.outputCommands.extend(RecoHiTrackerLocalFEVT.outputCommands)
 
 #and similarly ZSRAWSIM
 ZSRAWSIMEventContent = RAWSIMEventContent.clone()
 ZSRAWSIMEventContent.outputCommands.extend(ZSDigiToRawContent.outputCommands)
+ZSRAWSIMEventContent.outputCommands.extend(RecoHiTrackerLocalFEVT.outputCommands)
