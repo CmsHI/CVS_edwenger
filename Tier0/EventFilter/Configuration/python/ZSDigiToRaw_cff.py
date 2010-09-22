@@ -15,19 +15,16 @@ SiStripDigiToZSRaw = EventFilter.SiStripRawToDigi.SiStripDigiToRaw_cfi.SiStripDi
 ## (2) Combine new ZS RAW from tracker with existing RAW for other FEDs
 ##
 
-# ~MC~
 from EventFilter.RawDataCollector.rawDataCollectorByLabel_cfi import rawDataCollector
-rawDataCollector.verbose = 0
 
-# ~Data~
-source = rawDataCollector.clone(
+zsSource = rawDataCollector.clone(
+    verbose = cms.untracked.int32(0),
     RawCollectionList = cms.VInputTag( cms.InputTag('SiStripDigiToZSRaw'),
                                        cms.InputTag('source'))
     )
 
 ##
-## ZSDigiToRaw Sequences (MC and Data)
+## ZSDigiToRaw Sequence
 ##
 
-zsDigiToRawMC = cms.Sequence( SiStripDigiToZSRaw * rawDataCollector )
-zsDigiToRawData = cms.Sequence( SiStripDigiToZSRaw * source )
+zsDigiToRaw = cms.Sequence( SiStripDigiToZSRaw * zsSource )
