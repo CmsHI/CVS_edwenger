@@ -3,22 +3,18 @@
 dir=`pwd`
 
 cd $CMSSW_BASE/src
+
+cvs co -r V14-00-11 DQM/HcalMonitorModule
+cvs co -r V03-04-12 DQM/SiStripMonitorClient
+cvs co -r V03-02-08 DQM/SiPixelCommon
+cvs co -r V03-12-08 DQM/SiPixelMonitorClient
+cvs co -r V03-02-13 DQM/TrackingMonitor
+
 addpkg DQMOffline/Configuration
-addpkg DQM/HcalMonitorModule
-addpkg DQM/SiStripMonitorClient
-addpkg DQM/SiPixelCommon
-addpkg DQM/SiPixelMonitorClient
-addpkg DQM/TrackingMonitor
 addpkg Configuration/StandardSequences
 addpkg Configuration/PyReleaseValidation
 
 cd $dir
 cp DQMOfflineHeavyIons*.py $CMSSW_BASE/src/DQMOffline/Configuration/python
-cp hcal_dqm_source_fileT0_HeavyIons_cff.py $CMSSW_BASE/src/DQM/HcalMonitorModule/python
-cp SiStrip*Config*cff.py $CMSSW_BASE/src/DQM/SiStripMonitorClient/python
-cp SiPixel*DQM_*_cff.py $CMSSW_BASE/src/DQM/SiPixelCommon/python
-cp sipixel_tier0_qualitytest_heavyions.xml $CMSSW_BASE/src/DQM/SiPixelMonitorClient/test
-cp sistrip_qualitytest_config_tier0_heavyions.xml $CMSSW_BASE/src/DQM/SiStripMonitorClient/data
-cp TrackerHeavyIonTrackingMonitor_cfi.py $CMSSW_BASE/src/DQM/TrackingMonitor/python
 cp Harvesting*cff.py $CMSSW_BASE/src/Configuration/StandardSequences/python
 cp ConfigBuilder.py $CMSSW_BASE/src/Configuration/PyReleaseValidation/python
