@@ -12,7 +12,7 @@ from Configuration.EventContent.EventContent_cff import DQMEventContent
 # Heavy-Ion Specific Event Content
 from SimGeneral.Configuration.SimGeneral_HiMixing_EventContent_cff import * # heavy ion signal mixing
 from RecoHI.Configuration.RecoHI_EventContent_cff import *                  # heavy ion reconstruction
-from EventFilter.Configuration.ZSDigiToRaw_EventContent_cff import *        # RAW content after offline ZS
+from EventFilter.Configuration.Repack_EventContent_cff import *        # RAW content after offline ZS
 
 #################################################################
 
@@ -51,12 +51,12 @@ FEVTDEBUGHLTEventContent.outputCommands.extend(RecoHIFEVT.outputCommands)
 RECODEBUGEventContent.outputCommands.extend(HiMixRAW.outputCommands)
 RECODEBUGEventContent.outputCommands.extend(RecoHIRECO.outputCommands)
 
-#now define ZSRAW as an extension of RAW
-ZSRAWEventContent = RAWEventContent.clone()
-ZSRAWEventContent.outputCommands.extend(ZSDigiToRawContent.outputCommands)
-ZSRAWEventContent.outputCommands.extend(RecoHiTrackerLocalFEVT.outputCommands)
+#now define REPACKRAW as an extension of RAW
+REPACKRAWEventContent = RAWEventContent.clone()
+REPACKRAWEventContent.outputCommands.extend(RepackRAW.outputCommands)
+REPACKRAWEventContent.outputCommands.extend(RecoHiTrackerLocalFEVT.outputCommands)
 
-#and similarly ZSRAWSIM
-ZSRAWSIMEventContent = RAWSIMEventContent.clone()
-ZSRAWSIMEventContent.outputCommands.extend(ZSDigiToRawContent.outputCommands)
-ZSRAWSIMEventContent.outputCommands.extend(RecoHiTrackerLocalFEVT.outputCommands)
+#and similarly REPACKRAWSIM
+REPACKRAWSIMEventContent = RAWSIMEventContent.clone()
+REPACKRAWSIMEventContent.outputCommands.extend(RepackRAW.outputCommands)
+REPACKRAWSIMEventContent.outputCommands.extend(RecoHiTrackerLocalFEVT.outputCommands)

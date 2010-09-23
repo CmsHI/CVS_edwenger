@@ -23,7 +23,6 @@ defaultOptions.scenarioOptions=['pp','cosmics','nocoll','HeavyIons']
 defaultOptions.harvesting= 'AtRunEnd'
 defaultOptions.gflash = False
 defaultOptions.himix = False
-defaultOptions.zs = False #EAW 22.09.10
 defaultOptions.number = 0
 defaultOptions.arguments = ""
 defaultOptions.name = "NO NAME GIVEN"
@@ -418,7 +417,7 @@ class ConfigBuilder(object):
         self.ENDJOBDefaultCFF="Configuration/StandardSequences/EndOfProcess_cff"
         self.ConditionsDefaultCFF = "Configuration/StandardSequences/FrontierConditions_GlobalTag_cff"
         self.CFWRITERDefaultCFF = "Configuration/StandardSequences/CrossingFrameWriter_cff"
-	self.ZSDIGI2RAWDefaultCFF="Configuration/StandardSequences/ZSDigiToRaw_Data_cff" ## EAW 16.09.10
+	self.REPACKDefaultCFF="Configuration/StandardSequences/DigiToRaw_Repack_cff" ## EAW 22.09.10
 
         # synchronize the geometry configuration and the FullSimulation sequence to be used
         if self._options.geometry not in defaultOptions.geometryExtendedOptions:
@@ -451,7 +450,7 @@ class ConfigBuilder(object):
         self.VALIDATIONDefaultSeq='validation'
         self.PATLayer0DefaultSeq='all'
         self.ENDJOBDefaultSeq='endOfProcess'
-	self.ZSDIGI2RAWDefaultSeq=None ## EAW 16.09.10
+	self.REPACKDefaultSeq='DigiToRawRepack' ## EAW 22.09.10
 
         self.EVTCONTDefaultCFF="Configuration/EventContent/EventContent_cff"
         self.defaultMagField='38T'
@@ -466,7 +465,6 @@ class ConfigBuilder(object):
                 self.RAW2DIGIDefaultCFF="Configuration/StandardSequences/RawToDigi_cff"
                 self.DQMOFFLINEDefaultCFF="DQMOffline/Configuration/DQMOfflineMC_cff"
                 self.ALCADefaultCFF="Configuration/StandardSequences/AlCaRecoStreamsMC_cff"
-		self.ZSDIGI2RAWDefaultCFF="Configuration/StandardSequences/ZSDigiToRaw_cff" ## EAW 16.09.10
 
         # now for #%#$#! different scenarios
 
@@ -703,11 +701,11 @@ class ConfigBuilder(object):
         self.schedule.append(self.process.digi2raw_step)
         return
 
-    ## EAW 16.09.10
-    def prepare_ZSDIGI2RAW(self, sequence = None):
-        self.loadAndRemember(self.ZSDIGI2RAWDefaultCFF)
-	self.process.zsdigi2raw_step = cms.Path( self.process.ZSDigiToRaw )
-	self.schedule.append(self.process.zsdigi2raw_step)
+    ## EAW 22.09.10
+    def prepare_REPACK(self, sequence = "DigiToRawRepack"):
+        self.loadDefaultOrSpecifiedCFF(sequence,self.REPACKDefaultCFF)
+	self.process.repack_step = cms.Path( getattr(self.process, sequence.split('.')[-1]) )
+	self.schedule.append(self.process.repack_step)
 	return
 	    
     def prepare_L1(self, sequence = None):
@@ -756,10 +754,7 @@ class ConfigBuilder(object):
 
 
     def prepare_RAW2DIGI(self, sequence = "RawToDigi"):
-        if self._options.zs==True: #EAW 22.09.10
-	    self.loadDefaultOrSpecifiedCFF(sequence,"Configuration/StandardSequences/RawToDigi_ZSRAW_cff")
-        else:
-	    self.loadDefaultOrSpecifiedCFF(sequence,self.RAW2DIGIDefaultCFF)
+        self.loadDefaultOrSpecifiedCFF(sequence,self.RAW2DIGIDefaultCFF)
 	self.process.raw2digi_step = cms.Path( getattr(self.process, sequence.split('.')[-1]) )
 	self.schedule.append(self.process.raw2digi_step)
 	return

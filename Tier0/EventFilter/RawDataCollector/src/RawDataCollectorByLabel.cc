@@ -39,8 +39,10 @@ void RawDataCollectorByLabel::produce(Event & e, const EventSetup& c){
  std::vector< Handle<FEDRawDataCollection> > rawData;
  for(tag_iterator_t inputTag = inputTags_.begin(); inputTag != inputTags_.end(); ++inputTag ) {
    Handle<FEDRawDataCollection> input;
-   e.getByLabel(*inputTag,input);
-   rawData.push_back(input);
+   try {
+     e.getByLabel(*inputTag,input);
+   } catch (...) {}
+   if(input.isValid()) rawData.push_back(input);
  }
 
  std::auto_ptr<FEDRawDataCollection> producedData(new FEDRawDataCollection);
