@@ -23,6 +23,7 @@ defaultOptions.scenarioOptions=['pp','cosmics','nocoll','HeavyIons']
 defaultOptions.harvesting= 'AtRunEnd'
 defaultOptions.gflash = False
 defaultOptions.himix = False
+defaultOptions.zs = False #EAW 22.09.10
 defaultOptions.number = 0
 defaultOptions.arguments = ""
 defaultOptions.name = "NO NAME GIVEN"
@@ -450,7 +451,7 @@ class ConfigBuilder(object):
         self.VALIDATIONDefaultSeq='validation'
         self.PATLayer0DefaultSeq='all'
         self.ENDJOBDefaultSeq='endOfProcess'
-	self.ZSDIGI2RAWDefaultSeq='ZSDigiToRaw' ## EAW 16.09.10
+	self.ZSDIGI2RAWDefaultSeq=None ## EAW 16.09.10
 
         self.EVTCONTDefaultCFF="Configuration/EventContent/EventContent_cff"
         self.defaultMagField='38T'
@@ -755,10 +756,13 @@ class ConfigBuilder(object):
 
 
     def prepare_RAW2DIGI(self, sequence = "RawToDigi"):
+        if self._options.zs==True: #EAW 22.09.10
+	    self.loadDefaultOrSpecifiedCFF(sequence,"Configuration/StandardSequences/RawToDigi_ZSRAW_cff")
+        else:
 	    self.loadDefaultOrSpecifiedCFF(sequence,self.RAW2DIGIDefaultCFF)
-	    self.process.raw2digi_step = cms.Path( getattr(self.process, sequence.split('.')[-1]) )
-	    self.schedule.append(self.process.raw2digi_step)
-	    return
+	self.process.raw2digi_step = cms.Path( getattr(self.process, sequence.split('.')[-1]) )
+	self.schedule.append(self.process.raw2digi_step)
+	return
 
     def prepare_L1HwVal(self, sequence = 'L1HwVal'):
         ''' Enrich the schedule with L1 HW validation '''
