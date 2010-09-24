@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.56 2010/08/03 11:32:05 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.57 2010/09/17 13:40:19 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -285,7 +285,7 @@ TrackSpectraAnalyzer::beginJob()
    for(ptb =  25.2; ptb <  61.2-small; ptb +=  3.0 ) ptBins.push_back(ptb); // 12 bins
    for(ptb =  61.2; ptb < 121.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 12 bins
    for(ptb = 121.2; ptb < 361.2-small; ptb += 10.0 ) ptBins.push_back(ptb); // 24 bins
-
+   ptBins.push_back(361.2);
 
    // eta bins
    static float etaMin   = -2.4;

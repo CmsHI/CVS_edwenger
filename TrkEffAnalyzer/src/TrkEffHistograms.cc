@@ -56,6 +56,7 @@ TrkEffHistograms::declareHistograms()
        for(pt =  25.2; pt <  61.2-small; pt +=  3.0 ) ptBins.push_back(pt); // 12 bins
        for(pt =  61.2; pt < 121.2-small; pt +=  5.0 ) ptBins.push_back(pt); // 12 bins
        for(pt = 121.2; pt < 361.2-small; pt += 10.0 ) ptBins.push_back(pt); // 12 bins
+       ptBins.push_back(361.2);
 
     }else if(lowPtMode){
 
