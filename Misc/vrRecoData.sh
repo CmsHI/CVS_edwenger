@@ -8,6 +8,4 @@ cmsDriver.py vrRecoData -n -1 \
 --conditions FrontierConditions_GlobalTag,GR10_E_V9::All --data \
 --datatier 'RECO','REPACK' --eventcontent RECO,REPACKRAW \
 --filein=$infile --fileout=$outfile --processName 'RERECO' \
---customise RecoLocalTracker/SiStripZeroSuppression/customiseCMN.py \
---cust_function customiseIteratedMedian \
 --no_exec
