@@ -5,7 +5,7 @@ outfile="data_VR_RECO.root"
 
 cmsDriver.py vrRecoData -n -1 \
 -s RAW2DIGI,RECO,REPACK  --scenario HeavyIons \
---conditions FrontierConditions_GlobalTag,GR10_E_V9::All --data \
+--conditions FrontierConditions_GlobalTag,GR_R_39X_V0::All --data \
 --datatier 'RECO','REPACK' --eventcontent RECO,REPACKRAW \
 --filein=$infile --fileout=$outfile --processName 'RERECO' \
 --no_exec
