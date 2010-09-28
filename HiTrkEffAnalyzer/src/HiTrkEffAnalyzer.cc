@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.15 2010/07/07 14:32:46 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.1 2010/07/08 17:09:57 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -40,7 +40,8 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   bsTags_(iConfig.getUntrackedParameter<edm::InputTag>("beamspot")),
   doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true)),
   hasSimInfo_(iConfig.getUntrackedParameter<bool>("hasSimInfo",false)),
-  pixelMultMode_(iConfig.getUntrackedParameter<bool>("pixelMultMode",false))
+  pixelMultMode_(iConfig.getUntrackedParameter<bool>("pixelMultMode",false)),
+  useJetEt_(iConfig.getUntrackedParameter<bool>("useJetEt",true))
 {
 
   histograms = new HiTrkEffHistograms(iConfig);
@@ -85,22 +86,24 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   float jet_et = 0.0;
 
-  edm::Handle<std::vector<pat::Jet> > jets;
-  iEvent.getByLabel(jetTags_, jets);
-
-  std::vector<const pat::Jet *> sortedJets;
-
-  for(unsigned it=0; it<jets->size(); ++it){
-     const pat::Jet* jts = &((*jets)[it]);
-     sortedJets.push_back( & *jts);
-     sortByEtRef (&sortedJets);
+  if(useJetEt_){
+     edm::Handle<std::vector<pat::Jet> > jets;
+     iEvent.getByLabel(jetTags_, jets);
+     
+     std::vector<const pat::Jet *> sortedJets;
+     
+     for(unsigned it=0; it<jets->size(); ++it){
+	const pat::Jet* jts = &((*jets)[it]);
+	sortedJets.push_back( & *jts);
+	sortByEtRef (&sortedJets);
+     }
+     
+     for(unsigned it=0; it<sortedJets.size(); ++it){
+	jet_et = sortedJets[it]->et();
+	break;
+     }
   }
-
-  for(unsigned it=0; it<sortedJets.size(); ++it){
-     jet_et = sortedJets[it]->et();
-     break;
-  }
-
+  
   // sim track collections
   float occHandle = 0.0;
 

@@ -15,5 +15,6 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     lowPtMode = cms.bool(False),
     doAssociation = cms.untracked.bool(True),
     hasSimInfo = cms.untracked.bool(False),
-    pixelMultMode =  cms.untracked.bool(False)
+    pixelMultMode =  cms.untracked.bool(False),
+    useJetEt = cms.untracked.bool(True)
 )
