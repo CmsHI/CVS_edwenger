@@ -32,7 +32,7 @@ process.MessageLogger.cerr = cms.untracked.PSet(
 )
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.1 $'),
+        version = cms.untracked.string('$Revision: 1.2 $'),
             annotation = cms.untracked.string('step2 nevts:1'),
             name = cms.untracked.string('PyReleaseValidation')
         )
@@ -79,8 +79,8 @@ process.TFileService = cms.Service("TFileService",
 process.GlobalTag.globaltag = 'MC_38Y_V8::All' #38X
 
 # Path and EndPath definitions
-process.ana_step  = cms.Path(process.hitrkEffAna
-                             *process.hipxltrkEffAna)
+process.ana_step  = cms.Path(process.hitrkEffAna)
+                             #*process.hipxltrkEffAna)
 
 #process.out_step = cms.EndPath(process.output)
 
