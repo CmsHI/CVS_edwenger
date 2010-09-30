@@ -29,7 +29,7 @@ rawDataRepacker = rawDataCollector.clone(
     )
 
 virginRawDataRepacker = rawDataRepacker.clone(
-	RawCollectionList = cms.VInputTag( cms.InputTag('SiStripDigiToVirginRaw'))
+	RawCollectionList = cms.VInputTag( cms.InputTag('SiStripRawDigiToVirginRaw'))
 )
 
 ##
