@@ -32,7 +32,7 @@ process.MessageLogger.cerr = cms.untracked.PSet(
 )
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.6 $'),
+        version = cms.untracked.string('$Revision: 1.1 $'),
             annotation = cms.untracked.string('step2 nevts:1'),
             name = cms.untracked.string('PyReleaseValidation')
         )
@@ -56,15 +56,6 @@ process.source = cms.Source("PoolSource",
 
 # Track efficiency analyzer 
 process.load("edwenger.HiTrkEffAnalyzer.hitrkEffAnalyzer_cff")
-#process.trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("hiSelectedTracks")
-#process.trackingParticleRecoTrackAsssociation.label_tp = cms.InputTag("cutsFullTracks")
-
-#process.hitrkEffAnalyzer.label_tp_effic = cms.untracked.InputTag("cutsFullTracks")
-#process.hitrkEffAnalyzer.label_tp_fake = cms.untracked.InputTag("cutsFullTracks")
-#process.hitrkEffAnalyzer.associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation')
-#process.hitrkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # without this no sim track info
-#process.hitrkEffAnalyzer.doAssociation = cms.untracked.bool(False)
-#process.hitrkEffAnalyzer.useJetEt = cms.untracked.bool(False)
 
 # Output definition
 process.RECODEBUGEventContent.outputCommands.extend(
@@ -88,11 +79,8 @@ process.TFileService = cms.Service("TFileService",
 process.GlobalTag.globaltag = 'MC_38Y_V8::All' #38X
 
 # Path and EndPath definitions
-#process.ana_step = cms.Path(process.cutsFullTracks*
-#                            process.trackingParticleRecoTrackAsssociation*
-#                            process.hitrkEffAnalyzer)
-# or alternatively
-process.ana_step  = cms.Path(process.hitrkEffAna)
+process.ana_step  = cms.Path(process.hitrkEffAna
+                             *process.hipxltrkEffAna)
 
 #process.out_step = cms.EndPath(process.output)
 
