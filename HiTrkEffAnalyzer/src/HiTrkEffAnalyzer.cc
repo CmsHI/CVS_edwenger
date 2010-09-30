@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.1 2010/07/08 17:09:57 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.2 2010/09/28 21:23:23 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -71,15 +71,17 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByLabel(vtxTags_,vertexCollectionH);
   iEvent.getByLabel(bsTags_,beamSpotH);
 
+  LogDebug("HiTrkEffAnalyzer") <<" number of rec tracks = "<<trackCollection->size()<<std::endl;
 
   // Centrality information ----------------------                                                                                                                                                   
   double pixelMult = 0.0;
 
   if(pixelMultMode_){
-     edm::Handle<reco::Centrality> cent;
-     iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
-     pixelMult = cent->multiplicityPixel();
-     pixelMult = pixelMult/100.; // scale it (120K -> 1200)                                                                                                                                             
+     //edm::Handle<reco::Centrality> cent;
+     //iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
+     //pixelMult = cent->multiplicityPixel();
+     //pixelMult = pixelMult/100.; // scale it (120K -> 1200)
+     pixelMult = 1200;
   } 
 
   // PAT jet, to get leading jet ET
@@ -103,7 +105,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	break;
      }
   }
-  
+
   // sim track collections
   float occHandle = 0.0;
 
@@ -117,6 +119,9 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     
     iEvent.getByLabel(label_tp_effic_,TPCollectionHeff);
     iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
+
+    LogDebug("HiTrkEffAnalyzer") <<" number of sim tracks (for eff) = "<<TPCollectionHeff->size()
+				 <<" number of sim tracks (for fake) = "<<TPCollectionHfake->size()<<std::endl;
     
     
     // association map generated on-the-fly or read from file
@@ -127,12 +132,17 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
       simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
       recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
+      LogDebug("HiTrkEffAnalyzer") <<" association is done on the fly! \n"
+				   <<" sim for eff = ["<<label_tp_effic_<<" ] \n"
+				   <<" sim for fake = ["<<label_tp_fake_<<" ] \n";
     }else{
       iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
       simRecColl= *(simtorecoCollectionH.product());
       
       iEvent.getByLabel(associatorMap_,recotosimCollectionH);
       recSimColl= *(recotosimCollectionH.product());
+      LogDebug("HiTrkEffAnalyzer") <<" association is from the following association map \n"
+                                   <<" map = ["<<associatorMap_<<" ] \n";
     }
     
     // -------------------- SIM loop ----------------------------------------
