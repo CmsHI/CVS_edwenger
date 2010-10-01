@@ -11,7 +11,7 @@ inputDir=$1
 inputFile=$2
 outputDir=$3
 nperjob=$4
-swenv=/net/hisrv0001/home/frankma/work/job/ana/trkAnaCMSSW_3_5_7/env.sh
+swenv=/net/hisrv0001/home/frankma/work/job/ana/trkAnaCMSSW_3_6_2/env.sh
 
 # check
 if [ ! -e $cfg ]; then
