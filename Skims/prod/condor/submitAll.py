@@ -14,3 +14,4 @@ for sample,PD in samples.items():
   outputDir=scratch+"/data/"+PD+"/"+sample+"_"+jobTag
   cmd="./submitJob.sh "+inputList+" "+outputDir
   print cmd
+  os.system(cmd)
