@@ -11,21 +11,23 @@ process.load('Configuration/EventContent/EventContent_cff')
 # =============== 7 TeV Collision Data =====================
 
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring(
-     #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
-     #'/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c/trkAnaSkimAOD_100_1.root'))
-     #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2/86d28cd0599312fbc0b38fb077d9e1fc/trkAnaSkimAOD_10_1.root'))
-     #'/store/user/edwenger/MinimumBias/MB-C10-PR9-MBskim-v0/41db2a25372977708462def4fd0d0a92/trkAnaSkimAOD_89_1.root'))
-   '/store/user/frankma/MinimumBias/MB-C10-M6RR-MBHfLooseskim-v0/731e11dd8899c883730fd3f1e4a373e3/trkAnaSkimAOD_282_2_hxv.root'))
+    fileNames = cms.untracked.vstring(
+      #'/store/data/Commissioning10/MinimumBias/RECO/Apr20ReReco-v1/0164/D237203A-DC4C-DF11-BBF5-0018F3D095FC.root'))
+      #'/store/user/edwenger/MinimumBias/MB-C10-PR9-TRKANASKIM-v3/ae98f896d123ace1f592d26e790fa90c/trkAnaSkimAOD_100_1.root'))
+      #'/store/user/edwenger/MinimumBias/MB-C10-A20RR-TRKANASKIM-v2/86d28cd0599312fbc0b38fb077d9e1fc/trkAnaSkimAOD_10_1.root'))
+      #'/store/user/edwenger/MinimumBias/MB-C10-PR9-MBskim-v0/41db2a25372977708462def4fd0d0a92/trkAnaSkimAOD_89_1.root'))
+      #'/store/user/frankma/MinimumBias/MB-C10-M6RR-MBHfLooseskim-v0/731e11dd8899c883730fd3f1e4a373e3/trkAnaSkimAOD_282_2_hxv.root'))
+      # jm pr4: run > 141950
+      '/store/user/frankma/JetMET/JM-R10A-PR4-Jet50Uskim-v0/122e6996b8ad1b72a263641eb6b3d37b/trkAnaSkimAOD_9_1_eQU.root'))
 
 # =============== Other Statements =====================
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'GR_R_35X_V8B::All'
+process.GlobalTag.globaltag = 'GR10_P_V7::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.10 $'),
+    version = cms.untracked.string('$Revision: 1.11 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/prod/condor/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -45,15 +47,16 @@ process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Summer09_7TeV_ReReco332") # get the 7 TeV jet corrections
+#switchJECSet( process, "Summer09_7TeV_ReReco332") # if not explicit then takes from Relesae default
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
 
 from edwenger.Skims.customise_cfi import *
-enableEitherHFEvtSel(process) # Replace HF coinc with the looser any HF hit evt selection
-updateEvtSelEff(process.trackAna_STD,"AGR_Inel_EitherHF_TrkVtx")
-updateEvtSelEff(process.looseTrackAna_STD,"AGR_Inel_EitherHF_PixVtx")
+#enableEitherHFEvtSel(process) # Replace HF coinc with the looser any HF hit evt selection
+enableHLTJet(process,"HLT_Jet50U")
+updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
+updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 process = enableAOD(process)
 
 # =============== Final Paths =====================
