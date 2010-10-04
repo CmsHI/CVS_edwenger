@@ -8,6 +8,7 @@ RecoHiTrackerDEBUG = cms.PSet(
                                                 'keep *_hiRefitPxlTracks_*_*',
                                                 'keep *_hiPixel3PrimTracks_*_*',
                                                 'keep *_hiPixel3ProtoTracks_*_*',
+                                                'keep *_hiLowPtPixelTracks_*_*',
                                                 'keep recoVertexs_hiPixelMedianVertex_*_*',
                                                 'keep recoVertexs_hiPixelAdaptiveVertex_*_*',
                                                 'keep recoVertexs_hiSelectedVertex_*_*',
