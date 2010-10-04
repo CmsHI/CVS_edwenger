@@ -8,8 +8,8 @@ samples  = {
     "JM-R10A-PR4-Jet50Uskim-v0":"JetMETTau"
     }
 
-inFolder="."
-outFolder="merge0"
+inFolder="merge0"
+outFolder="mergeAll"
 for sample,PD in samples.items():
   indir=scratch+"/data/"+PD+"/"+sample+"_"+jobTag
   cmd="./mergeJob.sh " + indir+"/"+inFolder + " trkhists " + indir+"/"+outFolder
