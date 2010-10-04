@@ -14,7 +14,7 @@ outdir=$3
 # initialize
 ct=0
 cmd=
-nPerMerge=500
+nPerMerge=30
 N=`ls $inDir/*.root | grep $tag | wc -l`
 echo $inDir: $N files
 

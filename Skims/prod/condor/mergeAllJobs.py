@@ -1,18 +1,17 @@
 import os
 
-jobTag=""
-scratch = "/net/hidsk0001/d00/scratch/frankma/data"
+scratch="/net/hidsk0001/d00/scratch/frankma"
+jobTag="proc1001"
+
+# ================== 362 ===============
 samples  = {
-    #"MB-R10A-Jun14RR-MBskim-v0"+jobTag:"MinimumBias",
-    #"JMT-R10A-Jun14RR-J15Uskim-v0"+jobTag:"JetMETTau",
-    "JMT-R10A-PR4-Jet50Uskim-v0"+jobTag:"JetMETTau",
-    "JMT-R10A-PR4-Jet15Uskim-v0"+jobTag:"JetMETTau"
+    "JM-R10A-PR4-Jet50Uskim-v0":"JetMETTau"
     }
 
 inFolder="."
-outFolder="mergeAll"
+outFolder="merge0"
 for sample,PD in samples.items():
-  indir=scratch+"/"+PD+"/"+sample
+  indir=scratch+"/data/"+PD+"/"+sample+"_"+jobTag
   cmd="./mergeJob.sh " + indir+"/"+inFolder + " trkhists " + indir+"/"+outFolder
   print cmd
   os.system(cmd)
