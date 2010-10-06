@@ -65,6 +65,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    TH1F *hRecMult_STD;
    TH1F *hRecMult_STD_corr;
+   TH1F *hRecJetEt_STD_corr;
 
    TH1F *hGenNevt;
 

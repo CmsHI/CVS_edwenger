@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.57 2010/09/17 13:40:19 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.58 2010/09/24 09:42:54 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -140,6 +140,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	    if(mult+1>(int)evtSelEffv_[0]) evt_sel_eff = 1.0; // set eff = 1 
 	    else evt_sel_eff = evtSelEffv_[(unsigned)(mult+1)];
 	    hRecMult_STD_corr->Fill(mult,(1./evt_sel_eff));
+	    hRecJetEt_STD_corr->Fill(leadJetEt_,(1./evt_sel_eff));
 	 }
       }
       
@@ -320,6 +321,7 @@ TrackSpectraAnalyzer::beginJob()
 
       hRecMult_STD = fs->make<TH1F>("hRecMult_STD","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
       hRecMult_STD_corr = fs->make<TH1F>("hRecMult_STD_corr","Charged mult. |#eta|<|#eta_{max}|)",numBins,-0.5,xmax);
+      hRecJetEt_STD_corr = fs->make<TH1F>("hRecJetEt_STD_corr","Jet ET weighted by evt sel eff",jetBins.size()-1, &jetBins[0]);
 
       if(!histOnly_) nt_dndptdeta = fs->make<TNtuple>("nt_dndptdeta","eta vs pt","pt:eta");
 
