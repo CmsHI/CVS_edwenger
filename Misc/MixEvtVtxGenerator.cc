@@ -139,7 +139,7 @@ HepMC::FourVector* MixEvtVtxGenerator::getRecVertex( Event& evt){
   /**/
   
   if(!fVertex) fVertex = new HepMC::FourVector();
-  fVertex->set(aX,aY,aZ,0.0);
+  fVertex->set(10.0*aX,10.0*aY,10.0*aZ,0.0); // HepMC positions in mm (RECO in cm)
   
   return fVertex;
 
