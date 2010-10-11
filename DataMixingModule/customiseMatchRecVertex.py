@@ -12,6 +12,7 @@ def customiseDataMixerOutput(process):
 ##############################################################################
 def customiseMatchRecVertex(process):
 
+    process.generator = process.hiSignal.clone(embeddingMode=cms.bool(False))
     process.load("SimGeneral.MixingModule.MatchRecVtx_cfi")
     process.pgen.replace(process.VertexSmearing,process.matchRecVtx)
     process.mixData.input.sequential = True
