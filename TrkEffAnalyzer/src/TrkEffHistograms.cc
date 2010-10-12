@@ -70,8 +70,8 @@ TrkEffHistograms::declareHistograms()
     }else{
 
        static float ptMin   =  0.0;
-       static float ptMax   =  200.0;
-       static float ptWidth =  0.2;
+       static float ptMax   =  360.0;
+       static float ptWidth =  0.5;
 
        for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
 	  ptBins.push_back(pt);
