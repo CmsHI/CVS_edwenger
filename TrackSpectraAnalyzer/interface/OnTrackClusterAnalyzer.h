@@ -38,6 +38,7 @@ class OnTrackClusterAnalyzer : public edm::EDAnalyzer {
 
       TH1F *hInvalidHitLadder;
       TNtuple *ntInvalidHits;
+      TNtuple *ntLostHits;
       TH2F *hOnTrackClustersLayer1ZPhi;
       TH2F *hOnTrackClustersLayer2ZPhi;
       TH2F *hOnTrackClustersLayer3ZPhi;

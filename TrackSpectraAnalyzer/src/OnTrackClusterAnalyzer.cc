@@ -75,6 +75,10 @@ OnTrackClusterAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	  layerNumber = pxbid.layer();
 	  //std::cout << "  PXB layer " << layerNumber << std::endl;
 	  if((*recHit)->isValid()) {
+
+	    if(recHit==tciter->recHitsBegin() && layerNumber!=1)
+	      ntLostHits->Fill(layerNumber,pxbid.ladder(),pxbid.module());
+
 	    GlobalPoint gpos = theTracker->idToDet((*recHit)->geographicalId())->toGlobal((*recHit)->localPosition());
 	    //std::cout << "    z=" << gpos.z() << ", phi=" << gpos.phi() << std::endl;
 	    if(layerNumber==1) hOnTrackClustersLayer1ZPhi->Fill(gpos.z(),gpos.phi());
@@ -138,6 +142,7 @@ OnTrackClusterAnalyzer::beginJob()
   hTrackEtaPhi = fs->make<TH2F>("hTrackEtaPhi","Track distribution;#eta;#phi",100,-3.,3.,100,-3.1416,3.1416);
   hInvalidHitLadder = fs->make<TH1F>("hInvalidHitLadder","Invalid Hits On Track;Ladder",200,0.,200.);
   ntInvalidHits = fs->make<TNtuple>("ntInvalidHits","invalid hits ntuple","layer:ladder:module");
+  ntLostHits = fs->make<TNtuple>("ntLostHits","lost PXB1 hits ntuple","layer:ladder:module");
     
 }
 
