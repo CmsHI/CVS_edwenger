@@ -20,6 +20,31 @@ def enableSIM(process):
     process.postTrkVtxAna.vtxWeight=cms.untracked.bool(True)
     return process
 
+def enableSIMnoTP(process):
+    process.preTrgAna.isGEN=True
+    process.postTrgAna.isGEN=True
+    process.postEvtSelAna.isGEN=True
+    process.postVtxAna.isGEN=True
+    process.postTrkVtxAna.isGEN=True
+    process.trackAna.isGEN=True
+    process.looseTrackAna.isGEN=True
+    process.rootpleProducer.OnlyRECO=False
+    process.eventFilter.remove(process.physDeclFilter) # always false in MC
+    process.eventFilter.remove(process.bptxAnd)        # always false in MC
+    process.trkEffAnalyzer.hasSimInfo=False
+    process.loosetrkEffAnalyzer.hasSimInfo=False
+    #process.extraReco *= process.trackingParticleRecoTrackAsssociation
+    process.preTrgTest *= process.preTrackAna
+    process.postVtxAna.vtxWeight=cms.untracked.bool(True)
+    process.postTrkVtxAna.vtxWeight=cms.untracked.bool(True)
+    return process
+                                                                 
+
+def removeTPAssociation(process):
+    #process.trkEffAnalyzer.hasSimInfo=False #overwriteen above
+    #process.loosetrkEffAnalyzer.hasSimInfo=False #overwritten above
+    process.extraReco.remove(process.trackRefit)
+    return process
 
 # this is for Summer 09 samples where the HLT has been re-run during Spring 10 production
 def enableREDIGI(process):
@@ -35,6 +60,37 @@ def enableREDIGI(process):
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.eventFilter.remove(process.hltMinBias)     # 
+    return process
+
+
+def enableREDIGI2(process):
+    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.eventFilter.remove(process.hltMinBias)     #
+    return process
+
+def enableREDIGI3(process):
+    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.eventFilter.remove(process.hltMinBias)     #
     return process
 
 
@@ -65,6 +121,12 @@ def enableEitherHFEvtSel(process):
 ### this is for GEN analyzer for Pt_hat: 0 ~ 15
 def enableMinPtHatCut(process):
     process.preTrackAna.pthatCut=cms.untracked.double(15.0)
+    return process
+
+def enableMinPtHatCutAuto(process,genTypePtHatRange):
+    if genTypePtHatRange.find('0_to_15') >= 0:
+        print "Min pT_hat cut enable"
+        process.preTrackAna.pthatCut=cms.untracked.double(15.0)
     return process
 
 ### this is for taking the correct event selection efficiency
