@@ -14,7 +14,7 @@ process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.232.2.1 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('test nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -55,6 +55,8 @@ process.TFileService = cms.Service("TFileService",
 
 # Other statements
 process.GlobalTag.globaltag = 'MC_39Y_V2::All'
+
+#process.hiGlobalPrimTracks.Fitter = 'KFFittingSmoother' # without outlier rejection
 
 #process.trkana = cms.EDAnalyzer("OnTrackClusterAnalyzer")
 process.trkana = cms.EDAnalyzer("OnTrackClusterAnalyzer",
