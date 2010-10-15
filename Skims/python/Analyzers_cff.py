@@ -64,6 +64,9 @@ loosetrkEffAnalyzer = trkEffAnalyzer.clone(tracks=cms.untracked.InputTag("looseS
 
 trackingParticleRecoTrackAsssociation.label_tr = cms.InputTag("selectTracks")
 
+# dijet analyzer
+from Saved.DiJetAna.dijetAna_cff import *
+
 # sequences
 preTrgTest = cms.Sequence(preTrgAna)
 postTrgTest = cms.Sequence(postTrgAna)

@@ -175,3 +175,16 @@ def updateEvtSelEff(ana,evtSelType):
     ana.evtEffCorrType = 2
   # Set the eff sel eff numbers
   ana.evtSelEffv = getEvtSelEff(evtSelType)
+
+def enableDJetAna(process):
+  from Saved.DiJetAna.customise_cfi import enablePp
+  enablePp(process)
+  from Saved.DiJetAna.customise_cfi import enableData
+  enableData(process)
+  for m in [process.djcalo,process.djcalo_tower]:
+    m.jetsrc = "selectedPatJets"
+    m.anaJetType = 2
+    m.trksrc = "selectTracks"
+    m.anaTrkType = 2
+    m.vtxsrc = "sortedGoodVertices"
+    m.verbosity = 1
