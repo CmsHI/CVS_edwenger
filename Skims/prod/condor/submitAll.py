@@ -6,7 +6,7 @@ jobTag="proc1014"
 
 # ================== 362 ===============
 samples  = {
-    "JM-R10A-PR4-Jet50Uskim-v0":"JetMETTau"
+    "JM-R10A-PR4-Jet50Uskim-v0":"JetMETTau",
     "JM-R10A-PR4-Jet15Uskim-v0":"JetMETTau"
     }
 
