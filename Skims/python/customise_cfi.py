@@ -184,7 +184,7 @@ def enableDJetAna(process):
   for m in [process.djcalo,process.djcalo_tower]:
     m.jetsrc = "selectedPatJets"
     m.anaJetType = 2
-    m.trksrc = "selectTracks"
-    m.anaTrkType = 2
     m.vtxsrc = "sortedGoodVertices"
     m.verbosity = 1
+  process.djcalo.trksrc = "selectTracks"
+  process.djcalo.anaTrkType = 2
