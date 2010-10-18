@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.60 2010/10/06 16:22:46 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.61 2010/10/11 16:23:05 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -165,9 +165,9 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
-	       if(neededTrigSpectra_[i]!=1) continue;
-               if(hltAccept_[i]) hTrkPtEtaJetEtW_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./(evt_sel_eff*trk.pt()));
-	       index++;
+               if((neededTrigSpectra_[i]==1) && hltAccept_[i]) 
+		  hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+	       ind++;
             }
 
 	    if(includeExtra_) {
@@ -337,10 +337,10 @@ TrackSpectraAnalyzer::beginJob()
 
       unsigned index=0;
       for(unsigned i=0;i<hltNames_.size();i++){
-	 if(neededTrigSpectra_[i]!=1) continue;
-	 hTrkPtEtaJetEtW_Trig.push_back( subDir.make<TH3F>("","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-							    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0));
-	 hTrkPtEtaJetEtW_Trig[index]->SetName(Form("hTrkPtEtaJetEtW_%s",(char*) hltNames_[i].c_str()));
+	 if(neededTrigSpectra_[i]==0) continue;
+	 hTrkPtEtaJetEt_Trig.push_back( subDir.make<TH3F>("","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+							  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0));
+	 hTrkPtEtaJetEt_Trig[index]->SetName(Form("hTrkPtEtaJetEt_%s",(char*) hltNames_[i].c_str()));
 	 index++;
       }
 
