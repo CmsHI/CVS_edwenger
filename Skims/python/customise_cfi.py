@@ -94,6 +94,22 @@ def enableREDIGI3(process):
     return process
 
 
+def enableREDIGI36(process):
+    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.eventFilter.remove(process.hltMinBias)     #
+    return process
+
+
 # this is for running of AOD skims that already have extra reco/pat objects
 def enableAOD(process):
     process.extraReco.remove(process.extraVertex)
