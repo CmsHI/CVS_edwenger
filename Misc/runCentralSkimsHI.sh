@@ -8,6 +8,6 @@ infilePhoton20="/store/relval/CMSSW_3_9_0_pre6/RelValPyquen_GammaJet_pt20_2760Ge
 infileZmmee10="/store/relval/CMSSW_3_9_0_pre6/RelValPyquen_ZeemumuJets_pt10_2760GeV/GEN-SIM-RECO/MC_39Y_V1-v1/0049/96086977-42D5-DF11-9206-0026189438B4.root"
 
 # cmsDriver command for Central Skims
-cmsDriver.py centralSkims -s SKIM:DiJet+Photon+ZMM \
+cmsDriver.py centralSkims -s SKIM:DiJet+Photon+ZMM+ZEE \
 --conditions auto:mc --scenario HeavyIons \
---filein=$infileMB --no_exec
+--filein=$infileZmmee10 --no_exec
