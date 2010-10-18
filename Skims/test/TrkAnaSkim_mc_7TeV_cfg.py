@@ -1,4 +1,7 @@
 import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as VarParsing
+import os
+
 process = cms.Process("ANASKIM")
 
 process.load('Configuration/StandardSequences/Services_cff')
@@ -7,6 +10,21 @@ process.load('Configuration/StandardSequences/GeometryExtended_cff')
 process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
+
+# ============= pre-setting ============================
+# setup 'standard'  options
+options = VarParsing.VarParsing ('standard')
+
+# my own variable
+options.register('inputType',
+                 "MinBias",
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.string,
+                 "Input file type - MB or QCDPtX")
+
+# get and parse the command line arguments
+options.parseArguments()
+
 
 # =============== 7 TeV MC Sample =====================
 
@@ -19,10 +37,10 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'START3X_V26A::All'
+process.GlobalTag.globaltag = 'START36_V10::All' # for MB samples
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.9 $'),
+    version = cms.untracked.string('$Revision: 1.14 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -38,11 +56,10 @@ process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet( process, "Summer09_7TeV_ReReco332") # get the 7 TeV jet corrections
 
 from edwenger.Skims.customise_cfi import *
 process = enableSIM(process)    # activate isGEN in analyzers
-#process = enableREDIGI(process) # set proper HLT process name for REDIGI samples
+process = setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
 
 # =============== Final Paths =====================
 
