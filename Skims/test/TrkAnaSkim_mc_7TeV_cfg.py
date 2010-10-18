@@ -40,7 +40,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START36_V10::All' # for MB samples
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.14 $'),
+    version = cms.untracked.string('$Revision: 1.15 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -92,7 +92,7 @@ process.output_step = cms.EndPath(process.output)
 # =============== Schedule =====================
 
 process.schedule = cms.Schedule(
-    #process.gen_step,
+    process.gen_step,
     process.eventFilter_step,
     process.extraReco_step,
     process.ana_step,
