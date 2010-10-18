@@ -18,6 +18,13 @@ cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
 # vertex constraint for refitting
 cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
 
+# needed for dijetana
+cvs co RecoHI/HiCentralityAlgos
+cvs co DataFormats/HeavyIonEvent
+cvs co HeavyIonsAnalysis/Configuration
+cvs co RecoHI/HiCentralityAlgos
+cvs co RecoHI/HiMuonAlgos
+
 # cleanup
 mv UserCode/edwenger .
 mv UserCode/ASYoon/PPTrackingTools/ .
