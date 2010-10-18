@@ -109,6 +109,22 @@ def enableREDIGI36(process):
     process.eventFilter.remove(process.hltMinBias)     #
     return process
 
+# this is for choosing a right global tag and regid name for an input sample
+def setGlobTagAndRedigi(process,inputFileType):
+    if inputFileType=='MinBias':
+        print "MinBias with no REDIGI"
+        process.GlobalTag.globaltag = 'START3X_V26A::All'
+    if inputFileType=='MinBias_RIDIGI36':
+        print "MinBias with REDIGI36"
+        process.GlobalTag.globaltag = 'START36_V10::All'
+        process = enableREDIGI36(process)
+    if inputFileType=='QCDPtX_RIDIGI':
+        print "QCDPtX with REDIGI"
+        process.GlobalTag.globaltag = 'START36_V9::All'
+        process = enableREDIGI(process)
+    print ("GlobalTag = " + str(process.GlobalTag.globaltag))
+    return process
+
 
 # this is for running of AOD skims that already have extra reco/pat objects
 def enableAOD(process):
