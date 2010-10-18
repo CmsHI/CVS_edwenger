@@ -16,8 +16,8 @@ from Configuration.PyReleaseValidation.ConfigBuilder import ConfigBuilder
 from Configuration.PyReleaseValidation.ConfigBuilder import Options
 from Configuration.PyReleaseValidation.ConfigBuilder import defaultOptions
 from Configuration.PyReleaseValidation.ConfigBuilder import installFilteredStream
-from Configuration.PyReleaseValidation.ConfigBuilder import addOutputModule
 #from Configuration.DataProcessing.RecoTLR import customisePromptHI,customiseExpressHI
+from RecoLocalTracker.SiStripZeroSuppression.customiseCMN import *
 
 class HeavyIons(Scenario):
     """
@@ -48,25 +48,24 @@ class HeavyIons(Scenario):
         options.isMC = False
         options.isData = True
         options.beamspot = None
-        options.eventcontent = None
+        options.eventcontent = ','.join(writeTiers)
+        options.datatier = ','.join(writeTiers)
         options.magField = 'AutoFromDBCurrent'
         options.conditions = "FrontierConditions_GlobalTag,%s" % globalTag
         options.relval = False
         
         process = cms.Process('RECO')
-        cb = ConfigBuilder(options, process = process)
+        cb = ConfigBuilder(options, process = process, with_output = True)
 
         # Input source
         process.source = cms.Source("PoolSource",
             fileNames = cms.untracked.vstring()
         )
-        cb.prepare()
-
-        for tier in writeTiers: 
-          addOutputModule(process, tier, tier)        
+        cb.prepare()       
 
         #add the former top level patches here
         #customisePromptHI(process)
+        customiseMedian(process)
         
         return process
 
@@ -89,7 +88,8 @@ class HeavyIons(Scenario):
         options.isMC = False
         options.isData = True
         options.beamspot = None
-        options.eventcontent = None
+        options.eventcontent = ','.join(writeTiers)
+        options.datatier = ','.join(writeTiers)
         options.magField = 'AutoFromDBCurrent'
         options.conditions = "FrontierConditions_GlobalTag,%s" % globalTag
         options.relval = False
@@ -101,13 +101,11 @@ class HeavyIons(Scenario):
         process.source = cms.Source("NewEventStreamFileReader",
             fileNames = cms.untracked.vstring()
         )
-        cb.prepare()
-
-        for tier in writeTiers: 
-          addOutputModule(process, tier, tier)        
+        cb.prepare()       
 
         #add the former top level patches here
         #customiseExpressHI(process)
+        customiseMedian(process)
         
         return process
 
