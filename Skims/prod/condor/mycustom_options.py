@@ -11,6 +11,10 @@ print "=== trackAna_STD cfg: ==="
 print process.trackAna_STD.dumpPython()
 print "=== looseTrackAna_STD cfg: ==="
 print process.looseTrackAna_STD.dumpPython()
+print "=== djcalo cfg: ==="
+print process.djcalo.dumpPython()
+print "=== djcalo_tower cfg: ==="
+print process.djcalo_tower.dumpPython()
 
 # === Addition of Customization ===
 print "\nBegin My Customization\n"
