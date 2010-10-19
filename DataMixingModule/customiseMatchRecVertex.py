@@ -24,6 +24,16 @@ def customiseMatchRecVertex(process):
 def customiseSiStripRawDigi(process):
     process.mixData.SiStripRawDigiBkgd = True # use VirginRaw background digis
     process.SiStripDigiToRaw.FedReadoutMode = cms.string('VIRGIN_RAW') # pack rawdigis as VR
+
+    process.stripConditions = cms.ESSource("PoolDBESSource",
+        process.CondDBSetup,
+        timetype = cms.untracked.string('runnumber'),
+        connect = cms.string('frontier://FrontierProd/CMS_COND_31X_STRIP'),
+        toGet = cms.VPSet(cms.PSet(
+          record = cms.string('SiStripFedCablingRcd'),
+          tag = cms.string('SiStripFedCabling_GR10_v1_hlt')))
+    )
+    process.es_prefer_strips = cms.ESPrefer("PoolDBESSource","stripConditions")
     return process
 
 def customiseCloneMatchRaw(process):
