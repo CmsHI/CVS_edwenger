@@ -24,7 +24,7 @@ postTrkVtxSel = vertexanalyzer.clone(
 # track and jet spectra analyzer
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")
-trackAna.jsrc = cms.untracked.InputTag("selectedPatJets")
+trackAna.jsrc = cms.untracked.InputTag("cleanedPatJets")
 trackAna.vsrc = cms.untracked.InputTag("sortedGoodVertices")
 
 from edwenger.Skims.customise_cfi import getEvtSelEff

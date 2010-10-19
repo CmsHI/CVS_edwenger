@@ -214,9 +214,9 @@ def enableDJetAna(process,mode="MC"):
   for m in [process.djcalo,process.djcalo_tower,process.djcalo_genp,process.djgen]:
     m.vtxsrc = "sortedGoodVertices"
     m.verbosity = 1
-    m.refjetsrc = "selectedPatJets"
+    m.refjetsrc = "cleanedPatJets"
   for m in [process.djcalo,process.djcalo_tower,process.djcalo_genp]:
-    m.jetsrc = "selectedPatJets"
+    m.jetsrc = "cleanedPatJets"
     m.anaJetType = 2
   process.djcalo.trksrc = "selectTracks"
   process.djcalo.anaTrkType = 2
