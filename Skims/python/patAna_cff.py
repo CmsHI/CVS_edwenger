@@ -13,7 +13,7 @@ selectedPatJets.cut = cms.string('pt > 10')
 # clean jets
 cleanedPatJets = selectedPatJets.clone(
   src = cms.InputTag("selectedPatJets"),
-  cut = cms.string('jetID().n90Hits>3 && jetID().fHPD<0.5 && emEnergyFraction>0.1')
+  cut = cms.string('jetID().n90Hits>1 && jetID().fHPD<0.98 && emEnergyFraction>0.01')
   )
 
 # Define Sequence
