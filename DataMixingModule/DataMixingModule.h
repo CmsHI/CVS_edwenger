@@ -124,7 +124,8 @@ namespace edm
 
       DataMixingSiStripWorker *SiStripWorker_ ;
       DataMixingSiStripRawWorker *SiStripRawWorker_ ;
-      bool SiStripRawDigiBkgd_; 
+      bool useSiStripRawDigi_;
+      std::string siStripRawDigiSource_;
 
       // Pixels
 

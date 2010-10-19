@@ -56,21 +56,21 @@ namespace edm
 
       edm::InputTag Sistripdigi_collectionSig_ ; // primary name given to collection of SiStrip digis
       edm::InputTag SistripLabelSig_ ;           // secondary name given to collection of SiStrip digis
-      edm::InputTag SiStripRawPileInputTag_ ;    // InputTag for raw pileup strips
+      edm::InputTag SiStripPileInputTag_;        // InputTag for pileup strips
+      edm::InputTag SiStripRawInputTag_ ;        // InputTag for strips with rawdigis
       std::string SiStripDigiCollectionDM_  ;    // secondary name to be given to new SiStrip raw digis
+      std::string SiStripRawDigiSource_ ;        // which collection is rawdigis: either "SIGNAL" or "PILEUP" 
 
       // 
 
       typedef std::vector<SiStripDigi> OneDetectorMap;   // maps by strip ID for later combination - can have duplicate strips
       typedef std::map<uint32_t, OneDetectorMap> SiGlobalIndex; // map to all data for each detector ID
-
+      
       SiGlobalIndex SiHitStorage_;
 
-      // collection of RawDigis to put back in the event
-      std::vector< edm::DetSet<SiStripRawDigi> > vSiStripRawDigi;
-
-
-      //      unsigned int eventId_; //=0 for signal, from 1-n for pileup events
+      // SiStripDigi and SiStripRawDigi collections
+      const edm::DetSetVector<SiStripDigi>    *digicollection_;
+      const edm::DetSetVector<SiStripRawDigi> *rawdigicollection_;
 
       Selector * sel_;
       std::string label_;

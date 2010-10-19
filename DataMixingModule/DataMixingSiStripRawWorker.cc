@@ -47,9 +47,12 @@ namespace edm
     Sistripdigi_collectionSig_   = ps.getParameter<edm::InputTag>("SistripdigiCollectionSig");
     SistripLabelSig_   = ps.getParameter<edm::InputTag>("SistripLabelSig");
 
-    SiStripRawPileInputTag_ = ps.getParameter<edm::InputTag>("SiStripRawPileInputTag");
+    SiStripPileInputTag_ = ps.getParameter<edm::InputTag>("SiStripPileInputTag");
+    SiStripRawInputTag_ = ps.getParameter<edm::InputTag>("SiStripRawInputTag");
 
     SiStripDigiCollectionDM_  = ps.getParameter<std::string>("SiStripDigiCollectionDM");
+
+    SiStripRawDigiSource_ = ps.getParameter<std::string>("SiStripRawDigiSource");
 
     // clear local storage for this event                                                                     
     SiHitStorage_.clear();
@@ -66,64 +69,96 @@ namespace edm
 
 
   void DataMixingSiStripRawWorker::addSiStripSignals(const edm::Event &e) { 
-    // fill in maps of hits
 
-    Handle< edm::DetSetVector<SiStripDigi> >  input;
-
-    if( e.getByLabel(Sistripdigi_collectionSig_.label(),SistripLabelSig_.label(),input) ) {
-      OneDetectorMap LocalMap;
-
-      //loop on all detsets (detectorIDs) inside the input collection
-      edm::DetSetVector<SiStripDigi>::const_iterator DSViter=input->begin();
-      for (; DSViter!=input->end();DSViter++){
-
-#ifdef DEBUG
-	LogDebug("DataMixingSiStripRawWorker")  << "Processing DetID " << DSViter->id;
-#endif
-
-	LocalMap.clear();
-	LocalMap.reserve((DSViter->data).size());
-	LocalMap.insert(LocalMap.end(),(DSViter->data).begin(),(DSViter->data).end());	
-	
-	SiHitStorage_.insert( SiGlobalIndex::value_type( DSViter->id, LocalMap ) );
-      }
- 
+    
+    edm::Handle< edm::DetSetVector<SiStripDigi> >      hSSD;
+    edm::Handle< edm::DetSetVector<SiStripRawDigi> >   hSSRD;
+    
+    if (SiStripRawDigiSource_=="SIGNAL") {
+      e.getByLabel(SiStripRawInputTag_,hSSRD);
+      rawdigicollection_ = hSSRD.product();
+    } else if (SiStripRawDigiSource_=="PILEUP") {
+      e.getByLabel(Sistripdigi_collectionSig_.label(),SistripLabelSig_.label(),hSSD);
+      digicollection_ =  hSSD.product();
+    } else {
+      std::cout << "you shouldn't be here" << std::endl;
     }
+    
+
   } // end of addSiStripSignals
 
 
 
   void DataMixingSiStripRawWorker::addSiStripPileups(const int bcr, EventPrincipal *ep, unsigned int eventNr) {
-    LogDebug("DataMixingSiStripRawWorker") <<"\n===============> adding pileups from event  "<<ep->id()<<" for bunchcrossing "<<bcr;
-
-    boost::shared_ptr<Wrapper<edm::DetSetVector<SiStripRawDigi> >  const> inputPTR =
-      getProductByTag<edm::DetSetVector<SiStripRawDigi> >(*ep, SiStripRawPileInputTag_ );
-
-    if(!inputPTR) {
-      std::cout << "no pointer to SiStripRawDigis from SiStripRawPileInputTag_" << std::endl;
-      return;
-    }
     
-    const edm::DetSetVector<SiStripRawDigi>  *input = const_cast< edm::DetSetVector<SiStripRawDigi> * >(inputPTR->product());
+    LogDebug("DataMixingSiStripRawWorker") << "\n===============> adding pileups from event  "
+					   << ep->id() << " for bunchcrossing " << bcr;
 
+    boost::shared_ptr<Wrapper<edm::DetSetVector<SiStripDigi> > const>    pSSD;
+    boost::shared_ptr<Wrapper<edm::DetSetVector<SiStripRawDigi> > const> pSSRD;
+    
+    if (SiStripRawDigiSource_=="SIGNAL") {
+      pSSD = getProductByTag<edm::DetSetVector<SiStripDigi> >(*ep, SiStripPileInputTag_);
+      digicollection_ = const_cast< edm::DetSetVector<SiStripDigi> * >(pSSD->product());
+    } else if (SiStripRawDigiSource_=="PILEUP") {
+      pSSRD = getProductByTag<edm::DetSetVector<SiStripRawDigi> >(*ep, SiStripRawInputTag_ );
+      rawdigicollection_ = const_cast< edm::DetSetVector<SiStripRawDigi> * >(pSSRD->product());
+    } else {
+      std::cout << "you shouldn't be here" << std::endl;
+    }
+
+  } // end of addSiStripPileups
+
+ 
+  void DataMixingSiStripRawWorker::putSiStrip(edm::Event &e) {
+
+
+    //------------------
+    //  (1) Fill a map from the Digi collection
+    //
+
+    // fill in maps of SiStripDigis
     OneDetectorMap LocalMap;
-
+    
     //loop on all detsets (detectorIDs) inside the input collection
-    edm::DetSetVector<SiStripRawDigi>::const_iterator DSViter=input->begin();
-    for (; DSViter!=input->end();DSViter++){
+    edm::DetSetVector<SiStripDigi>::const_iterator DSViter=digicollection_->begin();
+    for (; DSViter!=digicollection_->end();DSViter++){
+      
+#ifdef DEBUG
+      LogDebug("DataMixingSiStripRawWorker")  << "Processing DetID " << DSViter->id;
+#endif
+      
+      LocalMap.clear();
+      LocalMap.reserve((DSViter->data).size());
+      LocalMap.insert(LocalMap.end(),(DSViter->data).begin(),(DSViter->data).end());	
+      
+      SiHitStorage_.insert( SiGlobalIndex::value_type( DSViter->id, LocalMap ) );
+    }
+
+
+    //------------------
+    //  (2) Loop over the input RawDigi collection and add the Digis from the map
+    //
+
+    // collection of RawDigis to put back in the event
+    std::vector< edm::DetSet<SiStripRawDigi> > vSiStripRawDigi;
+
+    //loop on all detsets (detectorIDs) inside the SiStripRawDigis collection
+    edm::DetSetVector<SiStripRawDigi>::const_iterator rawDSViter=rawdigicollection_->begin();
+    for (; rawDSViter!=rawdigicollection_->end();rawDSViter++){
 
       // Make empty collection with this detID
-      edm::DetSet<SiStripRawDigi> SSRD(DSViter->id); 
+      edm::DetSet<SiStripRawDigi> SSRD(rawDSViter->id); 
 
       // find local map (if it exists) for this detector ID
       SiGlobalIndex::const_iterator itest;
-      itest = SiHitStorage_.find(DSViter->id);
+      itest = SiHitStorage_.find(rawDSViter->id);
 
       // if detID already has digis in existing map, add them to rawdigis
       if(itest!=SiHitStorage_.end()) {  
 
 #ifdef DEBUG
-	LogDebug("DataMixingSiStripRawWorker")  << "Pileups: Processing DetID " << DSViter->id;
+	LogDebug("DataMixingSiStripRawWorker")  << "Pileups: Processing DetID " << rawDSViter->id;
 #endif
 
 	// get the map from storage
@@ -132,8 +167,8 @@ namespace edm
 
 	// loop on all strips in rawdigi detset
 	int currentstrip=0;
-	edm::DetSet<SiStripRawDigi>::const_iterator iRawDigi = DSViter->begin();
-	while( iRawDigi != DSViter->end() ) {
+	edm::DetSet<SiStripRawDigi>::const_iterator iRawDigi = rawDSViter->begin();
+	while( iRawDigi != rawDSViter->end() ) {
 
 	  int ADCSum = iRawDigi->adc();
 
@@ -155,16 +190,15 @@ namespace edm
 
       // otherwise, just copy the rawdigis from the background event to the output
       } else {
-	vSiStripRawDigi.push_back(*DSViter);
+	vSiStripRawDigi.push_back(*rawDSViter);
       }
 
     }
 
-  }
 
-
- 
-  void DataMixingSiStripRawWorker::putSiStrip(edm::Event &e) {
+    //------------------
+    //  (3) Put the new RawDigi collection back into the event
+    //
 
     // make new raw digi collection
     std::auto_ptr< edm::DetSetVector<SiStripRawDigi> > MySiStripRawDigis(new edm::DetSetVector<SiStripRawDigi>(vSiStripRawDigi) );

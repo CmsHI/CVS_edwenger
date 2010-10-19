@@ -22,7 +22,7 @@ def customiseMatchRecVertex(process):
     return process
 
 def customiseSiStripRawDigi(process):
-    process.mixData.SiStripRawDigiBkgd = True # use VirginRaw background digis
+    process.mixData.SiStripRawDigiSource = "PILEUP" # use raw digis from "PILEUP" or "SIGNAL"
     process.SiStripDigiToRaw.FedReadoutMode = cms.string('VIRGIN_RAW') # pack rawdigis as VR
 
     process.stripConditions = cms.ESSource("PoolDBESSource",
@@ -40,6 +40,13 @@ def customiseCloneMatchRaw(process):
     customiseCloneGenerator(process)
     customiseMatchRecVertex(process)
     customiseSiStripRawDigi(process)
+    return process
+
+def customiseSiStripRawSignal(process):
+    customiseSiStripRawDigi(process)
+    process.mixData.SiStripRawDigiSource = "SIGNAL"
+    process.mixData.ZDCdigiCollectionSig = ""
+    process.mixData.ZDCPileInputTag = ""
     return process
 
 ##############################################################################

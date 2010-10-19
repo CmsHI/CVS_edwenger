@@ -189,12 +189,13 @@ namespace edm
 
     // Si-Strips
 
-    SiStripRawDigiBkgd_ = ps.exists("SiStripRawDigiBkgd")?
-      ps.getParameter<bool>("SiStripRawDigiBkgd"):false;
+    useSiStripRawDigi_ = ps.exists("SiStripRawDigiSource")?
+      ps.getParameter<std::string>("SiStripRawDigiSource")=="PILEUP" ||
+      ps.getParameter<std::string>("SiStripRawDigiSource")=="SIGNAL" : false;
 
     SiStripDigiCollectionDM_  = ps.getParameter<std::string>("SiStripDigiCollectionDM");
 
-    if(SiStripRawDigiBkgd_) {
+    if(useSiStripRawDigi_) {
 
       produces< edm::DetSetVector<SiStripRawDigi> > (SiStripDigiCollectionDM_);
       SiStripRawWorker_ = new DataMixingSiStripRawWorker(ps);
@@ -269,7 +270,7 @@ namespace edm
       else { delete HcalDigiWorker_; }}
     else {delete HcalWorker_;}
     delete MuonWorker_;
-    if(SiStripRawDigiBkgd_)
+    if(useSiStripRawDigi_)
       delete SiStripRawWorker_;
     else
       delete SiStripWorker_;
@@ -302,7 +303,7 @@ namespace edm
     MuonWorker_->addMuonSignals(e);
 
     // SiStrips
-    if(SiStripRawDigiBkgd_) SiStripRawWorker_->addSiStripSignals(e);
+    if(useSiStripRawDigi_) SiStripRawWorker_->addSiStripSignals(e);
     else SiStripWorker_->addSiStripSignals(e);
 
     // SiPixels
@@ -338,7 +339,7 @@ namespace edm
     MuonWorker_->addMuonPileups(bcr, ep, eventNr);
 
     // SiStrips
-    if(SiStripRawDigiBkgd_) SiStripRawWorker_->addSiStripPileups(bcr, ep, eventNr);
+    if(useSiStripRawDigi_) SiStripRawWorker_->addSiStripPileups(bcr, ep, eventNr);
     else SiStripWorker_->addSiStripPileups(bcr, ep, eventNr);
 
     // SiPixels
@@ -385,7 +386,7 @@ namespace edm
     MuonWorker_->putMuon(e);
 
     // SiStrips
-    if(SiStripRawDigiBkgd_) SiStripRawWorker_->putSiStrip(e);
+    if(useSiStripRawDigi_) SiStripRawWorker_->putSiStrip(e);
     else SiStripWorker_->putSiStrip(e);
 
     // SiPixels

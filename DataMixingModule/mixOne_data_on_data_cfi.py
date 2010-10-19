@@ -28,17 +28,18 @@ mixData = cms.EDProducer("DataMixingModule",
     EcalMergeType = cms.string('Digis'),  # set to "Digis" to merge digis
     HcalMergeType = cms.string('Digis'),
     HcalDigiMerge = cms.string('NotFullProd'),
-    SiStripRawDigiBkgd = cms.bool(False), # digi + rawdigi -> rawdigi
     #
     # Input Specifications:
     #
+    SiStripRawDigiSource = cms.string("NONE"), # rawdigi+digi->rawdigi (specify 'SIGNAL' or 'PILEUP')
+    SiStripRawInputTag = cms.InputTag("siStripDigis","VirginRaw"),               
+    #                         
     SistripLabelSig = cms.InputTag("ZeroSuppressed"),
     SistripdigiCollectionSig = cms.InputTag("siStripDigis"),
                    #
     pixeldigiCollectionSig = cms.InputTag("siPixelDigis"),
     #
     SiStripPileInputTag = cms.InputTag("siStripDigis","ZeroSuppressed"),
-    SiStripRawPileInputTag = cms.InputTag("siStripDigis","VirginRaw"),         
                    #
     pixeldigiCollectionPile = cms.InputTag("siPixelDigis"),
                    #
