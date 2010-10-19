@@ -40,7 +40,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'START36_V10::All' # for MB samples
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.15 $'),
+    version = cms.untracked.string('$Revision: 1.16 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -60,6 +60,9 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 from edwenger.Skims.customise_cfi import *
 process = enableSIM(process)    # activate isGEN in analyzers
 process = setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
+updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
+updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
+enableDJetAna(process)
 
 # =============== Final Paths =====================
 
