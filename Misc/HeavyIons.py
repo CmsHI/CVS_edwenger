@@ -95,7 +95,7 @@ class HeavyIons(Scenario):
         options.relval = False
         
         process = cms.Process('RECO')
-        cb = ConfigBuilder(options, process = process)
+        cb = ConfigBuilder(options, process = process, with_output = True)
 
         # Input source
         process.source = cms.Source("NewEventStreamFileReader",
