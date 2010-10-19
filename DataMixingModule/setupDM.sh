@@ -8,6 +8,9 @@ addpkg $dir2
 cvs co Configuration/GenProduction
 cvs co SimGeneral/MixingModule
 
+# HIP monitoring
+# cvs co -d TkDPG UserCode/giordano/TkDPG
+
 cd $dir
 cp *.h *.cc $CMSSW_BASE/src/$dir2/plugins
 cp customise*.py *cfi.py $CMSSW_BASE/src/$dir2/python
