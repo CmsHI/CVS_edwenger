@@ -22,17 +22,17 @@ print "\nBegin My Customization\n"
 import sys
 print "cmssw command line arguements:",sys.argv
 import FWCore.ParameterSet.VarParsing as VarParsing
-options = VarParsing.VarParsing ('standard')
+myopts = VarParsing.VarParsing ('standard')
 # set default values
-options.maxEvents = -1
-options.output = 'default_output.root'
+myopts.maxEvents = -1
+myopts.output = 'default_output.root'
 # get and parse the command line arguments
-options.parseArguments()
+myopts.parseArguments()
 
 # now define the customization
 def mycustomise(process):
-  # process.options
-  process.options = cms.untracked.PSet(
+# process.myopts
+  process.myopts = cms.untracked.PSet(
       wantSummary = cms.untracked.bool(True)
       )
   # process.source
@@ -42,15 +42,15 @@ def mycustomise(process):
       runInput=True
       break
   if (runInput):
-    process.source.fileNames = cms.untracked.vstring(options.files)
+    process.source.fileNames = cms.untracked.vstring(myopts.files)
   # process.maxEvents
   process.maxEvents = cms.untracked.PSet(
-      input = cms.untracked.int32(options.maxEvents)
+      input = cms.untracked.int32(myopts.maxEvents)
       )
   # process.output
   try:
-    if ('default_output' not in options.output):
-      process.TFileService.fileName = cms.string(options.output)
+    if ('default_output' not in myopts.output):
+      process.TFileService.fileName = cms.string(myopts.output)
   except:
     print "no output module with the given name"
   # done
