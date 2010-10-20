@@ -17,7 +17,7 @@ options = VarParsing.VarParsing ('standard')
 
 # my own variable
 options.register('inputType',
-                 "MinBias",
+                 "QCDPtX_REDIGI36",
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
                  "Input file type - MB or QCDPtX")
@@ -37,10 +37,9 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'START36_V10::All' # for MB samples
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.16 $'),
+    version = cms.untracked.string('$Revision: 1.17 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )

@@ -95,17 +95,17 @@ def enableREDIGI3(process):
 
 
 def enableREDIGI36(process):
-    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
-    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.eventFilter.remove(process.hltMinBias)     #
     return process
 
@@ -114,14 +114,14 @@ def setGlobTagAndRedigi(process,inputFileType):
     if inputFileType=='MinBias':
         print "MinBias with no REDIGI"
         process.GlobalTag.globaltag = 'START3X_V26A::All'
-    if inputFileType=='MinBias_RIDIGI36':
+    if inputFileType=='MinBias_REDIGI36':
         print "MinBias with REDIGI36"
         process.GlobalTag.globaltag = 'START36_V10::All'
         process = enableREDIGI36(process)
-    if inputFileType=='QCDPtX_RIDIGI':
+    if inputFileType=='QCDPtX_REDIGI36':
         print "QCDPtX with REDIGI"
         process.GlobalTag.globaltag = 'START36_V9::All'
-        process = enableREDIGI(process)
+        process = enableREDIGI36(process)
     print ("GlobalTag = " + str(process.GlobalTag.globaltag))
     return process
 
@@ -215,6 +215,8 @@ def enableDJetAna(process,mode="MC"):
     m.vtxsrc = "sortedGoodVertices"
     m.verbosity = 1
     m.refjetsrc = "cleanedPatJets"
+    if mode=="MC":
+      m.hltNames[-1] = "HLT_Photon20_L1R"
   for m in [process.djcalo,process.djcalo_tower,process.djcalo_genp]:
     m.jetsrc = "cleanedPatJets"
     m.anaJetType = 2
