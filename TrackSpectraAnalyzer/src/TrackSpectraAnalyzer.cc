@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.62 2010/10/18 20:21:05 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.63 2010/10/19 15:10:24 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -165,10 +165,9 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
-               if((neededTrigSpectra_[i]==1) && hltAccept_[i]) {
-		  hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
-		  ind++;
-	       }
+	       if(neededTrigSpectra_[i]!=1) continue;
+               if(hltAccept_[i]) hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+	       ind++;
             }
 
 	    if(includeExtra_) {

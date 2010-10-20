@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.5 2010/07/12 17:08:31 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.6 2010/10/20 09:20:44 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -185,10 +185,9 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
-               if((neededTrigSpectra_[i]==1) && hltAccept_[i]) {
-		  hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
-		  ind++;
-	       }
+	       if(neededTrigSpectra_[i]!=1) continue;
+               if(hltAccept_[i]) hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+	       ind++;
             }
 
 
