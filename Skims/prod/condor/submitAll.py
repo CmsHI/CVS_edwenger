@@ -2,7 +2,7 @@ import os
 os.system("./create_custom_python_cfg.sh")
 
 scratch="/net/hidsk0001/d00/scratch/frankma"
-jobTag="proc1014"
+jobTag="proc1020_JetID"
 
 # ================== 362 ===============
 samples  = {
