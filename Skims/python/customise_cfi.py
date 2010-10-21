@@ -156,28 +156,40 @@ def enableMinPtHatCut(process):
     return process
 
 def enableMinPtHatCutAuto(process,genTypePtHatRange):
-    if genTypePtHatRange.find('NSD_0_to_5') >= 0:
+    if genTypePtHatRange=='NSD_0_to_5':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(5.0)
-    if genTypePtHatRange.find('NSD_0_to_10') >= 0:
+    if genTypePtHatRange=='NSD_0_to_10':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(10.0)
-    if genTypePtHatRange.find('NSD_0_to_15') >= 0:
+    if genTypePtHatRange=='NSD_0_to_15':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(15.0)
-    if genTypePtHatRange.find('NSD_0_to_20') >= 0:
+    if genTypePtHatRange=='NSD_0_to_20':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(20.0)
-    if genTypePtHatRange.find('MB_0_to_5') >= 0:
+    if genTypePtHatRange=='ENSD_0_to_5':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(5.0)
-    if genTypePtHatRange.find('MB_0_to_10') >= 0:
+    if genTypePtHatRange=='ENSD_0_to_10':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(10.0)
-    if genTypePtHatRange.find('MB_0_to_15') >= 0:
+    if genTypePtHatRange=='ENSD_0_to_15':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(15.0)
-    if genTypePtHatRange.find('MB_0_to_20') >= 0:
+    if genTypePtHatRange=='ENSD_0_to_20':
+        print "Min pT_hat cut enable"
+        process.preTrackAna.pthatCut=cms.untracked.double(20.0)
+    if genTypePtHatRange=='MB_0_to_5':
+        print "Min pT_hat cut enable"
+        process.preTrackAna.pthatCut=cms.untracked.double(5.0)
+    if genTypePtHatRange=='MB_0_to_10':
+        print "Min pT_hat cut enable"
+        process.preTrackAna.pthatCut=cms.untracked.double(10.0)
+    if genTypePtHatRange=='MB_0_to_15':
+        print "Min pT_hat cut enable"
+        process.preTrackAna.pthatCut=cms.untracked.double(15.0)
+    if genTypePtHatRange=='MB_0_to_20':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(20.0)
     return process
