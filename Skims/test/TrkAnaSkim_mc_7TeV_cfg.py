@@ -39,7 +39,7 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.17 $'),
+    version = cms.untracked.string('$Revision: 1.18 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -57,11 +57,11 @@ process.load("edwenger.Skims.Analysis_cff")
 from PhysicsTools.PatAlgos.tools.jetTools import *
 
 from edwenger.Skims.customise_cfi import *
-process = enableSIM(process)    # activate isGEN in analyzers
-process = setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
+enableSIM(process)    # activate isGEN in analyzers
+setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
-enableDJetAna(process)
+enableDJetAna(process,"MC","FF") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
 
 # =============== Final Paths =====================
 

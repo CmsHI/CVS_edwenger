@@ -208,12 +208,14 @@ def updateEvtSelEff(ana,evtSelType):
   # Set the eff sel eff numbers
   ana.evtSelEffv = getEvtSelEff(evtSelType)
 
-def enableDJetAna(process,mode="MC"):
+def enableDJetAna(process,mode="MC",output="FF"):
   from Saved.DiJetAna.customise_cfi import enablePp
+  from Saved.DiJetAna.customise_cfi import djOutputThreshold
   enablePp(process)
   for m in [process.djcalo,process.djcalo_tower,process.djcalo_genp,process.djgen]:
     m.vtxsrc = "sortedGoodVertices"
     m.verbosity = 1
+    m.nearJetPtMin = djOutputThreshold[output]
     m.refjetsrc = "cleanedPatJets"
     if mode=="MC":
       m.hltNames[-1] = "HLT_Photon20_L1R"
