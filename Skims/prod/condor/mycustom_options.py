@@ -1,12 +1,13 @@
 # job specific
 # === Simplify for Standard Data processing ===
-process.ana_step.remove(process.looseTrackAna)
+#process.ana_step.remove(process.looseTrackAna)
 process.ana_step.remove(process.looseTrackAna_STD)
 process.ana_step.remove(process.loosetrkEffAnalyzer)
 process.ana_step.remove(process.trackAna)
 process.ana_step.remove(process.refitTrackAna)
-if not process.trackAna.isGEN.value:
+if process.trackAna.isGEN.value():
   process.schedule.remove(process.gen_step)
+else:
   process.ana_step.remove(process.trkEffAnalyzer)
 
 # === Ana Ouput Content ===
