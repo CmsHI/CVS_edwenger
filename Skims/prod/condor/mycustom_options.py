@@ -1,10 +1,20 @@
-#
-# Python cfg Customization
-# - cf: https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideAboutPythonConfigFile#Passing_Command_Line_Arguments_T
-# - cf: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/HLTrigger/Configuration/python/customL1T_Options.py?view=markup
-# - iteralbles
-#   * cf: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/SavedFMa/pp/HLT/sw/hlt/timing/test/bryanTimer.py?view=markup
-#
+# job specific
+try:
+  process.schedule.remove(process.gen_step)
+except:
+  print "running on data"
+
+# === Simplify for Standard Data processing ===
+process.ana_step.remove(process.looseTrackAna)
+process.ana_step.remove(process.looseTrackAna_STD)
+process.ana_step.remove(process.loosetrkEffAnalyzer)
+process.ana_step.remove(process.trkEffAnalyzer)
+process.ana_step.remove(process.trackAna)
+process.ana_step.remove(process.refitTrackAna)
+
+# === Ana Ouput Content ===
+#process.trackAna_STD.histOnly = False
+#process.trkEffAnalyzer.fillNtuples = True
 
 # check spectra analyzer config
 print "=== trackAna_STD cfg: ==="
