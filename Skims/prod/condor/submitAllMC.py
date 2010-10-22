@@ -6,13 +6,13 @@ jobTag="proc1022_final"
 
 # ================== 362 ===============
 samples  = {
-    "JM-R10A-PR4-Jet50Uskim-v0":"JetMETTau",
-    "JM-R10A-PR4-Jet15Uskim-v0":"JetMETTau"
+#    "su10-qcdflat-startup36v9":"QCD"
+    "su10-qcd80-startup36v9_f500":"QCD"
     }
 
 for sample,PD in samples.items():
-  inputList="~/inputs_data/"+sample+".txt"
-  outputDir=scratch+"/data/"+PD+"/"+sample+"_"+jobTag
+  inputList="~/inputs_mc/"+sample+".txt"
+  outputDir=scratch+"/mc/"+PD+"/"+sample+"_"+jobTag
   cmd="./submitJob.sh "+inputList+" "+outputDir
   print cmd
   os.system(cmd)
