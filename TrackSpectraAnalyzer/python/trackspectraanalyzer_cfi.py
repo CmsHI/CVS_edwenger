@@ -12,6 +12,7 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                           pureGENmode = cms.untracked.bool(False),
                           nsdOnly = cms.untracked.bool(False), # look at only NSD GEN
                           pythia6 = cms.untracked.bool(True), # false => pythia8
+                          mode900GeV = cms.untracked.bool(False),
                           pthatCut = cms.untracked.double(0.0),
                           doJet = cms.untracked.bool(True),
                           histOnly = cms.untracked.bool(True),

@@ -106,6 +106,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool setQualityBit_;
+   bool mode900GeV_;
    double pthatCut_;
 
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;

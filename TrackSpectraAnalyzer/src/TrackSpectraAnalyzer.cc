@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.63 2010/10/19 15:10:24 frankma Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.64 2010/10/20 13:24:18 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -27,6 +27,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    nsdOnly_ = iConfig.getUntrackedParameter<bool>("nsdOnly", false);
    pythia6_ = iConfig.getUntrackedParameter<bool>("pythia6", true);
+   mode900GeV_ = iConfig.getUntrackedParameter<bool>("mode900GeV", false);
    pthatCut_ = iConfig.getUntrackedParameter<double>("pthatCut", 0.0);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
@@ -297,9 +298,16 @@ TrackSpectraAnalyzer::beginJob()
       etaBins.push_back(eta);
 
    // jet et bins
-   static float jetMin = 0.0;
-   static float jetMax = 2400; // good to be matched with ana 
-   static float jetWidth = 20;
+   static float jetMin;
+   static float jetMax; // good to be matched with ana
+   static float jetWidth;
+
+   if(!mode900GeV_){
+      jetMin = 0, jetMax = 2400, jetWidth = 20;
+   }else{
+      jetMin = 0, jetMax = 300, jetWidth = 5;
+   }
+   
 
    for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
       jetBins.push_back(jet);
@@ -308,9 +316,6 @@ TrackSpectraAnalyzer::beginJob()
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
 
-   //TH1::SetDefaultSumw2(true);
-   //TH2::SetDefaultSumw2(true);
-   //TH3::SetDefaultSumw2(true);
 
    if(!pureGENmode_){
 
@@ -339,7 +344,7 @@ TrackSpectraAnalyzer::beginJob()
       for(unsigned i=0;i<hltNames_.size();i++){
 	 if(neededTrigSpectra_[i]==0) continue;
 	 hTrkPtEtaJetEt_Trig.push_back( subDir.make<TH3F>("","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-							  nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0));
+							  etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]) );
 	 hTrkPtEtaJetEt_Trig[index]->SetName(Form("hTrkPtEtaJetEt_%s",(char*) hltNames_[i].c_str()));
 	 index++;
       }

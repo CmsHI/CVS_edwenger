@@ -77,6 +77,7 @@ class TrkEffHistograms
    bool fillNtuples;
    bool constPtBins;
    bool lowPtMode;
+   bool mode900GeV;
    edm::Service<TFileService> f;
 
    std::vector<double> etaBins, ptBins, jetBins;

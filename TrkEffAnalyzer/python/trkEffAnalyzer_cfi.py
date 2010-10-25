@@ -13,6 +13,7 @@ trkEffAnalyzer = cms.EDAnalyzer('TrkEffAnalyzer',
     fillNtuples = cms.bool(True),
     constPtBins = cms.bool(True),
     lowPtMode = cms.bool(False),
+    mode900GeV = cms.bool(False),
     doAssociation = cms.untracked.bool(True),
     hasSimInfo = cms.untracked.bool(False)
 )

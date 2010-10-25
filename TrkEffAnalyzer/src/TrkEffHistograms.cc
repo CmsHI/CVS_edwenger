@@ -16,6 +16,7 @@ TrkEffHistograms::TrkEffHistograms(const edm::ParameterSet& pset)
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
   constPtBins            = pset.getParameter<bool>("constPtBins");
   lowPtMode              = pset.getParameter<bool>("lowPtMode");
+  mode900GeV             = pset.getParameter<bool>("mode900GeV");
 }
 
 
@@ -88,9 +89,16 @@ TrkEffHistograms::declareHistograms()
 
 
     // jet et bins
-    static float jetMin = 0.0;
-    static float jetMax = 2400; // good to be matched with ana 
-    static float jetWidth = 20;
+    static float jetMin;
+    static float jetMax; // good to be matched with ana 
+    static float jetWidth;
+
+    if(!mode900GeV){
+       jetMin = 0, jetMax = 2400, jetWidth = 20;
+    }else{
+       jetMin = 0, jetMax = 300, jetWidth = 5;
+    }
+
 
     for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
        jetBins.push_back(jet);
