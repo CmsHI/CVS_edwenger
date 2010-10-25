@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.6 2010/10/20 09:20:44 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.7 2010/10/20 13:25:21 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -359,7 +359,7 @@ HiTrackSpectraAnalyzer::beginJob()
       for(unsigned i=0;i<hltNames_.size();i++){
 	 if(neededTrigSpectra_[i]!=1) continue;
 	 hTrkPtEtaJetEt_Trig.push_back( subDir.make<TH3F>("","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
-							    nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 60, 0.0, 1200.0));
+							  etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]) );
 	 hTrkPtEtaJetEt_Trig[index]->SetName(Form("hTrkPtEtaJetEt_%s",(char*) hltNames_[i].c_str()));
 	 index++;
       }
