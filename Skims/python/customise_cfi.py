@@ -109,23 +109,45 @@ def enableREDIGI36(process):
     process.eventFilter.remove(process.hltMinBias)     #
     return process
 
+# this is to update hlt names for 900 GeV sample
+def run900GeVmode(process):
+    process.preTrgAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.postTrgAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.postEvtSelAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.postVtxAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.postTrkVtxAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.preTrackAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.trackAna.hltNames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus', 'HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.trackAna.mode900GeV=cms.untracked.bool(True)
+    process.looseTrackAna.hltNames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus', 'HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.looseTrackAna.mode900GeV=cms.untracked.bool(True)
+    process.trackAna_STD.hltNames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus', 'HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.trackAna_STD.mode900GeV=cms.untracked.bool(True)
+    process.looseTrackAna_STD.hltNames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus', 'HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.looseTrackAna_STD.mode900GeV=cms.untracked.bool(True)
+    process.refitTrackAna.hltNames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus', 'HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
+    process.refitTrackAna.mode900GeV=cms.untracked.bool(True)
+    process.trkEffAnalyzer.mode900GeV=cms.bool(True)
+    process.loosetrkEffAnalyzer.mode900GeV=cms.bool(True)
+    return process
+
 # this is for choosing a right global tag and regid name for an input sample
 def setGlobTagAndRedigi(process,inputFileType):
     if inputFileType=='MinBias':
-        print "MinBias with no REDIGI"
+        print "Notice: MinBias with no REDIGI"
         process.GlobalTag.globaltag = 'START3X_V26A::All'
     if inputFileType=='MinBias900GeV':
-        print "MinBias900GeV with no REDIGI"
+        print "Notice: MinBias900GeV with no REDIGI"
         process.GlobalTag.globaltag = 'START36_V10::All'
     if inputFileType=='MinBias_REDIGI36':
-        print "MinBias with REDIGI36"
+        print "Notice: MinBias with REDIGI36"
         process.GlobalTag.globaltag = 'START36_V10::All'
         process = enableREDIGI36(process)
     if inputFileType=='QCDPtX_REDIGI36':
-        print "QCDPtX with REDIGI"
+        print "Notice: QCDPtX with REDIGI"
         process.GlobalTag.globaltag = 'START36_V9::All'
         process = enableREDIGI36(process)
-    print ("GlobalTag = " + str(process.GlobalTag.globaltag))
+    print ("Notice: GlobalTag = " + str(process.GlobalTag.globaltag))
     return process
 
 
