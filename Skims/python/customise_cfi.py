@@ -114,6 +114,9 @@ def setGlobTagAndRedigi(process,inputFileType):
     if inputFileType=='MinBias':
         print "MinBias with no REDIGI"
         process.GlobalTag.globaltag = 'START3X_V26A::All'
+    if inputFileType=='MinBias900GeV':
+        print "MinBias900GeV with no REDIGI"
+        process.GlobalTag.globaltag = 'START36_V10::All'
     if inputFileType=='MinBias_REDIGI36':
         print "MinBias with REDIGI36"
         process.GlobalTag.globaltag = 'START36_V10::All'
