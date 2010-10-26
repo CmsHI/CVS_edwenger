@@ -10,7 +10,7 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration/StandardSequences/ReconstructionHeavyIons_cff')
 process.load("RecoHI.Configuration.Reconstruction_hiPF_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'MC_37Y_V5::All'
+process.GlobalTag.globaltag = 'MC_39Y_V2::All'
 
 process.MessageLogger.cerr.FwkReport.reportEvery=100
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
@@ -21,7 +21,7 @@ process.Timing = cms.Service("Timing")
 process.source = cms.Source (
     "PoolSource",    
     fileNames = cms.untracked.vstring(
-    '/store/relval/CMSSW_3_7_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-RECO/MC_37Y_V4-v1/0026/88958F00-8F69-DF11-846A-00261894383C.root'
+    'store/relval/CMSSW_3_9_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-RECO/MC_39Y_V2-v1/0050/1A554290-13D8-DF11-A34B-002618943920.root'
     ),
     secondaryFileNames = cms.untracked.vstring(),
     noEventSort = cms.untracked.bool(True),
@@ -29,7 +29,7 @@ process.source = cms.Source (
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1)
 )
 
 # Filter on PF candidate pt
@@ -59,8 +59,8 @@ TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 process.pfCandidateAnalyzer = cms.EDAnalyzer("PFCandidateAnalyzer",
     PFCandidates = cms.InputTag("particleFlow",""),
     Vertices = cms.InputTag("hiSelectedVertex"),                                         
-    verbose = cms.untracked.bool(False), ## print candidate info
-    printBlocks = cms.untracked.bool(False), ## print block/element info
+    verbose = cms.untracked.bool(True), ## print candidate info
+    printBlocks = cms.untracked.bool(True), ## print block/element info
     ptMin = cms.untracked.double(15.0), ## of PF candidate
     SimTracks = cms.InputTag("mergedtruth","MergedTrackTruth"),
     Tracks = cms.InputTag("hiSelectedTracks"),                                         
@@ -92,8 +92,8 @@ process.TFileService = cms.Service("TFileService",
 # Paths
 
 process.filter = cms.Path(process.filter_seq)
-process.p = cms.Path(process.filter_seq
-                     *process.pfCandidateAnalyzer)
+process.p = cms.Path(process.filter_seq*
+                     process.pfCandidateAnalyzer)
 #process.outpath = cms.EndPath(process.aod)
 
 # Schedule
@@ -106,11 +106,14 @@ process.schedule = cms.Schedule(process.filter,
 def customiseMC(process):
     process.TFileService.fileName="pftupleMC.root"     # new ntuple name
     process.source.fileNames= [
-        #'/store/relval/CMSSW_3_7_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-RECO/MC_37Y_V4-v1/0026/88958F00-8F69-DF11-846A-00261894383C.root'
-        '/store/relval/CMSSW_3_7_0/RelValPyquen_DiJet_pt80to120_2760GeV/GEN-SIM-RECO/MC_37Y_V4-v1/0026/E61F5D5C-726A-DF11-B4BE-002618943807.root'
-        #'file:../../../RecoHI/Configuration/test/hydjetMB_PFRECO.root'
+        #'/store/relval/CMSSW_3_9_0/RelValHydjetQ_B0_2760GeV/GEN-SIM-RECO/MC_39Y_V2-v1/0050/1A554290-13D8-DF11-A34B-002618943920.root'
+        #'/store/relval/CMSSW_3_9_0/RelValPyquen_DiJet_pt80to120_2760GeV/GEN-SIM-RECO/MC_39Y_V2-v1/0052/6CA5E6DF-1CD9-DF11-A3E4-002618943849.root'
+        '/store/relval/CMSSW_3_9_0/RelValQCD_Pt_80_120/GEN-SIM-RECO/MC_39Y_V2-v1/0049/62E08581-F2D7-DF11-8475-002618943986.root'
         ]
-        
+
+    process.trkfilter.src = "generalTracks"
+    #process.pfCandidateAnalyzer.Vertices = "offlinePrimaryVertices"
+    #process.pfCandidateAnalyzer.Tracks = "generalTracks"
     #process.pfCandidateAnalyzer.hasSimInfo=cms.untracked.bool(True)
     
     return process

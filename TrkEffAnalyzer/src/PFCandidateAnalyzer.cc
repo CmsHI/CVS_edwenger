@@ -150,6 +150,9 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
     for(unsigned i=0; i<cand.elementsInBlocks().size(); i++) {
 
       PFBlockRef blockRef = cand.elementsInBlocks()[i].first;
+
+      // get a copy of the link data
+      PFBlock::LinkData linkData =  blockRef->linkData();
      
       if(i && verbose_) {
 	cout << "WARNING: more than one block in this candidate" << endl; 
@@ -210,6 +213,45 @@ PFCandidateAnalyzer::analyze(const Event& iEvent,
 	    max_nd0=d0/d0err;
 	    max_ndz=dz/dzerr;
 	    max_fake=fake;
+	  }
+
+	  // look for associated elements of all types
+	  // all types of links are considered. 
+	  // the elements are sorted by increasing distance
+	  std::multimap<double, unsigned> ecalElems;
+	  blockRef->associatedElements( ie,  linkData,
+					ecalElems ,
+					reco::PFBlockElement::ECAL,
+					reco::PFBlock::LINKTEST_ALL );
+	  
+	  std::multimap<double, unsigned> hcalElems;
+	  blockRef->associatedElements( ie,  linkData,
+					hcalElems,
+					reco::PFBlockElement::HCAL,
+					reco::PFBlock::LINKTEST_ALL );
+
+	  cout << "\t" << ecalElems.size() << " ecalElems" << endl;
+
+	  std::multimap <double, unsigned> :: const_iterator  iee;
+	  for(iee = ecalElems.begin(); iee != ecalElems.end(); ++iee ) {
+
+	    unsigned index = iee->second;
+	    double dist = iee->first * 1000;
+
+	    cout << "\t\t ECAL element #" << index 
+		 << " at distance x 1000 = " << dist << endl;
+	  }
+
+	  cout << "\t" << hcalElems.size() << " hcalElems" << endl;
+
+	  std::multimap <double, unsigned> :: const_iterator  ihe;
+	  for(ihe = hcalElems.begin(); ihe != hcalElems.end(); ++ihe ) {
+
+	    unsigned index = ihe->second;
+	    double dist = ihe->first * 1000;
+
+	    cout << "\t\t HCAL element #" << index 
+		 << " at distance x 1000 =  " << dist << endl;
 	  }
 
 	} 
