@@ -219,6 +219,13 @@ def enableMinPtHatCutAuto(process,genTypePtHatRange):
         process.preTrackAna.pthatCut=cms.untracked.double(20.0)
     return process
 
+
+def enable900GeVGENMode(process,genSqrts):
+    if genSqrts < 910 :
+        print "Sqrts is less then 910 GeV"
+        process.preTrackAna.mode900GeV=cms.untracked.bool(True)
+    return process                    
+
 ### this is for taking the correct event selection efficiency
 def getEvtSelEff(evtSelType):
     eff = {
