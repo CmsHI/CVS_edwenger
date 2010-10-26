@@ -219,6 +219,12 @@ def enableMinPtHatCutAuto(process,genTypePtHatRange):
         process.preTrackAna.pthatCut=cms.untracked.double(20.0)
     return process
 
+## to generate and analyze pythia 8 events
+def enablePythia8Mode(process):
+    print "Analyzer in Pythia8 mode"
+    process.preTrackAna.pythia6=cms.untracked.bool(False)
+    return process
+    
 
 def enable900GeVGENMode(process,genSqrts):
     if genSqrts < 910 :
