@@ -98,7 +98,7 @@ def customisePrompt(process):
 
 def customiseCommonHI(process):
     
-    #####################################################################################################
+    ###############################################################################################
     ####
     ####  Top level replaces for handling strange scenarios of early HI collisions
     ####
@@ -108,6 +108,12 @@ def customiseCommonHI(process):
     process.siStripZeroSuppression.Algorithms.CutToAvoidSignal = cms.double(2.0)
     process.siStripZeroSuppression.Algorithms.Iterations = cms.int32(3)
     process.siStripZeroSuppression.storeCM = cms.bool(True)
+
+
+    ###
+    ###  end of top level replacements
+    ###
+    ###############################################################################################
 
     return process
 
