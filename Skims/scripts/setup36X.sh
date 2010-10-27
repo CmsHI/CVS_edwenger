@@ -25,10 +25,18 @@ cvs co HeavyIonsAnalysis/Configuration
 cvs co RecoHI/HiCentralityAlgos
 cvs co RecoHI/HiMuonAlgos
 
+# for GEN spectra production
+#cvs co UserCode/ASYoon/MCGeneration
+#mv UserCode/ASYoon/MCGeneration .
+
 # cleanup
 mv UserCode/edwenger .
 mv UserCode/ASYoon/PPTrackingTools/ .
 rm -r UserCode/ASYoon
+
+# further clean up to keep it light
+#rm edwenger/TrackSpectraAnalyzer/macros/ -r
+#rm edwenger/TrkEffAnalyzer/macros/ -r
 
 # FW update for 36X
 sed -i 's/DEFINE_SEAL_MODULE();//' UserCode/FerencSiklerVertexing/plugins/module.cc
