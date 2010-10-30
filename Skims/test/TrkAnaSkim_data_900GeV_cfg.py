@@ -13,24 +13,24 @@ process.load('Configuration/EventContent/EventContent_cff')
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
       # may6rr
-      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/60ED4BDC-BF5C-DF11-ABF4-002618943856.root',
-      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/608292E0-B25C-DF11-8047-001A928116DC.root',
-      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/60245B69-BF5C-DF11-A0D5-0018F3D09634.root',
-      '/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/5ECC499A-815C-DF11-9B24-0018F3D09688.root'
-      # jun14rr
-      #'/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/7E781D15-4380-DF11-902E-001A928116B2.root',
-      #'/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/3A420F2A-4380-DF11-9B3E-0018F3D096F0.root'
+      #'/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/60245B69-BF5C-DF11-A0D5-0018F3D09634.root',
+      #'/store/data/Commissioning10/MinimumBias/RAW-RECO/May6thPDSkim_GOODCOLL-v1/0003/5ECC499A-815C-DF11-9B24-0018F3D09688.root'
+      # jun14rr, Run 134725
+      #'/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0149/826CD0DA-7D84-DF11-BA7D-0018F3D09648.root',
+      #'/store/data/Commissioning10/MinimumBias/RECO/SD_JetMETTau-Jun14thSkim_v1/0129/DEB2CC2F-4380-DF11-A8DE-003048678F02.root'
+      # jmt pr4: run >137436 (CMSSW_3_6_1_patch4) 
+      '/store/data/Run2010A/JetMETTau/RECO/v4/000/140/059/28ADC2FF-708E-DF11-B715-001D09F2527B.root'
       ),
     )
 
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'GR_R_35X_V8B::All'
+process.GlobalTag.globaltag = 'GR_R_36X_V12A::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.8 $'),
+    version = cms.untracked.string('$Revision: 1.9 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_900GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -51,7 +51,7 @@ process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
-switchJECSet(process, "Summer09_7TeV_ReReco332") # get the 900 GeV jet corrections, for the moment use default 7TeV JEC
+#switchJECSet(process, "Summer09_7TeV_ReReco332") # get the 900 GeV jet corrections, for the moment use default 7TeV JEC
 
 from PhysicsTools.PatAlgos.tools.coreTools import *
 removeMCMatching(process, ['All']) # turn off MC matching for data
@@ -60,6 +60,8 @@ from edwenger.Skims.customise_cfi import *
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_900GeV_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_900GeV_PixVtx")
 #enableHLTJet(process)
+enableDJetAna(process,"Data","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
+run900GeVmode(process) # set trigger names and appropriate binning for 900 GeV
 #process = enableAOD(process)
 
 # =============== Final Paths =====================
