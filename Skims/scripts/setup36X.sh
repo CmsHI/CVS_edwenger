@@ -19,11 +19,11 @@ cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
 cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
 
 # needed for dijetana
-cvs co RecoHI/HiCentralityAlgos
-cvs co DataFormats/HeavyIonEvent
-cvs co HeavyIonsAnalysis/Configuration
-cvs co RecoHI/HiCentralityAlgos
-cvs co RecoHI/HiMuonAlgos
+cvs co -r CMSSW_3_9_1 RecoHI/HiCentralityAlgos
+cvs co -r CMSSW_3_9_1 DataFormats/HeavyIonEvent
+cvs co -r CMSSW_3_9_1 HeavyIonsAnalysis/Configuration
+cvs co -r CMSSW_3_9_1 RecoHI/HiCentralityAlgos
+cvs co -r CMSSW_3_9_1 RecoHI/HiMuonAlgos
 
 # for GEN spectra production
 #cvs co UserCode/ASYoon/MCGeneration
