@@ -5,7 +5,7 @@ if [ $# -lt 3 ]; then
   exit 1
 fi
 
-swenv=/net/hisrv0001/home/frankma/work/job/ana/trkAnaCMSSW_3_5_7/env.sh
+swenv=/net/hisrv0001/home/frankma/work/job/ana/trkAnaCMSSW_3_6_2/env.sh
 
 outdir=$1
 shift
