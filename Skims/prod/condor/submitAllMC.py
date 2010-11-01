@@ -6,9 +6,9 @@ jobTag="proc1022_final_LIGHT_v3"
 
 # ================== 362 ===============
 samples  = {
-    #"su10-qcdflat-startup36v9":"QCD",
+    "su10-qcdflat-startup36v9":"QCD"
     #"su10-qcd80-startup36v9_f500":"QCD"
-    "su10-qcd80to120":"QCD"
+    #"su10-qcd80to120":"QCD"
     }
 
 for sample,PD in samples.items():
