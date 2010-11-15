@@ -20,6 +20,8 @@
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TH1.h"
+#include "TH2.h"
+#include "TH3.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 //
@@ -81,19 +83,43 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   double minHits_, maxPtErr_, maxD0_, maxDZ_, maxD0Norm_, maxDZNorm_;
   bool pixelSeedOnly_;
 
+  // ntuple
   TNtuple *nt;
-  edm::Service<TFileService> f;
+
+  // TH1F
+
+
+  // TH2F
+  TH2F *hTrkPtEcalEtSum, *hTrkPtHcalEtSum, *hTrkPtCaloEtSum;
+  TH2F *hTrkPtEcalEtSum_fake, *hTrkPtHcalEtSum_fake, *hTrkPtCaloEtSum_fake;
+
+  // TH3F
+  TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;
+  TH3F *hTrkPtEtaEcalEtSum_fake, *hTrkPtEtaHcalEtSum_fake, *hTrkPtEtaCaloEtSum_fake;
+
+  //TH3F *hTrkPtEcalEtSumNhit, *hTrkPtHcalEtSumNhit, *hTrkPtCaloEtSumNhit;
+  //TH3F *hTrkPtEcalEtSumNhit_fake, *hTrkPtHcalEtSumNhit_fake, *hTrkPtCaloEtSumNhit_fake;
+
+  edm::Service<TFileService> fs;
 
   float cand_type;
   float cand_pt;
+  float cand_eta;
   float max_trk;
   float sum_trk;
   float max_ecal;
   float sum_ecal;
   float max_hcal;
   float sum_hcal;
+  float sum_calo;
 
   float max_nhits,max_relpterr,max_algo,max_nd0,max_ndz,max_fake;
+
+  bool prodNtuple_;
+  bool isData_;
+
+
+  std::vector<double> etaBins, ptBins, cEtSumBins;
 
   //vector<pair<float,float>> elements; // type, pt 
 

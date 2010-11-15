@@ -8,9 +8,9 @@ TrackAssociatorByHits.SimToRecoDenominator = cms.string('reco')
 
 from edwenger.HiTrkEffAnalyzer.hipfCandAnalyzer_cfi import *
 
-pfCandidateAnalyzer.ptMin = cms.untracked.double(3.0)
-pfCandidateAnalyzer.hasSimInfo = cms.untracked.bool(True)
+pfCandidateAnalyzer.ptMin = cms.untracked.double(4.0)
 pfCandidateAnalyzer.Tracks = cms.InputTag("hiSelectedTracks")
+pfCandidateAnalyzer.isData = cms.untracked.bool(False)
 
 hipfCandAnalyzer = cms.Sequence(#myTrackAssociatorByHitsRecoDenom*
                                 pfCandidateAnalyzer)

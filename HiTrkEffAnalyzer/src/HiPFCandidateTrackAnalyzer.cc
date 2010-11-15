@@ -1,6 +1,6 @@
 /*
   Based on edwenger/TrkEffAnalyzer
-  Modified by Matt Nguyen, November 2010
+  Modified by Matt Nguyen and Andre Yoon, November 2010
 
 */
 
@@ -60,13 +60,12 @@ HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& 
   maxD0Norm_ = iConfig.getUntrackedParameter<double>("maxD0Norm");
   maxDZNorm_ = iConfig.getUntrackedParameter<double>("maxDZNorm");
   pixelSeedOnly_ = iConfig.getUntrackedParameter<bool>("pixelSeedOnly");
-
-  //prodNtuple_ = iConfig.getUntrackedParameter<bool>("prodNtuple_");
+  
+  prodNtuple_ = iConfig.getUntrackedParameter<bool>("prodNtuple");
+  isData_ = iConfig.getUntrackedParameter<bool>("isData");
 
   LogDebug("HiPFCandidateTrackAnalyzer")
     <<" input collection : "<<inputTagPFCandidates_ ;
-
-
 
    
 }
@@ -81,13 +80,9 @@ void
 HiPFCandidateTrackAnalyzer::beginRun(const edm::Run& run, 
 			      const edm::EventSetup & es) {}
 
-void 
-HiPFCandidateTrackAnalyzer::beginJob() {
 
-  nt = f->make<TNtuple>("nt","PF Testing","type:pt:tkptmax:tkptsum:eetmax:eetsum:hetmax:hetsum:nhits:relpterr:algo:nd0:ndz:fake");
 
-}
-
+// ------------ main analyzer run for each event ---------------------------------------- 
 
 void 
 HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent, 
@@ -115,7 +110,7 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     iEvent.getByLabel(inputTagTracks_,trackCollection);
     iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
     theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();  
-    recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
+    recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent); // to find fake
   }
 
   // get PFCandidates
@@ -123,7 +118,7 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
   Handle<PFCandidateCollection> pfCandidates;
   iEvent.getByLabel(inputTagPFCandidates_, pfCandidates);
 
-  if(verbose_)cout<<" # of pf cands: "<<pfCandidates->size()<<endl;
+  if(verbose_) cout<<" # of pf cands: "<<pfCandidates->size()<<endl;
 
   for( unsigned i=0; i<pfCandidates->size(); i++ ) {
     
@@ -138,6 +133,7 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     
     cand_type = cand.particleId();
     cand_pt = cand.pt();
+    cand_eta = cand.eta();
 
     //--------- EDIT: Apr 21, 2010 (EAW)
     if(cand_pt < thePtMin_) continue;
@@ -186,15 +182,15 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 	fake=true;
 
     //-----
-    if(verbose_)if(fake==true) std::cout<<" fake! "<<std::endl;
-    max_trk=0.0, sum_trk=0.0, max_ecal=0.0, sum_ecal=0.0, max_hcal=0.0, sum_hcal=0.0;
+    if(verbose_) if(fake==true) std::cout<<" fake! "<<std::endl;
+
+    max_trk=0.0, sum_trk=0.0, max_ecal=0.0, sum_ecal=0.0, max_hcal=0.0, sum_hcal=0.0, sum_calo=0.0;
     
     
     for(unsigned i=0; i<cand.elementsInBlocks().size(); i++) {
 
       PFBlockRef blockRef = cand.elementsInBlocks()[i].first;
-      
-      
+
       
       unsigned indexInBlock = cand.elementsInBlocks()[i].second;
       const edm::OwnVector<  reco::PFBlockElement>&  elements = (*blockRef).elements();
@@ -228,13 +224,14 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
       default:
 	break;
       }
-      // Could do more stuff here, e.g., pre-shower, HF
 
-    }
+    } // end of elementsInBlocks()
 	
-    double trkpt = trackRef->pt();
-    cout << "pt=" << trkpt << endl;
+    sum_calo = sum_ecal + sum_hcal; // add HCAL and ECAL cal sum
 
+    double trkpt = trackRef->pt();
+    if(verbose_) cout << "pt=" << trkpt << endl;
+    
     sum_trk+=trkpt;
     if(trkpt>max_trk) {
       max_trk=trkpt;
@@ -256,14 +253,22 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     
     if(verbose_)cout<<" number of elements in blocks "<<cand.elementsInBlocks().size()<<endl;
     
+    if(prodNtuple_) nt->Fill(cand_type,cand_pt,max_trk,sum_trk,max_ecal,sum_ecal,max_hcal,sum_hcal,max_nhits,max_relpterr,max_algo,max_nd0,max_ndz,max_fake);
 
+    // 2D hist
+    hTrkPtEcalEtSum->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum->Fill(cand_pt,sum_calo);
 
+    if(!isData_ && hasSimInfo_ && fake)  // fake only
+       hTrkPtEcalEtSum_fake->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum_fake->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum_fake->Fill(cand_pt,sum_calo);
 
+    // 3D hist
+    hTrkPtEtaEcalEtSum->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum->Fill(cand_eta,cand_pt,sum_calo);
 
-    nt->Fill(cand_type,cand_pt,max_trk,sum_trk,max_ecal,sum_ecal,max_hcal,sum_hcal,max_nhits,max_relpterr,max_algo,max_nd0,max_ndz,max_fake);
+    if(!isData_ && hasSimInfo_ && fake) // fake only
+       hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
     
-    //---------
-  }
+
+  } // end of pfCandidates loop
   
  
   LogDebug("HiPFCandidateTrackAnalyzer")<<"STOP event: "<<iEvent.id().event()
@@ -271,7 +276,70 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 }
 
 
+// ------------ define relevant histograms/tuple here ----------------------------------------
 
+void
+HiPFCandidateTrackAnalyzer::beginJob() {
+
+   // eta bins
+   static float etaMin   = -2.4;
+   static float etaMax   =  2.4;
+   static float etaWidth =  0.2;
+
+   for(double eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
+      etaBins.push_back(eta);
+
+
+   // pt bins
+   static float ptMin   =  0.0;
+   static float ptMax   =  200.0;
+   static float ptWidth =  1.0;
+
+   for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
+      ptBins.push_back(pt);
+   
+   // calo et sum bins
+   static float cSumEtMin   =  0.0;
+   static float cSumEtMax   =  1000.0;
+   static float cSumEtWidth =  5.0;
+
+   for(double cSumEt = cSumEtMin; cSumEt < cSumEtMax + cSumEtWidth/2; cSumEt += cSumEtWidth)
+      cEtSumBins.push_back(cSumEt);
+
+
+
+   if(prodNtuple_) nt = fs->make<TNtuple>("nt","PF Testing","type:pt:tkptmax:tkptsum:eetmax:eetsum:hetmax:hetsum:nhits:relpterr:algo:nd0:ndz:fake");
+
+   hTrkPtEcalEtSum = fs->make<TH2F>("hTrkPtEcalEtSum","pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+   hTrkPtHcalEtSum = fs->make<TH2F>("hTrkPtHcalEtSum","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+   hTrkPtCaloEtSum = fs->make<TH2F>("hTrkPtCaloEtSum","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+
+   hTrkPtEtaEcalEtSum = fs->make<TH3F>("hTrkPtEtaEcalEtSum","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+   hTrkPtEtaHcalEtSum = fs->make<TH3F>("hTrkPtEtaHcalEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+   hTrkPtEtaCaloEtSum = fs->make<TH3F>("hTrkPtEtaCaloEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+
+   if(!isData_ && hasSimInfo_) { 
+      hTrkPtEcalEtSum_fake = fs->make<TH2F>("hTrkPtEcalEtSum_fake","fake pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtHcalEtSum_fake = fs->make<TH2F>("hTrkPtHcalEtSum_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtCaloEtSum_fake = fs->make<TH2F>("hTrkPtCaloEtSum_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+
+      hTrkPtEtaEcalEtSum_fake = fs->make<TH3F>("hTrkPtEtaEcalEtSum_fake","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtEtaHcalEtSum_fake = fs->make<TH3F>("hTrkPtEtaHcalEtSum_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtEtaCaloEtSum_fake = fs->make<TH3F>("hTrkPtEtaCaloEtSum_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+
+   }
+
+
+}
+
+
+// ------------ define functions/method/etc below  ---------------------------------------- 
 
 void HiPFCandidateTrackAnalyzer::printElementsInBlocks(const PFCandidate& cand,
 						ostream& out) const {

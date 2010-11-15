@@ -16,5 +16,7 @@ pfCandidateAnalyzer = cms.EDAnalyzer("HiPFCandidateTrackAnalyzer",
                maxDZ = cms.untracked.double(0.2),
                maxD0Norm = cms.untracked.double(3.0),
                maxDZNorm = cms.untracked.double(3.0),
-               pixelSeedOnly = cms.untracked.bool(True)
+               pixelSeedOnly = cms.untracked.bool(True),
+               prodNtuple = cms.untracked.bool(False),
+               isData = cms.untracked.bool(False)
                )
