@@ -7,14 +7,14 @@ towersAboveThreshold = cms.EDProducer("CaloTowerCandidateCreator",
     minimumEt = cms.double(0.0),
 )
 
-hfPosTowers = cms.EDProducer("EtaPtMinCandSelector",
+hfPosTowers = cms.EDFilter("EtaPtMinCandSelector",
     src = cms.InputTag("towersAboveThreshold"),
     ptMin   = cms.double(0),
     etaMin = cms.double(3.0),
     etaMax = cms.double(6.0)
 )
 
-hfNegTowers = cms.EDProducer("EtaPtMinCandSelector",
+hfNegTowers = cms.EDFilter("EtaPtMinCandSelector",
     src = cms.InputTag("towersAboveThreshold"),
     ptMin   = cms.double(0),
     etaMin = cms.double(-6.0),
