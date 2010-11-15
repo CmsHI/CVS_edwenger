@@ -263,10 +263,12 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
     // 3D hist
     hTrkPtEtaEcalEtSum->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum->Fill(cand_eta,cand_pt,sum_calo);
+    hTrkPtEcalEtSumNhit->Fill(cand_pt,sum_eca,nhits), hTrkPtHcalEtSumNhit->Fill(cand_pt,sum_eca,nhits), hTrkPtCaloEtSumNhit->Fill(cand_pt,sum_eca,nhits);
 
-    if(!isData_ && hasSimInfo_ && fake) // fake only
+    if(!isData_ && hasSimInfo_ && fake){ // fake only
        hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
-    
+       hTrkPtEcalEtSumNhit_fake->Fill(cand_pt,sum_eca,nhits), hTrkPtHcalEtSumNhit_fake->Fill(cand_pt,sum_eca,nhits), hTrkPtCaloEtSumNhit_fake->Fill(cand_pt,sum_eca,nhits);
+    }
 
   } // end of pfCandidates loop
   
