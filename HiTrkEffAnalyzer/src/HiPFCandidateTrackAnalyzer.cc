@@ -289,7 +289,6 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    for(double eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
       etaBins.push_back(eta);
 
-
    // pt bins
    static float ptMin   =  0.0;
    static float ptMax   =  200.0;
@@ -300,12 +299,19 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    
    // calo et sum bins
    static float cSumEtMin   =  0.0;
-   static float cSumEtMax   =  1000.0;
-   static float cSumEtWidth =  5.0;
+   static float cSumEtMax   =  600.0;
+   static float cSumEtWidth =  3.0;
 
    for(double cSumEt = cSumEtMin; cSumEt < cSumEtMax + cSumEtWidth/2; cSumEt += cSumEtWidth)
       cEtSumBins.push_back(cSumEt);
 
+   // nhits bins
+   static float nhitMin   = 5;
+   static float nhitMax   =  30;
+   static float nhitWidth =  1;
+
+   for(double nhit = nhitMin; nhit < nhitMax + nhitWidth/2; nhit += nhitWidth)
+      nhitBins.push_back(nhit);
 
 
    if(prodNtuple_) nt = fs->make<TNtuple>("nt","PF Testing","type:pt:tkptmax:tkptsum:eetmax:eetsum:hetmax:hetsum:nhits:relpterr:algo:nd0:ndz:fake");
@@ -321,6 +327,14 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    hTrkPtEtaCaloEtSum = fs->make<TH3F>("hTrkPtEtaCaloEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
+   hTrkPtEcalEtSumNhit = fs->make<TH3F>("hTrkPtEcalEtSumNhit","pt vs ecal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
+					ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
+   hTrkPtHcalEtSumNhit = fs->make<TH3F>("hTrkPtHcalEtSumNhit","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
+					ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
+   hTrkPtCaloEtSumNhit = fs->make<TH3F>("hTrkPtCaloEtSumNhit","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
+					ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
+
+
    if(!isData_ && hasSimInfo_) { 
       hTrkPtEcalEtSum_fake = fs->make<TH2F>("hTrkPtEcalEtSum_fake","fake pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
       hTrkPtHcalEtSum_fake = fs->make<TH2F>("hTrkPtHcalEtSum_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
@@ -332,6 +346,14 @@ HiPFCandidateTrackAnalyzer::beginJob() {
 					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
       hTrkPtEtaCaloEtSum_fake = fs->make<TH3F>("hTrkPtEtaCaloEtSum_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+
+      hTrkPtEcalEtSumNhit_fake = fs->make<TH3F>("hTrkPtEcalEtSumNhit_fake","pt vs ecal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
+						ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
+      hTrkPtHcalEtSumNhit_fake = fs->make<TH3F>("hTrkPtHcalEtSumNhit_fake","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
+						ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
+      hTrkPtCaloEtSumNhit_fake = fs->make<TH3F>("hTrkPtCaloEtSumNhit_fake","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
+						ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
+      
 
    }
 

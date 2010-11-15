@@ -97,8 +97,8 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;
   TH3F *hTrkPtEtaEcalEtSum_fake, *hTrkPtEtaHcalEtSum_fake, *hTrkPtEtaCaloEtSum_fake;
 
-  //TH3F *hTrkPtEcalEtSumNhit, *hTrkPtHcalEtSumNhit, *hTrkPtCaloEtSumNhit;
-  //TH3F *hTrkPtEcalEtSumNhit_fake, *hTrkPtHcalEtSumNhit_fake, *hTrkPtCaloEtSumNhit_fake;
+  TH3F *hTrkPtEcalEtSumNhit, *hTrkPtHcalEtSumNhit, *hTrkPtCaloEtSumNhit;
+  TH3F *hTrkPtEcalEtSumNhit_fake, *hTrkPtHcalEtSumNhit_fake, *hTrkPtCaloEtSumNhit_fake;
 
   edm::Service<TFileService> fs;
 
@@ -119,7 +119,7 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   bool isData_;
 
 
-  std::vector<double> etaBins, ptBins, cEtSumBins;
+  std::vector<double> etaBins, ptBins, cEtSumBins, nhitBins;
 
   //vector<pair<float,float>> elements; // type, pt 
 
