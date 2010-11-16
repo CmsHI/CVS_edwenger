@@ -93,12 +93,23 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   TH2F *hTrkPtEcalEtSum, *hTrkPtHcalEtSum, *hTrkPtCaloEtSum;
   TH2F *hTrkPtEcalEtSum_fake, *hTrkPtHcalEtSum_fake, *hTrkPtCaloEtSum_fake;
 
+  TH2F *hTrkPtEcalEtMax, *hTrkPtHcalEtMax, *hTrkPtCaloEtMax;
+  TH2F *hTrkPtEcalEtMax_fake, *hTrkPtHcalEtMax_fake, *hTrkPtCaloEtMax_fake;
+
+
   // TH3F
   TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;
   TH3F *hTrkPtEtaEcalEtSum_fake, *hTrkPtEtaHcalEtSum_fake, *hTrkPtEtaCaloEtSum_fake;
 
   TH3F *hTrkPtEcalEtSumNhit, *hTrkPtHcalEtSumNhit, *hTrkPtCaloEtSumNhit;
   TH3F *hTrkPtEcalEtSumNhit_fake, *hTrkPtHcalEtSumNhit_fake, *hTrkPtCaloEtSumNhit_fake;
+
+  TH3F *hTrkPtEtaEcalEtMax, *hTrkPtEtaHcalEtMax, *hTrkPtEtaCaloEtMax;
+  TH3F *hTrkPtEtaEcalEtMax_fake, *hTrkPtEtaHcalEtMax_fake, *hTrkPtEtaCaloEtMax_fake;
+
+  TH3F *hTrkPtEcalEtMaxNhit, *hTrkPtHcalEtMaxNhit, *hTrkPtCaloEtMaxNhit;
+  TH3F *hTrkPtEcalEtMaxNhit_fake, *hTrkPtHcalEtMaxNhit_fake, *hTrkPtCaloEtMaxNhit_fake;
+
 
   edm::Service<TFileService> fs;
 
@@ -112,6 +123,7 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   float max_hcal;
   float sum_hcal;
   float sum_calo;
+  float max_calo;
 
   float max_nhits,max_relpterr,max_algo,max_nd0,max_ndz,max_fake;
 
