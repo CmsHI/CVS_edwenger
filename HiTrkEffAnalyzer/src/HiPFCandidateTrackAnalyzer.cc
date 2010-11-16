@@ -53,6 +53,7 @@ HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& 
   thePtMin_ = iConfig.getUntrackedParameter<double>("ptMin",3.0);
   hasSimInfo_ = iConfig.getUntrackedParameter<bool>("hasSimInfo");
 
+  applyTrkQCs_ = iConfig.getUntrackedParameter<bool>("applyTrkQCs");
   minHits_ = iConfig.getUntrackedParameter<double>("minHits");
   maxPtErr_ = iConfig.getUntrackedParameter<double>("maxPtErr");
   maxD0_ = iConfig.getUntrackedParameter<double>("maxD0");
@@ -138,14 +139,6 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     //--------- EDIT: Apr 21, 2010 (EAW)
     if(cand_pt < thePtMin_) continue;
     
-    if(!(cand_type == PFCandidate::h ||     //type1
-	 cand_type == PFCandidate::e ||     //type2
-	 cand_type == PFCandidate::mu ||     //type3
-	 cand_type == PFCandidate::gamma || //type4
-	 cand_type == PFCandidate::h0      //type5
-	 )
-       ) continue;
-    
     // Matt:  Look at only charged hardons for the moment, could be extended to study leptons
     if(!(cand_type == PFCandidate::h)) continue;
 
@@ -153,27 +146,25 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
     //----- track quality selections, MATT:  Already using high Purity hiSelectedTracks by default anyway
 
-    double nhits = trackRef->numberOfValidHits();
+    double nhits = 0, relpterr = 0, algo = 0, d0 = 0, dz = 0, d0err = 0, dzerr = 0;
 
-    if(nhits<minHits_) continue;
-    
-    double relpterr = trackRef->ptError()/trackRef->pt();
-    if(relpterr > maxPtErr_) continue;
-    
-    double algo = trackRef->algo();
-    if(algo > 7 && pixelSeedOnly_) continue;
-    
-    double d0 = trackRef->dxy(vtxs[0].position());
-    double dz = trackRef->dz(vtxs[0].position());
-    
-    if(fabs(d0) > maxD0_) continue;
-    if(fabs(dz) > maxDZ_) continue;
-    
-    double d0err = sqrt(trackRef->d0Error()*trackRef->d0Error()+vtxs[0].xError()*vtxs[0].yError());
-    double dzerr = sqrt(trackRef->dzError()*trackRef->dzError()+vtxs[0].zError()*vtxs[0].zError());
-    
-    if(fabs(d0/d0err) > maxD0Norm_) continue;
-    if(fabs(dz/dzerr) > maxDZNorm_) continue;
+    if(applyTrkQCs_){
+       nhits = trackRef->numberOfValidHits();
+       if(nhits<minHits_) continue;
+       relpterr = trackRef->ptError()/trackRef->pt();
+       if(relpterr > maxPtErr_) continue;
+       algo = trackRef->algo();
+       if(algo > 7 && pixelSeedOnly_) continue;
+       d0 = trackRef->dxy(vtxs[0].position());
+       if(fabs(d0) > maxD0_) continue;
+       dz = trackRef->dz(vtxs[0].position());
+       if(fabs(dz) > maxDZ_) continue;
+       d0err = sqrt(trackRef->d0Error()*trackRef->d0Error()+vtxs[0].xError()*vtxs[0].yError());
+       if(fabs(d0/d0err) > maxD0Norm_) continue;
+       dzerr = sqrt(trackRef->dzError()*trackRef->dzError()+vtxs[0].zError()*vtxs[0].zError());
+       if(fabs(dz/dzerr) > maxDZNorm_) continue;
+    }    
+
 
     bool fake=false;
     
@@ -268,18 +259,11 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
     // 3D hist
     hTrkPtEtaEcalEtSum->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum->Fill(cand_eta,cand_pt,sum_calo);
-    hTrkPtEcalEtSumNhit->Fill(cand_pt,sum_ecal,nhits), hTrkPtHcalEtSumNhit->Fill(cand_pt,sum_ecal,nhits), hTrkPtCaloEtSumNhit->Fill(cand_pt,sum_ecal,nhits);
-    
     hTrkPtEtaEcalEtMax->Fill(cand_eta,cand_pt,max_ecal), hTrkPtEtaHcalEtMax->Fill(cand_eta,cand_pt,max_hcal), hTrkPtEtaCaloEtMax->Fill(cand_eta,cand_pt,max_calo);
-    hTrkPtEcalEtMaxNhit->Fill(cand_pt,max_ecal,nhits), hTrkPtHcalEtMaxNhit->Fill(cand_pt,max_ecal,nhits), hTrkPtCaloEtMaxNhit->Fill(cand_pt,max_ecal,nhits);
 
     if(!isData_ && hasSimInfo_ && fake){ // fake only
        hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
-       hTrkPtEcalEtSumNhit_fake->Fill(cand_pt,sum_ecal,nhits), hTrkPtHcalEtSumNhit_fake->Fill(cand_pt,sum_ecal,nhits), hTrkPtCaloEtSumNhit_fake->Fill(cand_pt,sum_ecal,nhits);
-       
        hTrkPtEtaEcalEtMax_fake->Fill(cand_eta,cand_pt,max_ecal), hTrkPtEtaHcalEtMax_fake->Fill(cand_eta,cand_pt,max_hcal), hTrkPtEtaCaloEtMax_fake->Fill(cand_eta,cand_pt,max_calo);
-       hTrkPtEcalEtMaxNhit_fake->Fill(cand_pt,max_ecal,nhits), hTrkPtHcalEtMaxNhit_fake->Fill(cand_pt,max_ecal,nhits), hTrkPtCaloEtMaxNhit_fake->Fill(cand_pt,max_ecal,nhits);
-
     }
 
   } // end of pfCandidates loop
@@ -313,8 +297,8 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    
    // calo et sum bins
    static float cSumEtMin   =  0.0;
-   static float cSumEtMax   =  600.0;
-   static float cSumEtWidth =  3.0;
+   static float cSumEtMax   =  400.0;
+   static float cSumEtWidth =  2.0;
 
    for(double cSumEt = cSumEtMin; cSumEt < cSumEtMax + cSumEtWidth/2; cSumEt += cSumEtWidth)
       cEtSumBins.push_back(cSumEt);
@@ -346,28 +330,12 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    hTrkPtEtaCaloEtSum = fs->make<TH3F>("hTrkPtEtaCaloEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
-   hTrkPtEcalEtSumNhit = fs->make<TH3F>("hTrkPtEcalEtSumNhit","pt vs ecal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-					ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-   hTrkPtHcalEtSumNhit = fs->make<TH3F>("hTrkPtHcalEtSumNhit","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-					ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-   hTrkPtCaloEtSumNhit = fs->make<TH3F>("hTrkPtCaloEtSumNhit","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-					ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-
    hTrkPtEtaEcalEtMax = fs->make<TH3F>("hTrkPtEtaEcalEtMax","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
                                        etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    hTrkPtEtaHcalEtMax = fs->make<TH3F>("hTrkPtEtaHcalEtMax","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
                                        etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    hTrkPtEtaCaloEtMax = fs->make<TH3F>("hTrkPtEtaCaloEtMax","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
                                        etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-
-   hTrkPtEcalEtMaxNhit = fs->make<TH3F>("hTrkPtEcalEtMaxNhit","pt vs ecal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-                                        ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-   hTrkPtHcalEtMaxNhit = fs->make<TH3F>("hTrkPtHcalEtMaxNhit","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-                                        ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-   hTrkPtCaloEtMaxNhit = fs->make<TH3F>("hTrkPtCaloEtMaxNhit","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-                                        ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-
-
 
 
    if(!isData_ && hasSimInfo_) { 
@@ -394,22 +362,6 @@ HiPFCandidateTrackAnalyzer::beginJob() {
                                                etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
       hTrkPtEtaCaloEtMax_fake = fs->make<TH3F>("hTrkPtEtaCaloEtMax_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
                                                etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-
-      hTrkPtEcalEtSumNhit_fake = fs->make<TH3F>("hTrkPtEcalEtSumNhit_fake","pt vs ecal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-						ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-      hTrkPtHcalEtSumNhit_fake = fs->make<TH3F>("hTrkPtHcalEtSumNhit_fake","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-						ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-      hTrkPtCaloEtSumNhit_fake = fs->make<TH3F>("hTrkPtCaloEtSumNhit_fake","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-						ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-      
-      hTrkPtEcalEtMaxNhit_fake = fs->make<TH3F>("hTrkPtEcalEtMaxNhit_fake","pt vs ecal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-                                                ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-      hTrkPtHcalEtMaxNhit_fake = fs->make<TH3F>("hTrkPtHcalEtMaxNhit_fake","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-                                                ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-      hTrkPtCaloEtMaxNhit_fake = fs->make<TH3F>("hTrkPtCaloEtMaxNhit_fake","pt vs hcal et sum vs nhits; p_{T} (GeV/c);E_{T} (GeV);N_{hits}",
-                                                ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0], nhitBins.size()-1, &nhitBins[0]);
-
-
    }
 
 

@@ -80,6 +80,7 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
 
   double thePtMin_;
 
+  bool applyTrkQCs_;
   double minHits_, maxPtErr_, maxD0_, maxDZ_, maxD0Norm_, maxDZNorm_;
   bool pixelSeedOnly_;
 
@@ -101,15 +102,8 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;
   TH3F *hTrkPtEtaEcalEtSum_fake, *hTrkPtEtaHcalEtSum_fake, *hTrkPtEtaCaloEtSum_fake;
 
-  TH3F *hTrkPtEcalEtSumNhit, *hTrkPtHcalEtSumNhit, *hTrkPtCaloEtSumNhit;
-  TH3F *hTrkPtEcalEtSumNhit_fake, *hTrkPtHcalEtSumNhit_fake, *hTrkPtCaloEtSumNhit_fake;
-
   TH3F *hTrkPtEtaEcalEtMax, *hTrkPtEtaHcalEtMax, *hTrkPtEtaCaloEtMax;
   TH3F *hTrkPtEtaEcalEtMax_fake, *hTrkPtEtaHcalEtMax_fake, *hTrkPtEtaCaloEtMax_fake;
-
-  TH3F *hTrkPtEcalEtMaxNhit, *hTrkPtHcalEtMaxNhit, *hTrkPtCaloEtMaxNhit;
-  TH3F *hTrkPtEcalEtMaxNhit_fake, *hTrkPtHcalEtMaxNhit_fake, *hTrkPtCaloEtMaxNhit_fake;
-
 
   edm::Service<TFileService> fs;
 
