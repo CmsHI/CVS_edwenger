@@ -18,6 +18,14 @@ hitrkEffAna = cms.Sequence(cutsTPForFak*
                            cutsTPForEff*
                            hitrkEffAnalyzer)
 
+hicalotrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiCaloCompTracks'),
+                                              fillNtuples = cms.bool(False)
+                                              )
+
+hicalotrkEffAna = cms.Sequence(cutsTPForFak*
+                               cutsTPForEff*
+                               hicalotrkEffAnalyzer)
+
 ## pixel tracking
 hipxltrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiLowPtPixelTracks'), # hiPixel3PrimTracks
                                              label_tp_effic = cms.untracked.InputTag('cutsTPForEffPxl'),
