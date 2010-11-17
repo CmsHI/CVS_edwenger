@@ -9,7 +9,7 @@ pfCandidateAnalyzer = cms.EDAnalyzer("HiPFCandidateTrackAnalyzer",
                ptMin = cms.untracked.double(3.0), ## of PF candidate
                SimTracks = cms.InputTag("mergedtruth","MergedTrackTruth"),
                Tracks = cms.InputTag("hiSelectedTracks"),
-               hasSimInfo = cms.untracked.bool(True),
+               hasSimInfo = cms.untracked.bool(False),
                applyTrkQCs = cms.untracked.bool(False),
                minHits = cms.untracked.double(0),
                maxPtErr = cms.untracked.double(99999.),
@@ -19,5 +19,5 @@ pfCandidateAnalyzer = cms.EDAnalyzer("HiPFCandidateTrackAnalyzer",
                maxDZNorm = cms.untracked.double(99999.),
                pixelSeedOnly = cms.untracked.bool(False),
                prodNtuple = cms.untracked.bool(False),
-               isData = cms.untracked.bool(False)
+               isData = cms.untracked.bool(True)
                )
