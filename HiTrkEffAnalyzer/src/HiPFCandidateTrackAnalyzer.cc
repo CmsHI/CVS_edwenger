@@ -250,20 +250,18 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
     // 2D hist
     hTrkPtEcalEtSum->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum->Fill(cand_pt,sum_calo);
-    hTrkPtEcalEtMax->Fill(cand_pt,max_ecal), hTrkPtHcalEtMax->Fill(cand_pt,max_hcal), hTrkPtCaloEtMax->Fill(cand_pt,max_calo);
 
-    if(!isData_ && hasSimInfo_ && fake){  // fake only
-       hTrkPtEcalEtSum_fake->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum_fake->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum_fake->Fill(cand_pt,sum_calo);
-       hTrkPtEcalEtMax_fake->Fill(cand_pt,max_ecal), hTrkPtHcalEtMax_fake->Fill(cand_pt,max_hcal), hTrkPtCaloEtMax_fake->Fill(cand_pt,max_calo);
+    if(!isData_ && hasSimInfo_){  
+       if(fake) hTrkPtEcalEtSum_fake->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum_fake->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum_fake->Fill(cand_pt,sum_calo);
+       else hTrkPtEcalEtSum_real->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum_real->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum_real->Fill(cand_pt,sum_calo);
     }
 
     // 3D hist
     hTrkPtEtaEcalEtSum->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum->Fill(cand_eta,cand_pt,sum_calo);
-    hTrkPtEtaEcalEtMax->Fill(cand_eta,cand_pt,max_ecal), hTrkPtEtaHcalEtMax->Fill(cand_eta,cand_pt,max_hcal), hTrkPtEtaCaloEtMax->Fill(cand_eta,cand_pt,max_calo);
 
-    if(!isData_ && hasSimInfo_ && fake){ // fake only
-       hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
-       hTrkPtEtaEcalEtMax_fake->Fill(cand_eta,cand_pt,max_ecal), hTrkPtEtaHcalEtMax_fake->Fill(cand_eta,cand_pt,max_hcal), hTrkPtEtaCaloEtMax_fake->Fill(cand_eta,cand_pt,max_calo);
+    if(!isData_ && hasSimInfo_){ // fake only
+       if(fake) hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
+       else hTrkPtEtaEcalEtSum_real->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_real->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_real->Fill(cand_eta,cand_pt,sum_calo);
     }
 
   } // end of pfCandidates loop
@@ -318,11 +316,6 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    hTrkPtHcalEtSum = fs->make<TH2F>("hTrkPtHcalEtSum","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    hTrkPtCaloEtSum = fs->make<TH2F>("hTrkPtCaloEtSum","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    
-   hTrkPtEcalEtMax = fs->make<TH2F>("hTrkPtEcalEtMax","pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-   hTrkPtHcalEtMax = fs->make<TH2F>("hTrkPtHcalEtMax","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-   hTrkPtCaloEtMax = fs->make<TH2F>("hTrkPtCaloEtMax","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-
-
    hTrkPtEtaEcalEtSum = fs->make<TH3F>("hTrkPtEtaEcalEtSum","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    hTrkPtEtaHcalEtSum = fs->make<TH3F>("hTrkPtEtaHcalEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
@@ -330,23 +323,14 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    hTrkPtEtaCaloEtSum = fs->make<TH3F>("hTrkPtEtaCaloEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
-   hTrkPtEtaEcalEtMax = fs->make<TH3F>("hTrkPtEtaEcalEtMax","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
-                                       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-   hTrkPtEtaHcalEtMax = fs->make<TH3F>("hTrkPtEtaHcalEtMax","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
-                                       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-   hTrkPtEtaCaloEtMax = fs->make<TH3F>("hTrkPtEtaCaloEtMax","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
-                                       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-
-
    if(!isData_ && hasSimInfo_) { 
       hTrkPtEcalEtSum_fake = fs->make<TH2F>("hTrkPtEcalEtSum_fake","fake pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
       hTrkPtHcalEtSum_fake = fs->make<TH2F>("hTrkPtHcalEtSum_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
       hTrkPtCaloEtSum_fake = fs->make<TH2F>("hTrkPtCaloEtSum_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
-      hTrkPtEcalEtMax_fake = fs->make<TH2F>("hTrkPtEcalEtMax_fake","fake pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-      hTrkPtHcalEtMax_fake = fs->make<TH2F>("hTrkPtHcalEtMax_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-      hTrkPtCaloEtMax_fake = fs->make<TH2F>("hTrkPtCaloEtMax_fake","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-      
+      hTrkPtEcalEtSum_real = fs->make<TH2F>("hTrkPtEcalEtSum_real","real pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtHcalEtSum_real = fs->make<TH2F>("hTrkPtHcalEtSum_real","real pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtCaloEtSum_real = fs->make<TH2F>("hTrkPtCaloEtSum_real","fake pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
       hTrkPtEtaEcalEtSum_fake = fs->make<TH3F>("hTrkPtEtaEcalEtSum_fake","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
@@ -355,13 +339,13 @@ HiPFCandidateTrackAnalyzer::beginJob() {
       hTrkPtEtaCaloEtSum_fake = fs->make<TH3F>("hTrkPtEtaCaloEtSum_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 					       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
-      hTrkPtEtaEcalEtMax_fake = fs->make<TH3F>("hTrkPtEtaEcalEtMax_fake","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+      hTrkPtEtaEcalEtSum_real = fs->make<TH3F>("hTrkPtEtaEcalEtSum_real","eta vs pt vs ecal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+                                               etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtEtaHcalEtSum_real = fs->make<TH3F>("hTrkPtEtaHcalEtSum_real","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
+                                               etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+      hTrkPtEtaCaloEtSum_real = fs->make<TH3F>("hTrkPtEtaCaloEtSum_real","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
                                                etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
 
-      hTrkPtEtaHcalEtMax_fake = fs->make<TH3F>("hTrkPtEtaHcalEtMax_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
-                                               etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
-      hTrkPtEtaCaloEtMax_fake = fs->make<TH3F>("hTrkPtEtaCaloEtMax_fake","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
-                                               etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    }
 
 

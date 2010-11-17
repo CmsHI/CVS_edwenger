@@ -93,17 +93,13 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   // TH2F
   TH2F *hTrkPtEcalEtSum, *hTrkPtHcalEtSum, *hTrkPtCaloEtSum;
   TH2F *hTrkPtEcalEtSum_fake, *hTrkPtHcalEtSum_fake, *hTrkPtCaloEtSum_fake;
-
-  TH2F *hTrkPtEcalEtMax, *hTrkPtHcalEtMax, *hTrkPtCaloEtMax;
-  TH2F *hTrkPtEcalEtMax_fake, *hTrkPtHcalEtMax_fake, *hTrkPtCaloEtMax_fake;
-
+  TH2F *hTrkPtEcalEtSum_real, *hTrkPtHcalEtSum_real, *hTrkPtCaloEtSum_real;
 
   // TH3F
   TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;
   TH3F *hTrkPtEtaEcalEtSum_fake, *hTrkPtEtaHcalEtSum_fake, *hTrkPtEtaCaloEtSum_fake;
+  TH3F *hTrkPtEtaEcalEtSum_real, *hTrkPtEtaHcalEtSum_real, *hTrkPtEtaCaloEtSum_real;
 
-  TH3F *hTrkPtEtaEcalEtMax, *hTrkPtEtaHcalEtMax, *hTrkPtEtaCaloEtMax;
-  TH3F *hTrkPtEtaEcalEtMax_fake, *hTrkPtEtaHcalEtMax_fake, *hTrkPtEtaCaloEtMax_fake;
 
   edm::Service<TFileService> fs;
 
