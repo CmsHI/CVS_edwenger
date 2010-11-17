@@ -3,12 +3,12 @@ import FWCore.ParameterSet.Config as cms
 ###
 ### select high-purity tracks
 ###
-highPurityTracks = cms.EDFilter("TrackSelector",
+hiHighPurityTracks = cms.EDFilter("TrackSelector",
     src = cms.InputTag("hiSelectedTracks"),
     cut = cms.string('quality("highPurity") && (ptError/pt)<0.05 && numberOfValidHits>12')
 )
 
-cutRecoTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
+hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
 
     src = cms.InputTag("highPurityTracks"),
     keepAllTracks = cms.bool(False), ## if set to true tracks failing this filter are kept in the output
@@ -43,4 +43,4 @@ cutRecoTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
     maxNumberLostLayers = cms.uint32(99999)
 )
 
-hiGoodTracks = cms.Sequence(highPurityTracks+cutRecoTracks)
+hiGoodTracksSelection = cms.Sequence(hiHighPurityTracks+hiGoodTracks)
