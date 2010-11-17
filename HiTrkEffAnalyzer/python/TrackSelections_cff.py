@@ -43,4 +43,4 @@ cutRecoTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
     maxNumberLostLayers = cms.uint32(99999)
 )
 
-bestTracks = cms.Sequence(highPurityTracks+cutRecoTracks)
+hiGoodTracks = cms.Sequence(highPurityTracks+cutRecoTracks)
