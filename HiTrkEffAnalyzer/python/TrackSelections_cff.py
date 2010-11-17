@@ -10,7 +10,7 @@ hiHighPurityTracks = cms.EDFilter("TrackSelector",
 
 hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
 
-    src = cms.InputTag("highPurityTracks"),
+    src = cms.InputTag("hiHighPurityTracks"),
     keepAllTracks = cms.bool(False), ## if set to true tracks failing this filter are kept in the output
     beamspot = cms.InputTag("offlineBeamSpot"),
 
