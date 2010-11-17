@@ -117,8 +117,10 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
   // get PFCandidates
 
   Handle<PFCandidateCollection> pfCandidates;
-  iEvent.getByLabel(inputTagPFCandidates_, pfCandidates);
+  bool isPFThere = iEvent.getByLabel(inputTagPFCandidates_, pfCandidates);
 
+  if (!isPFThere) return;  // if no PFCand in an event, skip it
+  
   if(verbose_) cout<<" # of pf cands: "<<pfCandidates->size()<<endl;
 
   for( unsigned i=0; i<pfCandidates->size(); i++ ) {
