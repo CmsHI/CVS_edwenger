@@ -52,6 +52,7 @@ HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& 
   printBlocks_ = iConfig.getUntrackedParameter<bool>("printBlocks",false);
   thePtMin_ = iConfig.getUntrackedParameter<double>("ptMin",3.0);
   hasSimInfo_ = iConfig.getUntrackedParameter<bool>("hasSimInfo");
+  funcCaloComp_ = iConfig.getParameter<std::string>("funcCaloComp");
 
   applyTrkQCs_ = iConfig.getUntrackedParameter<bool>("applyTrkQCs");
   minHits_ = iConfig.getUntrackedParameter<double>("minHits");
@@ -65,10 +66,12 @@ HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& 
   prodNtuple_ = iConfig.getUntrackedParameter<bool>("prodNtuple");
   isData_ = iConfig.getUntrackedParameter<bool>("isData");
 
-  LogDebug("HiPFCandidateTrackAnalyzer")
-    <<" input collection : "<<inputTagPFCandidates_ ;
+  fCaloComp = new TF1("fCaloComp",funcCaloComp_.c_str(),0,200); // a function that defines track-calo (in)compatible region
 
-   
+  LogDebug("HiPFCandidateTrackAnalyzer")
+     <<" input collection : "<<inputTagPFCandidates_<<"\n"
+     <<" funtional form : "<<funcCaloComp_<<endl;
+
 }
 
 
@@ -150,20 +153,21 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
     double nhits = 0, relpterr = 0, algo = 0, d0 = 0, dz = 0, d0err = 0, dzerr = 0;
 
+    nhits = trackRef->numberOfValidHits();
+    relpterr = trackRef->ptError()/trackRef->pt();
+    algo = trackRef->algo();
+    d0 = trackRef->dxy(vtxs[0].position());
+    dz = trackRef->dz(vtxs[0].position());
+    d0err = sqrt(trackRef->d0Error()*trackRef->d0Error()+vtxs[0].xError()*vtxs[0].yError());
+    dzerr = sqrt(trackRef->dzError()*trackRef->dzError()+vtxs[0].zError()*vtxs[0].zError());
+
     if(applyTrkQCs_){
-       nhits = trackRef->numberOfValidHits();
        if(nhits<minHits_) continue;
-       relpterr = trackRef->ptError()/trackRef->pt();
        if(relpterr > maxPtErr_) continue;
-       algo = trackRef->algo();
        if(algo > 7 && pixelSeedOnly_) continue;
-       d0 = trackRef->dxy(vtxs[0].position());
        if(fabs(d0) > maxD0_) continue;
-       dz = trackRef->dz(vtxs[0].position());
        if(fabs(dz) > maxDZ_) continue;
-       d0err = sqrt(trackRef->d0Error()*trackRef->d0Error()+vtxs[0].xError()*vtxs[0].yError());
        if(fabs(d0/d0err) > maxD0Norm_) continue;
-       dzerr = sqrt(trackRef->dzError()*trackRef->dzError()+vtxs[0].zError()*vtxs[0].zError());
        if(fabs(dz/dzerr) > maxDZNorm_) continue;
     }    
 
@@ -253,6 +257,18 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     // 2D hist
     hTrkPtEcalEtSum->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum->Fill(cand_pt,sum_calo);
 
+    float compatible_calo = (fCaloComp->Eval(cand_pt)!=fCaloComp->Eval(cand_pt)) ? 0 : fCaloComp->Eval(cand_pt); // protect agains NaN
+
+    if(compatible_calo < sum_calo){
+       hHitsEtaAccept->Fill(cand_eta,nhits), hPtErrEtaAccept->Fill(cand_eta,relpterr), hAlgoEtaAccept->Fill(cand_eta,algo), hD0EtaAccept->Fill(cand_eta,d0);
+       hDZEtaAccept->Fill(cand_eta,dz), hD0ErrEtaAccept->Fill(cand_eta,d0err), hDZErrEtaAccept->Fill(cand_eta,dzerr);
+       hD0PerErrEtaAccept->Fill(cand_eta,fabs(d0/d0err)), hDZPerErrEtaAccept->Fill(cand_eta,fabs(dz/dzerr));
+    }else{
+       hHitsEtaReject->Fill(cand_eta,nhits), hPtErrEtaReject->Fill(cand_eta,relpterr), hAlgoEtaReject->Fill(cand_eta,algo), hD0EtaReject->Fill(cand_eta,d0);
+       hDZEtaReject->Fill(cand_eta,dz), hD0ErrEtaReject->Fill(cand_eta,d0err), hDZErrEtaReject->Fill(cand_eta,dzerr);
+       hD0PerErrEtaReject->Fill(cand_eta,fabs(d0/d0err)), hDZPerErrEtaReject->Fill(cand_eta,fabs(dz/dzerr));
+    }
+
     if(!isData_ && hasSimInfo_){  
        if(fake) hTrkPtEcalEtSum_fake->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum_fake->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum_fake->Fill(cand_pt,sum_calo);
        else hTrkPtEcalEtSum_real->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum_real->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum_real->Fill(cand_pt,sum_calo);
@@ -262,8 +278,10 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     hTrkPtEtaEcalEtSum->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum->Fill(cand_eta,cand_pt,sum_calo);
 
     if(!isData_ && hasSimInfo_){ // fake only
-       if(fake) hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
-       else hTrkPtEtaEcalEtSum_real->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_real->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_real->Fill(cand_eta,cand_pt,sum_calo);
+       if(fake) 
+	  hTrkPtEtaEcalEtSum_fake->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_fake->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_fake->Fill(cand_eta,cand_pt,sum_calo);
+       else 
+	  hTrkPtEtaEcalEtSum_real->Fill(cand_eta,cand_pt,sum_ecal), hTrkPtEtaHcalEtSum_real->Fill(cand_eta,cand_pt,sum_hcal), hTrkPtEtaCaloEtSum_real->Fill(cand_eta,cand_pt,sum_calo);
     }
 
   } // end of pfCandidates loop
@@ -324,6 +342,34 @@ HiPFCandidateTrackAnalyzer::beginJob() {
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
    hTrkPtEtaCaloEtSum = fs->make<TH3F>("hTrkPtEtaCaloEtSum","eta vs pt vs hcal et sum; #eta;p_{T} (GeV/c);E_{T} (GeV)",
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);
+   
+   hHitsEtaAccept = fs->make<TH2F>("hHitsEtaAccept","Nhits dist. for accepted tracks; #eta;N_{hits}", etaBins.size()-1, &etaBins[0],nhitBins.size()-1, &nhitBins[0]);
+   hHitsEtaReject = fs->make<TH2F>("hHitsEtaReject","Nhits dist. for rejected tracks; #eta;N_{hits}", etaBins.size()-1, &etaBins[0],nhitBins.size()-1, &nhitBins[0]);
+   
+   hPtErrEtaAccept = fs->make<TH2F>("hPtErrEtaAccept","rel. pT error dist. for accepted tracks; #eta;p_{T}^{err}", etaBins.size()-1,&etaBins[0], 50,0,0.5);
+   hPtErrEtaReject = fs->make<TH2F>("hPtErrEtaReject","rel. pT error dist. for rejected tracks; #eta;p_{T}^{err}", etaBins.size()-1,&etaBins[0], 50,0,0.5);
+   
+   hAlgoEtaAccept = fs->make<TH2F>("hAlgoEtaAccept","algo number dist. for accepted tracks; #eta;Algo", etaBins.size()-1,&etaBins[0], 10,0,10);
+   hAlgoEtaReject = fs->make<TH2F>("hAlgoEtaReject","algo number dist. for rejected tracks; #eta;Algo", etaBins.size()-1,&etaBins[0], 10,0,10);
+
+   hD0EtaAccept = fs->make<TH2F>("hD0EtaAccept","D0 dist. for accepted tracks;#eta;d_{0}", etaBins.size()-1,&etaBins[0], 100,-5,5);
+   hD0EtaReject = fs->make<TH2F>("hD0EtaReject","D0 dist. for rejected tracks;#eta;d_{0}", etaBins.size()-1,&etaBins[0], 100,-5,5);
+
+   hDZEtaAccept = fs->make<TH2F>("hDZEtaAccept","DZ dist. for accepted tracks;#eta;d_{z}", etaBins.size()-1,&etaBins[0], 200,-25,25);
+   hDZEtaReject = fs->make<TH2F>("hDZEtaReject","DZ dist. for rejected tracks;#eta;d_{z}", etaBins.size()-1,&etaBins[0], 200,-25,25);
+
+   hD0ErrEtaAccept = fs->make<TH2F>("hD0ErrEtaAccept","D0 error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
+   hD0ErrEtaReject = fs->make<TH2F>("hD0ErrEtaReject","D0 error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
+
+   hDZErrEtaAccept = fs->make<TH2F>("hDZErrEtaAccept","DZ error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
+   hDZErrEtaReject = fs->make<TH2F>("hDZErrEtaReject","DZ error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
+
+   hD0PerErrEtaAccept = fs->make<TH2F>("hD0PerErrEtaAccept","D0/D0Err dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0], 100,-10,10);
+   hD0PerErrEtaReject = fs->make<TH2F>("hD0PerErrEtaReject","D0/D0Err dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
+
+   hDZPerErrEtaAccept = fs->make<TH2F>("hDZPerErrEtaAccept","DZ/DZErr dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
+   hDZPerErrEtaReject = fs->make<TH2F>("hDZPerErrEtaReject","DZ/DZErr dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
+
 
    if(!isData_ && hasSimInfo_) { 
       hTrkPtEcalEtSum_fake = fs->make<TH2F>("hTrkPtEcalEtSum_fake","fake pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], cEtSumBins.size()-1, &cEtSumBins[0]);

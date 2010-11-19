@@ -12,7 +12,11 @@ pfCandidateAnalyzer.ptMin = cms.untracked.double(4.0)
 pfCandidateAnalyzer.Tracks = cms.InputTag("hiSelectedTracks")
 pfCandidateAnalyzer.isData = cms.untracked.bool(False)
 
+
 hipfCandAnalyzer = cms.Sequence(#myTrackAssociatorByHitsRecoDenom*
                                 pfCandidateAnalyzer)
 
 
+pfCandidateAnalyzer_test = pfCandidateAnalyzer.clone(Tracks = cms.InputTag("hiCaloCompTracks"))
+
+hipfCandAnalyzer_test = cms.Sequence(pfCandidateAnalyzer_test)

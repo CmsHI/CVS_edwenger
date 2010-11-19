@@ -10,6 +10,7 @@ pfCandidateAnalyzer = cms.EDAnalyzer("HiPFCandidateTrackAnalyzer",
                SimTracks = cms.InputTag("mergedtruth","MergedTrackTruth"),
                Tracks = cms.InputTag("hiSelectedTracks"),
                hasSimInfo = cms.untracked.bool(False),
+               funcCaloComp = cms.string("(x>14) * (1.2*pow(TMath::Abs(x-10),8.7/9)) * (2+1./(exp(-1*(x-13))-1))"), # a function
                applyTrkQCs = cms.untracked.bool(False),
                minHits = cms.untracked.double(0),
                maxPtErr = cms.untracked.double(99999.),

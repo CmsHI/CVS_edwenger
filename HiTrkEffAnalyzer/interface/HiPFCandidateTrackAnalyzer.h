@@ -16,21 +16,23 @@
 
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
-//EAW
+//EAW, ASY
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
+#include "TF1.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-//
+
 
 /**\class PFCandidateTrackAnalyzer 
 \brief produces IsolatedPFCandidates from PFCandidates
 
 \author Colin Bernet
 \date   february 2008
+--> Modified by Ed Wenger, Matt Nguyen, and Andre Yoon
 */
 
 
@@ -80,7 +82,10 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
 
   double thePtMin_;
 
+  std::string funcCaloComp_;
+
   bool applyTrkQCs_;
+  
   double minHits_, maxPtErr_, maxD0_, maxDZ_, maxD0Norm_, maxDZNorm_;
   bool pixelSeedOnly_;
 
@@ -89,17 +94,28 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
 
   // TH1F
 
-
   // TH2F
   TH2F *hTrkPtEcalEtSum, *hTrkPtHcalEtSum, *hTrkPtCaloEtSum;
   TH2F *hTrkPtEcalEtSum_fake, *hTrkPtHcalEtSum_fake, *hTrkPtCaloEtSum_fake;
   TH2F *hTrkPtEcalEtSum_real, *hTrkPtHcalEtSum_real, *hTrkPtCaloEtSum_real;
+
+  TH2F *hHitsEtaAccept, *hHitsEtaReject;
+  TH2F *hPtErrEtaAccept, *hPtErrEtaReject;
+  TH2F *hAlgoEtaAccept, *hAlgoEtaReject;
+  TH2F *hD0EtaAccept, *hD0EtaReject;
+  TH2F *hDZEtaAccept, *hDZEtaReject;
+  TH2F *hD0ErrEtaAccept, *hD0ErrEtaReject; // quadratic sum of d0 err and xy err w.r.t vtx
+  TH2F *hDZErrEtaAccept, *hDZErrEtaReject; // quadratic sum of dz err and z err w.r.t vtx 
+  TH2F *hD0PerErrEtaAccept, *hD0PerErrEtaReject;
+  TH2F *hDZPerErrEtaAccept, *hDZPerErrEtaReject;
 
   // TH3F
   TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;
   TH3F *hTrkPtEtaEcalEtSum_fake, *hTrkPtEtaHcalEtSum_fake, *hTrkPtEtaCaloEtSum_fake;
   TH3F *hTrkPtEtaEcalEtSum_real, *hTrkPtEtaHcalEtSum_real, *hTrkPtEtaCaloEtSum_real;
 
+  // TF1
+  TF1 *fCaloComp;
 
   edm::Service<TFileService> fs;
 
