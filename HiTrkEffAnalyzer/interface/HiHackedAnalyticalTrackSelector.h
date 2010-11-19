@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: HiHackedAnalyticalTrackSelector.h,v 1.1 2010/07/07 13:10:04 sungho Exp $
+ * $Id: HiHackedAnalyticalTrackSelector.h,v 1.1 2010/07/08 17:09:56 sungho Exp $
  *
  */
 
@@ -65,6 +65,9 @@ namespace reco { namespace modules {
             /// do I have to set a quality bit?
             bool setQualityBit_;
             TrackBase::TrackQuality qualityToSet_;
+
+	    double min_relpterr_;
+	    uint32_t min_nhits_;
 
             /// vertex cuts
             int32_t vtxNumber_;

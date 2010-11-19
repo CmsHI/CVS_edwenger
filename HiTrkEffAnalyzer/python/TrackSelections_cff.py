@@ -1,16 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-###
-### select high-purity tracks
-###
-hiHighPurityTracks = cms.EDFilter("TrackSelector",
-    src = cms.InputTag("hiSelectedTracks"),
-    cut = cms.string('quality("highPurity") && (ptError/pt)<0.05 && numberOfValidHits>12')
-)
 
 hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
 
-    src = cms.InputTag("hiHighPurityTracks"),
+    src = cms.InputTag("hiSelectedTracks"),
     keepAllTracks = cms.bool(False), ## if set to true tracks failing this filter are kept in the output
     beamspot = cms.InputTag("offlineBeamSpot"),
 
@@ -19,9 +12,13 @@ hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
     vtxTracks = cms.uint32(0), ## at least 3 tracks
     vtxChi2Prob = cms.double(0.0), ## at least 1% chi2nprobability (if it has a chi2)
 
-    copyTrajectories = cms.untracked.bool(False),
+    copyTrajectories = cms.untracked.bool(True),
     copyExtras = cms.untracked.bool(False), ## set to false on AOD
     qualityBit = cms.string(''), ## set to '' or comment out if you don't want to set the bit
+
+    # parameters for cutting on pterror/pt and number of valid hits
+    min_relpterr = cms.double(0.05),
+    min_nhits = cms.uint32(12),                           
 
     # parameters for adapted optimal cuts on chi2 and primary vertex compatibility
     chi2n_par = cms.double(99999.),
@@ -43,4 +40,4 @@ hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
     maxNumberLostLayers = cms.uint32(99999)
 )
 
-hiGoodTracksSelection = cms.Sequence(hiHighPurityTracks+hiGoodTracks)
+hiGoodTracksSelection = cms.Sequence(hiGoodTracks)  

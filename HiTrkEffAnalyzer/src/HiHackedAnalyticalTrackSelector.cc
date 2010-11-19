@@ -16,6 +16,8 @@ HiHackedAnalyticalTrackSelector::HiHackedAnalyticalTrackSelector( const edm::Par
                          false ),  // as this is what you expect from a well behaved selector
     setQualityBit_( false ),
     qualityToSet_( TrackBase::undefQuality ),
+    min_relpterr_( cfg.getParameter<double>("min_relpterr") ),
+    min_nhits_( cfg.getParameter<uint32_t>("min_nhits") ),
     vtxNumber_( cfg.getParameter<int32_t>("vtxNumber") ),
     vtxTracks_( cfg.getParameter<uint32_t>("vtxTracks") ),
     vtxChi2Prob_( cfg.getParameter<double>("vtxChi2Prob") ),
@@ -75,6 +77,8 @@ void HiHackedAnalyticalTrackSelector::produce( edm::Event& evt, const edm::Event
     Handle< vector<Trajectory> > hTrajP;
     Handle< TrajTrackAssociationCollection > hTTAss;
 
+    bool isTrajThere = evt.getByLabel(src_, hTraj);
+
     // looking for the beam spot
     edm::Handle<reco::BeamSpot> hBsp;
     evt.getByLabel(beamspot_, hBsp);
@@ -100,7 +104,7 @@ void HiHackedAnalyticalTrackSelector::produce( edm::Event& evt, const edm::Event
       rTrackExtras_ = evt.getRefBeforePut<TrackExtraCollection>();
     }
 
-    if (copyTrajectories_) trackRefs_.resize(hSrcTrack->size());
+    if (isTrajThere && copyTrajectories_) trackRefs_.resize(hSrcTrack->size());
     
     // Loop over tracks
     size_t current = 0;
@@ -109,7 +113,7 @@ void HiHackedAnalyticalTrackSelector::produce( edm::Event& evt, const edm::Event
 	// Check if this track passes cuts
         bool ok = select(vertexBeamSpot, trk, points, vterr, vzerr);
         if (!ok) {
-            if (copyTrajectories_) trackRefs_[current] = reco::TrackRef();
+            if (isTrajThere && copyTrajectories_) trackRefs_[current] = reco::TrackRef();
             if (!keepAllTracks_) continue;
         }
 	selTracks_->push_back( Track( trk ) ); // clone and store
@@ -130,16 +134,16 @@ void HiHackedAnalyticalTrackSelector::produce( edm::Event& evt, const edm::Event
                 tx.add( TrackingRecHitRef( rHits_, selHits_->size() - 1) );
             }
         }
-        if (copyTrajectories_) {
+        if (isTrajThere && copyTrajectories_) {
             trackRefs_[current] = TrackRef(rTracks_, selTracks_->size() - 1);
         }
     }
-    if ( copyTrajectories_ ) {
-        Handle< vector<Trajectory> > hTraj;
-        Handle< TrajTrackAssociationCollection > hTTAss;
-        evt.getByLabel(src_, hTTAss);
-        evt.getByLabel(src_, hTraj);
-		selTrajs_ = auto_ptr< vector<Trajectory> >(new vector<Trajectory>()); 
+    if (isTrajThere && copyTrajectories_ ) {
+       Handle< vector<Trajectory> > hTraj;
+       Handle< TrajTrackAssociationCollection > hTTAss;
+       evt.getByLabel(src_, hTTAss);
+       evt.getByLabel(src_, hTraj); // it's gotten up there 
+       selTrajs_ = auto_ptr< vector<Trajectory> >(new vector<Trajectory>()); 
 		rTrajectories_ = evt.getRefBeforePut< vector<Trajectory> >();
 		selTTAss_ = auto_ptr< TrajTrackAssociationCollection >(new TrajTrackAssociationCollection());
         for (size_t i = 0, n = hTraj->size(); i < n; ++i) {
@@ -162,7 +166,7 @@ void HiHackedAnalyticalTrackSelector::produce( edm::Event& evt, const edm::Event
 	  evt.put(selTrackExtras_); 
 	  evt.put(selHits_);
 	}
-        if ( copyTrajectories_ ) {
+        if (isTrajThere &&  copyTrajectories_ ) {
             evt.put(selTrajs_);
             evt.put(selTTAss_);
         }
@@ -187,6 +191,12 @@ bool HiHackedAnalyticalTrackSelector::select(const reco::BeamSpot &vertexBeamSpo
    double pt = tk.pt(),eta = tk.eta(), chi2n =  tk.normalizedChi2();
    double d0 = -tk.dxy(vertexBeamSpot.position()), d0E =  tk.d0Error(),
      dz = tk.dz(vertexBeamSpot.position()), dzE =  tk.dzError();
+
+   double relpterr = tk.ptError()/pt;
+   uint32_t nhits = tk.numberOfValidHits();
+
+   if(relpterr > min_relpterr_) return false;
+   if(nhits < min_nhits_) return false;
 
    // optimized cuts adapted to the track nlayers, pt, eta:
    // cut on chiquare/ndof 
