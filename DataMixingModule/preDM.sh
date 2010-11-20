@@ -1,11 +1,12 @@
 #!/bin/sh
 
-infile="/store/express/Run2010B/ExpressPhysics/FEVT/Express-v2/000/146/417/10F981FF-5EC6-DF11-9657-0030486733B4.root"
+infile="/store/hidata/HIRun2010/HICorePhysics/RECO/PromptReco-v3/000/151/353/DC04F2F3-32F2-DF11-BD72-0030487C5CE2.root"
+secfile="/store/hidata/HIRun2010/HICorePhysics/RAW/v1/000/151/353/00B95950-00F2-DF11-9485-001D09F252DA.root"
 
 cmsDriver.py DMPreProcess -n 10 \
 -s RAW2DIGI --eventcontent DATAMIXER \
---conditions FrontierConditions_GlobalTag,GR_R_38X_V7::All \
---filein $infile --data \
+--conditions FrontierConditions_GlobalTag,GR10_P_V12::All \
+--filein $infile --secondfilein $secfile --data \
 --customise SimGeneral.DataMixingModule.customiseMatchRecVertex \
 --cust_function customiseDataMixerOutput \
 --no_exec
