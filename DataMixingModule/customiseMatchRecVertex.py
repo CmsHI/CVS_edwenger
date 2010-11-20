@@ -60,3 +60,68 @@ def customiseBeamSpot(process):
                  )
         )
     return process
+
+def customiseSiStripConditions(process):
+    process.stripConditions = cms.ESSource("PoolDBESSource",
+    process.CondDBSetup,
+    timetype = cms.untracked.string('runnumber'),
+    connect = cms.string('frontier://FrontierProd/CMS_COND_31X_STRIP'),
+    toGet = cms.VPSet(
+        cms.PSet(
+        record = cms.string('SiStripNoisesRcd'),
+        tag = cms.string('SiStripNoise_GR10_v1_hlt')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripPedestalsRcd'),
+        tag = cms.string('SiStripPedestals_GR10_v1_hlt')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripFedCablingRcd'),
+        tag = cms.string('SiStripFedCabling_GR10_v1_hlt')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripBadChannelRcd'),
+        tag = cms.string('SiStripBadChannel_FromOnline_GR10_v1_hlt')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripLatencyRcd'),
+        tag = cms.string('SiStripLatency_GR10_v2_hlt')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripThresholdRcd'),
+        tag = cms.string('SiStripThreshold_GR10_v1_hlt')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripBadFiberRcd'),
+        tag = cms.string('SiStripBadChannel_FromOfflineCalibration_GR10_v2_offline')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripBadModuleRcd'),
+        tag = cms.string('SiStripBadChannel_FromEfficiencyAnalysis_GR10_v1_offline')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripConfObjectRcd'),
+        tag = cms.string('SiStripShiftAndCrosstalk_GR10_v1_offline')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripLorentzAngleRcd'),
+        tag = cms.string('SiStripLorentzAngle_GR10_v1_offline')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripApvGain2Rcd'),
+        tag = cms.string('SiStripApvGain_FromParticles_GR10_v2_offline')
+        ),
+        cms.PSet(
+        record = cms.string('SiStripApvGainRcd'),
+        tag = cms.string('SiStripApvGain_GR10_v1_hlt')
+        )
+        )
+    )
+    
+    process.es_prefer_strips = cms.ESPrefer("PoolDBESSource","stripConditions")
+    return process
+
+def customiseBeamRaw(process):
+    customiseBeamSpot(process)
+    customiseSiStripConditions(process)
+    return process
