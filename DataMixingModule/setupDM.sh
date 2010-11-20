@@ -6,7 +6,7 @@ cd $CMSSW_BASE/src
 dir2=SimGeneral/DataMixingModule
 addpkg $dir2
 cvs co Configuration/GenProduction
-cvs co SimGeneral/MixingModule
+cvs co -r V05-02-11 SimGeneral/MixingModule
 
 # HIP monitoring
 # cvs co -d TkDPG UserCode/giordano/TkDPG
