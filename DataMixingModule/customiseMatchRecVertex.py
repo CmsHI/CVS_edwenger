@@ -17,7 +17,7 @@ def customiseCloneGenerator(process):
 
 def customiseMatchRecVertex(process):
     process.load("SimGeneral.MixingModule.MatchRecVtx_cfi")
-    process.matchRecVertex.heavyIonLabel = "hiSelectedVertex"
+    process.matchRecVtx.heavyIonLabel = "hiSelectedVertex"
     process.pgen.replace(process.VertexSmearing,process.matchRecVtx)
     process.mixData.input.sequential = True
     return process
