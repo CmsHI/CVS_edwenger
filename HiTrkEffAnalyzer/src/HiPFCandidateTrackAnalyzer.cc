@@ -346,29 +346,29 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    hHitsEtaAccept = fs->make<TH2F>("hHitsEtaAccept","Nhits dist. for accepted tracks; #eta;N_{hits}", etaBins.size()-1, &etaBins[0],nhitBins.size()-1, &nhitBins[0]);
    hHitsEtaReject = fs->make<TH2F>("hHitsEtaReject","Nhits dist. for rejected tracks; #eta;N_{hits}", etaBins.size()-1, &etaBins[0],nhitBins.size()-1, &nhitBins[0]);
    
-   hPtErrEtaAccept = fs->make<TH2F>("hPtErrEtaAccept","rel. pT error dist. for accepted tracks; #eta;p_{T}^{err}", etaBins.size()-1,&etaBins[0], 50,0,0.5);
-   hPtErrEtaReject = fs->make<TH2F>("hPtErrEtaReject","rel. pT error dist. for rejected tracks; #eta;p_{T}^{err}", etaBins.size()-1,&etaBins[0], 50,0,0.5);
+   hPtErrEtaAccept = fs->make<TH2F>("hPtErrEtaAccept","rel. pT error dist. for accepted tracks; #eta;p_{T}^{err}", etaBins.size()-1,&etaBins[0], 50,0,0.25);
+   hPtErrEtaReject = fs->make<TH2F>("hPtErrEtaReject","rel. pT error dist. for rejected tracks; #eta;p_{T}^{err}", etaBins.size()-1,&etaBins[0], 50,0,0.25);
    
    hAlgoEtaAccept = fs->make<TH2F>("hAlgoEtaAccept","algo number dist. for accepted tracks; #eta;Algo", etaBins.size()-1,&etaBins[0], 10,0,10);
    hAlgoEtaReject = fs->make<TH2F>("hAlgoEtaReject","algo number dist. for rejected tracks; #eta;Algo", etaBins.size()-1,&etaBins[0], 10,0,10);
 
-   hD0EtaAccept = fs->make<TH2F>("hD0EtaAccept","D0 dist. for accepted tracks;#eta;d_{0}", etaBins.size()-1,&etaBins[0], 100,-5,5);
-   hD0EtaReject = fs->make<TH2F>("hD0EtaReject","D0 dist. for rejected tracks;#eta;d_{0}", etaBins.size()-1,&etaBins[0], 100,-5,5);
+   hD0EtaAccept = fs->make<TH2F>("hD0EtaAccept","D0 dist. for accepted tracks;#eta;d_{0}", etaBins.size()-1,&etaBins[0], 100,-2.0,2.0);
+   hD0EtaReject = fs->make<TH2F>("hD0EtaReject","D0 dist. for rejected tracks;#eta;d_{0}", etaBins.size()-1,&etaBins[0], 100,-2.0,2.0);
 
-   hDZEtaAccept = fs->make<TH2F>("hDZEtaAccept","DZ dist. for accepted tracks;#eta;d_{z}", etaBins.size()-1,&etaBins[0], 200,-25,25);
-   hDZEtaReject = fs->make<TH2F>("hDZEtaReject","DZ dist. for rejected tracks;#eta;d_{z}", etaBins.size()-1,&etaBins[0], 200,-25,25);
+   hDZEtaAccept = fs->make<TH2F>("hDZEtaAccept","DZ dist. for accepted tracks;#eta;d_{z}", etaBins.size()-1,&etaBins[0], 200,-4,4);
+   hDZEtaReject = fs->make<TH2F>("hDZEtaReject","DZ dist. for rejected tracks;#eta;d_{z}", etaBins.size()-1,&etaBins[0], 200,-4,4);
 
-   hD0ErrEtaAccept = fs->make<TH2F>("hD0ErrEtaAccept","D0 error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
-   hD0ErrEtaReject = fs->make<TH2F>("hD0ErrEtaReject","D0 error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
+   hD0ErrEtaAccept = fs->make<TH2F>("hD0ErrEtaAccept","D0 error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.2);
+   hD0ErrEtaReject = fs->make<TH2F>("hD0ErrEtaReject","D0 error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.2);
 
-   hDZErrEtaAccept = fs->make<TH2F>("hDZErrEtaAccept","DZ error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
-   hDZErrEtaReject = fs->make<TH2F>("hDZErrEtaReject","DZ error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.5);
+   hDZErrEtaAccept = fs->make<TH2F>("hDZErrEtaAccept","DZ error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.2);
+   hDZErrEtaReject = fs->make<TH2F>("hDZErrEtaReject","DZ error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.2);
 
    hD0PerErrEtaAccept = fs->make<TH2F>("hD0PerErrEtaAccept","D0/D0Err dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0], 100,-10,10);
    hD0PerErrEtaReject = fs->make<TH2F>("hD0PerErrEtaReject","D0/D0Err dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
 
-   hDZPerErrEtaAccept = fs->make<TH2F>("hDZPerErrEtaAccept","DZ/DZErr dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
-   hDZPerErrEtaReject = fs->make<TH2F>("hDZPerErrEtaReject","DZ/DZErr dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
+   hDZPerErrEtaAccept = fs->make<TH2F>("hDZPerErrEtaAccept","DZ/DZErr dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,0,5);
+   hDZPerErrEtaReject = fs->make<TH2F>("hDZPerErrEtaReject","DZ/DZErr dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,0,5);
 
 
    if(!isData_ && hasSimInfo_) { 
