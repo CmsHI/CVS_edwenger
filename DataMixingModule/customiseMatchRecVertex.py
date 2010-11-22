@@ -12,17 +12,7 @@ def customiseDataMixerOutput(process):
 
 def customiseCloneGenerator(process):
     process.generator = process.hiSignal.clone(embeddingMode=cms.bool(False))
-    process.mumugenfilter = cms.EDFilter("MCParticlePairFilter",
-        Status = cms.untracked.vint32(1, 1),
-        MinPt = cms.untracked.vdouble(2.5, 2.5),
-        MaxEta = cms.untracked.vdouble(2.5, 2.5),
-        MinEta = cms.untracked.vdouble(-2.5, -2.5),
-        ParticleCharge = cms.untracked.int32(-1),
-        ParticleID1 = cms.untracked.vint32(13),
-        ParticleID2 = cms.untracked.vint32(13)
-        )
-    process.zMuMuGenSequence = cms.Sequence(process.generator*process.mumugenfilter)
-    process.ProductionFilterSequence.replace(process.hiSignal,process.zMuMuGenSequence)
+    process.ProductionFilterSequence.replace(process.hiSignal,process.generator)
     return process
 
 def customiseMatchRecVertex(process):
