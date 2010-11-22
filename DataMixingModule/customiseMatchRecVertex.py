@@ -121,6 +121,11 @@ def customiseSiStripConditions(process):
     process.es_prefer_strips = cms.ESPrefer("PoolDBESSource","stripConditions")
     return process
 
+def customiseDummyVtx(process):
+    # Dummy GEN -> RECO vertex
+    process.hiSelectedVertex = cms.EDProducer("GenToRecoVtxProducer",
+        signalLabel=cms.InputTag("generator"))
+
 def customiseBeamRaw(process):
     customiseBeamSpot(process)
     customiseSiStripConditions(process)
