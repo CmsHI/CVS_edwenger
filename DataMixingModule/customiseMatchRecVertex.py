@@ -129,4 +129,5 @@ def customiseDummyVtx(process):
 def customiseBeamRaw(process):
     customiseBeamSpot(process)
     customiseSiStripConditions(process)
+    customiseDummyVtx(process)
     return process
