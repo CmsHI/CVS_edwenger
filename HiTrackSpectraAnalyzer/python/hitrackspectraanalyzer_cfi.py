@@ -13,7 +13,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           nsdOnly = cms.untracked.bool(False), # look at only NSD GEN
                           pythia6 = cms.untracked.bool(True), # false => pythia8
                           pthatCut = cms.untracked.double(0.0),
-                          doJet = cms.untracked.bool(True),
+                          doJet = cms.untracked.bool(False),
                           histOnly = cms.untracked.bool(True),
                           includeExtra = cms.untracked.bool(False),
                           etaMax = cms.untracked.double(2.5),
