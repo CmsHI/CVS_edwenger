@@ -364,11 +364,11 @@ HiPFCandidateTrackAnalyzer::beginJob() {
    hDZErrEtaAccept = fs->make<TH2F>("hDZErrEtaAccept","DZ error dist. for accepted tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.2);
    hDZErrEtaReject = fs->make<TH2F>("hDZErrEtaReject","DZ error dist. for rejected tracks;#eta;d_{0}^{err}", etaBins.size()-1,&etaBins[0], 100,0,0.2);
 
-   hD0PerErrEtaAccept = fs->make<TH2F>("hD0PerErrEtaAccept","D0/D0Err dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0], 100,-10,10);
-   hD0PerErrEtaReject = fs->make<TH2F>("hD0PerErrEtaReject","D0/D0Err dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,-10,10);
+   hD0PerErrEtaAccept = fs->make<TH2F>("hD0PerErrEtaAccept","D0/D0Err dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0], 50,0,10);
+   hD0PerErrEtaReject = fs->make<TH2F>("hD0PerErrEtaReject","D0/D0Err dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0], 50,0,10);
 
-   hDZPerErrEtaAccept = fs->make<TH2F>("hDZPerErrEtaAccept","DZ/DZErr dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,0,5);
-   hDZPerErrEtaReject = fs->make<TH2F>("hDZPerErrEtaReject","DZ/DZErr dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],100,0,5);
+   hDZPerErrEtaAccept = fs->make<TH2F>("hDZPerErrEtaAccept","DZ/DZErr dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],50,0,10);
+   hDZPerErrEtaReject = fs->make<TH2F>("hDZPerErrEtaReject","DZ/DZErr dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],50,0,10);
 
 
    if(!isData_ && hasSimInfo_) { 
