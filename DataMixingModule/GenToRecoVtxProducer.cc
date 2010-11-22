@@ -69,9 +69,9 @@ reco::Vertex* GenToRecoVtxProducer::getVertex( Event& evt){
     HepMC::GenEvent::particle_const_iterator ptend=inev->particles_end();
     while(!genvtx || ( genvtx->particles_in_size() == 1 && pt != ptend ) ){
       if(!genvtx) cout<<"No Gen Vertex!"<<endl;
-      ++pt;
       if(pt == ptend) cout<<"End reached!"<<endl;
       genvtx = (*pt)->production_vertex();
+      ++pt;
     }
   }
   double aX,aY,aZ;
