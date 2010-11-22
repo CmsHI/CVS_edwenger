@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.8 2010/10/25 14:43:00 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.9 2010/11/05 14:53:54 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -103,19 +103,20 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       }
 
       //----- loop over pat jets and store in a vector -----
-      edm::Handle<reco::CandidateView> jets;
-      iEvent.getByLabel(jsrc_,jets);
-      hNumJets->Fill(jets->size()); // check # of jets found in event
-      
-      vector<const reco::Candidate *> sortedJets;
-      
-      for(unsigned it=0; it<jets->size(); ++it){
-	 const reco::Candidate* jet = &((*jets)[it]);
-	 sortedJets.push_back(jet);
-	 sortByEtRef (&sortedJets);
-      }
-      
-      if(doJet_){ 
+      if(doJet_){
+
+	 edm::Handle<reco::CandidateView> jets;
+	 iEvent.getByLabel(jsrc_,jets);
+	 hNumJets->Fill(jets->size()); // check # of jets found in event
+	 
+	 vector<const reco::Candidate *> sortedJets;
+	 
+	 for(unsigned it=0; it<jets->size(); ++it){
+	    const reco::Candidate* jet = &((*jets)[it]);
+	    sortedJets.push_back(jet);
+	    sortByEtRef (&sortedJets);
+	 }
+	 
 	 for(unsigned it=0; it<sortedJets.size(); ++it){
 	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
 					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
@@ -126,12 +127,12 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    }
 	    break;             
 	 }                     
+	 
+	 // Get Leading jet energy
+	 unsigned index = 0; 
+	 if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 0; 
+	 else leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(); 
       }
-
-      // Get Leading jet energy
-      unsigned index = 0; 
-      if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 0; 
-      else leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(); 
       
       // Get multiplicity dist from track collection
       int mult = 0;
