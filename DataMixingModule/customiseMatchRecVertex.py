@@ -20,6 +20,7 @@ def customiseMatchRecVertex(process):
     process.matchRecVtx.heavyIonLabel = "hiSelectedVertex"
     process.pgen.replace(process.VertexSmearing,process.matchRecVtx)
     process.mixData.input.sequential = True
+    process.mixData.input.fileNames = process.source.fileNames
     return process
 
 def customiseSiStripRawDigi(process):
