@@ -125,6 +125,7 @@ def customiseDummyVtx(process):
     # Dummy GEN -> RECO vertex
     process.hiSelectedVertex = cms.EDProducer("GenToRecoVtxProducer",
         signalLabel=cms.InputTag("generator"))
+    return process
 
 def customiseBeamRaw(process):
     customiseBeamSpot(process)
