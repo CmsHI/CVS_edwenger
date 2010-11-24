@@ -9,4 +9,4 @@ cmsDriver.py hiRecoDM -n 10 --scenario HeavyIons \
 --customise SimGeneral.DataMixingModule.customiseMatchRecVertex,SimGeneral.DataMixingModule.DataMixer_DataConditions_3_8_X_data2010,Configuration.GlobalRuns.reco_TLR_39X \
 --cust_function customiseBeamRaw,customise,customiseCommonHI \
 --geometry DB --filein $infile --fileout $outfile \
---conditions START39_V5HI::All --no_exec
+--conditions START39_V7HI::All --no_exec
