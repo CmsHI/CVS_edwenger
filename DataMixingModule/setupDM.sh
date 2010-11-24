@@ -15,4 +15,5 @@ cvs co -r V01-18-49 Configuration/StandardSequences/python/*DM_cff.py
 cd $dir
 cp BuildFile.xml Gen*.cc $CMSSW_BASE/src/SimGeneral/MixingModule/plugins
 cp customise*.py $CMSSW_BASE/src/$dir2/python
+cp DataMixingSiStripRawWorker.* $CMSSW_BASE/src/$dir2/plugins
 

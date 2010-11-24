@@ -44,7 +44,6 @@ namespace edm
 
     // declare the products to produce
 
-    Sistripdigi_collectionSig_   = ps.getParameter<edm::InputTag>("SistripdigiCollectionSig");
     SistripLabelSig_   = ps.getParameter<edm::InputTag>("SistripLabelSig");
 
     SiStripPileInputTag_ = ps.getParameter<edm::InputTag>("SiStripPileInputTag");
@@ -78,7 +77,7 @@ namespace edm
       e.getByLabel(SiStripRawInputTag_,hSSRD);
       rawdigicollection_ = hSSRD.product();
     } else if (SiStripRawDigiSource_=="PILEUP") {
-      e.getByLabel(Sistripdigi_collectionSig_.label(),SistripLabelSig_.label(),hSSD);
+      e.getByLabel(SistripLabelSig_,hSSD);
       digicollection_ =  hSSD.product();
     } else {
       std::cout << "you shouldn't be here" << std::endl;
