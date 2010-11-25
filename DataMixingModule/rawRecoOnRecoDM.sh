@@ -6,7 +6,7 @@ outfile="DMRawRecoOnReco_DIGI2RAW.root"
 cmsDriver.py DMRawRecoOnReco -n 10 \
 -s RAW2DIGI,DATAMIX,L1,DIGI2RAW,HLT:HIon \
 --datamix DataOnData --data --processName MIX \
---conditions GR_R_38X_V15::All \
+--conditions GR_R_39X_V3::All \
 --eventcontent FEVT \
 --customise SimGeneral.DataMixingModule.customiseMatchRecVertex \
 --cust_function customiseSiStripRawDigi \
