@@ -130,7 +130,7 @@ def customiseDummyVtx(process):
 
 def customiseVtxPP(process):
     # Run RECO around p+p vertex from embedded RAW-RECO event
-    process.hiCentrality.srcVertex = 'offlinePrimaryVertices'
+    #process.hiCentrality.srcVertex = 'offlinePrimaryVertices'
     process.photons.primaryVertexProducer = 'offlinePrimaryVertices'
     process.hiPixel3PrimTracks.RegionFactoryPSet.RegionPSet.VertexCollection = 'offlinePrimaryVertices'
     process.hiPixel3PrimTracks.FilterPSet.VertexCollection = 'offlinePrimaryVertices'
