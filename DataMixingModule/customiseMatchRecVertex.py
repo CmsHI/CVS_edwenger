@@ -128,6 +128,17 @@ def customiseDummyVtx(process):
         signalLabel=cms.InputTag("generator"))
     return process
 
+def customiseVtxPP(process):
+    # Run RECO around p+p vertex from embedded RAW-RECO event
+    process.hiCentrality.srcVertex = 'offlinePrimaryVertices'
+    process.photons.primaryVertexProducer = 'offlinePrimaryVertices'
+    process.hiPixel3PrimTracks.RegionFactoryPSet.RegionPSet.VertexCollection = 'offlinePrimaryVertices'
+    process.hiPixel3PrimTracks.FilterPSet.VertexCollection = 'offlinePrimaryVertices'
+    process.hiTracksWithLooseQuality.vertices = 'offlinePrimaryVertices'
+    process.hiTracksWithTightQuality.vertices = 'offlinePrimaryVertices'
+    process.hiSelectedTracks.vertices = 'offlinePrimaryVertices'
+    return process
+
 def customiseBeamRaw(process):
     customiseBeamSpot(process)
     customiseSiStripConditions(process)
