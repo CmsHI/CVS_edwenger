@@ -5,11 +5,11 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('standard')
 ivars.register('initialEvent',mult=ivars.multiplicity.singleton,info="for testing")
 
-ivars.files = "dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/yetkin/test/mix/MinBias_DijetUnquenched80_d20101124/Mixed_DIGI_DEFF3756-E4F0-DF11-A905-003048F1BF66.root"
+ivars.files = "dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/krajczar/mix/MinBias_DijetUnquenched80_d20101125_Offset_1_RECO/Mixed_1_RECO_Mixed_1_DIGI_FA71D5A1-EAF0-DF11-9C4B-003048D2C0F0.root"
 
 ivars.maxEvents = -1
 ivars.initialEvent = 1
-ivars.output = 'justTreesNoPF.root'
+ivars.output = 'justTreesNoPF_offset1.root'
 
 ivars.parseArguments()
 
@@ -18,9 +18,9 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('HIJETS')
 
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+#process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
-process.Timing = cms.Service("Timing")
+#process.Timing = cms.Service("Timing")
 
 # Input source
 process.source = cms.Source("PoolSource",
@@ -119,8 +119,8 @@ process.patJets.embedCaloTowers = cms.bool(False)
 ### IC5 PU, Calo ###
 
 process.icPu5corr = process.patJetCorrFactors.clone(jetSource = cms.InputTag("iterativeConePu5CaloJets"),
-                                                    corrLevels = cms.PSet(L2Relative = cms.string("HI_L2Relative_IC5Calo"),
-                                                                          L3Absolute = cms.string("HI_L3Absolute_IC5Calo"),
+                                                    corrLevels = cms.PSet(L2Relative = cms.string("L2Relative_IC5Calo"),
+                                                                          L3Absolute = cms.string("L3Absolute_IC5Calo"),
                                                                           L5Flavor = cms.string("none")))
 process.icPu5clean = process.heavyIonCleanedGenJets.clone(src = cms.InputTag('iterativeCone5HiGenJets'))
 process.icPu5match = process.patJetGenJetMatch.clone(src = cms.InputTag("iterativeConePu5CaloJets"),
