@@ -14,7 +14,7 @@ hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
 
     copyTrajectories = cms.untracked.bool(True),
     copyExtras = cms.untracked.bool(False), ## set to false on AOD
-    qualityBit = cms.string(''), ## set to '' or comment out if you don't want to set the bit
+    qualityBit = cms.string('highPurity'), ## set to '' or comment out if you don't want to set the bit
 
     # parameters for cutting on pterror/pt and number of valid hits
     min_relpterr = cms.double(0.05),
