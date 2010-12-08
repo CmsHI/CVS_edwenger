@@ -11,6 +11,9 @@
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
+#include <iostream>
+#include <fstream>
+
 #include <TROOT.h>
 #include <TStyle.h>
 #include "TError.h"
@@ -83,6 +86,7 @@ vector<TCanvas*> tcan2;
 TF1* fit1=0;
 TF1* fit2=0;
 TF1* fit3=0;
+TF1* fit_tot=0;
 
 TF1* fitfake1=0;
 TF1* fitfake2=0;
@@ -98,10 +102,14 @@ vector<double> zvarBins;
 
 
 bool drawing = true;
+bool fulltrk = true;
 float ptmax = 0;
 float fit1_min = 0, fit1_max = 0;
 float fit2_min = 0, fit2_max = 0;
 float fit3_min = 0, fit3_max = 0;
+
+TString infile;
+ofstream fdata;
 
 //--------------------------------------------------
 void prepareThings();
@@ -117,20 +125,27 @@ void makeMultiPanelCanvas(TCanvas*& canv, const Int_t columns,
 
 void prepareThings(){
 
-  // eta range 1 (-2.4 ~ -1.0)
-  static float etaMin1   = -2.4;
-  static float etaMax1   = -1.0;
-  static float etaWidth1 =  0.2;
+   // input file
+   if(fulltrk) infile = "validation3D_bass_hiGoodTracks";
+   else infile = "validation3D_bass_hiConformalPixelTracks";
 
-  for(double eta = etaMin1; eta < etaMax1 + etaWidth1/2; eta += etaWidth1)
-    etaBins.push_back(eta);
+   // output data file
+   fdata.open(Form("%s_fulltrk%d.dat",infile.Data(),fulltrk));
 
-  // eta range 2 (-1.0 ~ 1.0)
-  etaBins.push_back(-0.6);
-  etaBins.push_back(-0.2);
-  etaBins.push_back(0.2);
-  etaBins.push_back(0.6);
-
+   // eta range 1 (-2.4 ~ -1.0)
+   static float etaMin1   = -2.4;
+   static float etaMax1   = -1.0;
+   static float etaWidth1 =  0.2;
+   
+   for(double eta = etaMin1; eta < etaMax1 + etaWidth1/2; eta += etaWidth1)
+      etaBins.push_back(eta);
+   
+   // eta range 2 (-1.0 ~ 1.0)
+   etaBins.push_back(-0.6);
+   etaBins.push_back(-0.2);
+   etaBins.push_back(0.2);
+   etaBins.push_back(0.6);
+   
   // eta range 1 (1.0 ~ 2.4) 
   static float etaMin2   = 1.0;
   static float etaMax2   = 2.4;
@@ -152,28 +167,49 @@ void prepareThings(){
   zvarBins.push_back(12);
   zvarBins.push_back(40);
 
-  ptmax = 10.0;
+  if(fulltrk) ptmax = 10.0;
+  else ptmax = 3.0;
   drawing = true;
   
   fit1_min = 0.2, fit1_max = 1.5;
   fit2_min = 1.5, fit2_max = 1.80;
   fit3_min = 1.80, fit3_max = 100;
 
-  fit1 = new TF1("fit1","[0]/(1+exp([1]*x+[2])) + [3]*x^2",fit1_min,fit1_max);
-  fit2 = new TF1("fit2","pol2",fit2_min,fit2_max);
-  fit3 = new TF1("fit3","pol2",fit3_min,fit3_max);
+  
+  if(fulltrk){
+     // fit function hiGoodTracks
+     fit1 = new TF1("fit1","[0]*pow(x,[3])/(1+exp([1]*(x+[2]))) + [4]*pow(x,[5])",0.7,200);
+     fit1->SetParLimits(3,0.1,1.0);
+     fit1->SetParLimits(4,-6.0E-2,-1.0E-3);
+     fit1->SetParLimits(5,0.2,1.6);
+     
+     fitfake1 = new TF1("fitfake1","[0]*pow(x,[3])/(1+exp([1]*x+[2])) + [4]*pow(x,[5])",0.7,200);
+     fitfake1->SetParLimits(4,8.5E-1,1.0);
+     fitfake1->SetParLimits(5,-1.0,1.0); // -1.0 can be lowered 
+  }else{
+     // fit function hiConformalPixelTracks
+     fit1 = new TF1("fit1","[0]*pow(x,[3])/(1+exp([1]*(x+[2]))) + [4]*pow(x,[5])",0.2,200);
+     fit1->SetParLimits(3,0.1,1.0);
+     fit1->SetParLimits(4,-6.0E-2,-1.0E-3);
+     fit1->SetParLimits(5,0.2,1.6);
 
-  //fitfake1 = new TF1("fitfake1","pol3",fit1_min,fit1_max);
-  fitfake1 = new TF1("fitfake1","[0]/(1+exp([1]*x+[2])) + [3]*x^2",fit1_min,fit1_max);
-  fitfake2 = new TF1("fitfake2","pol2",fit2_min,fit2_max);
-  fitfake3 = new TF1("fitfake3","pol3",fit3_min,fit3_max);
+     fitfake1 = new TF1("fitfake1","[0]*pow(x,[3])/(1+exp([1]*x+[2])) + [4]*pow(x,[5])",0.2,200);
+     fit1->SetParLimits(3,0.1,1.0);
+     fitfake1->SetParLimits(4,8.5E-1,1.0);
+     fitfake1->SetParLimits(5,-1E-2,1.0);
+  }
+
 
 }
 
 void parameterizeTrkEffAndFake(){
 
-  fMC = new TFile("./root_files/validation3D_bass_hiBadgerTracks.root");
-  
+   // prepare binning, etc 
+   prepareThings();
+
+   fMC = new TFile(Form("./root_files/%s.root",infile.Data()));
+   cout<<"Input file loaded = "<<infile.Data()<<endl;
+
   // sim-to-reco hists
   hSim3D = (TH3F*) fMC->Get("hitrkPixelEffAnalyzer/hsim3D"); 
   hAcc3D = (TH3F*) fMC->Get("hitrkPixelEffAnalyzer/hacc3D"); 
@@ -182,9 +218,6 @@ void parameterizeTrkEffAndFake(){
   // reco-to-sim hists
   hRec3D = (TH3F*) fMC->Get("hitrkPixelEffAnalyzer/hrec3D"); 
   hFak3D = (TH3F*) fMC->Get("hitrkPixelEffAnalyzer/hfak3D"); 
-
-  // prepare binning, etc
-  prepareThings(); 
 
   //loop over and slice the 3D hists in bins of eta, cent
   int counter = 0;
@@ -285,7 +318,7 @@ void parameterizeTrkEffAndFake(){
   hDum->GetYaxis()->SetNdivisions(905,true);
 
   TH1F *hDum2 = (TH1F*) hDum->Clone("hDum2");
-  hDum2->SetMinimum(0.0), hDum2->SetMaximum(0.3);
+  hDum2->SetMinimum(-0.1), hDum2->SetMaximum(0.5);
 
   // Make canvas for the number of zvar
   for(int i=0; i<zvarBins.size()-1; i++){
@@ -300,20 +333,17 @@ void parameterizeTrkEffAndFake(){
   for(int i=0; i<tgEffVV.size(); i++){
     tcan[i]->cd();
     for(int j=0; j<tgEffVV[i].size(); j++){
+       double par[7];
        tcan[i]->cd(j+1);
        hDum->Draw("");
        tgEffVV[i][j]->Draw("pc");
-       tgEffVV[i][j]->Fit("fit1","QR");
-       tgEffVV[i][j]->Fit("fit2","QR+");
-       tgEffVV[i][j]->Fit("fit3","QR+");
+       tgEffVV[i][j]->Fit(fit1,"R");
        drawText(Form("%1.1f ~ %1.1f",etaBins[j],etaBins[j+1]),0.24,0.24);
        
-       cout<<" 0 "<<" "<<j<<" "<<i<<" "<<fit1->GetParameter(0)<<" "<<fit1->GetParameter(1)
-	   <<" "<<fit1->GetParameter(2)<<" "<<fit1->GetParameter(3)<<endl;
-       cout<<" 1 "<<" "<<j<<" "<<i<<" "<<fit2->GetParameter(0)<<" "<<fit2->GetParameter(1)
-	   <<" "<<fit2->GetParameter(2)<<endl;
-       cout<<" 2 "<<" "<<j<<" "<<i<<" "<<fit3->GetParameter(0)<<" "<<fit3->GetParameter(1)
-	   <<" "<<fit3->GetParameter(2)<<endl;
+       fdata<<" 0 "<<" "<<fulltrk<<" "<<j<<" "<<i<<" "<<fit1->GetParameter(0)<<" "<<fit1->GetParameter(1)
+	   <<" "<<fit1->GetParameter(2)<<" "<<fit1->GetParameter(3)<<" "<<fit1->GetParameter(4)
+	   <<" "<<fit1->GetParameter(5)<<" "<<endl;
+
     }
   }
   cout<<"[Efficiency table] ===============================================\n"<<endl;
@@ -326,22 +356,19 @@ void parameterizeTrkEffAndFake(){
 	tcan2[i]->cd(j+1);
 	hDum2->Draw("");
 	tgFakVV[i][j]->Draw("pc"); 
-	tgFakVV[i][j]->Fit("fitfake1","QR");
-	tgFakVV[i][j]->Fit("fitfake2","QR+");
-	tgFakVV[i][j]->Fit("fitfake3","QR+");
+	tgFakVV[i][j]->Fit("fitfake1","R");
 	drawText(Form("%1.1f ~ %1.1f",etaBins[j],etaBins[j+1]),0.24,0.5);
-
-	cout<<" 0 "<<" "<<j<<" "<<i<<" "<<fitfake1->GetParameter(0)<<" "<<fitfake1->GetParameter(1)
-	    <<" "<<fitfake1->GetParameter(2)<<" "<<fitfake1->GetParameter(3)<<endl;
-	cout<<" 1 "<<" "<<j<<" "<<i<<" "<<fitfake2->GetParameter(0)<<" "<<fitfake2->GetParameter(1)
-	    <<" "<<fitfake2->GetParameter(2)<<endl;
-	cout<<" 2 "<<" "<<j<<" "<<i<<" "<<fitfake3->GetParameter(0)<<" "<<fitfake3->GetParameter(1)
-	    <<" "<<fitfake3->GetParameter(2)<<" "<<fitfake3->GetParameter(3)<<endl;
+	
+	fdata<<" 1 "<<" "<<fulltrk<<" "<<j<<" "<<i<<" "<<fitfake1->GetParameter(0)<<" "<<fitfake1->GetParameter(1)
+	    <<" "<<fitfake1->GetParameter(2)<<" "<<fitfake1->GetParameter(3)<<" "<<fitfake1->GetParameter(4)
+	    <<" "<<fitfake1->GetParameter(5)<<" "<<endl;
      }
   }
   cout<<"[Fake rate table] ===============================================\n"<<endl;
 
 
+  fdata.close();
+  cout<<Form("%s_fulltrk%d.dat is created",infile.Data(),fulltrk)<<endl;
 }
 
 
