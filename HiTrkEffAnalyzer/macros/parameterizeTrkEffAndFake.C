@@ -102,7 +102,7 @@ vector<double> zvarBins;
 
 
 bool drawing = true;
-bool fulltrk = true;
+bool fulltrk = false;
 float ptmax = 0;
 float fit1_min = 0, fit1_max = 0;
 float fit2_min = 0, fit2_max = 0;
@@ -183,7 +183,7 @@ void prepareThings(){
      fit1->SetParLimits(4,-6.0E-2,-1.0E-3);
      fit1->SetParLimits(5,0.2,1.6);
      
-     fitfake1 = new TF1("fitfake1","[0]*pow(x,[3])/(1+exp([1]*x+[2])) + [4]*pow(x,[5])",0.7,200);
+     fitfake1 = new TF1("fitfake1","[0]*pow(x,[3])/(1+exp([1]*(x+[2]))) + [4]*pow(x,[5])",0.7,200);  
      fitfake1->SetParLimits(4,8.5E-1,1.0);
      fitfake1->SetParLimits(5,-1.0,1.0); // -1.0 can be lowered 
   }else{
@@ -193,7 +193,7 @@ void prepareThings(){
      fit1->SetParLimits(4,-6.0E-2,-1.0E-3);
      fit1->SetParLimits(5,0.2,1.6);
 
-     fitfake1 = new TF1("fitfake1","[0]*pow(x,[3])/(1+exp([1]*x+[2])) + [4]*pow(x,[5])",0.2,200);
+     fitfake1 = new TF1("fitfake1","[0]*pow(x,[3])/(1+exp([1]*(x+[2]))) + [4]*pow(x,[5])",0.2,200);  
      fit1->SetParLimits(3,0.1,1.0);
      fitfake1->SetParLimits(4,8.5E-1,1.0);
      fitfake1->SetParLimits(5,-1E-2,1.0);
