@@ -48,6 +48,7 @@
 #include <TH2.h>
 #include <TH1.h>
 #include <TFile.h>
+#include <TTree.h>
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
@@ -60,6 +61,27 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "FWCore/Common/interface/TriggerResultsByName.h"
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+// PID tracks
+typedef struct
+{
+  int charge;
+  float eta;
+  float p;
+  float pt;
+  float phi;
+  float dz;
+  float d0;
+  float pterr;
+  float d0err;
+  float dzerr;
+  float chi2;
+  int hit; 
+  float dedx;
+} PidTrack;
+
 //
 // class declaration
 //
@@ -67,60 +89,39 @@
 class DeDxHi : public edm::EDAnalyzer {
    public:
       explicit DeDxHi(const edm::ParameterSet&);
-      ~DeDxHi();
+      ~DeDxHi(){};
 
 
    private:
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
+      virtual void endJob(){} ;
 
       // ----------member data ---------------------------
 
   edm::InputTag theTrackCollection;
-  edm::InputTag thePxlTrkCollection;
   edm::InputTag theTrackDeDxMap;
-  edm::InputTag thePxlTrkDeDxMap;
+
+  edm::Service<TFileService> f;
+
+  //dedx histograms
+  TH2D  *dedx_selected;
+  TTree *track_tree;
+
+  PidTrack pidTrackValues;
+
 
 };
-
-//
-// constants, enums and typedefs
-//
-
-//dedx histograms
-TH2F  *dedx_merged;
-TH2F  *dedx_pixel;
-TH2F  *dedx_selected;
-
-//other declarations
-TFile *file;
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
 //
 DeDxHi::DeDxHi(const edm::ParameterSet& iConfig) : 
   theTrackCollection(iConfig.getParameter<edm::InputTag>("TrackCollection")),
-  thePxlTrkCollection(iConfig.getParameter<edm::InputTag>("PxlTrkCollection")),
-  theTrackDeDxMap(iConfig.getParameter<edm::InputTag>("TrackDeDxMap")),
-  thePxlTrkDeDxMap(iConfig.getParameter<edm::InputTag>("PxlTrkDeDxMap"))
+  theTrackDeDxMap(iConfig.getParameter<edm::InputTag>("TrackDeDxMap"))
 
 {
-   //now do what ever initialization is needed
-   file = new TFile("dEdx_HI_output.root", "recreate");
-}
 
-
-DeDxHi::~DeDxHi()
-{
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-   file->Close();
 }
 
 
@@ -135,64 +136,52 @@ DeDxHi::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
 
    /*
-   * Track analisys
+   * Track analysis
    */
 
    //=================================================================
-   //get Low pT pixel tracks from the event
-   //=================================================================
-   edm::Handle<reco::TrackCollection> pixelTrackCollectionHandle;
-   iEvent.getByLabel(thePxlTrkCollection, pixelTrackCollectionHandle);
-   reco::TrackCollection pixelTrackCollection = *pixelTrackCollectionHandle.product();
-
-   //=================================================================
-   //get dEdx information for low pT pixel tracks
-   //=================================================================
-   Handle<edm::ValueMap<reco::DeDxData> > dEdxPixelTrackHandle;
-   iEvent.getByLabel(thePxlTrkDeDxMap, dEdxPixelTrackHandle);
-   const edm::ValueMap<reco::DeDxData> dEdxPixelTrack = *dEdxPixelTrackHandle.product();
-
-   //=================================================================
-   //get HI selected tracks from the event
+   //get tracks from the event
    //=================================================================
    edm::Handle<reco::TrackCollection> selectedTrackCollectionHandle;
    iEvent.getByLabel(theTrackCollection, selectedTrackCollectionHandle);
    reco::TrackCollection selectedTrackCollection = *selectedTrackCollectionHandle.product();
 
    //=================================================================
-   //get dEdx information for HI selected tracks
+   //get dEdx information for tracks
    //=================================================================
    Handle<edm::ValueMap<reco::DeDxData> > dEdxSelectedTrackHandle;
    iEvent.getByLabel(theTrackDeDxMap, dEdxSelectedTrackHandle);
    const edm::ValueMap<reco::DeDxData> dEdxSelectedTrack = *dEdxSelectedTrackHandle.product();
 
-   //loop over the pixel tracks of the event
-   for(unsigned int i=0; i<pixelTrackCollection.size(); i++)
-   {
-      //get ith track from the event
-      reco::TrackRef pixelTrack     = reco::TrackRef( pixelTrackCollectionHandle, i );
-
-      //fill the (dEdx,p) merged (pixel-selected) histogram
-      if (pixelTrack->p() < .9)
-         dedx_merged->Fill(pixelTrack->p(), dEdxPixelTrack[pixelTrack].dEdx());
-
-     //only pixel tracks
-      dedx_pixel->Fill(pixelTrack->p(), dEdxPixelTrack[pixelTrack].dEdx());
-   }
 
    //loop over the selected tracks of the event
    for(unsigned int i = 0; i < selectedTrackCollection.size(); i++)
    {
-      //get ith track from the event
-      reco::TrackRef selectedTrack     = reco::TrackRef( selectedTrackCollectionHandle, i );
-
-      //fill the (dEdx,p) merged (pixel-selected) histogram
-      if (selectedTrack->p() > .9)
-         dedx_merged->Fill(selectedTrack->p(), dEdxSelectedTrack[selectedTrack].dEdx());
-
+     //get ith track from the event
+     reco::TrackRef tr     = reco::TrackRef( selectedTrackCollectionHandle, i );
+     
       //only selected tracks
-      dedx_selected->Fill(selectedTrack->p(), dEdxSelectedTrack[selectedTrack].dEdx());
+     dedx_selected->Fill(tr->p(), dEdxSelectedTrack[tr].dEdx());
 
+     // fill tree
+     PidTrack pid;
+     pid.charge = tr->charge();
+     pid.eta = tr->eta();
+     pid.p = tr->p();
+     pid.pt = tr->pt();
+     pid.phi = tr->phi();
+     pid.dz = tr->dz();
+     pid.d0 = tr->dxy();
+     pid.pterr = tr->ptError();
+     pid.d0err = tr->d0Error();
+     pid.dzerr = tr->dzError();
+     pid.chi2 = tr->normalizedChi2();
+     pid.hit = tr->numberOfValidHits();
+     pid.dedx = dEdxSelectedTrack[tr].dEdx();
+
+     pidTrackValues = pid;
+     track_tree->Fill();
+     
    }
 }
 
@@ -202,21 +191,15 @@ void
 DeDxHi::beginJob()
 {
    //dedx histograms
-   dedx_merged   = new TH2F("dedx vs p merged", "dedx vs p merged", 300, 0, 3, 300, 0, 45);
-   dedx_pixel    = new TH2F("dedx vs p pixel tracks", "dedx vs p pixel tracks", 300, 0, 3, 300, 0, 45);
-   dedx_selected = new TH2F("dedx vs p selected tracks", "dedx vs p selected tracks", 300, 0, 3, 300, 0, 45);
-}
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-DeDxHi::endJob()
-{
-   file->cd();
+   dedx_selected = f->make<TH2D>("dedx_selected", ";p (GeV/c); dE/dx (MeV/cm)", 600, 0, 3, 600, 0, 45);
 
-   //dedx histograms
-   dedx_merged->Write();
-   dedx_pixel->Write();
-   dedx_selected->Write();
+   //track tree
+   track_tree = f->make<TTree>("track_tree","track_tree");
+   TString leafStr = "charge/I:eta/F:p/F:pt/F:phi/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:chi2/F:hit/I:dedx/F";
+   track_tree->Branch("pidTrackValues", &pidTrackValues, leafStr.Data());
+
 }
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(DeDxHi);
