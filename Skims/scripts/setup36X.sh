@@ -28,6 +28,7 @@ cvs co -r CMSSW_3_9_1 RecoHI/HiMuonAlgos
 # for GEN spectra production
 #cvs co UserCode/ASYoon/MCGeneration
 #mv UserCode/ASYoon/MCGeneration .
+#cvs co Configuration/Generator/python/PythiaUEZ2Settings_cfi.py
 
 # cleanup
 mv UserCode/edwenger .
