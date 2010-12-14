@@ -10,7 +10,7 @@ cvs co UserCode/edwenger/EvtSelAnalyzer
 cvs co UserCode/edwenger/VertexAnalyzer
 cvs co UserCode/edwenger/TrackSpectraAnalyzer
 cvs co UserCode/edwenger/TrkEffAnalyzer
-cvs co -d Saved UserCode/SavedFMa/Saved
+cvs co -r Y1JAna_0_1_4  -d Saved UserCode/SavedFMa/Saved
 
 # agglomerative vertex
 cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
