@@ -209,6 +209,9 @@ def enableMinPtHatCutAuto(process,genTypePtHatRange):
     if genTypePtHatRange=='ENSD_0_to_20':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(20.0)
+    if genTypePtHatRange=='ENSD_0_to_30':
+        print "Min pT_hat cut enable"
+        process.preTrackAna.pthatCut=cms.untracked.double(30.0)
     if genTypePtHatRange=='MB_0_to_5':
         print "Min pT_hat cut enable"
         process.preTrackAna.pthatCut=cms.untracked.double(5.0)
