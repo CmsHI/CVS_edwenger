@@ -13,7 +13,7 @@ hitrkEffAnalyzer.label_tp_effic = cms.untracked.InputTag("cutsTPForEff")
 hitrkEffAnalyzer.label_tp_fake = cms.untracked.InputTag("cutsTPForFak")
 hitrkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # without this no sim track info
 hitrkEffAnalyzer.doAssociation = cms.untracked.bool(True)
-hitrkEffAnalyzer.pixelMultMode =  cms.untracked.bool(True)
+hitrkEffAnalyzer.pixelMultMode =  cms.untracked.bool(False)
 hitrkEffAnalyzer.useJetEt = cms.untracked.bool(True)
 
 hitrkEffAna = cms.Sequence(cutsTPForFak*
