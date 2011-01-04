@@ -39,7 +39,7 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.20 $'),
+    version = cms.untracked.string('$Revision: 1.21 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -62,6 +62,7 @@ setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi 
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 enableDJetAna(process,"MC","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
+setMaxNumberVertices(process,1)
 
 # =============== Final Paths =====================
 
