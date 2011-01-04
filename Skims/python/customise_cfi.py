@@ -239,6 +239,14 @@ def enable900GeVGENMode(process,genSqrts):
         process.preTrackAna.mode900GeV=cms.untracked.bool(True)
     return process                    
 
+
+## this is to change the number of max vertices in event
+def setMaxNumberVertices(process,maxnum):
+    print "Max number of vertices in each event (in sortedGoodVertices) is set to ", maxnum
+    process.sortedGoodVertices.maxNumber=cms.uint32(maxnum)
+    print "double-check : ", process.sortedGoodVertices.maxNumber
+    return process
+
 ### this is for taking the correct event selection efficiency
 def getEvtSelEff(evtSelType):
     eff = {
