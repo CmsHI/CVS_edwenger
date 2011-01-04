@@ -246,7 +246,7 @@ trkeffanalyzer_hist_data trkeffanalyzer_hist_graph(Char_t *cFile, Bool_t REBIN =
 
        }
      }else{
-	bin += 1;
+	bin += 4;
 	/*
        if (bin < 30)         bin += 1;
        else if (bin < 40)    bin += 1;

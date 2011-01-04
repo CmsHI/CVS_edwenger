@@ -11,7 +11,7 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    
 
    int variable = 2;
-   rebin = true;
+   rebin = false;
    range = true;
    
    bool MBonly = false;
@@ -42,8 +42,8 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
       sprintf(VARIABLE,"ETA_%1.1f",maxeta);
       if(lowerhalf) dum->SetMaximum(0.5);
    }else if(variable==2){
-      TH1F *dum = new TH1F("dum","",100,0.5,170);
-      if(range) dum->SetAxisRange(0,160);
+      TH1F *dum = new TH1F("dum","",100,0.5,320);
+      //if(range) dum->SetAxisRange(0,160);
       dum->GetXaxis()->SetTitle("p_{T} [GeV/c]");
       dum->GetXaxis()->CenterTitle();
       dum->GetYaxis()->SetDecimals();
@@ -84,43 +84,53 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    Char_t fileString6[200];
 
 
-   //sprintf(fileName1,"TrkEff_Hist_QCD_10M_2nd_v8.root");  
-   sprintf(fileName1,"TrkHistMC_QCD_10M.root");
-   sprintf(fileString1,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName1);
-   //sprintf(fileString1,"/Users/y_alive/research/spectra/7TeV/root_files/%s",fileName1);    
+   //sprintf(fileName1,"TrkHistMC_QCD_10M.root");
+   //sprintf(fileName1,"TrkHistMC_july09v2_qcdMBD6TdJuly09V3_div2.root");
+   //sprintf(fileString1,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName1);
+
+   sprintf(fileName1,"TrkHistGEN_oct06_qcdMBD6TV1.root");
+   sprintf(fileString1,"/Users/andreyoon/Research/pp7TeV/root_files_postApp/mc/%s",fileName1);
    cout<<"input file 1 is "<<fileString1<<endl;
    
-   //sprintf(fileName2,"TrkEff_Hist_QCD_Pt30_v8.root");     
-   sprintf(fileName2,"TrkHistMC_QCD_Pt15.root");
-   sprintf(fileString2,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName2);
-   //sprintf(fileString2,"/Users/y_alive/research/spectra/7TeV/root_files/%s",fileName2);    
+   //sprintf(fileName2,"TrkHistMC_QCD_Pt15.root");
+   //sprintf(fileName2,"TrkHistMC_july09v2_qcdPt15dJuly09_div2.root");
+   //sprintf(fileString2,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName2);
+
+   sprintf(fileName2,"TrkHistGEN_oct01_qcdPt15V1.root");
+   sprintf(fileString2,"/Users/andreyoon/Research/pp7TeV/root_files_postApp/mc/%s",fileName2);
    cout<<"input file 2 is "<<fileString2<<endl;
    
-   //sprintf(fileName3,"TrkEff_Hist_QCD_Pt170_v8.root");
-   sprintf(fileName3,"TrkHistMC_QCD_Pt30v2.root");
-   sprintf(fileString3,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName3);
-   //sprintf(fileString3,"/Users/y_alive/research/spectra/7TeV/root_files/%s",fileName3);
+   //sprintf(fileName3,"TrkHistMC_QCD_Pt30v2.root");
+   //sprintf(fileName3,"TrkHistMC_july09v2_qcdPt30dJuly09V2_div2.root");
+   //sprintf(fileString3,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName3);
+
+   sprintf(fileName3,"TrkHistGEN_oct01_qcdPt30V2.root");
+   sprintf(fileString3,"/Users/andreyoon/Research/pp7TeV/root_files_postApp/mc/%s",fileName3);
    cout<<"input file 3 is "<<fileString3<<endl;
    
-   //sprintf(fileName4,"TrkEff_Hist_QCD_300_PowPt_1rad.root");
-   sprintf(fileName4,"TrkHistMC_QCD_Pt80v2.root");
-   sprintf(fileString4,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName4);
-   //sprintf(fileString4,"./root_files/%s",fileName4);
-   //sprintf(fileString4,"/Users/y_alive/research/spectra/7TeV/root_files/%s",fileName4);
+   //sprintf(fileName4,"TrkHistMC_QCD_Pt80v2.root");
+   //sprintf(fileName4,"TrkHistMC_july09v2_qcdPt80dJuly09V2_div2.root");
+   //sprintf(fileString4,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName4);
+
+   sprintf(fileName4,"TrkHistGEN_oct01_qcdPt80V2.root");
+   sprintf(fileString4,"/Users/andreyoon/Research/pp7TeV/root_files_postApp/mc/%s",fileName4);
    cout<<"input file 4 is "<<fileString4<<endl;
    
-   //sprintf(fileName5,"TrkEff_Hist_QCD_800_PowPt_1rad.root");
-   //sprintf(fileName5,"TrkHistMC_QCD_Pt170.root");
-   sprintf(fileName5,"TrkHistMC_QCD_Pt170_V2_1st.root");  
-   sprintf(fileString5,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName5);
-   //sprintf(fileString5,"/Users/y_alive/research/spectra/7TeV/root_files/%s",fileName5);
+   //sprintf(fileName5,"TrkHistMC_QCD_Pt170_V2_1st.root");  
+   //sprintf(fileName5,"TrkHistMC_july09v2_qcdPt170dJuly09_div2.root");
+   //sprintf(fileString5,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName5);
+
+   sprintf(fileName5,"TrkHistGEN_oct01_qcdPt170V1.root");
+   sprintf(fileString5,"/Users/andreyoon/Research/pp7TeV/root_files_postApp/mc/%s",fileName5);
    cout<<"input file 5 is "<<fileString5<<endl;
 
-   //sprintf(fileName6,"TrkHistMC_QCD_Pt470v2.root");
-   sprintf(fileName6,"TrkHistMC_QCD_Pt470_V2_1st.root"); 
-   sprintf(fileString6,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName6);
-   //sprintf(fileString6,"/Users/y_alive/research/spectra/7TeV/root_files/%s",fileName6);
-   cout<<"input file 5 is "<<fileString6<<endl;
+   //sprintf(fileName6,"TrkHistMC_QCD_Pt470_V2_1st.root"); 
+   //sprintf(fileName6,"TrkHistMC_july09v2_dec14_qcdPt300dJuly09V2.root");
+   //sprintf(fileString6,"/Users/andreyoon/Research/ana/spectra/pp_spectra/7TeV/root_files/%s",fileName6);
+
+   sprintf(fileName6,"TrkHistGEN_oct01_qcdPt300V1.root");
+   sprintf(fileString6,"/Users/andreyoon/Research/pp7TeV/root_files_postApp/mc/%s",fileName6);
+   cout<<"input file 6 is "<<fileString6<<endl;
 
    char jetrange1[100], jetrange2[100], jetrange3[100], jetrange4[100], jetrange5[100], jetrange6[100];
    char jetrange7[100], jetrange8[100], jetrange9[100], jetrange10[100], jetrange11[100], jetrange12[100];
@@ -150,6 +160,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    TGraphAsymmErrors *Eff2Skm = removeLastPoint(Eff2,1);
    TGraphAsymmErrors *FR2Skm = removeLastPoint(FR2,1);
 
+   //TGraphAsymmErrors *Eff2Skm = removeLastPoint(Eff2,0);
+   //TGraphAsymmErrors *FR2Skm = removeLastPoint(FR2,0);
+
    trkeffanalyzer_hist_data d3 = trkeffanalyzer_hist_graph(fileString2,rebin,range,variable,0.0,maxeta,minjet,maxjet,minpt,maxpt);
 
    TGraphAsymmErrors *Eff3 = d3.gEfficiency;
@@ -157,6 +170,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
 
    TGraphAsymmErrors *Eff3Skm = removeLastPoint(Eff3,1);
    TGraphAsymmErrors *FR13km = removeLastPoint(FR3,1);
+
+   //TGraphAsymmErrors *Eff3Skm = removeLastPoint(Eff3,0);
+   //TGraphAsymmErrors *FR13km = removeLastPoint(FR3,0);
 
    // 40-60 Pt15, Pt30
    minjet = 40, maxjet =60;
@@ -170,6 +186,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    TGraphAsymmErrors *Eff4Skm = removeLastPoint(Eff4,2);
    TGraphAsymmErrors *FR4Skm = removeLastPoint(FR4,2);
 
+   //TGraphAsymmErrors *Eff4Skm = removeLastPoint(Eff4,0);
+   //TGraphAsymmErrors *FR4Skm = removeLastPoint(FR4,0);
+
    trkeffanalyzer_hist_data d5 = trkeffanalyzer_hist_graph(fileString3,rebin,range,variable,0.0,maxeta,minjet,maxjet,minpt,maxpt);
 
    TGraphAsymmErrors *Eff5 = d5.gEfficiency;
@@ -177,6 +196,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
  
    TGraphAsymmErrors *Eff5Skm = removeLastPoint(Eff5,2);
    TGraphAsymmErrors *FR5Skm = removeLastPoint(FR5,2);
+
+   //TGraphAsymmErrors *Eff5Skm = removeLastPoint(Eff5,0);
+   //TGraphAsymmErrors *FR5Skm = removeLastPoint(FR5,0);
 
    // 60-80 Pt30 
    minjet = 60, maxjet =80;
@@ -204,6 +226,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    TGraphAsymmErrors *Eff7Skm = removeLastPoint(Eff7,2);
    TGraphAsymmErrors *FR7Skm = removeLastPoint(FR7,2);
 
+   //TGraphAsymmErrors *Eff7Skm = removeLastPoint(Eff7,0);
+   //TGraphAsymmErrors *FR7Skm = removeLastPoint(FR7,0);
+
  
    // 100-120 Pt80
    minjet = 100, maxjet =120;
@@ -216,6 +241,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
 
    TGraphAsymmErrors *Eff8Skm = removeLastPoint(Eff8,3);
    TGraphAsymmErrors *FR8Skm = removeLastPoint(FR8,3);
+
+   //TGraphAsymmErrors *Eff8Skm = removeLastPoint(Eff8,0);
+   //TGraphAsymmErrors *FR8Skm = removeLastPoint(FR8,0);
 
 
    // 120-140
@@ -236,14 +264,20 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    TGraphAsymmErrors *Eff9Skm = removeLastPoint(Eff9,1);
    TGraphAsymmErrors *FR9Skm = removeLastPoint(FR9,1);
 
+   //TGraphAsymmErrors *Eff9Skm = removeLastPoint(Eff9,0);
+   //TGraphAsymmErrors *FR9Skm = removeLastPoint(FR9,0);
+
 
    trkeffanalyzer_hist_data d10 = trkeffanalyzer_hist_graph(fileString5,rebin,range,variable,0.0,maxeta,minjet,maxjet,minpt,maxpt);
 
    TGraphAsymmErrors *Eff10 = d10.gEfficiency;
    TGraphAsymmErrors *FR10 = d10.gFakerate;
    
-   TGraphAsymmErrors *Eff10Skm = removeLastPoint(Eff10,1);
-   TGraphAsymmErrors *FR10Skm = removeLastPoint(FR10,1);
+   TGraphAsymmErrors *Eff10Skm = removeLastPoint(Eff10,2);
+   TGraphAsymmErrors *FR10Skm = removeLastPoint(FR10,2);
+
+   //TGraphAsymmErrors *Eff10Skm = removeLastPoint(Eff10,0);
+   //TGraphAsymmErrors *FR10Skm = removeLastPoint(FR10,0);
 
    //250 -300 
    minjet = 250, maxjet =300;
@@ -257,8 +291,25 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    TGraphAsymmErrors *Eff11Skm = removeLastPoint(Eff11,1);
    TGraphAsymmErrors *FR11Skm = removeLastPoint(FR11,1);
 
+   //TGraphAsymmErrors *Eff11Skm = removeLastPoint(Eff11,0);
+   //TGraphAsymmErrors *FR11Skm = removeLastPoint(FR11,0);
+   
+
+   //500 - 2400
+   minjet = 500, maxjet =2400;
+   sprintf(jetrange9," %1.0f<E_{T}<%1.0f",minjet,maxjet);
+
+   trkeffanalyzer_hist_data d12 = trkeffanalyzer_hist_graph(fileString6,rebin,range,variable,0.0,maxeta,minjet,maxjet,minpt,maxpt);
+
+   TGraphAsymmErrors *Eff12 = d12.gEfficiency;
+   TGraphAsymmErrors *FR12 = d12.gFakerate;
+
+   TGraphAsymmErrors *Eff12Skm = removeLastPoint(Eff12,0);
+   TGraphAsymmErrors *FR12Skm = removeLastPoint(FR12,0);
+
 
    
+
    Char_t xTitle[100],yTitle[100];
    sprintf(xTitle,"p_{T} [GeV/c]");
    sprintf(yTitle,"Ratio");
@@ -316,6 +367,9 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    color = 22;
    //th1Style1(Eff11Skm,color,20,binsize,color,1,1,dopt);
    //th1Style1(FR11Skm,color,21,binsize,color,1,1,dopt);
+
+   th1Style1(Eff12Skm,color,20,binsize,color,1,1,dopt);
+   th1Style1(FR12Skm,color,21,binsize,color,1,1,dopt);
 
    
 
@@ -402,8 +456,8 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
       leg->AddEntry(Eff10Skm,jetrange7,"lp");
       leg->AddEntry(dum,"Pt170  ","");
       
-      //leg->AddEntry(Eff11Skm,jetrange8,"lp");
-      //leg->AddEntry(dum,"Pt170  ","");
+      leg->AddEntry(Eff12Skm,jetrange9,"lp");
+      leg->AddEntry(dum,"Pt300  ","");
 
    }else{
      TLegend *leg = new TLegend(0.54,0.4,0.89,0.62);
@@ -427,20 +481,21 @@ void plot_eff_vs_general_var_grand_pas(Bool_t rebin=false, Bool_t range=false){
    
      Char_t outName1[100];
      //sprintf(outName1,"Eff_FR_GRAND_%s",VARIABLE);
-     sprintf(outName1,"Eff_FR_GRAND_wider");
+     sprintf(outName1,"Eff_FR_GRAND_wider_v2");
      Char_t outName2[100];
      //sprintf(outName2,"Eff_FR_GRAND_logx_%s",VARIABLE);
-     sprintf(outName2,"Eff_FR_GRAND_logx_wider");
+     sprintf(outName2,"Eff_FR_GRAND_logx_wider_v2");
 
 
      tex->Draw();
      dum->SetMaximum(0.91);
-     dum->SetMinimum(0.65);
-     //printCanvases(call,outName1,0);
+     //dum->SetMinimum(0.65);
+     dum->SetMinimum(0.50);
+     printCanvases(call,outName1,0);
 
      dum->SetMinimum(-0.05);
      dum->SetMaximum(1.0);
-     //printCanvases(call,outName2,1);
+     printCanvases(call,outName2,1);
 
 }
 
