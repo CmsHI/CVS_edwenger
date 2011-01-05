@@ -24,7 +24,7 @@ postTrkVtxSel = vertexanalyzer.clone(
 # this is for studing trk-jet-vtx correlation
 postExtraTrkVtxSel = vertexanalyzer.clone(
     vtxlabel = cms.untracked.InputTag("sortedPreGoodVertices"),
-    trklabel = cms.untracked.InputTag("selectTracks"),
+    trklabel = cms.untracked.InputTag("preSelectTracks"),
     jetlabel=cms.untracked.InputTag("cleanedPatJets"),
     jetTrkVerticesCorr=cms.untracked.bool(True)) 
 
