@@ -11,6 +11,7 @@ extraReco = cms.Sequence(extraVertex *         ## agglomerative pixel vertexing
                          postEvtSelTest *
                          selectedVertex *      ## most-populated (filters)
                          goodVertices *        ## all vertices pass ndof>4, etc.
+                         sortedPreGoodVertices *
                          sortedGoodVertices *
                          chargedCandidates *   ## selected tracks -> charged candidates
                          postVtxTest *

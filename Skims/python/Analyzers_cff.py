@@ -21,6 +21,14 @@ preTrkVtxSel = vertexanalyzer.clone(
 postTrkVtxSel = vertexanalyzer.clone(
     vtxlabel = cms.untracked.InputTag("sortedGoodVertices"))
 
+# this is for studing trk-jet-vtx correlation
+postExtraTrkVtxSel = vertexanalyzer.clone(
+    vtxlabel = cms.untracked.InputTag("sortedPreGoodVertices"),
+    trklabel = cms.untracked.InputTag("selectTracks"),
+    jetlabel=cms.untracked.InputTag("cleanedPatJets"),
+    jetTrkVerticesCorr=cms.untracked.bool(True)) 
+
+
 # track and jet spectra analyzer
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
 trackAna.src = cms.untracked.InputTag("selectTracks")

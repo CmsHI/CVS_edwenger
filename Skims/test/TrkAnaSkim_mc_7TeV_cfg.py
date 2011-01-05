@@ -17,7 +17,7 @@ options = VarParsing.VarParsing ('standard')
 
 # my own variable
 options.register('inputType',
-                 "QCDPtX_REDIGI36",
+                 "QCDPtX_REDIGI36X",
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
                  "Input file type - MB or QCDPtX")
@@ -30,16 +30,17 @@ options.parseArguments()
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-    '/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V26A_356ReReco-v1/0009/FEFC70B6-F53D-DF11-B57E-003048679150.root',
-    '/store/mc/Spring10/MinBias/GEN-SIM-RECO/START3X_V26A_356ReReco-v1/0009/FED8673E-F53D-DF11-9E58-0026189437EB.root'))
+    #'file:/home/sungho/sctch101/mc/spectra/7TeV/test/MinBias_TuneD6T_GEN-SIM-RECODEBUG_362_1_1_BEp.root',
+    #'file:/home/sungho/sctch101/mc/spectra/7TeV/test/MinBias_TuneD6T_GEN-SIM-RECODEBUG_362_2_1_Apa.root'))
+    'file:/home/sungho/sctch101/mc/spectra/7TeV/test/QCD_Pt80_GEN-SIM-RECODEBUG_362-02E7583C-847B-DF11-B1FB-00215E21D75C.root'))
 
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.21 $'),
+    version = cms.untracked.string('$Revision: 1.22 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -49,7 +50,6 @@ process.TFileService = cms.Service("TFileService",
                                    )
 
 # =============== Import Sequences =====================
-
 process.load("edwenger.Skims.EventFilter_cff")
 process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
@@ -62,6 +62,8 @@ setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi 
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 enableDJetAna(process,"MC","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
+replaceMinBiasHLTPath(process) # replace MB hlt path for MC
+removeDijetAna(process) # remove dijetAna_seq
 setMaxNumberVertices(process,1)
 
 # =============== Final Paths =====================

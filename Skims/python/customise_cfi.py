@@ -38,7 +38,6 @@ def enableSIMnoTP(process):
     process.postVtxAna.vtxWeight=cms.untracked.bool(True)
     process.postTrkVtxAna.vtxWeight=cms.untracked.bool(True)
     return process
-                                                                 
 
 def removeTPAssociation(process):
     #process.trkEffAnalyzer.hasSimInfo=False #overwriteen above
@@ -46,6 +45,10 @@ def removeTPAssociation(process):
     process.extraReco.remove(process.trackRefit)
     return process
 
+def removeDijetAna(process):
+    process.analysisSeq.remove(process.dijetAna_seq)
+    return process
+    
 # this is for Summer 09 samples where the HLT has been re-run during Spring 10 production
 def enableREDIGI(process):
     process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
@@ -94,7 +97,7 @@ def enableREDIGI3(process):
     return process
 
 
-def enableREDIGI36(process):
+def enableREDIGI36X(process):
     process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
@@ -107,6 +110,37 @@ def enableREDIGI36(process):
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.eventFilter.remove(process.hltMinBias)     #
+    return process
+
+def enableREDIGI36(process):
+    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.eventFilter.remove(process.hltMinBias)     #
+    return process
+                                                    
+
+# this is to replace the MB trigger for MC
+#def gettriglist():
+#    list = {
+
+def replaceMinBiasHLTPath(process):
+    list = ['HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U']
+    print "hlt list for event selection analyzer = ", list
+    process.evtselanalyzer.trignames=cms.untracked.vstring(list)
+    process.preTrgAna.trignames=cms.untracked.vstring(list)
+    process.postTrgAna.trignames=cms.untracked.vstring(list)
+    process.postEvtSelAna.trignames=cms.untracked.vstring(list)
+    process.postVtxAna.trignames=cms.untracked.vstring(list)
+    process.postTrkVtxAna.trignames=cms.untracked.vstring(list)
     return process
 
 # this is to update hlt names for 900 GeV sample
@@ -147,10 +181,10 @@ def setGlobTagAndRedigi(process,inputFileType):
         print "Notice: MinBias with REDIGI36"
         process.GlobalTag.globaltag = 'START36_V10::All'
         process = enableREDIGI36(process)
-    if inputFileType=='QCDPtX_REDIGI36':
-        print "Notice: QCDPtX with REDIGI"
+    if inputFileType=='QCDPtX_REDIGI36X':
+        print "Notice: QCDPtX with REDIGI36X"
         process.GlobalTag.globaltag = 'START36_V9::All'
-        process = enableREDIGI36(process)
+        process = enableREDIGI36X(process)
     print ("Notice: GlobalTag = " + str(process.GlobalTag.globaltag))
     return process
 
