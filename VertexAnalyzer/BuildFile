@@ -4,6 +4,7 @@
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/VertexReco>
 <use name=CommonTools/UtilAlgos>
+<use name=DataFormats/JetReco>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerVertexAnalyzer>
