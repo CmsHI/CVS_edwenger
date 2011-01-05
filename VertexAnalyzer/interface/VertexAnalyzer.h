@@ -15,7 +15,9 @@
 #include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-
+#include "RecoVertex/PrimaryVertexProducer/interface/VertexHigherPtSquared.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "RecoVertex/PrimaryVertexProducer/interface/PrimaryVertexSorter.h"
 
 
 // ROOT includes
@@ -57,6 +59,7 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSLeadingTrkSVdZ;
       TH1F *hSSLeadingTrkSVdZ;
 
+      TH1F *hTrkPtFromAV;
       TH1F *hTrkPtFromPV;
       TH1F *hTrkPtFromSV;
 
