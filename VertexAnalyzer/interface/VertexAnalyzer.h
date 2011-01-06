@@ -59,6 +59,10 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSLeadingTrkSVdZ;
       TH1F *hSSLeadingTrkSVdZ;
 
+      TH2F *hLeadingTrkPnSVdZ;
+      TH2F *hSLeadingTrkPnSVdZ;
+      TH2F *hSSLeadingTrkPnSVdZ;
+
       TH1F *hTrkPtFromAV;
       TH1F *hTrkPtFromPV;
       TH1F *hTrkPtFromSV;

@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.8 2011/01/06 10:11:19 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.9 2011/01/06 11:00:48 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -116,9 +116,9 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 double dzPV = sortedTrks[j]->dz(vtxs[0].position());
 	 double dzSV = sortedTrks[j]->dz(vtxs[1].position());
 
-	 if(j==0) hLeadingTrkPVdZ->Fill(dzPV), hLeadingTrkSVdZ->Fill(dzSV); // leading
-	 else if(j==1) hSLeadingTrkPVdZ->Fill(dzPV), hSLeadingTrkSVdZ->Fill(dzSV); // sub-leading
-	 else if(j==2) hSSLeadingTrkPVdZ->Fill(dzPV), hSSLeadingTrkSVdZ->Fill(dzSV); // s-sub-leading
+	 if(j==0) hLeadingTrkPVdZ->Fill(dzPV), hLeadingTrkSVdZ->Fill(dzSV), hLeadingTrkPnSVdZ->Fill(dzPV,dzSV); // leading
+	 else if(j==1) hSLeadingTrkPVdZ->Fill(dzPV), hSLeadingTrkSVdZ->Fill(dzSV), hSLeadingTrkPnSVdZ->Fill(dzPV,dzSV); // sub-leading
+	 else if(j==2) hSSLeadingTrkPVdZ->Fill(dzPV), hSSLeadingTrkSVdZ->Fill(dzSV), hSSLeadingTrkPnSVdZ->Fill(dzPV,dzSV); // s-sub-leading
 	 
 	 hTrkPtFromAV->Fill(sortedTrks[j]->pt());
 
@@ -168,6 +168,10 @@ VertexAnalyzer::beginJob()
      hSLeadingTrkSVdZ = f->make<TH1F>("hSLeadingTrkSVdZ","dz of sub-leading track with 2nd vertex",500,-30,30);
      hSSLeadingTrkSVdZ = f->make<TH1F>("hSSLeadingTrkSVdZ","dz of sub-sub-leading track with 2nd vertex",500,-30,30);
      
+     hLeadingTrkPnSVdZ = f->make<TH2F>("hLeadingTrkPnSVdZ","dz of leading track with primary vs 2nd vertices",500,-30,30, 500,-30,30);
+     hSLeadingTrkPnSVdZ = f->make<TH2F>("hSLeadingTrkPnSVdZ","dz of sub-leading track with primary vs 2nd vertices",500,-30,30, 500,-30,30);
+     hSSLeadingTrkPnSVdZ = f->make<TH2F>("hSSLeadingTrkPnSVdZ","dz of sub-sub0leading track with primary vs 2nd vertices",500,-30,30, 500,-30,30);
+
      hTrkPtFromAV = f->make<TH1F>("hTrkPtFromAV","track p_{T} distribution from all vertices;p_{T} (GeV/c)",ptBins.size()-1, &ptBins[0]);
      hTrkPtFromPV = f->make<TH1F>("hTrkPtFromPV","track p_{T} distribution from PV;p_{T} (GeV/c)",ptBins.size()-1, &ptBins[0]);
      hTrkPtFromSV = f->make<TH1F>("hTrkPtFromSV","track p_{T} distribution from SV;p_{T} (GeV/c)",ptBins.size()-1, &ptBins[0]);
