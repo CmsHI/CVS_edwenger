@@ -65,4 +65,6 @@ class VertexAnalyzer : public edm::EDAnalyzer {
 
       TH2F *hVtxZTrkEta;
 
+      std::vector<double> ptBins;
+
 };
