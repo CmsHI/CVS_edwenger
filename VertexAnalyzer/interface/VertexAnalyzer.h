@@ -22,6 +22,7 @@
 
 // ROOT includes
 #include <TH2.h>
+#include <TMath.h>
 
 class VertexAnalyzer : public edm::EDAnalyzer {
    public:
@@ -59,9 +60,29 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSLeadingTrkSVdZ;
       TH1F *hSSLeadingTrkSVdZ;
 
-      TH2F *hLeadingTrkPnSVdZ;
-      TH2F *hSLeadingTrkPnSVdZ;
-      TH2F *hSSLeadingTrkPnSVdZ;
+      TH1F *hLeadingTrkPVdZ_narrowEta; // for jet |eta|<2.0! 
+      TH1F *hLeadingTrkSVdZ_narrowEta;
+
+      TH1F *hLeadingJetEtaFromPV;
+      TH1F *hLeadingJetEtaFromSV;
+      TH1F *hSLeadingJetEtaFromPV;
+      TH1F *hSLeadingJetEtaFromSV;
+      TH1F *hSSLeadingJetEtaFromPV;
+      TH1F *hSSLeadingJetEtaFromSV;
+
+      TH1F *hLeadingdRFromPV;
+      TH1F *hLeadingdRFromSV;
+      TH1F *hSLeadingdRFromPV;
+      TH1F *hSLeadingdRFromSV;
+      TH1F *hSSLeadingdRFromPV;
+      TH1F *hSSLeadingdRFromSV;
+
+      TH2F *hLeadingPVdZdR;
+      TH2F *hSLeadingPVdZdR;
+      TH2F *hSSLeadingPVdZdR;
+      TH2F *hLeadingSVdZdR;
+      TH2F *hSLeadingSVdZdR;
+      TH2F *hSSLeadingSVdZdR;
 
       TH1F *hTrkPtFromAV;
       TH1F *hTrkPtFromPV;
