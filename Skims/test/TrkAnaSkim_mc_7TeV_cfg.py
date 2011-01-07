@@ -36,11 +36,11 @@ process.source = cms.Source("PoolSource",
 
 # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(30))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.22 $'),
+    version = cms.untracked.string('$Revision: 1.23 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -65,6 +65,7 @@ enableDJetAna(process,"MC","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT",
 replaceMinBiasHLTPath(process) # replace MB hlt path for MC
 removeDijetAna(process) # remove dijetAna_seq
 setMaxNumberVertices(process,1)
+runWithsortedSumPtOrdVertices(process)
 
 # =============== Final Paths =====================
 

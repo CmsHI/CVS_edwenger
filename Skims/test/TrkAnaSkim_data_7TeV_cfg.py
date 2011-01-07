@@ -25,15 +25,17 @@ process.source = cms.Source("PoolSource",
       # jm pr4: run > 141950
       '/store/data/Run2010A/JetMET/RECO/v4/000/144/114/F4E53E34-31B4-DF11-9A2C-0030487CD6D8.root',
       '/store/data/Run2010A/JetMET/RECO/v4/000/144/114/C8E66A3C-28B4-DF11-BA17-001D09F24763.root'
+      # jm pr4 skim
+      #'file:/home/sungho/sctch101/data/spectra/7TeV/test/JM-R10A-PR4-Jet50Uskim-v0-trkAnaSkimAOD_530_3_kOu.root'
       ))
     # =============== Other Statements =====================
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR10_P_V7::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.21 $'),
+    version = cms.untracked.string('$Revision: 1.22 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -66,6 +68,7 @@ updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 enableDJetAna(process,"Data")
 setMaxNumberVertices(process,1)
+runWithsortedSumPtOrdVertices(process)
 #process = enableAOD(process)
 
 # =============== Final Paths =====================
@@ -94,5 +97,5 @@ process.schedule = cms.Schedule(
     process.eventFilter_step,
     process.extraReco_step,
     process.ana_step,
-    process.output_step
+    #process.output_step
     )

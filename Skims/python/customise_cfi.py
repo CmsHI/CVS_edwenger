@@ -176,7 +176,7 @@ def setGlobTagAndRedigi(process,inputFileType):
         process = enableREDIGI(process)
     if inputFileType=='Herwig_REDIGI35':
         print "Notice: Herwig with REDIGI35"
-        process.GlobalTag.globaltag = 'START3X_V26::All'
+        process.GlobalTag.globaltag = 'START3X_V26A::All'
         process = enableREDIGI(process)
     if inputFileType=='MinBias900GeV':
         print "Notice: MinBias900GeV with no REDIGI"
@@ -277,12 +277,25 @@ def enable900GeVGENMode(process,genSqrts):
         process.preTrackAna.mode900GeV=cms.untracked.bool(True)
     return process                    
 
+## this is to change vertex collection to sortedSumPtOrdVertices
+def runWithsortedSumPtOrdVertices(process):
+    print "sortedSumPtOrdVertices is used for final spectra!!"
+    process.postTrkVtxAna.vtxlabel=cms.untracked.InputTag("sortedSumPtOrdVertices")
+    process.postTrkVtxSel.vtxlabel=cms.untracked.InputTag("sortedSumPtOrdVertices")
+    process.selectTracks.vertices = cms.InputTag("sortedSumPtOrdVertices")
+    process.trackAna.vsrc=cms.untracked.InputTag("sortedSumPtOrdVertices")
+    process.refitTrackAna.vsrc=cms.untracked.InputTag("sortedSumPtOrdVertices")
+    process.trackAna_STD.vsrc=cms.untracked.InputTag("sortedSumPtOrdVertices")
+    process.trkEffAnalyzer.vertices=cms.untracked.InputTag("sortedSumPtOrdVertices")
+    return process
 
 ## this is to change the number of max vertices in event
 def setMaxNumberVertices(process,maxnum):
-    print "Max number of vertices in each event (in sortedGoodVertices) is set to ", maxnum
+    print "Max number of vertices in each event (GoodVertices, SumPtOrdVertices) set to", maxnum
     process.sortedGoodVertices.maxNumber=cms.uint32(maxnum)
-    print "double-check : ", process.sortedGoodVertices.maxNumber
+    process.sortedSumPtOrdVertices.maxNumber=cms.uint32(maxnum)
+    print "double-check (GoodVertices): ", process.sortedGoodVertices.maxNumber
+    print "double-check (SumPtOrdVertices): ", process.sortedSumPtOrdVertices.maxNumber
     return process
 
 ### this is for taking the correct event selection efficiency
