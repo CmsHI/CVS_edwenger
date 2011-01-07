@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.10 2011/01/06 18:39:35 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.11 2011/01/06 23:08:34 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -36,15 +36,8 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel(vtxlabel_,vtxsH);
 
    reco::VertexCollection vtxs = *vtxsH;
-   std::sort(vtxs.begin(),vtxs.end(),MoreTracksThenLowerChi2<reco::Vertex>());
-
-   //-- same vertex collection for sqrt(pt*pt) based sorting
-   edm::Handle<reco::VertexCollection> vtxsH_sortPt;
-   iEvent.getByLabel(vtxlabel_,vtxsH_sortPt);
-   
-   reco::VertexCollection vtxs_sortPt = *vtxsH_sortPt;
-
-   //std::sort(vtxs_sortPt.begin(),vtxs_sortPt.end(), PrimaryVertexSorter);
+   if(jetTrkVerticesCorr_) std::sort(vtxs.begin(),vtxs.end(),VertexHigherPtSquared()); // sorted by sum pt^2 for jet-vtx correlation
+   else std::sort(vtxs.begin(),vtxs.end(),MoreTracksThenLowerChi2<reco::Vertex>());
 
    //------- Vertex analyzer ---------------
    hVtxSize->Fill(vtxs.size());
@@ -86,7 +79,7 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       double leadJetEt_=0, leadJetEta_=0, leadJetPhi_=0;
 
       unsigned index = 0;
-      if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 100, leadJetPhi_ = 0;
+      if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 100, leadJetPhi_ = 0; // so that dr > 10 for events with no pat jet
       else leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(), leadJetPhi_ = sortedJets[index]->phi();
 
       //------ Tracks -------------------------- 

@@ -17,3 +17,10 @@ sortedGoodVertices = cms.EDFilter("BestVertexSelection",
     maxNumber = cms.uint32(100),
     filter = cms.bool(False)
 )
+
+sortedSumPtOrdVertices = cms.EDFilter("SumPtOrdVertexSelector",
+     src = cms.InputTag("goodVertices"),
+     maxNumber = cms.uint32(100),
+     filter = cms.bool(False)
+)
+

@@ -5,6 +5,7 @@
 <use name=DataFormats/VertexReco>
 <use name=CommonTools/UtilAlgos>
 <use name=DataFormats/JetReco>
+<use name=RecoVertex/PrimaryVertexProducer>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerVertexAnalyzer>
