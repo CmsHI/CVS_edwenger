@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
 hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
-                          src = cms.untracked.InputTag("hiGoodTracks"),
+                          src = cms.untracked.InputTag("hiGoodMergedTracks"),
                           vsrc = cms.untracked.InputTag("hiSelectedVertex"),
                           jsrc = cms.untracked.InputTag("patJets"),
                           gsrc = cms.untracked.InputTag("hiGenParticles"),
                           gjsrc = cms.untracked.InputTag("ak5HiGenJets"),
-                          src_evtCorr = cms.untracked.InputTag("hiGoodTracks"),
+                          src_evtCorr = cms.untracked.InputTag("hiGoodMergedTracks"),
                           setQualityBit = cms.untracked.bool(False),
                           isGEN = cms.untracked.bool(False),
                           pureGENmode = cms.untracked.bool(False),
