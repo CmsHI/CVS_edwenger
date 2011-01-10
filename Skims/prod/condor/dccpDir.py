@@ -25,7 +25,7 @@ for sample,PD in samples.items():
     if not os.path.isfile(outdir + "/" + file):
       cmd = 'dccp ' + infile + ' ' + outdir
       print cmd
-      #os.system(cmd)
+      os.system(cmd)
     else:
       print file + " already exists in '" + outdir + "' directory"
 
