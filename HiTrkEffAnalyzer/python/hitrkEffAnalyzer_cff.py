@@ -8,7 +8,7 @@ from edwenger.HiTrkEffAnalyzer.HiTPCuts_cff import *
 from edwenger.HiTrkEffAnalyzer.hitrkEffAnalyzer_cfi import *
 
 ## full tracking
-hitrkEffAnalyzer.tracks = cms.untracked.InputTag('hiGoodMergedTracks')
+hitrkEffAnalyzer.tracks = cms.untracked.InputTag('hiGoodTracks')
 hitrkEffAnalyzer.label_tp_effic = cms.untracked.InputTag("cutsTPForEff")
 hitrkEffAnalyzer.label_tp_fake = cms.untracked.InputTag("cutsTPForFak")
 hitrkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # without this no sim track info
