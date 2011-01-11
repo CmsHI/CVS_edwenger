@@ -42,9 +42,10 @@ HiTrkEffHistograms::declareHistograms()
   
   if(fillHistograms) {
 
+     const double small = 1e-3;
+
     // pt bins
     if(!constPtBins){
-       const double small = 1e-3;
        double pt;
 
        // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
@@ -59,18 +60,18 @@ HiTrkEffHistograms::declareHistograms()
 
     }else if(lowPtMode){
 
-       static float ptMin   =  0.0;
-       static float ptMax   =  2.0;
-       static float ptWidth =  0.02;
+       static double ptMin   =  0.0;
+       static double ptMax   =  2.0;
+       static double ptWidth =  0.02;
 
        for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
 	  ptBins.push_back(pt);
 
     }else{
 
-       static float ptMin   =  0.0;
-       static float ptMax   =  200.0;
-       static float ptWidth =  0.2;
+       static double ptMin   =  0.0;
+       static double ptMax   =  200.0;
+       static double ptWidth =  0.2;
 
        for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
 	  ptBins.push_back(pt);
@@ -78,22 +79,29 @@ HiTrkEffHistograms::declareHistograms()
     }
     
     // eta bins
-    static float etaMin   = -3.0;
-    static float etaMax   =  3.0;
-    static float etaWidth =  0.2;
+    static double etaMin   = -2.6;
+    static double etaMax   =  2.6;
+    static double etaWidth =  0.4;
 
     for(double eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
       etaBins.push_back(eta);
 
 
     // jet et bins
+    double jet;
+    for(jet =    0; jet <   50-small; jet +=  50 ) jetBins.push_back(jet);
+    for(jet =   50; jet <   80-small; jet +=  30 ) jetBins.push_back(jet); 
+    for(jet =   80; jet < 1000-small; jet +=  25 ) jetBins.push_back(jet);
+    jetBins.push_back(1005);
+
+    /*
     static float jetMin = 0.0;
     static float jetMax = 1000; // good to be matched with ana 
     static float jetWidth = 20;
 
     for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
        jetBins.push_back(jet);
-
+    */
 
     // simulated
     hsim = f->make<TH2F>("hsim","Sim Tracks;#eta;p_{T} (GeV/c)",

@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.10 2010/11/22 12:44:33 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.11 2010/12/20 15:26:03 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -316,21 +316,28 @@ HiTrackSpectraAnalyzer::beginJob()
 
 
    // eta bins
-   static float etaMin   = -2.4;
-   static float etaMax   =  2.4;
-   static float etaWidth =  0.2;
+   static double etaMin   = -2.6;
+   static double etaMax   =  2.6;
+   static double etaWidth =  0.4;
 
    for(double eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
       etaBins.push_back(eta);
 
    // jet et bins
+   double jet;
+   for(jet =    0; jet <   50-small; jet +=  50 ) jetBins.push_back(jet);
+   for(jet =   50; jet <   80-small; jet +=  30 ) jetBins.push_back(jet);
+   for(jet =   80; jet < 1000-small; jet +=  25 ) jetBins.push_back(jet);
+   jetBins.push_back(1005);
+
+   /*
    static float jetMin = 0.0;
    static float jetMax = 1000; // good to be matched with ana 
    static float jetWidth = 20;
 
    for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
       jetBins.push_back(jet);
-
+   */
 
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
