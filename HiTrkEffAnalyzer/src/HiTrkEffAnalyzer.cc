@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.3 2010/09/30 15:09:18 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.4 2010/12/20 15:40:26 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -248,7 +248,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
   s.hits = tp.matchedHit();
   s.status = tp.status();
   std::pair<bool,bool> acc = isAccepted(tp);
-  s.acc = acc.first || acc.second;
+  s.acc = acc.first; // for HI tracking, only triplet should be taken
 
 #ifdef DEBUG
   edm::LogVerbatim("HiTrkEffAnalyzer")  
