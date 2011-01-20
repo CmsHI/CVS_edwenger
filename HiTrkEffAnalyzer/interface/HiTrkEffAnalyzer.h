@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.1 2010/07/08 17:09:56 sungho Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.2 2010/09/28 21:24:14 sungho Exp $
 //
 
 // user include files
@@ -18,6 +18,7 @@
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "edwenger/HiTrkEffAnalyzer/interface/HiTrkEffHistograms.h"
+#include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
 
 // define track efficiency analyzer class
 class HiTrkEffAnalyzer : public edm::EDAnalyzer {
@@ -32,8 +33,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob();
       
-      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float);
-      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float);
+      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int);
+      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int);
       bool testVertex(reco::Track&, double&, double&, double&, double&);
       std::pair<bool,bool> isAccepted(TrackingParticle&);
       int getLayerId(const PSimHit&);
@@ -57,6 +58,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       
       HiTrkEffHistograms *histograms;
       edm::Service<TFileService> f;
+      
+      CentralityProvider * centrality_;
 
       enum { BPix1=0, BPix2=1, BPix3=2,
 	     FPix1_neg=3, FPix2_neg=4,
