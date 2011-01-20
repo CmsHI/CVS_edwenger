@@ -31,6 +31,7 @@ typedef struct
   int hitr;
   int algo;
   float jetr;
+  int cbin;
 } SimTrack_t;
 
 typedef struct
@@ -53,6 +54,7 @@ typedef struct
   float etas;
   float pts;
   float jetr;
+  int cbin;
 } RecTrack_t;
 
 // define class to hold histograms and track trees
@@ -81,6 +83,9 @@ class HiTrkEffHistograms
 
    std::vector<double> etaBins, ptBins, jetBins;
 
+   std::vector<int32_t> neededCentBins;
+
+
    // SimTrack
    TH2F* hsim;
    TH2F* hacc;
@@ -104,6 +109,22 @@ class HiTrkEffHistograms
    TH3F* hrec3D;
    TH3F* hfak3D;
    TH3F* hsec3D;
+
+
+   // vector of histograms
+   std::vector<TH3F*> vhsim3D;
+   std::vector<TH3F*> vheff3D;
+   std::vector<TH3F*> vhmul3D;
+
+   std::vector<TH3F*> vhrec3D;
+   std::vector<TH3F*> vhfak3D;
+   std::vector<TH3F*> vhsec3D;
+   
+   std::vector<TH3F*> vhresStoR3D;
+
+
+
+
 
 };
 
