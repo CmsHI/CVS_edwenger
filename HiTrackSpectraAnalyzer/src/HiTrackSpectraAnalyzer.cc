@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.12 2011/01/11 16:42:02 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.13 2011/01/20 20:09:35 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -364,8 +364,8 @@ HiTrackSpectraAnalyzer::beginJob()
    for(ptb =   7.2; ptb <  13.2-small; ptb +=  0.5 ) ptBins.push_back(ptb); // 12 bins
    for(ptb =  13.2; ptb <  25.2-small; ptb +=  1.0 ) ptBins.push_back(ptb); // 12 bins
    for(ptb =  25.2; ptb <  61.2-small; ptb +=  3.0 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  61.2; ptb < 121.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 12 bins
-   ptBins.push_back(121.2);
+   for(ptb =  61.2; ptb < 181.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 24 bins
+   ptBins.push_back(181.2);
 
 
    // eta bins
@@ -377,20 +377,20 @@ HiTrackSpectraAnalyzer::beginJob()
       etaBins.push_back(eta);
 
    // jet et bins
+   /*
    double jet;
    for(jet =    0; jet <   50-small; jet +=  50 ) jetBins.push_back(jet);
    for(jet =   50; jet <   80-small; jet +=  30 ) jetBins.push_back(jet);
    for(jet =   80; jet < 1000-small; jet +=  25 ) jetBins.push_back(jet);
    jetBins.push_back(1005);
+   */
 
-   /*
    static float jetMin = 0.0;
    static float jetMax = 1000; // good to be matched with ana 
    static float jetWidth = 20;
 
    for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
       jetBins.push_back(jet);
-   */
 
    static double centMin   =  -0.5;
    static double centMax   =  39.5;
