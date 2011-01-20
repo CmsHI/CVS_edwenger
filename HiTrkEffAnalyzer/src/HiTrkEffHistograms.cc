@@ -16,6 +16,7 @@ HiTrkEffHistograms::HiTrkEffHistograms(const edm::ParameterSet& pset)
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
   constPtBins            = pset.getParameter<bool>("constPtBins");
   lowPtMode              = pset.getParameter<bool>("lowPtMode");
+  neededCentBins         = pset.getUntrackedParameter<std::vector<int> >("neededCentBins");
 }
 
 
@@ -88,20 +89,20 @@ HiTrkEffHistograms::declareHistograms()
 
 
     // jet et bins
+    /*
     double jet;
     for(jet =    0; jet <   50-small; jet +=  50 ) jetBins.push_back(jet);
     for(jet =   50; jet <   80-small; jet +=  30 ) jetBins.push_back(jet); 
     for(jet =   80; jet < 1000-small; jet +=  25 ) jetBins.push_back(jet);
     jetBins.push_back(1005);
+    */
 
-    /*
     static float jetMin = 0.0;
     static float jetMax = 1000; // good to be matched with ana 
     static float jetWidth = 20;
 
     for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
        jetBins.push_back(jet);
-    */
 
     // simulated
     hsim = f->make<TH2F>("hsim","Sim Tracks;#eta;p_{T} (GeV/c)",
@@ -182,24 +183,41 @@ HiTrkEffHistograms::declareHistograms()
                                ptBins.size()-1, &ptBins[0],
                                ptBins.size()-1, &ptBins[0]);
 
-    /*
-    hresStoR3D_etaS = f->make<TH3F>("hresStoR3D_etaS","Momentum resolution (sim to rec);#jet E_{T} (GeV/c);sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
-				    jetBins.size()-1, &jetBins[0],
-				    ptBins.size()-1, &ptBins[0],
-				    ptBins.size()-1, &ptBins[0]);
 
-    hresStoR3D_etaL = f->make<TH3F>("hresStoR3D_etaL","Momentum resolution (sim to rec);#jet E_{T} (GeV/c);sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
-                                    jetBins.size()-1, &jetBins[0],
-                                    ptBins.size()-1, &ptBins[0],
-                                    ptBins.size()-1, &ptBins[0]);
-    */
+    for(unsigned i=0;i<neededCentBins.size()-1;i++){
+       vhsim3D.push_back(f->make<TH3F>("","Sim Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
+       vheff3D.push_back(f->make<TH3F>("","Effic Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+                                       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
+       vhmul3D.push_back(f->make<TH3F>("","Mult Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+                                       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
+       vhrec3D.push_back(f->make<TH3F>("","Rec Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+				      etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
+       vhfak3D.push_back(f->make<TH3F>("","Fake Rec Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+                                      etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
+       vhsec3D.push_back(f->make<TH3F>("","Secondary Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
+				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
+       vhresStoR3D.push_back(f->make<TH3F>("","Momentum resolution (sim to rec);#eta;sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
+					   etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], ptBins.size()-1, &ptBins[0]) );
+       if(i==0) {
+	  vhsim3D[i]->SetName(Form("hsim3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+       }else{
+	  vhsim3D[i]->SetName(Form("hsim3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+	  vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+          vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+          vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+	  vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+          vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+          vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+       }
 
-    // mom resolution (Sim to Rec) v2      
-    //hresStoR3D_v2 = f->make<TH3F>("hresStoR3D_v2","Momentum resolution (sim to rec);#eta;sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
-    //etaBins.size()-1, &etaBins[0],
-    //ptBins.size()-1, &ptBins[0],
-    //ptBins.size()-1, &ptBins[0]);
-
+    }
 
   }
 
@@ -220,12 +238,31 @@ HiTrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
     if(s.acc)    hacc->Fill(s.etas, s.pts);
     if(s.nrec==1) {
        hresStoR3D->Fill(s.etas, s.pts, s.ptr);
-       //if(fabs(s.etas)<1.0) hresStoR3D_etaS->Fill(s.jetr, s.pts, s.ptr);
-       //if(fabs(s.etas)<2.4) hresStoR3D_etaL->Fill(s.jetr, s.pts, s.ptr);
     }
     if(s.nrec>0) heff->Fill(s.etas, s.pts), heff3D->Fill(s.etas, s.pts, s.jetr);
     if(s.nrec>1) hmul->Fill(s.etas, s.pts), hmul3D->Fill(s.etas, s.pts, s.jetr);
-  }
+
+
+    // filling histogram in vector 
+    for(unsigned i=0;i<neededCentBins.size()-1;i++){
+       if(i==0){
+          if(s.cbin<=neededCentBins[i+1]){
+             vhsim3D[i]->Fill(s.etas, s.pts, s.jetr);
+	     if(s.nrec>0) vheff3D[i]->Fill(s.etas, s.pts, s.jetr);
+	     if(s.nrec==1) vhresStoR3D[i]->Fill(s.etas, s.pts, s.ptr);
+	     if(s.nrec>1) vhmul3D[i]->Fill(s.etas, s.pts, s.jetr);
+          }
+       }else{
+          if(s.cbin>neededCentBins[i] && s.cbin<=neededCentBins[i+1]){
+	     vhsim3D[i]->Fill(s.etas, s.pts, s.jetr);
+             if(s.nrec>0) vheff3D[i]->Fill(s.etas, s.pts, s.jetr);
+	     if(s.nrec==1) vhresStoR3D[i]->Fill(s.etas, s.pts, s.ptr);
+             if(s.nrec>1) vhmul3D[i]->Fill(s.etas, s.pts, s.jetr);
+          }
+       }
+    } // end of vector loop 
+
+  } // end of (fillHistogram && s.status) loop 
 
 }
 
@@ -243,7 +280,25 @@ HiTrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
     hrec3D->Fill(r.etar, r.ptr, r.jetr);
     if(!r.nsim) hfak->Fill(r.etar, r.ptr), hfak3D->Fill(r.etar, r.ptr, r.jetr);
     if(r.nsim>0 && r.status<0) hsec->Fill(r.etar, r.ptr), hsec3D->Fill(r.etar, r.ptr, r.jetr); // nsim>0 redudant?
-  }
+
+    // filling histogram in vector
+    for(unsigned i=0;i<neededCentBins.size()-1;i++){
+       if(i==0){
+          if(r.cbin<=neededCentBins[i+1]){
+	     vhrec3D[i]->Fill(r.etar, r.ptr, r.jetr);
+	     if(!r.nsim) vhfak3D[i]->Fill(r.etar, r.ptr, r.jetr);
+	     if(r.nsim>0 && r.status<0) vhsec3D[i]->Fill(r.etar, r.ptr, r.jetr);
+	  }
+       }else{
+          if(r.cbin>neededCentBins[i] && r.cbin<=neededCentBins[i+1]){
+	     vhrec3D[i]->Fill(r.etar, r.ptr, r.jetr);
+	     if(!r.nsim) vhfak3D[i]->Fill(r.etar, r.ptr, r.jetr);
+	     if(r.nsim>0 && r.status<0) vhsec3D[i]->Fill(r.etar, r.ptr, r.jetr);
+	  }
+       }
+    } // end of vector loop
+
+  } // end of (fillHistogram) loop
 
 }
 
