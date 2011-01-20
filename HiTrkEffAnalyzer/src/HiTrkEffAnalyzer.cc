@@ -22,7 +22,7 @@
 #include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #include "edwenger/HiTrkEffAnalyzer/interface/HiTrkEffAnalyzer.h"
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
-
+//#include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -41,7 +41,8 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true)),
   hasSimInfo_(iConfig.getUntrackedParameter<bool>("hasSimInfo",false)),
   pixelMultMode_(iConfig.getUntrackedParameter<bool>("pixelMultMode",false)),
-  useJetEt_(iConfig.getUntrackedParameter<bool>("useJetEt",true))
+  useJetEt_(iConfig.getUntrackedParameter<bool>("useJetEt",true)),
+  centrality_(0)
 {
 
   histograms = new HiTrkEffHistograms(iConfig);
@@ -73,13 +74,15 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   LogDebug("HiTrkEffAnalyzer") <<" number of rec tracks = "<<trackCollection->size()<<std::endl;
 
-  // Centrality information ----------------------                                                                                                                                                   
+  // Centrality information ----------------------
   double pixelMult = 0.0;
 
+  centrality_ = new CentralityProvider(iSetup);
+  centrality_->newEvent(iEvent,iSetup);
+  int cbin = centrality_->getBin();
+
   if(pixelMultMode_){
-     edm::Handle<reco::Centrality> cent;
-     iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
-     pixelMult = cent->multiplicityPixel();
+     pixelMult = centrality_->raw()->multiplicityPixel();
      pixelMult = pixelMult/100.; // scale it (120K -> 1200)
   } 
 
@@ -163,7 +166,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	if(nrec) mtr = rt.begin()->first.get();      
       }
       
-      SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle);
+      SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle, cbin);
       histograms->fillSimHistograms(s);  
       
 #ifdef DEBUG
@@ -193,7 +196,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       if(nsim) mtp = tp.begin()->first.get();       
     }
 
-    RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle);
+    RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle, cbin);
     histograms->fillRecHistograms(r); 
 
 #ifdef DEBUG
@@ -238,7 +241,7 @@ HiTrkEffAnalyzer::endJob()
 
 // ------------
 SimTrack_t 
-HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet)
+HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet, int cent)
 {
 
   SimTrack_t s;
@@ -248,7 +251,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
   s.hits = tp.matchedHit();
   s.status = tp.status();
   std::pair<bool,bool> acc = isAccepted(tp);
-  s.acc = acc.first; // for HI tracking, only triplet should be taken
+  s.acc = acc.first; // for HI tracking, only triplet should be taken 
 
 #ifdef DEBUG
   edm::LogVerbatim("HiTrkEffAnalyzer")  
@@ -283,13 +286,15 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     s.algo = 0;
   }
 
+  s.cbin = cent;
+
   return s;
 
 }
 
 // ------------
 RecTrack_t 
-HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet)
+HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet, int cent)
 {
 
   RecTrack_t r;
@@ -342,6 +347,8 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     r.etas = 0.0;
     r.pts = 0.0;
   }
+  
+  r.cbin = cent;
   
   return r;
 
