@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.11 2010/12/20 15:26:03 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.12 2011/01/11 16:42:02 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -16,7 +16,8 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
   leadGJetEta_(0),
   occHandle_(0),
   occGENHandle_(0),
-  hltAccept_(5,false)
+  hltAccept_(5,false),
+  centrality_(0)
 {
    //now do what ever initialization is needed
    src_ = iConfig.getUntrackedParameter<edm::InputTag>("src",edm::InputTag("generalTracks"));
@@ -45,6 +46,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<int> >("neededTrigSpectra");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
+   neededCentBins_ = iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins");
    pixelMultMode_ = iConfig.getUntrackedParameter<bool>("pixelMultMode",true);
 }
 
@@ -68,6 +70,17 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       etaCut_evtSel = 1.0;
    else if(evtEffCorrType_==2)
       etaCut_evtSel = 0.8;
+
+   //----- centrality information ----------------------                                                                                                                                     
+   centrality_ = new CentralityProvider(iSetup);
+   centrality_->newEvent(iEvent,iSetup);
+   int cbin = centrality_->getBin();
+
+   if(pixelMultMode_){
+      pixelMult_ = centrality_->raw()->multiplicityPixel();
+      pixelMult_ = pixelMult_/100.; // scale it (120K -> 1200)                                                                                                                               
+      hPxlMultDist->Fill(pixelMult_);
+   }
 
    if(!pureGENmode_){  // if pure GEN, skip through to the GEN ana part
 
@@ -93,15 +106,6 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 } 
       }
 
-      //----- centrality information ----------------------
-      if(pixelMultMode_){
-	 edm::Handle<reco::Centrality> cent;
-	 iEvent.getByLabel(edm::InputTag("hiCentrality"),cent);
-	 pixelMult_ = cent->multiplicityPixel();
-	 pixelMult_ = pixelMult_/100.; // scale it (120K -> 1200)
-	 hPxlMultDist->Fill(pixelMult_);
-      }
-
       //----- loop over pat jets and store in a vector -----
       if(doJet_){
 
@@ -121,10 +125,24 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
 					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 	    if(fabs(sortedJets[it]->eta())>6.5) continue;
-	    hJet0Pt->Fill(sortedJets[it]->et());
+	    // all jet et
+	    hJet0Pt->Fill(sortedJets[it]->et()), hJet0Eta->Fill(sortedJets[it]->eta());
+	    // triggered jet et
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(hltAccept_[i]) hJet0Pt_Trig[i]->Fill(sortedJets[it]->et());
 	    }
+	    // centrality binned jet et
+	    for(unsigned i=0;i<neededCentBins_.size();i++){
+	       if(i==0){
+		  if(cbin<=neededCentBins_[i+1])
+		     hJet0Pt_Cent[i]->Fill(sortedJets[it]->et());
+	       }else{
+		  if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
+		     hJet0Pt_Cent[i]->Fill(sortedJets[it]->et());
+	       }
+	    }
+	    // centrality bin vs jet et
+	    hCentJetEt->Fill(cbin,sortedJets[it]->et());
 	    break;             
 	 }                     
 	 
@@ -147,7 +165,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       }
       
       // get evt sel eff
-      double evt_sel_eff = 1;
+      double evt_sel_eff = 1.0;
 
       if(applyEvtEffCorr_) {
 	 hRecMult_STD->Fill(mult);
@@ -184,6 +202,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 
+	    // triggered spectra 
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(neededTrigSpectra_[i]!=1) continue;
@@ -191,6 +210,16 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	       ind++;
             }
 
+	    // centrality binned spectra
+	    for(unsigned i=0;i<neededCentBins_.size();i++){
+	       if(i==0){
+		  if(cbin<=neededCentBins_[i+1]) 
+		     hTrkPtEtaJetEt_Cent[i]->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
+	       }else{
+		  if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
+		     hTrkPtEtaJetEt_Cent[i]->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
+	       }
+	    }
 
 	    if(includeExtra_) {
 	       hTrkPtEta->Fill(trk.eta(),trk.pt(),1./evt_sel_eff);
@@ -206,6 +235,17 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 if(mult==1) hNevt_mult1->Fill(evt_sel_eff);
 	 if(mult==2) hNevt_mult2->Fill(evt_sel_eff);
 	 if(mult==3) hNevt_mult3->Fill(evt_sel_eff);
+
+	 // centrality binned number of events
+	 for(unsigned i=0;i<neededCentBins_.size();i++){
+	    if(i==0){
+	       if(cbin<=neededCentBins_[i+1])
+		  hNevt_Cent[i]->Fill(evt_sel_eff);
+	    }else{
+	       if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
+		  hNevt_Cent[i]->Fill(evt_sel_eff);
+	    }
+	 }
 
       }// end of skip evt
 
@@ -268,6 +308,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    const GenParticle & gen = (*genCollect)[i];
 	    if(gen.status() != 1) continue;
 	    if(gen.charge() == 0) continue;
+
 	    if(fabs(gen.eta())>etaMax_) continue;
 	    if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta(),leadJetEt_,leadGJetEt_,
 		hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]);
@@ -277,6 +318,18 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),occGENHandle_); 
 	    hGenTrkPtEtaJetEt_vbin->Fill(gen.eta(),gen.pt(),occGENHandle_);
 
+	    // centrality binned spectra
+            for(unsigned i=0;i<neededCentBins_.size();i++){
+               if(i==0){
+                  if(cbin<=neededCentBins_[i+1])
+                     hGenTrkPtEtaJetEt_Cent[i]->Fill(gen.eta(),gen.pt(),occGENHandle_);
+               }else{
+                  if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
+                     hGenTrkPtEtaJetEt_Cent[i]->Fill(gen.eta(),gen.pt(),occGENHandle_);
+               }
+            }
+
+	    // extra
 	    if(includeExtra_) {
 	       hGenTrkPtEtaJetEtW->Fill(gen.eta(),gen.pt(),occGENHandle_,(1./gen.pt())); // weighted by pT
 	       hGenTrkPtEtaJetEtW_vbin->Fill(gen.eta(),gen.pt(),occGENHandle_,(1./gen.pt()));
@@ -339,6 +392,14 @@ HiTrackSpectraAnalyzer::beginJob()
       jetBins.push_back(jet);
    */
 
+   static double centMin   =  -0.5;
+   static double centMax   =  39.5;
+   static double centWidth =   1.0;
+
+   for(double cent = centMin; cent < centMax + centWidth/2; cent += centWidth)
+      centBins.push_back(cent);
+
+
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
 
@@ -348,6 +409,8 @@ HiTrackSpectraAnalyzer::beginJob()
       hNevt_mult1 = fs->make<TH1F>("hNevt_mult1","evt sel eff", 102, -0.02, 2.02);
       hNevt_mult2 = fs->make<TH1F>("hNevt_mult2","evt sel eff", 102, -0.02, 2.02);
       hNevt_mult3 = fs->make<TH1F>("hNevt_mult3","evt sel eff", 102, -0.02, 2.02);
+
+      hCentJetEt = fs->make<TH2F>("hCentJetEt","Centrality vs Jet E_{T};centrality bin; E_{T}", centBins.size()-1,&centBins[0], jetBins.size()-1,&jetBins[0]);
 
       if(pixelMultMode_) hPxlMultDist = fs->make<TH1F>("hPxlMultDist","pixel mult dist",50, 0.0, 1000.0);
 
@@ -371,6 +434,24 @@ HiTrackSpectraAnalyzer::beginJob()
 	 index++;
       }
 
+      // cross check by summing all binned spectra and compare with "MB"
+      // test by running on binned selection
+      for(unsigned i=0;i<neededCentBins_.size()-1;i++){
+	 hTrkPtEtaJetEt_Cent.push_back( subDir.make<TH3F>("","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+                                                          etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]) );
+	 if(i==0) hTrkPtEtaJetEt_Cent[i]->SetName(Form("hTrkPtEtaJetEt_vbin_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));  
+	 else hTrkPtEtaJetEt_Cent[i]->SetName(Form("hTrkPtEtaJetEt_vbin_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+
+	 // this is Nevt histogram for different centrality 
+	 hNevt_Cent.push_back(fs->make<TH1F>("","evt sel eff", 102, -0.02, 2.02));
+	 if(i==0) hNevt_Cent[i]->SetName(Form("hNevt_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+	 else hNevt_Cent[i]->SetName(Form("hNevt_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+
+	 // this is hJet0Pt histograms for different centrality
+	 hJet0Pt_Cent.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));
+         if(i==0) hJet0Pt_Cent[i]->SetName(Form("hJet0Pt_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+         else hJet0Pt_Cent[i]->SetName(Form("hJet0Pt_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+      }
 
       if(includeExtra_) {
 	 hTrkPtEta = fs->make<TH2F>("hTrkPtEta","eta vs pt;#eta;p_{T} (GeV/c)", nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0);
@@ -390,9 +471,10 @@ HiTrackSpectraAnalyzer::beginJob()
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
 	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
 	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
-	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 450, 0.0, 900.0);
+	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0);
+	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet eta; #eta", 50,-6.0,6.0);
 	 for(unsigned i=0;i<hltNames_.size();i++){
-	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 450, 0.0, 900.0));
+	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));
 	    hJet0Pt_Trig[i]->SetName(Form("hJet0Pt_%s",(char*) hltNames_[i].c_str()));
 	 }
       }
@@ -408,13 +490,19 @@ HiTrackSpectraAnalyzer::beginJob()
       hGenTrkPtEtaJetEt_vbin = subDir.make<TH3F>("hGenTrkPtEtaJetEt_vbin","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						 etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]);
 
+      for(unsigned i=0;i<neededCentBins_.size()-1;i++){
+         hGenTrkPtEtaJetEt_Cent.push_back( subDir.make<TH3F>("","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
+							     etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]) );
+         if(i==0) hGenTrkPtEtaJetEt_Cent[i]->SetName(Form("hGenTrkPtEtaJetEt_vbin_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+         else hGenTrkPtEtaJetEt_Cent[i]->SetName(Form("hGenTrkPtEtaJetEt_vbin_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+      }
+
       if(includeExtra_) {
 	 hGenTrkPtEtaJetEtW = subDir.make<TH3F>("hGenTrkPtEtaJetEtW","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						nbinsEta, -1.*etaHistMax, etaHistMax, 1000, 0.0, 200.0, 50, 0.0, 1000.0);
 	 hGenTrkPtEtaJetEtW_vbin = subDir.make<TH3F>("hGenTrkPtEtaJetEtW_vbin","eta vs pt vs jet;#eta;p_{T} (GeV/c);E_{T} (GeV/c)",
 						     etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]);
       }
-
 
       // Set Sumw2()
       /*

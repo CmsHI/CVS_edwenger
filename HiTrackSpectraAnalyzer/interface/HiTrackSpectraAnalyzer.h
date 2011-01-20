@@ -30,7 +30,7 @@
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
-
+#include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
 
 // ROOT includes
 #include "TNtuple.h"
@@ -72,9 +72,10 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    TH1F *hGenNevt;
 
-
    TH2F *hTrkPtEta;
    TH2F *hGenTrkPtEta;
+
+   TH2F *hCentJetEt;
    
    TH3F *hTrkPtEtaJetEt;
    TH3F *hTrkPtEtaJetEtW;
@@ -82,8 +83,6 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hTrkPtEtaJetEt_vbin;
    TH3F *hTrkPtEtaJetEtW_vbin;
 
-   std::vector<TH3F*> hTrkPtEtaJetEt_Trig;
-   
    TH3F *hTrkPtEtaJetEtW_mult1;
    TH3F *hTrkPtEtaJetEtW_mult2;
    TH3F *hTrkPtEtaJetEtW_mult3;
@@ -94,12 +93,19 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH3F *hGenTrkPtEtaJetEt_vbin;
    TH3F *hGenTrkPtEtaJetEtW_vbin;
 
+   std::vector<TH1F*> hNevt_Cent;
+   std::vector<TH1F*> hJet0Pt_Cent;
+   std::vector<TH3F*> hTrkPtEtaJetEt_Trig;
+   std::vector<TH3F*> hTrkPtEtaJetEt_Cent;
+   std::vector<TH3F*> hGenTrkPtEtaJetEt_Cent;
+
+
    //evt sel eff. correction
    TF1 *evtSelEff;
 
    // Jets
    TH1F *hNumJets;
-   TH1F *hJet0Pt;
+   TH1F *hJet0Pt, *hJet0Eta;
    std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;
@@ -132,6 +138,9 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    edm::InputTag triglabel_;
    
    std::vector<int32_t> neededTrigSpectra_;
-   std::vector<double> etaBins, ptBins, jetBins;
+   std::vector<int32_t> neededCentBins_;
+   std::vector<double> etaBins, ptBins, jetBins, centBins;
+
+   CentralityProvider * centrality_;
       
 };
