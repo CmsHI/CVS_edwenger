@@ -49,15 +49,15 @@ HiTrkEffHistograms::declareHistograms()
     if(!constPtBins){
        double pt;
 
-       // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
+       // simple rebinning possible with a rebinning factor n = 2, 3, 4, 6 !
        for(pt =   0  ; pt <   1.2-small; pt +=  0.05) ptBins.push_back(pt); // 24 bins
        for(pt =   1.2; pt <   2.4-small; pt +=  0.1 ) ptBins.push_back(pt); // 12 bins
        for(pt =   2.4; pt <   7.2-small; pt +=  0.2 ) ptBins.push_back(pt); // 24 bins
        for(pt =   7.2; pt <  13.2-small; pt +=  0.5 ) ptBins.push_back(pt); // 12 bins
        for(pt =  13.2; pt <  25.2-small; pt +=  1.0 ) ptBins.push_back(pt); // 12 bins
        for(pt =  25.2; pt <  61.2-small; pt +=  3.0 ) ptBins.push_back(pt); // 12 bins
-       for(pt =  61.2; pt < 121.2-small; pt +=  5.0 ) ptBins.push_back(pt); // 12 bins
-       ptBins.push_back(121.2);
+       for(pt =  61.2; pt < 181.2-small; pt +=  5.0 ) ptBins.push_back(pt); // 24 bins
+       ptBins.push_back(181.2);
 
     }else if(lowPtMode){
 
