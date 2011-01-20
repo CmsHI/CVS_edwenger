@@ -4,7 +4,7 @@
  *
  * \author Giuseppe Cerati, INFN (modified to include status selection option, 2010/09/30)
  *
- *  $Date: 2009/03/04 13:11:28 $
+ *  $Date: 2010/09/30 11:44:54 $
  *  $Revision: 1.1 $
  *
  */
@@ -30,6 +30,7 @@ public:
     // also reject if the particle is not primary (i.e. status != 1)
     if (primaryOnly_ && (tp.status()!=1)) return false;
 
+
     if (chargedOnly_ && tp.charge()==0) return false;//select only if charge!=0
     bool testId = false;
     unsigned int idSize = pdgId_.size();
@@ -37,12 +38,13 @@ public:
     else for (unsigned int it=0;it!=idSize;++it){
       if (tp.pdgId()==pdgId_[it]) testId = true;
     }
+
     return (
 	    tp.matchedHit() >= minHit_ &&
 	    sqrt(tp.momentum().perp2()) >= ptMin_ && 
 	    tp.momentum().eta() >= minRapidity_ && tp.momentum().eta() <= maxRapidity_ && 
-	    sqrt(tp.vertex().perp2()) <= tip_ &&
-	    fabs(tp.vertex().z()) <= lip_ &&
+	    //sqrt(tp.vertex().perp2()) <= tip_ &&  // until a bug with TP in heavy ion MC will be understood
+	    //fabs(tp.vertex().z()) <= lip_ &&      // this is kept commented out
 	    testId
 	    );
   }
