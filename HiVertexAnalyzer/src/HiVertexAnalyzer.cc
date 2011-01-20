@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.4 2010/08/22 19:39:29 edwenger Exp $
+// $Id: HiVertexAnalyzer.cc,v 1.1 2010/11/05 20:14:48 sungho Exp $
 //
 
 #include "edwenger/HiVertexAnalyzer/interface/HiVertexAnalyzer.h"
@@ -59,10 +59,10 @@ HiVertexAnalyzer::beginJob()
 
   hVtxSize = f->make<TH1D>("hVtxSize","number of reconstructed vertices",10,-0.5,9.5);
   hVtxTracks = f->make<TH1D>("hVtxTracks","number of tracks fitted to vertex",nTracksBins_,-0.5,(float)nTracksBins_-0.5);
-  hVtxZ = f->make<TH1D>("hVtxZ","z position of best reconstructed vertex",80,-20.0,20.0);
+  hVtxZ = f->make<TH1D>("hVtxZ","z position of best reconstructed vertex",120,-30.0,30.0);
   hMultVtxTracks = f->make<TH2D>("hMultVtxTracks","number of tracks fitted to vertex; most populated; 2nd most populated",nTracksBins_,-0.5,(float)nTracksBins_-0.5,nTracksBins_,-0.5,(float)nTracksBins_-0.5);
-  hMultVtxZ = f->make<TH2D>("hMultVtxZ","z position of reconstructed vertex; most populated; 2nd most populated",80,-20.0,20.0,80,-20.0,20.0);
-  hAllVtxZ = f->make<TH1D>("hAllVtxZ","z position of all reconstructed vertices",80,-20.0,20.0);
+  hMultVtxZ = f->make<TH2D>("hMultVtxZ","z position of reconstructed vertex; most populated; 2nd most populated",120,-30.0,30.0,120,-30.0,30.0);
+  hAllVtxZ = f->make<TH1D>("hAllVtxZ","z position of all reconstructed vertices",120,-30.0,30.0);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
