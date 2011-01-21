@@ -98,6 +98,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    // Jets
    TH1F *hNumJets;
    TH1F *hJet0Pt;
+   TH1F *hJet0Eta;
    std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;

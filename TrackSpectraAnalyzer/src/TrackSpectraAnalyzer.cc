@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.64 2010/10/20 13:24:18 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.65 2010/10/25 14:59:00 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -106,6 +106,7 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 	    if(fabs(sortedJets[it]->eta())>6.5) continue;
 	    hJet0Pt->Fill(sortedJets[it]->et());
+	    hJet0Eta->Fill(sortedJets[it]->eta());
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(hltAccept_[i]) hJet0Pt_Trig[i]->Fill(sortedJets[it]->et());
 	    }
