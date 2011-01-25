@@ -212,9 +212,9 @@ HiTrkEffHistograms::declareHistograms()
 	  vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
           vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
           vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-	  vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-          vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-          vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+	  vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+          vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+          vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
        }
 
     }
