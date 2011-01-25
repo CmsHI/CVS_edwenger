@@ -20,6 +20,14 @@ hitrkEffAna = cms.Sequence(cutsTPForFak*
                            cutsTPForEff*
                            hitrkEffAnalyzer)
 
+hiseltrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiSelectedTracks'),
+                      fillNtuples = cms.bool(False)
+                      )
+
+hiseltrkEffAna = cms.Sequence(cutsTPForFak*
+                              cutsTPForEff*
+                              hiseltrkEffAnalyzer)
+
 hicalotrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiCaloCompTracks'),
                                               fillNtuples = cms.bool(False)
                                               )
