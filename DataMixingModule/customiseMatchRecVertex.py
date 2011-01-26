@@ -125,7 +125,11 @@ def customiseSiStripConditions(process):
 def customiseDummyVtx(process):
     # Dummy GEN -> RECO vertex
     process.hiSelectedVertex = cms.EDProducer("GenToRecoVtxProducer",
-        signalLabel=cms.InputTag("generator"))
+        signalLabel=cms.InputTag("generator"),
+        dummyVtxError=cms.vdouble(0.0,0.0,0.0),
+        useBkgdVtxError=cms.bool(True),
+        bkgdVtxLabel=cms.InputTag("hiSelectedVertex")     
+    )
     return process
 
 def customiseVtxPP(process):

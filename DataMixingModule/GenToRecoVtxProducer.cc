@@ -42,10 +42,17 @@ class GenToRecoVtxProducer : public edm::EDProducer
 
    edm::InputTag            signalLabel;
 
+   std::vector<double>      dummyVtxError;
+   bool                     useBkgdVtxError;
+   edm::InputTag            bkgdVtxLabel;
+
 };
 
 GenToRecoVtxProducer::GenToRecoVtxProducer( const ParameterSet& pset ) 
-	: signalLabel(pset.getParameter<edm::InputTag>("signalLabel"))
+	: signalLabel(pset.getParameter<edm::InputTag>("signalLabel")),
+          dummyVtxError(pset.getParameter< std::vector<double> >("dummyVtxError")),
+          useBkgdVtxError(pset.getParameter<bool>("useBkgdVtxError")),
+          bkgdVtxLabel(pset.getParameter<edm::InputTag>("bkgdVtxLabel"))
 	  
 {   
    produces<reco::VertexCollection>();
@@ -82,11 +89,24 @@ reco::Vertex* GenToRecoVtxProducer::getVertex( Event& evt){
 
   cout << "Matching to vertex position: (" << aX << "," << aY << "," << aZ << ")" << endl;
 
+  double eX,eY,eZ;
+
+  eX = dummyVtxError[0];
+  eY = dummyVtxError[1];
+  eZ = dummyVtxError[2];
+
+  if(useBkgdVtxError) {
+    Handle<reco::VertexCollection> bkgdVtx;
+    evt.getByLabel(bkgdVtxLabel,bkgdVtx);
+    eX = bkgdVtx->begin()->xError();
+    eY = bkgdVtx->begin()->yError();
+    eZ = bkgdVtx->begin()->zError();
+  }
 
   reco::Vertex::Error err;
-  err(0,0)=pow(0.01,2);
-  err(1,1)=pow(0.01,2);
-  err(2,2)=pow(0.01,2);
+  err(0,0)=pow(eX,2);
+  err(1,1)=pow(eY,2);
+  err(2,2)=pow(eZ,2);
 
   reco::Vertex *fVertex = new reco::Vertex(reco::Vertex::Point(aX,aY,aZ),err, 0, 1, 1);
   
