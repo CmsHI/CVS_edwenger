@@ -1,7 +1,7 @@
 #ifndef HI_GenToRecoVtxProducer_H
 #define HI_GenToRecoVtxProducer_H
 /*
-*   $Date: 2010/10/11 11:40:10 $
+*   $Date: 2011/01/26 20:55:35 $
 *   $Revision: 1.4 $
 */
 #include "FWCore/PluginManager/interface/ModuleDef.h"
@@ -109,7 +109,7 @@ reco::Vertex* GenToRecoVtxProducer::getVertex( Event& evt){
 
   if(smearVtx) {
     aX += gRandom->Gaus(0.0,eX);
-    aY += gRandom->Gaus(0.0.eY);
+    aY += gRandom->Gaus(0.0,eY);
     aZ += gRandom->Gaus(0.0,eZ);
   }
 
