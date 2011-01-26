@@ -128,7 +128,8 @@ def customiseDummyVtx(process):
         signalLabel=cms.InputTag("generator"),
         dummyVtxError=cms.vdouble(0.0,0.0,0.0),
         useBkgdVtxError=cms.bool(True),
-        bkgdVtxLabel=cms.InputTag("hiSelectedVertex")     
+        bkgdVtxLabel=cms.InputTag("hiSelectedVertex"),     
+        smearVtx=cms.bool(True)
     )
     return process
 

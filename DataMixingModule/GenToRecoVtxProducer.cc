@@ -21,6 +21,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+#include <TRandom.h> 
 
 using namespace edm;
 using namespace std;
@@ -46,13 +47,16 @@ class GenToRecoVtxProducer : public edm::EDProducer
    bool                     useBkgdVtxError;
    edm::InputTag            bkgdVtxLabel;
 
+   bool                     smearVtx;
+
 };
 
 GenToRecoVtxProducer::GenToRecoVtxProducer( const ParameterSet& pset ) 
 	: signalLabel(pset.getParameter<edm::InputTag>("signalLabel")),
           dummyVtxError(pset.getParameter< std::vector<double> >("dummyVtxError")),
           useBkgdVtxError(pset.getParameter<bool>("useBkgdVtxError")),
-          bkgdVtxLabel(pset.getParameter<edm::InputTag>("bkgdVtxLabel"))
+          bkgdVtxLabel(pset.getParameter<edm::InputTag>("bkgdVtxLabel")),
+          smearVtx(pset.getParameter<bool>("smearVtx"))
 	  
 {   
    produces<reco::VertexCollection>();
@@ -101,6 +105,12 @@ reco::Vertex* GenToRecoVtxProducer::getVertex( Event& evt){
     eX = bkgdVtx->begin()->xError();
     eY = bkgdVtx->begin()->yError();
     eZ = bkgdVtx->begin()->zError();
+  }
+
+  if(smearVtx) {
+    aX += gRandom->Gaus(0.0,eX);
+    aY += gRandom->Gaus(0.0.eY);
+    aZ += gRandom->Gaus(0.0,eZ);
   }
 
   reco::Vertex::Error err;
