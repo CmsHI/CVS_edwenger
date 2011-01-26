@@ -42,6 +42,11 @@ def customiseCloneMatchRaw(process):
     customiseCloneGenerator(process)
     customiseMatchRecVertex(process)
     customiseSiStripRawDigi(process)
+    
+    for outmod in process.outputModules_():
+        print "Extending %s content to include 'hiSelectedVertex' from background event" % outmod
+        getattr(process,outmod).outputCommands.extend(['keep *_hiSelectedVertex_*_*'])
+
     return process
 
 def customiseSiStripRawSignal(process):
