@@ -29,6 +29,12 @@ cvs co -r CMSSW_3_9_1 RecoHI/HiMuonAlgos
 #cvs co UserCode/ASYoon/MCGeneration
 #mv UserCode/ASYoon/MCGeneration .
 #cvs co Configuration/Generator/python/PythiaUEZ2Settings_cfi.py
+#cvs co Configuration/Generator/python/PythiaUECW900ASettings_cfi.py
+#cvs co Configuration/Generator/python/PythiaUED6TSettings_cfi.py
+#cvs co Configuration/Generator/python/PythiaUEP0Settings_cfi.py
+#cvs co Configuration/Generator/python/PythiaUEProQ20Settings_cfi.py
+#cvs co Configuration/Generator/python/MinBias_7TeV_pythia8_cff.py
+
 
 # cleanup
 mv UserCode/edwenger .
