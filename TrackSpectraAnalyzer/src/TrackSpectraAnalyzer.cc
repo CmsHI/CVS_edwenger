@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.65 2010/10/25 14:59:00 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.66 2011/01/21 13:09:48 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -370,6 +370,7 @@ TrackSpectraAnalyzer::beginJob()
 	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
 	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
 	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 700, 0.0, 1400.0);
+	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet #eta; #eta", 300, -6.0, 6.0);
 	 for(unsigned i=0;i<hltNames_.size();i++){
 	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0));
 	    hJet0Pt_Trig[i]->SetName(Form("hJet0Pt_%s",(char*) hltNames_[i].c_str()));
