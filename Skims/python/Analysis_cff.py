@@ -7,7 +7,7 @@ from edwenger.Skims.Analyzers_cff import *
 analysisSeq = cms.Sequence(patAnaSequence *
 			   cleanedPatJets *
                            selectedVertex *
-                           postExtraTrkVtxSel * # trk,vtx,jet 
+                           (postExtraTrkVtxSel + postExtraTrkVtxSel_jet60) * # trk,vtx,jet 
                            (looseTrackAna + looseTrackAna_STD) *
                            loosetrkEffAnalyzer *
                            primaryVertexFilter *

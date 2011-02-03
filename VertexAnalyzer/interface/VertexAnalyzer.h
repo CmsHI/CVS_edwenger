@@ -43,6 +43,7 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       edm::InputTag jetlabel_;
 
       double dzcut_;
+      double minJetEt_;
       int nTracksBins_;
       bool jetTrkVerticesCorr_;
 

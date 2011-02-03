@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.13 2011/02/03 18:43:14 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.14 2011/02/03 18:59:44 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -15,6 +15,7 @@ VertexAnalyzer::VertexAnalyzer(const edm::ParameterSet& iConfig)
   trklabel_(iConfig.getUntrackedParameter<edm::InputTag>("trklabel")),
   jetlabel_(iConfig.getUntrackedParameter<edm::InputTag>("jetlabel")),
   dzcut_(iConfig.getUntrackedParameter<double>("dzcut")),
+  minJetEt_(iConfig.getUntrackedParameter<double>("minJetEt")),
   nTracksBins_(iConfig.getUntrackedParameter<int>("nTracksBins")),
   jetTrkVerticesCorr_(iConfig.getUntrackedParameter<bool>("jetTrkVerticesCorr"))
 
@@ -83,6 +84,8 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 100, leadJetPhi_ = 0; // so that dr > 10 for events with no pat jet
       else leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(), leadJetPhi_ = sortedJets[index]->phi();
 
+      if(minJetEt_>leadJetEt_) return;  // if jet 
+ 
       if(sortedJets.size()>1) 
 	 hLeadnSLeadJetEta->Fill(leadJetEta_,sortedJets[1]->eta());
 
@@ -107,8 +110,8 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       // Tracks/Vertices corrleation ========================
-      double dzPV_leading, dzSV_leading;
-      double dzPV_sleading, dzSV_sleading;
+      double dzPV_leading=0, dzSV_leading=0;
+      double dzPV_sleading=0, dzSV_sleading=0;
 
       if(sortedTrks.size()>0){
 	 dzPV_leading = sortedTrks[0]->dz(vtxs[0].position());

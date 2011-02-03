@@ -28,6 +28,8 @@ postExtraTrkVtxSel = vertexanalyzer.clone(
     jetlabel=cms.untracked.InputTag("cleanedPatJets"),
     jetTrkVerticesCorr=cms.untracked.bool(True)) 
 
+postExtraTrkVtxSel_jet60 = postExtraTrkVtxSel.clone(minJetEt=cms.untracked.double(60))
+postExtraTrkVtxSel_jet120 = postExtraTrkVtxSel.clone(minJetEt=cms.untracked.double(120))
 
 # track and jet spectra analyzer
 from edwenger.TrackSpectraAnalyzer.trackspectraanalyzer_cfi import *
