@@ -42,10 +42,12 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       edm::InputTag trklabel_;
       edm::InputTag jetlabel_;
 
+      double dzcut_;
       int nTracksBins_;
       bool jetTrkVerticesCorr_;
 
       edm::Service<TFileService> f;
+
       TH1D *hVtxSize;
       TH1D *hVtxTracks;
       TH1D *hVtxZ;
@@ -59,6 +61,14 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hLeadingTrkSVdZ;
       TH1F *hSLeadingTrkSVdZ;
       TH1F *hSSLeadingTrkSVdZ;
+
+      TH2F *hLeadingAndSLeadingTrkPVdZ;
+      TH2F *hLeadingAndSSLeadingTrkPVdZ;
+      TH2F *hSLeadingAndSSLeadingTrkPVdZ;
+
+      TH2F *hLeadingAndSLeadingTrkSVdZ;
+      TH2F *hLeadingAndSSLeadingTrkSVdZ;
+      TH2F *hSLeadingAndSSLeadingTrkSVdZ;
 
       TH1F *hLeadingTrkPVdZ_narrowEta; // for jet |eta|<2.0! 
       TH1F *hLeadingTrkSVdZ_narrowEta;
@@ -76,7 +86,7 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSLeadingdRFromSV;
       TH1F *hSSLeadingdRFromPV;
       TH1F *hSSLeadingdRFromSV;
-
+      
       TH2F *hLeadingPVdZdR;
       TH2F *hSLeadingPVdZdR;
       TH2F *hSSLeadingPVdZdR;
@@ -89,7 +99,11 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hTrkPtFromSV;
 
       TH2F *hVtxZTrkEta;
+      TH2F *hLeadnSLeadJetEta;
 
-      std::vector<double> ptBins;
+      TH2F *hJetEtTrkPtSumPV;
+      TH2F *hJetEtTrkPtSumSV;
+
+      std::vector<double> ptBins, jetBins;
 
 };
