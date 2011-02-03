@@ -62,6 +62,7 @@ def enableREDIGI(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI')
+    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','REDIGI')
     process.eventFilter.remove(process.hltMinBias)     # 
     return process
 
@@ -78,6 +79,7 @@ def enableREDIGI2(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','ANASKIM')
+    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','ANASKIM')
     process.eventFilter.remove(process.hltMinBias)     #
     return process
 
@@ -93,6 +95,7 @@ def enableREDIGI3(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','RECO')
+    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','RECO')
     process.eventFilter.remove(process.hltMinBias)     #
     return process
 
@@ -109,6 +112,7 @@ def enableREDIGI36X(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36X')
+    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','REDIGI36X')
     process.eventFilter.remove(process.hltMinBias)     #
     return process
 
@@ -124,6 +128,7 @@ def enableREDIGI36(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','REDIGI36')
+    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','REDIGI36')
     process.eventFilter.remove(process.hltMinBias)     #
     return process
                                                     
