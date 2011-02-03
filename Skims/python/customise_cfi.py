@@ -46,7 +46,7 @@ def removeTPAssociation(process):
     return process
 
 def removeDijetAna(process):
-    process.analysisSeq.remove(process.dijetAna_seq)
+    process.analysisSeq.remove(process.djcalo)
     return process
     
 # this is for Summer 09 samples where the HLT has been re-run during Spring 10 production
