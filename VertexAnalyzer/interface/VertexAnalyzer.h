@@ -104,6 +104,6 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH2F *hJetEtTrkPtSumPV;
       TH2F *hJetEtTrkPtSumSV;
 
-      std::vector<double> ptBins, jetBins;
+      std::vector<double> ptBins, jetBins, cptBins;
 
 };

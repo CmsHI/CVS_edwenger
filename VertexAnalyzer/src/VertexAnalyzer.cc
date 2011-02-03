@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.12 2011/01/07 16:39:36 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.13 2011/02/03 18:43:14 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -193,6 +193,17 @@ VertexAnalyzer::beginJob()
    for(ptb = 121.2; ptb < 361.2-small; ptb += 10.0 ) ptBins.push_back(ptb); // 24 bins
    ptBins.push_back(361.2);
 
+   // constant pt bins
+   static float ptMin;
+   static float ptMax;
+   static float ptWidth;
+
+   ptMin = 0, ptMax = 1200, ptWidth = 10;
+
+   for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
+      cptBins.push_back(pt);
+
+
    // jet et bins
    static float jetMin;
    static float jetMax; 
@@ -260,8 +271,8 @@ VertexAnalyzer::beginJob()
      hSLeadingSVdZdR = f->make<TH2F>("hSLeadingSVdZdR","dz vs dr of s-leading track when from SV",60,-30,30, 50,0.0,3.2);
      hSSLeadingSVdZdR = f->make<TH2F>("hSSLeadingSVdZdR","dz vs dr ss-leading track when from SV",60,-30,30, 50,0.0,3.2);
 
-     hJetEtTrkPtSumPV = f->make<TH2F>("hJetEtTrkPtSumPV","track sum pt (PV originated) vs leading jet et",ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]);
-     hJetEtTrkPtSumSV = f->make<TH2F>("hJetEtTrkPtSumSV","track sum pt (SV originated) vs leading jet et",ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]);
+     hJetEtTrkPtSumPV = f->make<TH2F>("hJetEtTrkPtSumPV","track sum pt (PV originated) vs leading jet et",cptBins.size()-1, &cptBins[0], jetBins.size()-1, &jetBins[0]);
+     hJetEtTrkPtSumSV = f->make<TH2F>("hJetEtTrkPtSumSV","track sum pt (SV originated) vs leading jet et",cptBins.size()-1, &cptBins[0], jetBins.size()-1, &jetBins[0]);
   }
 }
 
