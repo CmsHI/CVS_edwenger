@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.15 2011/02/03 21:52:22 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.16 2011/02/04 15:28:19 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -160,7 +160,8 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if(j==1 && sortedTrks[j]->pt()>2.0) hSLeadingJetEtaFromPV->Fill(leadJetEta_), hSLeadingdRFromPV->Fill(dr);
 	    if(j==2 && sortedTrks[j]->pt()>2.0) hSSLeadingJetEtaFromPV->Fill(leadJetEta_), hSSLeadingdRFromPV->Fill(dr);
 	    ptSum_PV = ptSum_PV + sortedTrks[j]->pt();
-	 }else if(fabs(dzSV)<=dzcut_) { // non-PV originated tracks (second PV to be precise)
+	    //}else if(fabs(dzSV)<=dzcut_) { // non-PV originated tracks (second PV to be precise)
+	 }else{ // any non-PV originatd tracks
 	    hTrkPtFromSV->Fill(sortedTrks[j]->pt());
 	    if(j==0 && sortedTrks[j]->pt()>2.0) hLeadingJetEtaFromSV->Fill(leadJetEta_), hLeadingdRFromSV->Fill(dr);
             if(j==1 && sortedTrks[j]->pt()>2.0) hSLeadingJetEtaFromSV->Fill(leadJetEta_), hSLeadingdRFromSV->Fill(dr);
