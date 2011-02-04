@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.14 2011/02/03 18:59:44 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.15 2011/02/03 21:52:22 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -154,23 +154,23 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 
 	 hTrkPtFromAV->Fill(sortedTrks[j]->pt());
 
-	 if(fabs(dzPV)<=dzcut_) {
+	 if(fabs(dzPV)<=dzcut_) { // PV originated tracks
 	    hTrkPtFromPV->Fill(sortedTrks[j]->pt());
-	    if(j==0) hLeadingJetEtaFromPV->Fill(leadJetEta_), hLeadingdRFromPV->Fill(dr); 
-	    if(j==1) hSLeadingJetEtaFromPV->Fill(leadJetEta_), hSLeadingdRFromPV->Fill(dr);
-	    if(j==2) hSSLeadingJetEtaFromPV->Fill(leadJetEta_), hSSLeadingdRFromPV->Fill(dr);
+	    if(j==0 && sortedTrks[j]->pt()>2.0) hLeadingJetEtaFromPV->Fill(leadJetEta_), hLeadingdRFromPV->Fill(dr); 
+	    if(j==1 && sortedTrks[j]->pt()>2.0) hSLeadingJetEtaFromPV->Fill(leadJetEta_), hSLeadingdRFromPV->Fill(dr);
+	    if(j==2 && sortedTrks[j]->pt()>2.0) hSSLeadingJetEtaFromPV->Fill(leadJetEta_), hSSLeadingdRFromPV->Fill(dr);
 	    ptSum_PV = ptSum_PV + sortedTrks[j]->pt();
-	 }else if(fabs(dzSV)<=dzcut_) {
+	 }else if(fabs(dzSV)<=dzcut_) { // non-PV originated tracks (second PV to be precise)
 	    hTrkPtFromSV->Fill(sortedTrks[j]->pt());
-	    if(j==0) hLeadingJetEtaFromSV->Fill(leadJetEta_), hLeadingdRFromSV->Fill(dr);
-            if(j==1) hSLeadingJetEtaFromSV->Fill(leadJetEta_), hSLeadingdRFromSV->Fill(dr);
-            if(j==2) hSSLeadingJetEtaFromSV->Fill(leadJetEta_), hSSLeadingdRFromSV->Fill(dr);
+	    if(j==0 && sortedTrks[j]->pt()>2.0) hLeadingJetEtaFromSV->Fill(leadJetEta_), hLeadingdRFromSV->Fill(dr);
+            if(j==1 && sortedTrks[j]->pt()>2.0) hSLeadingJetEtaFromSV->Fill(leadJetEta_), hSLeadingdRFromSV->Fill(dr);
+            if(j==2 && sortedTrks[j]->pt()>2.0) hSSLeadingJetEtaFromSV->Fill(leadJetEta_), hSSLeadingdRFromSV->Fill(dr);
 	    ptSum_SV = ptSum_SV+ sortedTrks[j]->pt();
 	 }
       }
 
-      hJetEtTrkPtSumPV->Fill(ptSum_PV,leadJetEta_);
-      hJetEtTrkPtSumSV->Fill(ptSum_SV,leadJetEta_);
+      hJetEtTrkPtSumPV->Fill(ptSum_PV,leadJetEt_);
+      hJetEtTrkPtSumSV->Fill(ptSum_SV,leadJetEt_);
 
    } // end of if(jetTrkVerticesCorr_)
 }
@@ -235,13 +235,13 @@ VertexAnalyzer::beginJob()
      hSLeadingTrkSVdZ = f->make<TH1F>("hSLeadingTrkSVdZ","dz of sub-leading track with 2nd vertex",300,-30,30);
      hSSLeadingTrkSVdZ = f->make<TH1F>("hSSLeadingTrkSVdZ","dz of sub-sub-leading track with 2nd vertex",300,-30,30);
 
-     hLeadingAndSLeadingTrkPVdZ = f->make<TH2F>("hLeadingAndSLeadingTrkPVdZ","dz of leading track vs dz of sub-leading tracks",300,-30,30, 300,-30,30);
-     hLeadingAndSSLeadingTrkPVdZ = f->make<TH2F>("hLeadingAndSSLeadingTrkPVdZ","dz of leading track vs dz of ssub-leading tracks",300,-30,30, 300,-30,30);
-     hSLeadingAndSSLeadingTrkPVdZ = f->make<TH2F>("hSLeadingAndSSLeadingTrkPVdZ","dz of sub-leading track vs dz of ssub-leading tracks",300,-30,30, 300,-30,30);
+     hLeadingAndSLeadingTrkPVdZ = f->make<TH2F>("hLeadingAndSLeadingTrkPVdZ","dz of leading track vs dz of sub-leading tracks",60,-30,30, 60,-30,30);
+     hLeadingAndSSLeadingTrkPVdZ = f->make<TH2F>("hLeadingAndSSLeadingTrkPVdZ","dz of leading track vs dz of ssub-leading tracks",60,-30,30, 60,-30,30);
+     hSLeadingAndSSLeadingTrkPVdZ = f->make<TH2F>("hSLeadingAndSSLeadingTrkPVdZ","dz of sub-leading track vs dz of ssub-leading tracks",60,-30,30, 60,-30,30);
 
-     hLeadingAndSLeadingTrkSVdZ = f->make<TH2F>("hLeadingAndSLeadingTrkSVdZ","dz of leading track vs dz of sub-leading tracks",300,-30,30, 300,-30,30);
-     hLeadingAndSSLeadingTrkSVdZ = f->make<TH2F>("hLeadingAndSSLeadingTrkSVdZ","dz of leading track vs dz of ssub-leading tracks",300,-30,30, 300,-30,30);
-     hSLeadingAndSSLeadingTrkSVdZ = f->make<TH2F>("hSLeadingAndSSLeadingTrkSVdZ","dz of sub-leading track vs dz of ssub-leading tracks",300,-30,30, 300,-30,30);
+     hLeadingAndSLeadingTrkSVdZ = f->make<TH2F>("hLeadingAndSLeadingTrkSVdZ","dz of leading track vs dz of sub-leading tracks",60,-30,30, 60,-30,30);
+     hLeadingAndSSLeadingTrkSVdZ = f->make<TH2F>("hLeadingAndSSLeadingTrkSVdZ","dz of leading track vs dz of ssub-leading tracks",60,-30,30, 60,-30,30);
+     hSLeadingAndSSLeadingTrkSVdZ = f->make<TH2F>("hSLeadingAndSSLeadingTrkSVdZ","dz of sub-leading track vs dz of ssub-leading tracks",60,-30,30, 60,-30,30);
 
      hLeadingTrkPVdZ_narrowEta = f->make<TH1F>("hLeadingTrkPVdZ_narrowEta","dz of leading track with primary vertex",300,-30,30);
      hLeadingTrkSVdZ_narrowEta = f->make<TH1F>("hLeadingTrkSVdZ_narrowEta","dz of leading track with 2nd vertex",300,-30,30);
