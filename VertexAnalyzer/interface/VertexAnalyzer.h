@@ -44,6 +44,7 @@ class VertexAnalyzer : public edm::EDAnalyzer {
 
       double dzcut_;
       double minJetEt_;
+      unsigned int nthleadingMax_;
       int nTracksBins_;
       bool jetTrkVerticesCorr_;
 
@@ -62,6 +63,21 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hLeadingTrkSVdZ;
       TH1F *hSLeadingTrkSVdZ;
       TH1F *hSSLeadingTrkSVdZ;
+
+      TH1F *hMostCorrTrkPVdZ;
+      TH1F *hMostCorrTrkSVdZ;
+      
+      TH1F *hMostCorrTrkPVdZ_Acc;
+      TH1F *hMostCorrTrkSVdZ_Acc;
+
+      TH1F *hMostCorrTrkPVdZ_nonAcc;
+      TH1F *hMostCorrTrkSVdZ_nonAcc;
+
+      TH1F *hTrkIndex;
+      TH1F *dRofMostCorrTrk;
+      TH1F *dRofMostCorrTrk_Acc;
+      TH1F *dRofMostCorrTrk_nonAcc;
+      TH2F *dEtadPhi_leading;
 
       TH2F *hLeadingAndSLeadingTrkPVdZ;
       TH2F *hLeadingAndSSLeadingTrkPVdZ;
@@ -100,6 +116,7 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hTrkPtFromSV;
 
       TH2F *hVtxZTrkEta;
+      TH1F *hLeadMonoJetEta;
       TH2F *hLeadnSLeadJetEta;
 
       TH2F *hJetEtTrkPtSumPV;

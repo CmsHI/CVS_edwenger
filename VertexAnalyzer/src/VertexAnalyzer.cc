@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: VertexAnalyzer.cc,v 1.16 2011/02/04 15:28:19 sungho Exp $
+// $Id: VertexAnalyzer.cc,v 1.17 2011/02/04 18:20:32 sungho Exp $
 //
 
 #include "edwenger/VertexAnalyzer/interface/VertexAnalyzer.h"
@@ -16,6 +16,7 @@ VertexAnalyzer::VertexAnalyzer(const edm::ParameterSet& iConfig)
   jetlabel_(iConfig.getUntrackedParameter<edm::InputTag>("jetlabel")),
   dzcut_(iConfig.getUntrackedParameter<double>("dzcut")),
   minJetEt_(iConfig.getUntrackedParameter<double>("minJetEt")),
+  nthleadingMax_(iConfig.getUntrackedParameter<int>("nthleadingMax")),
   nTracksBins_(iConfig.getUntrackedParameter<int>("nTracksBins")),
   jetTrkVerticesCorr_(iConfig.getUntrackedParameter<bool>("jetTrkVerticesCorr"))
 
@@ -78,16 +79,25 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       // Get Leading jet energy 
-      double leadJetEt_=0, leadJetEta_=0, leadJetPhi_=0;
+      double leadJetEt_=0.0, leadJetEta_=0.0, leadJetPhi_=0.0;
+      double sleadJetEt_=0.0, sleadJetEta_=0.0, sleadJetPhi_=0.0;
 
       unsigned index = 0;
-      if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 100, leadJetPhi_ = 0; // so that dr > 10 for events with no pat jet
-      else leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(), leadJetPhi_ = sortedJets[index]->phi();
+
+      if(sortedJets.size()==0){
+	 leadJetEt_ = 0,leadJetEta_ = 100, leadJetPhi_ = 0; // so that dr > 10 for events with no pat jet
+      }else{
+	 leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(), leadJetPhi_ = sortedJets[index]->phi();
+	 if(sortedJets.size()>1) sleadJetEt_ = sortedJets[1]->et(), sleadJetEta_ = sortedJets[1]->eta(), sleadJetPhi_ = sortedJets[1]->phi();
+      }
+	 
 
       if(minJetEt_>leadJetEt_) return;  // if jet 
  
       if(sortedJets.size()>1) 
 	 hLeadnSLeadJetEta->Fill(leadJetEta_,sortedJets[1]->eta());
+      else 
+	 hLeadMonoJetEta->Fill(leadJetEta_); // events with mono-jet
 
       //------ Tracks -------------------------- 
       edm::Handle<std::vector<reco::Track> > tracks;
@@ -123,22 +133,45 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 dzSV_sleading = sortedTrks[1]->dz(vtxs[1].position());
       }
 
+      unsigned int nthleading = 0.0;
+      double dzPV_mostCorr=0, dzSV_mostCorr=0;
       double ptSum_PV=0, ptSum_SV=0;
-      
+      double least_dr_corr = 999.;
+
       for(unsigned j=0; j<sortedTrks.size(); j++){
 	 
 	 double dzPV = sortedTrks[j]->dz(vtxs[0].position());
 	 double dzSV = sortedTrks[j]->dz(vtxs[1].position());
 	 
+	 // correlation with leading jet
 	 double deta = leadJetEta_ - sortedTrks[j]->eta();
 	 double dphi = leadJetPhi_ - sortedTrks[j]->phi();
 
-	 if(fabs(dphi)>(TMath::Pi()) && dphi>0) dphi = dphi - (float) 2.*TMath::Pi();
-         if(fabs(dphi)>(TMath::Pi()) && dphi<0) dphi = dphi + (float) 2.*TMath::Pi();
+	 if(fabs(dphi)>(TMath::Pi()) && dphi>0) dphi = dphi - 2.*TMath::Pi();
+         if(fabs(dphi)>(TMath::Pi()) && dphi<0) dphi = dphi + 2.*TMath::Pi();
 
-	 double dr = TMath::Sqrt(deta*deta + dphi*dphi); // dr < pi
+	 double dr = TMath::Sqrt(deta*deta + dphi*dphi); // dr < pi when deta = 0
+
+	 // correlation with sub-leading jet
+	 double deta_sub = sleadJetEta_ - sortedTrks[j]->eta();
+         double dphi_sub = sleadJetPhi_ - sortedTrks[j]->phi();
+
+         if(fabs(dphi_sub)>(TMath::Pi()) && dphi_sub>0) dphi_sub = dphi_sub - 2.*TMath::Pi();
+         if(fabs(dphi_sub)>(TMath::Pi()) && dphi_sub<0) dphi_sub = dphi_sub + 2.*TMath::Pi();
+
+         double dr_sub = TMath::Sqrt(deta_sub*deta_sub + dphi_sub*dphi_sub); 
+	 
+	 if(sortedJets.size()<2) dr_sub = 999.9; // if no second jet, assign large value
+
+	 double dr_corr = min(dr,dr_sub);
+
+	 if(j<nthleadingMax_){
+            if(dr_corr<least_dr_corr)
+	       least_dr_corr = dr_corr, nthleading = j, dzPV_mostCorr = dzPV, dzSV_mostCorr = dzSV;
+	 }
 
 	 if(j==0) {
+	    dEtadPhi_leading->Fill(deta,dphi);
 	    hLeadingTrkPVdZ->Fill(dzPV), hLeadingTrkSVdZ->Fill(dzSV), hLeadingPVdZdR->Fill(dzPV,dr), hLeadingSVdZdR->Fill(dzSV,dr); // leading
 	    if(fabs(leadJetEta_)<2.0) hLeadingTrkPVdZ_narrowEta->Fill(dzPV), hLeadingTrkSVdZ_narrowEta->Fill(dzSV); 
 	 }
@@ -169,6 +202,18 @@ VertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    ptSum_SV = ptSum_SV+ sortedTrks[j]->pt();
 	 }
       }
+
+      hTrkIndex->Fill(nthleading);
+      dRofMostCorrTrk->Fill(least_dr_corr);
+      hMostCorrTrkPVdZ->Fill(dzPV_mostCorr), hMostCorrTrkSVdZ->Fill(dzSV_mostCorr);
+      
+      // events with 0, 1 jet only --> leading jet eta>2.4
+      // events with more then 1 jets --> both leading and sub-leading jet eta > 2.4 
+      if((sortedJets.size()<2 && fabs(leadJetEta_)>= 2.4) || 
+	 (sortedJets.size()>1 && fabs(leadJetEta_)>= 2.4 && fabs(sortedJets[1]->eta())>=2.4))
+	 dRofMostCorrTrk_nonAcc->Fill(least_dr_corr), hMostCorrTrkPVdZ_nonAcc->Fill(dzPV_mostCorr), hMostCorrTrkSVdZ_nonAcc->Fill(dzSV_mostCorr);
+      else
+	 dRofMostCorrTrk_Acc->Fill(least_dr_corr), hMostCorrTrkPVdZ_Acc->Fill(dzPV_mostCorr), hMostCorrTrkSVdZ_Acc->Fill(dzSV_mostCorr);
 
       hJetEtTrkPtSumPV->Fill(ptSum_PV,leadJetEt_);
       hJetEtTrkPtSumSV->Fill(ptSum_SV,leadJetEt_);
@@ -236,6 +281,23 @@ VertexAnalyzer::beginJob()
      hSLeadingTrkSVdZ = f->make<TH1F>("hSLeadingTrkSVdZ","dz of sub-leading track with 2nd vertex",300,-30,30);
      hSSLeadingTrkSVdZ = f->make<TH1F>("hSSLeadingTrkSVdZ","dz of sub-sub-leading track with 2nd vertex",300,-30,30);
 
+     hMostCorrTrkPVdZ = f->make<TH1F>("hMostCorrTrkPVdZ","dz of most leading jet-correlated tracks with PV",300,-30,30);
+     hMostCorrTrkSVdZ = f->make<TH1F>("hMostCorrTrkSVdZ","dz of most leading jet-correlated tracks with non-PV",300,-30,30);
+
+     hMostCorrTrkPVdZ_Acc = f->make<TH1F>("hMostCorrTrkPVdZ_Acc","dz of most leading jet-correlated tracks with PV when jets inside acc"
+                                             ,300,-30,30);
+     hMostCorrTrkSVdZ_Acc =f->make<TH1F>("hMostCorrTrkSVdZ_Acc","dz of most leading jet-correlated tracks with non-PV when jets inside acc",
+                                            300,-30,30);
+     hMostCorrTrkPVdZ_nonAcc = f->make<TH1F>("hMostCorrTrkPVdZ_nonAcc","dz of most leading jet-correlated tracks with PV when jets outside acc"
+					     ,300,-30,30);
+     hMostCorrTrkSVdZ_nonAcc =f->make<TH1F>("hMostCorrTrkSVdZ_nonAcc","dz of most leading jet-correlated tracks with non-PV when jets outside acc",
+					    300,-30,30);
+     hTrkIndex = f->make<TH1F>("hTrkIndex","nth leading tracks that is most correlated wit jet",10,-0.5,9.5);
+     dRofMostCorrTrk = f->make<TH1F>("dRofMostCorrTrk","dr of most jet-correlated leading track in event",90,0.0,9.0);
+     dRofMostCorrTrk_nonAcc = f->make<TH1F>("dRofMostCorrTrk_nonAcc","dr of most jet-correlated leading track in event",90,0.0,9.0);
+     dRofMostCorrTrk_Acc = f->make<TH1F>("dRofMostCorrTrk_Acc","dr of most jet-correlated leading track in event",90,0.0,9.0);
+     dEtadPhi_leading = f->make<TH2F>("dEtadPhi_leading","deta vs dphi of leading track", 60,-9.0,9.0, 22,0.0,2.*TMath::Pi());
+
      hLeadingAndSLeadingTrkPVdZ = f->make<TH2F>("hLeadingAndSLeadingTrkPVdZ","dz of leading track vs dz of sub-leading tracks",60,-30,30, 60,-30,30);
      hLeadingAndSSLeadingTrkPVdZ = f->make<TH2F>("hLeadingAndSSLeadingTrkPVdZ","dz of leading track vs dz of ssub-leading tracks",60,-30,30, 60,-30,30);
      hSLeadingAndSSLeadingTrkPVdZ = f->make<TH2F>("hSLeadingAndSSLeadingTrkPVdZ","dz of sub-leading track vs dz of ssub-leading tracks",60,-30,30, 60,-30,30);
@@ -254,26 +316,27 @@ VertexAnalyzer::beginJob()
      hSSLeadingJetEtaFromPV = f->make<TH1F>("hSSLeadingJetEtaFromPV","leading jet et whean ssl-track is from PV",60,-5.0,5.0);
      hSSLeadingJetEtaFromSV = f->make<TH1F>("hSSLeadingJetEtaFromSV","leading jet et whean ssl-track is from SV",60,-5.0,5.0);
 
-     hLeadingdRFromPV = f->make<TH1F>("hLeadingdRFromPV","dr of leading track w.r.t leading jet when from PV",50,0.0,3.2);
-     hLeadingdRFromSV =f->make<TH1F>("hLeadingdRFromSV","dr of leading track w.r.t leading jet when from SV",50,0.0,3.2);
-     hSLeadingdRFromPV =f->make<TH1F>("hSLeadingdRFromPV","dr of s-leading track w.r.t leading jet when from PV",50,0.0,3.2);
-     hSLeadingdRFromSV =f->make<TH1F>("hSLeadingdRFromSV","dr of s-leading track w.r.t leading jet when from SV",50,0.0,3.2);
-     hSSLeadingdRFromPV =f->make<TH1F>("hSSLeadingdRFromPV","dr of ss-leading track w.r.t leading jet when from PV",50,0.0,3.2);
-     hSSLeadingdRFromSV =f->make<TH1F>("hSSLeadingdRFromSV","dr of ss-leading track w.r.t leading jet when from SV",50,0.0,3.2);
+     hLeadingdRFromPV = f->make<TH1F>("hLeadingdRFromPV","dr of leading track w.r.t leading jet when from PV",50,0.0,3.5);
+     hLeadingdRFromSV =f->make<TH1F>("hLeadingdRFromSV","dr of leading track w.r.t leading jet when from SV",50,0.0,3.5);
+     hSLeadingdRFromPV =f->make<TH1F>("hSLeadingdRFromPV","dr of s-leading track w.r.t leading jet when from PV",50,0.0,3.5);
+     hSLeadingdRFromSV =f->make<TH1F>("hSLeadingdRFromSV","dr of s-leading track w.r.t leading jet when from SV",50,0.0,3.5);
+     hSSLeadingdRFromPV =f->make<TH1F>("hSSLeadingdRFromPV","dr of ss-leading track w.r.t leading jet when from PV",50,0.0,3.5);
+     hSSLeadingdRFromSV =f->make<TH1F>("hSSLeadingdRFromSV","dr of ss-leading track w.r.t leading jet when from SV",50,0.0,3.5);
 
      hTrkPtFromAV = f->make<TH1F>("hTrkPtFromAV","track p_{T} distribution from all vertices;p_{T} (GeV/c)",ptBins.size()-1, &ptBins[0]);
      hTrkPtFromPV = f->make<TH1F>("hTrkPtFromPV","track p_{T} distribution from PV;p_{T} (GeV/c)",ptBins.size()-1, &ptBins[0]);
      hTrkPtFromSV = f->make<TH1F>("hTrkPtFromSV","track p_{T} distribution from SV;p_{T} (GeV/c)",ptBins.size()-1, &ptBins[0]);
 
      hVtxZTrkEta = f->make<TH2F>("hVtxZTrkEta","vtx vz vs track eta",80,-20.,20.,24,-3.0,3.0);
+     hLeadMonoJetEta = f->make<TH1F>("hLeadMonoJetEta","leading jet eta if monojet", 60,-5.0,5.0);
      hLeadnSLeadJetEta = f->make<TH2F>("hLeadnSLeadJetEta","leading jet eta vs sleading jet eta", 60,-5.0,5.0, 60,-5.0,5.0);
 
-     hLeadingPVdZdR = f->make<TH2F>("hLeadingPVdZdR","dz vs dr of leading track when from PV",60,-30,30, 50,0.0,3.2);
-     hSLeadingPVdZdR = f->make<TH2F>("hSLeadingPVdZdR","dz vs dr of s-leading track when from PV",60,-30,30, 50,0.0,3.2);
-     hSSLeadingPVdZdR = f->make<TH2F>("hSSLeadingPVdZdR","dz vs dr ss-leading track when from PV",60,-30,30, 50,0.0,3.2);
-     hLeadingSVdZdR = f->make<TH2F>("hLeadingSVdZdR","dz vs dr of leading track when from SV",60,-30,30, 50,0.0,3.2);
-     hSLeadingSVdZdR = f->make<TH2F>("hSLeadingSVdZdR","dz vs dr of s-leading track when from SV",60,-30,30, 50,0.0,3.2);
-     hSSLeadingSVdZdR = f->make<TH2F>("hSSLeadingSVdZdR","dz vs dr ss-leading track when from SV",60,-30,30, 50,0.0,3.2);
+     hLeadingPVdZdR = f->make<TH2F>("hLeadingPVdZdR","dz vs dr of leading track when from PV",60,-30,30, 50,0.0,3.5);
+     hSLeadingPVdZdR = f->make<TH2F>("hSLeadingPVdZdR","dz vs dr of s-leading track when from PV",60,-30,30, 50,0.0,3.5);
+     hSSLeadingPVdZdR = f->make<TH2F>("hSSLeadingPVdZdR","dz vs dr ss-leading track when from PV",60,-30,30, 50,0.0,3.5);
+     hLeadingSVdZdR = f->make<TH2F>("hLeadingSVdZdR","dz vs dr of leading track when from SV",60,-30,30, 50,0.0,3.5);
+     hSLeadingSVdZdR = f->make<TH2F>("hSLeadingSVdZdR","dz vs dr of s-leading track when from SV",60,-30,30, 50,0.0,3.5);
+     hSSLeadingSVdZdR = f->make<TH2F>("hSSLeadingSVdZdR","dz vs dr ss-leading track when from SV",60,-30,30, 50,0.0,3.5);
 
      hJetEtTrkPtSumPV = f->make<TH2F>("hJetEtTrkPtSumPV","track sum pt (PV originated) vs leading jet et",cptBins.size()-1, &cptBins[0], jetBins.size()-1, &jetBins[0]);
      hJetEtTrkPtSumSV = f->make<TH2F>("hJetEtTrkPtSumSV","track sum pt (SV originated) vs leading jet et",cptBins.size()-1, &cptBins[0], jetBins.size()-1, &jetBins[0]);
