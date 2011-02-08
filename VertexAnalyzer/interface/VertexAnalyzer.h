@@ -107,13 +107,6 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSLeadingJetEtFromSV;
       TH1F *hSSLeadingJetEtFromPV;
       TH1F *hSSLeadingJetEtFromSV;
-      
-      TH1F *hLeadingNJetFromPV;
-      TH1F *hLeadingNJetFromSV;
-      TH1F *hSLeadingNJetFromPV;
-      TH1F *hSLeadingNJetFromSV;
-      TH1F *hSSLeadingNJetFromPV;
-      TH1F *hSSLeadingNJetFromSV;
 
       TH1F *hLeadingdRFromPV;
       TH1F *hLeadingdRFromSV;
@@ -134,14 +127,6 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hLeadingdR_sleadingJets;
       TH1F *hSLeadingdR_sleadingJets;
       TH1F *hSSLeadingdR_sleadingJets;
-
-
-      TH1F *hLeadingdNtrkFromPV;
-      TH1F *hLeadingdNtrkFromSV;
-      TH1F *hSLeadingdNtrkFromPV;
-      TH1F *hSLeadingdNtrkFromSV;
-      TH1F *hSSLeadingdNtrkFromPV;
-      TH1F *hSSLeadingdNtrkFromSV;
 
       TH2F *hLeadingPVdZdR;
       TH2F *hSLeadingPVdZdR;
