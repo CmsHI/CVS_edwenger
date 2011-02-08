@@ -64,6 +64,10 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSLeadingTrkSVdZ;
       TH1F *hSSLeadingTrkSVdZ;
 
+      TH1F *hLeadingTrkPVdZ_tightest;
+      TH1F *hLeadingTrkSVdZ_tightest;
+
+
       TH1F *hMostCorrTrkPVdZ;
       TH1F *hMostCorrTrkSVdZ;
       
@@ -97,13 +101,48 @@ class VertexAnalyzer : public edm::EDAnalyzer {
       TH1F *hSSLeadingJetEtaFromPV;
       TH1F *hSSLeadingJetEtaFromSV;
 
+      TH1F *hLeadingJetEtFromPV;
+      TH1F *hLeadingJetEtFromSV;
+      TH1F *hSLeadingJetEtFromPV;
+      TH1F *hSLeadingJetEtFromSV;
+      TH1F *hSSLeadingJetEtFromPV;
+      TH1F *hSSLeadingJetEtFromSV;
+      
+      TH1F *hLeadingNJetFromPV;
+      TH1F *hLeadingNJetFromSV;
+      TH1F *hSLeadingNJetFromPV;
+      TH1F *hSLeadingNJetFromSV;
+      TH1F *hSSLeadingNJetFromPV;
+      TH1F *hSSLeadingNJetFromSV;
+
       TH1F *hLeadingdRFromPV;
       TH1F *hLeadingdRFromSV;
       TH1F *hSLeadingdRFromPV;
       TH1F *hSLeadingdRFromSV;
       TH1F *hSSLeadingdRFromPV;
       TH1F *hSSLeadingdRFromSV;
-      
+
+      // track-jet
+      TH1F *hLeadingdR_eitherJets;
+      TH1F *hSLeadingdR_eitherJets;
+      TH1F *hSSLeadingdR_eitherJets;
+
+      TH1F *hLeadingdR_leadingJets;
+      TH1F *hSLeadingdR_leadingJets;
+      TH1F *hSSLeadingdR_leadingJets;
+
+      TH1F *hLeadingdR_sleadingJets;
+      TH1F *hSLeadingdR_sleadingJets;
+      TH1F *hSSLeadingdR_sleadingJets;
+
+
+      TH1F *hLeadingdNtrkFromPV;
+      TH1F *hLeadingdNtrkFromSV;
+      TH1F *hSLeadingdNtrkFromPV;
+      TH1F *hSLeadingdNtrkFromSV;
+      TH1F *hSSLeadingdNtrkFromPV;
+      TH1F *hSSLeadingdNtrkFromSV;
+
       TH2F *hLeadingPVdZdR;
       TH2F *hSLeadingPVdZdR;
       TH2F *hSSLeadingPVdZdR;
