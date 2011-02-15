@@ -2,14 +2,11 @@ import os
 
 dcache  = "/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/frankma"
 scratch = "/net/hidsk0001/d00/scratch/frankma/data"
-#inputs_dir = '/net/hisrv0001/home/frankma/inputs_data'
+
 samples  = {
-    "hcpr-spectra-v2-all":"HCPR",
-    "hcpr-spectra-v2-0to5":"HCPR",
-    "hcpr-spectra-v2-5to10":"HCPR",
-    "hcpr-spectra-v2-10to30":"HCPR",
-    "hcpr-spectra-v2-30to50":"HCPR",
-    "hcpr-spectra-v2-50to100":"HCPR",
+    "hcpr-spectra-v3-mb-all":"HCPR",
+    "hcpr-spectra-v3-J35U-all":"HCPR",
+    "hcpr-spectra-v3-J50U-all":"HCPR"
     }
 
 for sample,PD in samples.items():
