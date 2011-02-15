@@ -1,16 +1,13 @@
 import os
 
 scratch="/net/hidsk0001/d00/scratch/frankma/data"
-jobTag="proc0111_JetVtx"
+jobTag="proc0210_AllCent"
 
 # ================== 39X ===============
 hisamples  = {
-    "hcpr-spectra-v2-all":"HCPR",
-    "hcpr-spectra-v2-0to5":"HCPR",
-    "hcpr-spectra-v2-5to10":"HCPR",
-    "hcpr-spectra-v2-10to30":"HCPR",
-    "hcpr-spectra-v2-30to50":"HCPR",
-    "hcpr-spectra-v2-50to100":"HCPR"
+    "hcpr-spectra-v3-mb-all":"HCPR",
+    "hcpr-spectra-v3-J35U-all":"HCPR",
+    "hcpr-spectra-v3-J50U-all":"HCPR"
     }
 
 # ================== 362 ===============
@@ -28,9 +25,9 @@ ppsamples  = {
 
 inFolder="."
 outFolder="mergeAll"
-for sample,PD in ppsamples.items():
-  indir=scratch+"/"+PD+"/"+sample+"_"+jobTag
-  #indir=scratch+"/"+PD+"/"+sample
+for sample,PD in hisamples.items():
+  #indir=scratch+"/"+PD+"/"+sample+"_"+jobTag
+  indir=scratch+"/"+PD+"/"+sample
   cmd="./mergeJob.sh " + indir+"/"+inFolder + " trkhists " + indir+"/"+outFolder
   print cmd
-  #os.system(cmd)
+  os.system(cmd)
