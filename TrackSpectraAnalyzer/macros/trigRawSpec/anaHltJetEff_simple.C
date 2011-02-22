@@ -42,10 +42,11 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
 }
 
 void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
-    const char * inFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
+    const char * inFileName = "~/scratch01/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MnJ-v0_p0710_a3",
-    const char * mergedFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/mergeAll/trkhists_sub0.root",
-    const char * trigFileName = "/net/hibat0007/d00/scratch/frankma/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
+    const char * mergedFileName = "~/scratch01/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/mergeAll/trkhists_sub0.root",
+    const char * trigFileName = "~/scratch01/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
+    TString j50FileName = "~/scratch01/data/JetMETTau/JM-R10A-PR4-Jet50Uskim-v0_proc0111_JetVtx/trkhists_*",
     TString histDir = "trackAna/",
     Bool_t useHist = false)
 {
@@ -57,7 +58,9 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
 
   HisTGroup<TH1D> hgJet0Et("Jet0Et",numPtBins,0,histJetEtMax);
   HisTGroup<TH1D> hgTrigJet0Et("TrigJet0Et",numPtBins,0,histJetEtMax);
+  TH1D * hTrigJet50UJet0Et=0;
   Double_t numSelMBEvt=0, numJet15UGt60MB=0, fracJet15UGt60MB=0, numJet15UGt60Trig=0;
+  Double_t numJet15UGt120TrigJet15U=0, numJet50UGt120TrigJet50U=0;
   // === Inputs ===
   // Plot Jet Pt distributions from various triggers
   if (useHist) {
@@ -104,7 +107,9 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
     cout << trigFileName << endl;
     cout << "Tree Analysis on " << nt_trigjet->GetEntries() << " events" << endl;
     numJet15UGt60Trig = nt_trigjet->GetEntries("jet>60 && jet15");
+    numJet15UGt120TrigJet15U = nt_trigjet->GetEntries("jet>120 && jet15");
     cout << "Tree Analysis 15U - Jets > 60GeV: " << numJet15UGt60Trig << " events" << endl;
+    cout << "Tree Analysis 15U - Jets > 120GeV: " << numJet15UGt120TrigJet15U << " events" << endl;
     // Get Histograms
     TCut baseTrigJetSel="jet15";
     nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("15U")->GetName()),baseTrigJetSel&&"jet15 && jet>10","goff");
@@ -112,6 +117,17 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
     nt_trigjet->Draw(Form("jet>>%s",hgTrigJet0Et.GetH("50U")->GetName()),baseTrigJetSel&&"jet50 && jet>30","goff");
     // check number
     cout << "Hist 15U check: # of Jets above 60GeV: " << hgTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000) << endl;
+
+    // === Jet50U ===
+    TChain * djj50 = new TChain("djcalo/djTree");
+    djj50->Add(j50FileName);
+    hTrigJet50UJet0Et = new TH1D("hTrigJet50UJet0Et","",numPtBins,0,histJetEtMax);
+    cout << endl << "===== HLT Jet50U =====" << endl;
+    cout << j50FileName << endl;
+    cout << "Tree Analysis on " << djj50->GetEntries() << " events" << endl;
+    djj50->Project("hTrigJet50UJet0Et","nljet","nljet>50 && hlt[2]");
+    numJet50UGt120TrigJet50U = djj50->GetEntries("nljet>120 && hlt[2]");
+    cout << "Tree Analysis 50U - Jets > 120GeV: " << numJet50UGt120TrigJet50U << " events" << endl;
   }
 
   // === Define Output ===
@@ -138,6 +154,9 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
   hgScTrigJet0Et.Add(hgTrigJet0Et.H("50U"),"50U",1./(numSelTrigEvt*hgTrigJet0Et.H("50U")->GetBinWidth(1)));
   // check number
   cout << "15U: Frac of Jets above 60GeV: " << hgScTrigJet0Et.GetH("15U")->Integral(60./histJEtBinWidth+1,1000)*hgScTrigJet0Et.GetH("15U")->GetBinWidth(1) << endl;
+
+  // Jet50U
+  hTrigJet50UJet0Et->Scale((numJet15UGt120TrigJet15U/numJet50UGt120TrigJet50U)/numSelTrigEvt/hTrigJet50UJet0Et->GetBinWidth(1));
 
   // === Check Histograms ===
   TCanvas * cJet0Et = new TCanvas("cJet0Et","cJet0Et",510,510);
@@ -202,7 +221,10 @@ void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("15U"),"  HLT Jet15U","E",kGreen-3,kFullCircle);
   //cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("30U"),"Triggered: HLT Jet30U","E",kOrange-5,kFullCircle);
   cpScJet0Et.AddHist1D(hgScTrigJet0Et.H("50U"),"  HLT Jet50U","E",kRed-2,kFullCircle);
-  cpScJet0Et.SetLegend(0.49,0.50,0.89,0.77);
+  cpScJet0Et.AddHist1D(hTemp,"","E",0,0);
+  cpScJet0Et.AddHist1D(hTemp,"Jet50U Triggered","E",0,0);
+  cpScJet0Et.AddHist1D(hTrigJet50UJet0Et,"  HLT Jet50U","E",kRed,kOpenStar);
+  cpScJet0Et.SetLegend(0.518,0.413,0.919,0.847);
   cpScJet0Et.SetLegendStyle(0.045);
   cpScJet0Et.SetAxisLabeling(15,63,18,63,4,2.5);
   cpScJet0Et.Draw(pUpper,false);
