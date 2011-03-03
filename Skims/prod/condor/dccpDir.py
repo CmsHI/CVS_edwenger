@@ -4,9 +4,9 @@ dcache  = "/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/frankma"
 scratch = "/net/hidsk0001/d00/scratch/frankma/data"
 
 samples  = {
-    "hcpr-spectra-v3-mb-all":"HCPR",
-    "hcpr-spectra-v3-J35U-all":"HCPR",
-    "hcpr-spectra-v3-J50U-all":"HCPR"
+    "hcpr-spectra-v4_3-mb-all":"HCPR",
+    "hcpr-spectra-v4_3-J35U-all":"HCPR",
+    "hcpr-spectra-v4_3-J50U-all":"HCPR"
     }
 
 for sample,PD in samples.items():

@@ -5,9 +5,9 @@ jobTag="proc0210_AllCent"
 
 # ================== 39X ===============
 hisamples  = {
-    "hcpr-spectra-v3-mb-all":"HCPR",
-    "hcpr-spectra-v3-J35U-all":"HCPR",
-    "hcpr-spectra-v3-J50U-all":"HCPR"
+    "hcpr-spectra-v4_3-mb-all":"HCPR",
+    "hcpr-spectra-v4_3-J35U-all":"HCPR",
+    "hcpr-spectra-v4_3-J50U-all":"HCPR"
     }
 
 # ================== 362 ===============
