@@ -42,11 +42,11 @@ Double_t countEvt(const char * inFileName, TString want="All", TString histDir="
 }
 
 void anaHltJetEff_simple(TString sampleName="#sqrt{s} = 7 TeV",
-    const char * inFileName = "~/scratch01/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
+    const char * inFileName = "~frankma/scratch01/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
     TString outdir="plots/MB-C10-PR9-MnJ-v0_p0710_a3",
-    const char * mergedFileName = "~/scratch01/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/mergeAll/trkhists_sub0.root",
-    const char * trigFileName = "~/scratch01/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
-    TString j50FileName = "~/scratch01/data/JetMETTau/JM-R10A-PR4-Jet50Uskim-v0_proc0111_JetVtx/trkhists_*",
+    const char * mergedFileName = "~frankma/scratch01/data/MinimumBias/MB-C10-PR9-MBskim-v0_proc0710_trkAnaNoFilter/mergeAll/trkhists_sub0.root",
+    const char * trigFileName = "~frankma/scratch01/data/MinimumBias/MB-C10-PR9-JMTskim-v0_proc0710_trkAnaNoFilter/trkhists_trkAnaSkimAOD_*.root",
+    TString j50FileName = "~frankma/scratch01/data/JetMETTau/JM-R10A-PR4-Jet50Uskim-v0_proc0111_JetVtx/trkhists_*",
     TString histDir = "trackAna/",
     Bool_t useHist = false)
 {
