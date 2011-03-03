@@ -7,9 +7,9 @@
 #include "TGraphAsymmErrors.h"
 #include "TCut.h"
 
-#include "edwenger/TrackSpectraAnalyzer/macros/trigRawSpec/CPlot.h"           // helper class for plots
-#include "edwenger/TrackSpectraAnalyzer/macros/trigRawSpec/HisTGroup.h"
-#include "edwenger/TrackSpectraAnalyzer/macros/trigRawSpec/tgraphTools.C"
+#include "CPlot.h"           // helper class for plots
+#include "HisTGroup.h"
+#include "tgraphTools.C"
 
 #include <map>
 #include <cassert>
