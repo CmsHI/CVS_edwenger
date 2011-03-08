@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.13 2011/01/20 20:09:35 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.14 2011/01/20 21:44:58 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -357,16 +357,14 @@ HiTrackSpectraAnalyzer::beginJob()
    const double small = 1e-3;
    double ptb;
 
-   // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
+   // simple rebinning possible with a rebinning facto n = 2, 3, 6 !
    for(ptb =   0  ; ptb <   1.2-small; ptb +=  0.05) ptBins.push_back(ptb); // 24 bins
    for(ptb =   1.2; ptb <   2.4-small; ptb +=  0.1 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.2 ) ptBins.push_back(ptb); // 24 bins
-   for(ptb =   7.2; ptb <  13.2-small; ptb +=  0.5 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  13.2; ptb <  25.2-small; ptb +=  1.0 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  25.2; ptb <  61.2-small; ptb +=  3.0 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  61.2; ptb < 181.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 24 bins
-   ptBins.push_back(181.2);
-
+   for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.4 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb =   7.2; ptb <  16.8-small; ptb +=  1.6 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  16.8; ptb <  55.2-small; ptb +=  6.4 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  55.2; ptb < 170.4-small; ptb +=  9.6 ) ptBins.push_back(ptb); // 12 bins
+   ptBins.push_back(170.4);
 
    // eta bins
    static double etaMin   = -2.6;
