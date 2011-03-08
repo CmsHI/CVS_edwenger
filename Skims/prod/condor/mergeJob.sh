@@ -14,9 +14,13 @@ outdir=$3
 # initialize
 ct=0
 cmd=
-nPerMerge=1000
+nPerMerge=500
 N=`ls $inDir/*.root | grep $tag | wc -l`
+startDir=`pwd`
 echo $inDir: $N files
+
+# clean indir
+./cleanJob2.sh $inDir
 
 for job in `ls $inDir/*.root | grep $tag | head -n $N`; do
   subi=`expr $ct % $nPerMerge`
