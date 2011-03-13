@@ -11,6 +11,9 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "DataFormats/HeavyIonEvent/interface/Centrality.h"
+#include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
+
 // ROOT includes
 #include <TH2.h>
 
@@ -30,20 +33,29 @@ class HiVertexAnalyzer : public edm::EDAnalyzer {
       int nTracksBins_;
 
       edm::Service<TFileService> f;
-      TH1D *hVtxSize;
-      TH1D *hVtxTracks;
+      TH1F *hVtxSize;
+      TH1F *hVtxTracks;
 
-      TH1D *hVtxZ;
-      TH1D *hVtxY;
-      TH1D *hVtxX;
+      TH1F *hVtxZ;
+      TH1F *hVtxY;
+      TH1F *hVtxX;
 
-      TH2D *hMultVtxTracks;
-      TH2D *hMultVtxZ;
-      TH1D *hAllVtxZ;
+      TH2F *hMultVtxTracks;
+      TH2F *hMultVtxZ;
+      TH1F *hAllVtxZ;
       
       TH2F *hVtxXnY;
       TH2F *hVtxXnZ;
       TH2F *hVtxYnZ;
 
+      std::vector<TH1F*> hVtxZ_Cent;
+      std::vector<TH1F*> hVtxX_Cent;
+      std::vector<TH1F*> hVtxY_Cent;
+
+      std::vector<TH1F*> hVtxTracks_Cent;
+
+      std::vector<int32_t> neededCentBins_;
+
+      CentralityProvider * centrality_;
 
 };
