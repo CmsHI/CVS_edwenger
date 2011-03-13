@@ -32,9 +32,18 @@ class HiVertexAnalyzer : public edm::EDAnalyzer {
       edm::Service<TFileService> f;
       TH1D *hVtxSize;
       TH1D *hVtxTracks;
+
       TH1D *hVtxZ;
+      TH1D *hVtxY;
+      TH1D *hVtxX;
+
       TH2D *hMultVtxTracks;
       TH2D *hMultVtxZ;
       TH1D *hAllVtxZ;
+      
+      TH2F *hVtxXnY;
+      TH2F *hVtxXnZ;
+      TH2F *hVtxYnZ;
+
 
 };

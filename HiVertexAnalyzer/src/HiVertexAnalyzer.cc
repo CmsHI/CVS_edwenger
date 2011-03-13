@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: HiVertexAnalyzer.cc,v 1.1 2010/11/05 20:14:48 sungho Exp $
+// $Id: HiVertexAnalyzer.cc,v 1.2 2011/01/20 20:33:40 sungho Exp $
 //
 
 #include "edwenger/HiVertexAnalyzer/interface/HiVertexAnalyzer.h"
@@ -35,7 +35,14 @@ HiVertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(!vtxs.size()) return;
 
   hVtxTracks->Fill(vtxs[0].tracksSize());
+
   hVtxZ->Fill(vtxs[0].z());
+  hVtxX->Fill(vtxs[0].x());
+  hVtxY->Fill(vtxs[0].y());
+
+  hVtxXnY->Fill(vtxs[0].x(),vtxs[0].y());
+  hVtxXnZ->Fill(vtxs[0].x(),vtxs[0].z());
+  hVtxYnZ->Fill(vtxs[0].y(),vtxs[0].z());
 
   for(unsigned i=0; i<vtxs.size(); i++)
     hAllVtxZ->Fill(vtxs[i].z());
@@ -59,7 +66,15 @@ HiVertexAnalyzer::beginJob()
 
   hVtxSize = f->make<TH1D>("hVtxSize","number of reconstructed vertices",10,-0.5,9.5);
   hVtxTracks = f->make<TH1D>("hVtxTracks","number of tracks fitted to vertex",nTracksBins_,-0.5,(float)nTracksBins_-0.5);
+
   hVtxZ = f->make<TH1D>("hVtxZ","z position of best reconstructed vertex",120,-30.0,30.0);
+  hVtxX = f->make<TH1D>("hVtxX","x position of best reconstructed vertex",120,-30.0,30.0);
+  hVtxY = f->make<TH1D>("hVtxY","y position of best reconstructed vertex",120,-30.0,30.0);
+
+  hVtxXnY = f->make<TH2F>("hVtxXnY","x vs y position", 120,-30.0,30.0, 120,-30.0,30.0);
+  hVtxXnZ = f->make<TH2F>("hVtxXnZ","x vs z position", 120,-30.0,30.0, 120,-30.0,30.0);
+  hVtxYnZ = f->make<TH2F>("hVtxYnZ","y vs z position", 120,-30.0,30.0, 120,-30.0,30.0);
+
   hMultVtxTracks = f->make<TH2D>("hMultVtxTracks","number of tracks fitted to vertex; most populated; 2nd most populated",nTracksBins_,-0.5,(float)nTracksBins_-0.5,nTracksBins_,-0.5,(float)nTracksBins_-0.5);
   hMultVtxZ = f->make<TH2D>("hMultVtxZ","z position of reconstructed vertex; most populated; 2nd most populated",120,-30.0,30.0,120,-30.0,30.0);
   hAllVtxZ = f->make<TH1D>("hAllVtxZ","z position of all reconstructed vertices",120,-30.0,30.0);
