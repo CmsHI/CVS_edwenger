@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.16 2011/03/14 18:24:33 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.17 2011/03/14 19:42:12 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -29,9 +29,6 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    setQualityBit_ = iConfig.getUntrackedParameter<bool>("setQualityBit", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
-   nsdOnly_ = iConfig.getUntrackedParameter<bool>("nsdOnly", false);
-   pythia6_ = iConfig.getUntrackedParameter<bool>("pythia6", true);
-   pthatCut_ = iConfig.getUntrackedParameter<double>("pthatCut", 0.0);
    doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
@@ -39,7 +36,6 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    ptMin_ = iConfig.getUntrackedParameter<double>("ptMin", 0.5);
    applyEvtEffCorr_ = iConfig.getUntrackedParameter<bool>("applyEvtEffCorr", true);
    evtEffCorrType_ = iConfig.getUntrackedParameter<int>("evtEffCorrType", 0);
-   efit_type_ = iConfig.getUntrackedParameter<int>("efit_type", 0);
    evtSelEffv_ = iConfig.getUntrackedParameter< std::vector<double> >("evtSelEffv");
    evtMultCut_ = iConfig.getUntrackedParameter<int>("evtMultCut", 0);
    triggerNeeded_ = iConfig.getUntrackedParameter<bool>("triggerNeeded",false);
@@ -49,6 +45,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    neededCentBins_ = iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins");
    pixelMultMode_ = iConfig.getUntrackedParameter<bool>("pixelMultMode",true);
    trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);
+   useSubLeadingJet_ = iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false);
 }
 
 // ------------ method called to for each event  ------------
@@ -137,7 +134,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 
 	 for(unsigned it=0; it<sortedJets.size(); ++it){
 	    // break statement below makes it iterate only once!
-
+	    
 	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
 					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 	    if(fabs(sortedJets[it]->eta())>6.5) continue;
@@ -164,6 +161,10 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 	 // Get Leading jet energy
 	 for(unsigned it=0; it<sortedJets_occHand.size(); ++it){
+	    if(useSubLeadingJet_){ // use sub-leading jet
+	       if(sortedJets_occHand.size()>1) it++;
+	       else break; // if not sub-leading jet, break
+	    }
 	    leadJetEt_ = sortedJets_occHand[it]->et();
 	    leadJetEta_ = sortedJets_occHand[it]->eta();
 	    hJet0Eta_occHand->Fill(leadJetEta_);
@@ -311,23 +312,8 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       int pid = genEvtInfo->signalProcessID();
       double pthat = genEvtInfo->qScale();
       
-      bool isWanted = false;
+      bool isWanted = true;
       
-      if(nsdOnly_){
-	 if(pythia6_){
-	    if( ((pid>=11) && (pid<=68)) || (pid==94) || (pid==95)) isWanted = true;
-	 }else{
-	    // SD - 103, 104, DD - 105, MB - 101
-	    if(!(pid==103||pid==104)) isWanted = true;
-	 }
-      }else{
-	 isWanted = true;
-      }
-      
-      if((int)pthatCut_!=0){
-	 if(pthat>pthatCut_) isWanted = false;
-      }
-
       // occupancy handle 
       if(pixelMultMode_) occGENHandle_ = pixelMult_;
       else occGENHandle_ = leadJetEt_;

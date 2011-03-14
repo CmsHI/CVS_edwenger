@@ -111,17 +111,16 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    edm::Service<TFileService> fs;
    
-   bool isGEN_, doJet_, pureGENmode_, nsdOnly_, pythia6_;
+   bool isGEN_, doJet_, pureGENmode_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool setQualityBit_;
    bool triggerNeeded_;
    bool pixelMultMode_;
    bool trkAcceptedJet_;
+   bool useSubLeadingJet_;
 
-   double pthatCut_;
-
-   int32_t evtEffCorrType_, efit_type_, evtMultCut_;
+   int32_t evtEffCorrType_, evtMultCut_;
 
    double  etaMax_, ptMin_;
    double  pixelMult_;
