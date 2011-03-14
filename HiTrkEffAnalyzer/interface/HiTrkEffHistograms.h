@@ -79,6 +79,7 @@ class HiTrkEffHistograms
    bool fillNtuples;
    bool constPtBins;
    bool lowPtMode;
+   double trkPtMin;
    edm::Service<TFileService> f;
 
    std::vector<double> etaBins, ptBins, jetBins;

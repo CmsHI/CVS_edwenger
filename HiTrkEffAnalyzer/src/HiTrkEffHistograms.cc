@@ -16,6 +16,7 @@ HiTrkEffHistograms::HiTrkEffHistograms(const edm::ParameterSet& pset)
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
   constPtBins            = pset.getParameter<bool>("constPtBins");
   lowPtMode              = pset.getParameter<bool>("lowPtMode");
+  trkPtMin		 = pset.getParameter<double>("trkPtMin");
   neededCentBins         = pset.getUntrackedParameter<std::vector<int> >("neededCentBins");
 }
 
@@ -32,11 +33,11 @@ HiTrkEffHistograms::declareHistograms()
     TString leafStr;
     
     trackTrees.push_back(f->make<TTree>("simTrackTree","simTrackTree"));
-    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I";
+    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:jetr/F:cbin/I";
     trackTrees[0]->Branch("simTrackValues", &simTrackValues, leafStr.Data());
     
     trackTrees.push_back(f->make<TTree>("recTrackTree","recTrackTree"));
-    leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:status/I:ids/I:parids/I:etas/F:pts/F";
+    leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:status/I:ids/I:parids/I:etas/F:pts/F:jetr/F:cbin/I";
     trackTrees[1]->Branch("recTrackValues", &recTrackValues, leafStr.Data());
     
   }
@@ -227,8 +228,10 @@ HiTrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
 {
 
   if(fillNtuples && s.status>0){
-    simTrackValues = s;
-    trackTrees[0]->Fill();
+    if (trkPtMin>0&&s.pts>=trkPtMin) {
+      simTrackValues = s;
+      trackTrees[0]->Fill();
+    }
   }
 
   if(fillHistograms && s.status>0) {
@@ -270,8 +273,10 @@ HiTrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
 {
 
   if(fillNtuples){
-    recTrackValues = r;
-    trackTrees[1]->Fill();
+    if (trkPtMin>0&&r.ptr>=trkPtMin) {
+      recTrackValues = r;
+      trackTrees[1]->Fill();
+    }
   }
 
   if(fillHistograms) {
