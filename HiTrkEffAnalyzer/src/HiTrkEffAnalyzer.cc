@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.4 2010/12/20 15:40:26 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.6 2011/01/20 20:53:22 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -42,6 +42,8 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   hasSimInfo_(iConfig.getUntrackedParameter<bool>("hasSimInfo",false)),
   pixelMultMode_(iConfig.getUntrackedParameter<bool>("pixelMultMode",false)),
   useJetEt_(iConfig.getUntrackedParameter<bool>("useJetEt",true)),
+  trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
+  useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
   centrality_(0)
 {
 
@@ -91,18 +93,30 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   float jet_et = 0.0;
 
   if(useJetEt_){
-     edm::Handle<std::vector<pat::Jet> > jets;
+     edm::Handle<reco::CandidateView> jets;
      iEvent.getByLabel(jetTags_, jets);
      
-     std::vector<const pat::Jet *> sortedJets;
-     
+     std::vector<const reco::Candidate *> sortedJets;         // jets for event classfication
+
      for(unsigned it=0; it<jets->size(); ++it){
-	const pat::Jet* jts = &((*jets)[it]);
-	sortedJets.push_back( & *jts);
-	sortByEtRef (&sortedJets);
+	const reco::Candidate* jet = &((*jets)[it]);
+
+	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
+	   if(fabs(jet->eta())<1.9) {
+	      sortedJets.push_back(jet);
+	      sortByEtRef (&sortedJets);
+	   }
+	}else{
+	   sortedJets.push_back(jet);
+	   sortByEtRef (&sortedJets);
+	}
      }
      
      for(unsigned it=0; it<sortedJets.size(); ++it){
+	if(useSubLeadingJet_){ // use sub-leading jet
+	   if(sortedJets.size()>1) it++;
+	   else break; // if not sub-leading jet, break
+	}
 	jet_et = sortedJets[it]->et();
 	break;
      }
