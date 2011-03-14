@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.14 2011/01/20 21:44:58 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.15 2011/03/08 17:39:00 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -48,6 +48,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
    neededCentBins_ = iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins");
    pixelMultMode_ = iConfig.getUntrackedParameter<bool>("pixelMultMode",true);
+   trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);
 }
 
 // ------------ method called to for each event  ------------
@@ -113,15 +114,30 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 iEvent.getByLabel(jsrc_,jets);
 	 hNumJets->Fill(jets->size()); // check # of jets found in event
 	 
-	 vector<const reco::Candidate *> sortedJets;
+	 vector<const reco::Candidate *> sortedJets;         // jets for event normalization
+	 vector<const reco::Candidate *> sortedJets_occHand; // jets for event classfication
 	 
 	 for(unsigned it=0; it<jets->size(); ++it){
 	    const reco::Candidate* jet = &((*jets)[it]);
+
 	    sortedJets.push_back(jet);
+
+	    if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
+	       if(fabs(jet->eta())<1.9) {
+		  sortedJets_occHand.push_back(jet);
+		  sortByEtRef (&sortedJets_occHand);
+	       }
+	    }else{
+	       sortedJets_occHand.push_back(jet);
+	       sortByEtRef (&sortedJets_occHand);
+	    }
+
 	    sortByEtRef (&sortedJets);
 	 }
 	 
 	 for(unsigned it=0; it<sortedJets.size(); ++it){
+	    // break statement below makes it iterate only once!
+
 	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
 					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 	    if(fabs(sortedJets[it]->eta())>6.5) continue;
@@ -144,12 +160,16 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    // centrality bin vs jet et
 	    hCentJetEt->Fill(cbin,sortedJets[it]->et());
 	    break;             
-	 }                     
-	 
+	 }
+
 	 // Get Leading jet energy
-	 unsigned index = 0; 
-	 if(sortedJets.size()==0) leadJetEt_ = 0,leadJetEta_ = 0; 
-	 else leadJetEt_ = sortedJets[index]->et(), leadJetEta_ = sortedJets[index]->eta(); 
+	 for(unsigned it=0; it<sortedJets_occHand.size(); ++it){
+	    leadJetEt_ = sortedJets_occHand[it]->et();
+	    leadJetEta_ = sortedJets_occHand[it]->eta();
+	    hJet0Eta_occHand->Fill(leadJetEta_);
+	    break;
+	 }
+	 
       }
       
       // Get multiplicity dist from track collection
@@ -259,16 +279,30 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       iEvent.getByLabel(gjsrc_,gjets);
       
       vector<const reco::Candidate *> sortedGJets;
+      vector<const reco::Candidate *> sortedGJets_occHand;
       
       for(unsigned it=0; it<gjets->size(); ++it){
 	 const reco::Candidate* jet = &((*gjets)[it]);
+
+	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance                                                                                   
+	    if(fabs(jet->eta())<1.9) {
+	       sortedGJets_occHand.push_back(jet);
+	       sortByEtRef (&sortedGJets_occHand);
+	    }
+	 }else{
+	    sortedGJets_occHand.push_back(jet);
+	    sortByEtRef (&sortedGJets_occHand);
+	 }
 	 sortedGJets.push_back(jet);
-	 sortByEtRef (&sortedGJets);
+         sortByEtRef (&sortedGJets);
       }
+
       // Get Leading jet energy
-      unsigned index = 0; 
-      if(sortedGJets.size()==0) leadGJetEt_ = 0,leadGJetEta_ = 0; 
-      else leadGJetEt_ = sortedGJets[index]->et(), leadGJetEta_ = sortedGJets[index]->eta(); 
+      for(unsigned it=0; it<sortedGJets_occHand.size(); ++it){
+	 leadGJetEt_ = sortedGJets_occHand[it]->et();
+	 leadGJetEta_ = sortedGJets_occHand[it]->eta();
+	 break;
+      }
       
       // Gen event info
       edm::Handle<GenEventInfoProduct> genEvtInfo;
@@ -471,6 +505,7 @@ HiTrackSpectraAnalyzer::beginJob()
 	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
 	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0);
 	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet eta; #eta", 50,-6.0,6.0);
+	 hJet0Eta_occHand = fs->make<TH1F>("hJet0Eta_occHand","jet eta; #eta", 50,-6.0,6.0);
 	 for(unsigned i=0;i<hltNames_.size();i++){
 	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));
 	    hJet0Pt_Trig[i]->SetName(Form("hJet0Pt_%s",(char*) hltNames_[i].c_str()));

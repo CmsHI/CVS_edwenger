@@ -106,6 +106,7 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    // Jets
    TH1F *hNumJets;
    TH1F *hJet0Pt, *hJet0Eta;
+   TH1F *hJet0Eta_occHand;
    std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;
@@ -116,6 +117,8 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool setQualityBit_;
    bool triggerNeeded_;
    bool pixelMultMode_;
+   bool trkAcceptedJet_;
+
    double pthatCut_;
 
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;
