@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.15 2011/03/08 17:39:00 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.16 2011/03/14 18:24:33 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -121,6 +121,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    const reco::Candidate* jet = &((*jets)[it]);
 
 	    sortedJets.push_back(jet);
+	    sortByEtRef (&sortedJets);
 
 	    if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
 	       if(fabs(jet->eta())<1.9) {
@@ -132,7 +133,6 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	       sortByEtRef (&sortedJets_occHand);
 	    }
 
-	    sortByEtRef (&sortedJets);
 	 }
 	 
 	 for(unsigned it=0; it<sortedJets.size(); ++it){
@@ -284,7 +284,10 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       for(unsigned it=0; it<gjets->size(); ++it){
 	 const reco::Candidate* jet = &((*gjets)[it]);
 
-	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance                                                                                   
+	 sortedGJets.push_back(jet);
+         sortByEtRef (&sortedGJets);
+
+	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance 
 	    if(fabs(jet->eta())<1.9) {
 	       sortedGJets_occHand.push_back(jet);
 	       sortByEtRef (&sortedGJets_occHand);
@@ -293,8 +296,6 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    sortedGJets_occHand.push_back(jet);
 	    sortByEtRef (&sortedGJets_occHand);
 	 }
-	 sortedGJets.push_back(jet);
-         sortByEtRef (&sortedGJets);
       }
 
       // Get Leading jet energy
