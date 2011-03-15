@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.17 2011/03/14 19:42:12 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.18 2011/03/14 20:34:24 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -11,9 +11,9 @@
 HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
   pixelMult_(0),
   leadJetEt_(0),
-  leadJetEta_(0),
+  leadJetEta_(-999), 
   leadGJetEt_(0),
-  leadGJetEta_(0),
+  leadGJetEta_(-999),
   occHandle_(0),
   occGENHandle_(0),
   hltAccept_(5,false),
@@ -69,21 +69,24 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
    else if(evtEffCorrType_==2)
       etaCut_evtSel = 0.8;
 
-   //----- centrality information ----------------------                                                                                                                                     
+   //----- intialization of variables ------------------
+   pixelMult_ = 0.;
+   leadJetEt_ = 0.,  leadJetEta_ = -999.; // so that no jet present, put it outisde of scope
+   leadGJetEt_ = 0., leadGJetEta_ = -999.;
+   occHandle_ = 0.,  occGENHandle_ = 0.;
+
+   //----- centrality information ----------------------
    centrality_ = new CentralityProvider(iSetup);
    centrality_->newEvent(iEvent,iSetup);
    int cbin = centrality_->getBin();
 
    if(pixelMultMode_){
       pixelMult_ = centrality_->raw()->multiplicityPixel();
-      pixelMult_ = pixelMult_/100.; // scale it (120K -> 1200)                                                                                                                               
+      pixelMult_ = pixelMult_/100.; // scale it (120K -> 1200)
       hPxlMultDist->Fill(pixelMult_);
    }
 
    if(!pureGENmode_){  // if pure GEN, skip through to the GEN ana part
-
-     //float nevt = 1.0; // comment out unused variable (EAW)
-      
       // get hlt bit
       if(triggerNeeded_){
 	 Handle<edm::TriggerResults> triggerResults;
