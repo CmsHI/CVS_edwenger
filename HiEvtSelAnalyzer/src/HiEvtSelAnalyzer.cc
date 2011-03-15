@@ -74,6 +74,7 @@ class HiEvtSelAnalyzer : public edm::EDAnalyzer {
    edm::InputTag gtrklabel_;
    
    bool isGEN_;
+   double ptMin_;
 
    std::vector<int32_t> neededCentBins_;
    
@@ -118,6 +119,7 @@ HiEvtSelAnalyzer::HiEvtSelAnalyzer(const edm::ParameterSet& iConfig)
    isGEN_(iConfig.getUntrackedParameter<bool>("isGEN")),
    neededCentBins_(iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins")),
    trignames_(iConfig.getUntrackedParameter<std::vector <std::string> >("trignames")),
+   ptMin_(iConfig.getUntrackedParameter<double>("ptMin", 0.5)),
    centrality_(0)
 {
    //now do what ever initialization is needed
@@ -241,6 +243,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	 if(gen.status()!=1) continue;
 	 if(gen.charge()==0) continue;
+	 if(gen.pt()<ptMin_) continue;
 	 if(fabs(gen.eta())>2.4) continue;
 
 	 nGEN++;
@@ -293,8 +296,8 @@ HiEvtSelAnalyzer::beginJob()
    hCentDist = f->make<TH1F>("hCentDist","Centrality bin distribution; centrality bin",40,-0.5,39.5);
    hPixelMultDst = f->make<TH1F>("hPixelMultDst","Pixel hit distribution; first layer pixel hits",600,0,1200);
 
-   hRecMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",300,-0.5,299.5);
-   hGenMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",300,-0.5,299.5);
+   hRecMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
+   hGenMult = f->make<TH1F>("hGenMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
 
    // Centrality binned multiplicity
 
@@ -303,8 +306,8 @@ HiEvtSelAnalyzer::beginJob()
       nREC_Cent.push_back(0);
       nGEN_Cent.push_back(0);
 
-      hRecMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",300,-0.5,299.5));
-      hGenMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",300,-0.5,299.5));
+      hRecMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",600,-0.5,599.5));
+      hGenMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",600,-0.5,599.5));
 
       if(i==0){
 	 hRecMult_Cent[i]->SetName(Form("hRecMult_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));

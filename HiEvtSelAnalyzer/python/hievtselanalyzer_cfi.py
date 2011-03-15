@@ -6,6 +6,7 @@ hievtselanalyzer = cms.EDAnalyzer('HiEvtSelAnalyzer',
        trklabel=cms.untracked.InputTag('hiSelectedTracks'),
        gtrklabel=cms.untracked.InputTag('hiGenParticles'),
        isGEN=cms.untracked.bool(False),
+       ptMin=cms.untracked.double(0.9),
        neededCentBins = cms.untracked.vint32(0,1,3,11,19,39), # 0~5% (0,1), 5~10% (2,3), 10~30% (4,11) etc..
        trignames=cms.untracked.vstring('HLT_HIMinBiasHF',
                                        'HLT_HIJet35U',
