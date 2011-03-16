@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.6 2011/01/20 20:53:22 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.7 2011/03/14 20:47:21 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -22,7 +22,7 @@
 #include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #include "edwenger/HiTrkEffAnalyzer/interface/HiTrkEffAnalyzer.h"
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
-//#include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -44,6 +44,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   useJetEt_(iConfig.getUntrackedParameter<bool>("useJetEt",true)),
   trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
+  jetTrkOnly_(iConfig.getUntrackedParameter<bool>("jetTrkOnly",false)),
   centrality_(0)
 {
 
@@ -90,7 +91,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // PAT jet, to get leading jet ET
 
-  float jet_et = 0.0;
+  float jet_et = 0.0, jet_eta=0.0, jet_phi=0.0;
 
   if(useJetEt_){
      edm::Handle<reco::CandidateView> jets;
@@ -118,6 +119,8 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   else break; // if not sub-leading jet, break
 	}
 	jet_et = sortedJets[it]->et();
+	jet_eta = sortedJets[it]->eta();
+	jet_phi= sortedJets[it]->phi();
 	break;
      }
   }
@@ -169,6 +172,9 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
       
       if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
+
+      double drs = deltaR(jet_eta,jet_phi,tp->eta(),tp->phi());
+      if(jetTrkOnly_ && drs>0.8) continue; // if jetTrkOnly_, only those within dR = 0.8;
       
       std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
       const reco::Track* mtr=0;
@@ -203,6 +209,9 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     std::vector<std::pair<TrackingParticleRef, double> > tp;
     const TrackingParticle *mtp=0;
     size_t nsim=0;
+
+    double drr = deltaR(jet_eta,jet_phi,track->eta(),track->phi());
+    if(jetTrkOnly_ && drr>0.8) continue; // if jetTrkOnly_, only those within dR = 0.8;  
 
     if(hasSimInfo_ && recSimColl.find(track) != recSimColl.end()){
       tp = recSimColl[track];

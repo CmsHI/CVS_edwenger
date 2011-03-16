@@ -20,5 +20,6 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     useJetEt = cms.untracked.bool(False),
     trkPtMin = cms.double(-1),
     trkAcceptedJet = cms.untracked.bool(False),
-    useSubLeadingJet = cms.untracked.bool(False)
+    useSubLeadingJet = cms.untracked.bool(False),
+    jetTrkOnly = cms.untracked.bool(False)                                  
 )

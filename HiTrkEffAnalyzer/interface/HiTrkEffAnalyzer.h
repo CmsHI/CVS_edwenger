@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.3 2011/01/20 20:15:17 sungho Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.4 2011/03/14 20:47:29 sungho Exp $
 //
 
 // user include files
@@ -57,6 +57,7 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool useJetEt_;
       bool trkAcceptedJet_;
       bool useSubLeadingJet_;
+      bool jetTrkOnly_;
       
       HiTrkEffHistograms *histograms;
       edm::Service<TFileService> f;
