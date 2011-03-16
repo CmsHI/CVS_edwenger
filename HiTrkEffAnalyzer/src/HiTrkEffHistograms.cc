@@ -14,10 +14,10 @@ HiTrkEffHistograms::HiTrkEffHistograms(const edm::ParameterSet& pset)
 {
   fillHistograms         = pset.getParameter<bool>("fillHistograms");
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
-  constPtBins            = pset.getParameter<bool>("constPtBins");
+  ptBinScheme            = pset.getParameter<Int_t>("ptBinScheme");
   lowPtMode              = pset.getParameter<bool>("lowPtMode");
-  trkPtMin		 = pset.getParameter<double>("trkPtMin");
-  neededCentBins         = pset.getUntrackedParameter<std::vector<int> >("neededCentBins");
+  trkPtMin		 = pset.getParameter<Double_t>("trkPtMin");
+  neededCentBins         = pset.getUntrackedParameter<std::vector<Int_t> >("neededCentBins");
 }
 
 
@@ -44,11 +44,11 @@ HiTrkEffHistograms::declareHistograms()
   
   if(fillHistograms) {
 
-     const double small = 1e-3;
+     const Double_t small = 1e-3;
 
     // pt bins
-    if(!constPtBins){
-       double pt;
+    if(ptBinScheme==1){
+       Double_t pt;
 
        // simple rebinning possible with a rebinning facto n = 2, 3, 6 !
        for(pt =   0  ; pt <   1.2-small; pt +=  0.05) ptBins.push_back(pt); // 24 bins 
@@ -59,49 +59,64 @@ HiTrkEffHistograms::declareHistograms()
        for(pt =  55.2; pt < 170.4-small; pt +=  9.6 ) ptBins.push_back(pt); // 12 bins
        ptBins.push_back(170.4);
 
-    }else if(lowPtMode){
+    } else if(ptBinScheme==2){
+       Double_t pt;
 
-       static double ptMin   =  0.0;
-       static double ptMax   =  2.0;
-       static double ptWidth =  0.02;
+       // simple rebinning possible with a rebinning facto n = 2, 3, 6 !
+       for(pt =   0  ; pt <   1.2-small; pt +=  0.05) ptBins.push_back(pt); // 24 bins 
+       for(pt =   1.2; pt <   2.4-small; pt +=  0.1 ) ptBins.push_back(pt); // 12 bins
+       for(pt =   2.4; pt <   7.2-small; pt +=  0.4 ) ptBins.push_back(pt); // 12 bins
+       for(pt =   7.2; pt <  20.0-small; pt +=  1.6 ) ptBins.push_back(pt); // 8 bins 
+       for(pt =  20.0; pt <  24-small;	 pt +=  2.0 ) ptBins.push_back(pt); // 2 bins
+       for(pt =  24.0; pt <  30-small;	 pt +=  3.0 ) ptBins.push_back(pt); // 2 bins
+       for(pt =  30.0; pt <  40-small;	 pt +=  5.0 ) ptBins.push_back(pt); // 2 bins
+       for(pt =  40.0; pt <  60-small;	 pt += 10.0 ) ptBins.push_back(pt); // 2 bins
+       for(pt =  60.0; pt < 300-small;	 pt += 30.0 ) ptBins.push_back(pt); // 8 bins
+       ptBins.push_back(400); // total: 72 bins
 
-       for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
+    } else if(lowPtMode){
+
+       static Double_t ptMin   =  0.0;
+       static Double_t ptMax   =  2.0;
+       static Double_t ptWidth =  0.02;
+
+       for(Double_t pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
 	  ptBins.push_back(pt);
 
     }else{
 
-       static double ptMin   =  0.0;
-       static double ptMax   =  200.0;
-       static double ptWidth =  0.2;
+       static Double_t ptMin   =  0.0;
+       static Double_t ptMax   =  200.0;
+       static Double_t ptWidth =  0.2;
 
-       for(double pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
+       for(Double_t pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
 	  ptBins.push_back(pt);
 
     }
     
     // eta bins
-    static double etaMin   = -2.6;
-    static double etaMax   =  2.6;
-    static double etaWidth =  0.4;
+    static Double_t etaMin   = -2.6;
+    static Double_t etaMax   =  2.6;
+    static Double_t etaWidth =  0.4;
 
-    for(double eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
+    for(Double_t eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
       etaBins.push_back(eta);
 
 
     // jet et bins
     /*
-    double jet;
+    Double_t jet;
     for(jet =    0; jet <   50-small; jet +=  50 ) jetBins.push_back(jet);
     for(jet =   50; jet <   80-small; jet +=  30 ) jetBins.push_back(jet); 
     for(jet =   80; jet < 1000-small; jet +=  25 ) jetBins.push_back(jet);
     jetBins.push_back(1005);
     */
 
-    static float jetMin = 0.0;
-    static float jetMax = 1000; // good to be matched with ana 
-    static float jetWidth = 20;
+    static Float_t jetMin = 0.0;
+    static Float_t jetMax = 1000; // good to be matched with ana 
+    static Float_t jetWidth = 20;
 
-    for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
+    for(Double_t jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
        jetBins.push_back(jet);
 
     // simulated
