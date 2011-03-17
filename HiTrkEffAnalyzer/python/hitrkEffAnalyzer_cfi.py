@@ -11,13 +11,13 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     beamspot = cms.untracked.InputTag('offlineBeamSpot'),                         
     fillHistograms = cms.bool(True),
     fillNtuples = cms.bool(False),
-    ptBinScheme = cms.int32(2),
+    ptBinScheme = cms.int32(2), # 1 = original, 2 = constant d(1/pt) binning
     lowPtMode = cms.bool(False),
     doAssociation = cms.untracked.bool(True),
     hasSimInfo = cms.untracked.bool(False),
     pixelMultMode =  cms.untracked.bool(False),
     neededCentBins = cms.untracked.vint32(0,1,3,11,19,39), # 0~5% (0,1), 5~10% (2,3), 10~30% (4,11) etc..
-    useJetEtMode = cms.int32(0), # 0 = no jet, 1 = leading jet, 2 = closest jets
+    useJetEtMode = cms.int32(2), # 0 = no jet, 1 = leading jet, 2 = closest jets
     trkPtMin = cms.double(-1),
     trkAcceptedJet = cms.untracked.bool(False),
     useSubLeadingJet = cms.untracked.bool(False),
