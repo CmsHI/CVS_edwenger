@@ -19,7 +19,7 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     neededCentBins = cms.untracked.vint32(0,1,3,11,19,39), # 0~5% (0,1), 5~10% (2,3), 10~30% (4,11) etc..
     useJetEtMode = cms.int32(2), # 0 = no jet, 1 = leading jet, 2 = closest jets
     trkPtMin = cms.double(-1),
-    trkAcceptedJet = cms.untracked.bool(False),
+    trkAcceptedJet = cms.untracked.bool(True), # limit jets to |eta|<2.0 
     useSubLeadingJet = cms.untracked.bool(False),
     jetTrkOnly = cms.untracked.bool(False)
 )

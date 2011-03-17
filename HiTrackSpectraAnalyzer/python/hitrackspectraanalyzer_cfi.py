@@ -30,7 +30,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           neededCentBins = cms.untracked.vint32(0,1,3,11,19,39), # 0~5% (0,1), 5~10% (2,3), 10~30% (4,11) etc..
                           pixelMultMode = cms.untracked.bool(False),
                           closestJets = cms.untracked.bool(True), # use ET of jet closest in dR for a given track  
-                          trkAcceptedJet = cms.untracked.bool(False),
+                          trkAcceptedJet = cms.untracked.bool(True), # # limit jets to |eta|<2.0
                           useSubLeadingJet = cms.untracked.bool(False)
                           )
 
