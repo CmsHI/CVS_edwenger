@@ -17,9 +17,9 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     hasSimInfo = cms.untracked.bool(False),
     pixelMultMode =  cms.untracked.bool(False),
     neededCentBins = cms.untracked.vint32(0,1,3,11,19,39), # 0~5% (0,1), 5~10% (2,3), 10~30% (4,11) etc..
-    useJetEtMode = cms.int32(0),
+    useJetEtMode = cms.int32(0), # 0 = no jet, 1 = leading jet, 2 = closest jets
     trkPtMin = cms.double(-1),
     trkAcceptedJet = cms.untracked.bool(False),
     useSubLeadingJet = cms.untracked.bool(False),
-    jetTrkOnly = cms.untracked.bool(False)                                  
+    jetTrkOnly = cms.untracked.bool(False)
 )
