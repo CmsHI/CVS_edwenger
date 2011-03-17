@@ -11,6 +11,7 @@
 <use name=DataFormats/HeavyIonEvent>
 <use name=CondFormats/HIObjects>
 <use name=SimDataFormats/GeneratorProducts>
+<use name=DataFormats/Math>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerHiTrackSpectraAnalyzer>

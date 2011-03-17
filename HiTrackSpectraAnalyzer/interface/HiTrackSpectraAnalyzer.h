@@ -32,6 +32,8 @@
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
 #include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+
 // ROOT includes
 #include "TNtuple.h"
 #include "TH1.h"
@@ -107,16 +109,20 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH1F *hNumJets;
    TH1F *hJet0Pt, *hJet0Eta;
    TH1F *hJet0Eta_occHand;
+   TH1F *hClosestJetdR;
+   TH1F *hClosestJetInd;
+   TH1F *hClosestJetEta;
    std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;
    
-   bool isGEN_, doJet_, pureGENmode_;
+   bool isGEN_, pureGENmode_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool setQualityBit_;
    bool triggerNeeded_;
    bool pixelMultMode_;
+   bool closestJets_;
    bool trkAcceptedJet_;
    bool useSubLeadingJet_;
 

@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.18 2011/03/14 20:34:24 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.19 2011/03/15 13:01:26 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -29,7 +29,6 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    setQualityBit_ = iConfig.getUntrackedParameter<bool>("setQualityBit", true);
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
-   doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
@@ -44,6 +43,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
    neededCentBins_ = iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins");
    pixelMultMode_ = iConfig.getUntrackedParameter<bool>("pixelMultMode",true);
+   closestJets_ = iConfig.getUntrackedParameter<bool>("closestJets",true);
    trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);
    useSubLeadingJet_ = iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false);
 }
@@ -108,73 +108,70 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       }
 
       //----- loop over pat jets and store in a vector -----
-      if(doJet_){
-
-	 edm::Handle<reco::CandidateView> jets;
-	 iEvent.getByLabel(jsrc_,jets);
-	 hNumJets->Fill(jets->size()); // check # of jets found in event
+      edm::Handle<reco::CandidateView> jets;
+      iEvent.getByLabel(jsrc_,jets);
+      hNumJets->Fill(jets->size()); // check # of jets found in event
+      
+      vector<const reco::Candidate *> sortedJets;         // jets for event normalization
+      vector<const reco::Candidate *> sortedJets_occHand; // jets for event classfication
+      
+      for(unsigned it=0; it<jets->size(); ++it){
+	 const reco::Candidate* jet = &((*jets)[it]);
 	 
-	 vector<const reco::Candidate *> sortedJets;         // jets for event normalization
-	 vector<const reco::Candidate *> sortedJets_occHand; // jets for event classfication
+	 sortedJets.push_back(jet);
+	 sortByEtRef (&sortedJets);
 	 
-	 for(unsigned it=0; it<jets->size(); ++it){
-	    const reco::Candidate* jet = &((*jets)[it]);
-
-	    sortedJets.push_back(jet);
-	    sortByEtRef (&sortedJets);
-
-	    if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-	       if(fabs(jet->eta())<1.9) {
-		  sortedJets_occHand.push_back(jet);
-		  sortByEtRef (&sortedJets_occHand);
-	       }
-	    }else{
+	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
+	    if(fabs(jet->eta())<1.9) {
 	       sortedJets_occHand.push_back(jet);
 	       sortByEtRef (&sortedJets_occHand);
 	    }
-
-	 }
-	 
-	 for(unsigned it=0; it<sortedJets.size(); ++it){
-	    // break statement below makes it iterate only once!
-	    
-	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
-					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
-	    if(fabs(sortedJets[it]->eta())>6.5) continue;
-	    // all jet et
-	    hJet0Pt->Fill(sortedJets[it]->et()), hJet0Eta->Fill(sortedJets[it]->eta());
-	    // triggered jet et
-	    for(unsigned i=0;i<hltNames_.size();i++){
-	       if(hltAccept_[i]) hJet0Pt_Trig[i]->Fill(sortedJets[it]->et());
-	    }
-	    // centrality binned jet et
-	    for(unsigned i=0;i<neededCentBins_.size();i++){
-	       if(i==0){
-		  if(cbin<=neededCentBins_[i+1])
-		     hJet0Pt_Cent[i]->Fill(sortedJets[it]->et());
-	       }else{
-		  if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
-		     hJet0Pt_Cent[i]->Fill(sortedJets[it]->et());
-	       }
-	    }
-	    // centrality bin vs jet et
-	    hCentJetEt->Fill(cbin,sortedJets[it]->et());
-	    break;             
-	 }
-
-	 // Get Leading jet energy
-	 for(unsigned it=0; it<sortedJets_occHand.size(); ++it){
-	    if(useSubLeadingJet_){ // use sub-leading jet
-	       if(sortedJets_occHand.size()>1) it++;
-	       else break; // if not sub-leading jet, break
-	    }
-	    leadJetEt_ = sortedJets_occHand[it]->et();
-	    leadJetEta_ = sortedJets_occHand[it]->eta();
-	    hJet0Eta_occHand->Fill(leadJetEta_);
-	    break;
+	 }else{
+	    sortedJets_occHand.push_back(jet);
+	    sortByEtRef (&sortedJets_occHand);
 	 }
 	 
       }
+      
+      for(unsigned it=0; it<sortedJets.size(); ++it){
+	 // break statement below makes it iterate only once!
+	 
+	 if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
+				     hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
+	 if(fabs(sortedJets[it]->eta())>6.5) continue;
+	 // all jet et
+	 hJet0Pt->Fill(sortedJets[it]->et()), hJet0Eta->Fill(sortedJets[it]->eta());
+	 // triggered jet et
+	 for(unsigned i=0;i<hltNames_.size();i++){
+	    if(hltAccept_[i]) hJet0Pt_Trig[i]->Fill(sortedJets[it]->et());
+	 }
+	 // centrality binned jet et
+	 for(unsigned i=0;i<neededCentBins_.size();i++){
+	    if(i==0){
+	       if(cbin<=neededCentBins_[i+1])
+		  hJet0Pt_Cent[i]->Fill(sortedJets[it]->et());
+	    }else{
+	       if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
+		  hJet0Pt_Cent[i]->Fill(sortedJets[it]->et());
+	    }
+	 }
+	 // centrality bin vs jet et
+	 hCentJetEt->Fill(cbin,sortedJets[it]->et());
+	 break;             
+      }
+      
+      // Get Leading jet energy
+      for(unsigned it=0; it<sortedJets_occHand.size(); ++it){
+	 if(useSubLeadingJet_){ // use sub-leading jet
+	    if(sortedJets_occHand.size()>1) it++;
+	    else break; // if not sub-leading jet, break
+	 }
+	 leadJetEt_ = sortedJets_occHand[it]->et();
+	 leadJetEta_ = sortedJets_occHand[it]->eta();
+	 hJet0Eta_occHand->Fill(leadJetEta_);
+	 break;
+      }
+      
       
       // Get multiplicity dist from track collection
       int mult = 0;
@@ -219,10 +216,33 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    
 	    if(setQualityBit_ && !trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 	    
-	    if(!histOnly_) nt_dndptdeta->Fill(trk.pt(),trk.eta());
-	    if(doJet_ && (!histOnly_)) nt_jettrack->Fill(trk.pt(),trk.eta(),leadJetEt_,
-							 hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
-	    
+	    if(!histOnly_){
+	       nt_dndptdeta->Fill(trk.pt(),trk.eta()); 
+	       nt_jettrack->Fill(trk.pt(),trk.eta(),leadJetEt_,
+				 hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
+	    }
+
+	    // if closestJets, use ET of jet which is closest in dR for a given track
+	    if(closestJets_){
+	       float closestJetdR = 99, dR=99;
+	       int closestJetInd = -99;
+	       for(unsigned k=0;k<sortedJets_occHand.size();k++){
+		  if(sortedJets_occHand[k]->et()<40) continue; // fake jet meaningless
+		  dR=deltaR(*sortedJets_occHand[k],trk);
+		  if (dR<closestJetdR) {
+		     closestJetdR=dR;
+		     closestJetInd=k;
+		  }
+	       }
+	       if(closestJetInd<0) occHandle_ = 0.0;
+	       else occHandle_ = sortedJets_occHand[closestJetInd]->et();
+
+	       hClosestJetdR->Fill(closestJetdR);
+	       hClosestJetInd->Fill(closestJetInd);
+	       hClosestJetEta->Fill(sortedJets_occHand[closestJetInd]->eta());
+	    }
+
+
 	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 
@@ -230,7 +250,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    unsigned ind=0;
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(neededTrigSpectra_[i]!=1) continue;
-               if(hltAccept_[i]) hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),leadJetEt_,1./evt_sel_eff);
+               if(hltAccept_[i]) hTrkPtEtaJetEt_Trig[ind]->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 	       ind++;
             }
 
@@ -337,8 +357,24 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    if(!histOnly_) nt_gen_dndptdeta->Fill(gen.pt(),gen.eta(),leadJetEt_,leadGJetEt_,
 		hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]);
 	    
-	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
 
+	    if(closestJets_){
+	       float closestGJetdR = 99, GdR=99;
+               int closestGJetInd = -99;
+               for(unsigned k=0;k<sortedGJets_occHand.size();k++){
+                  if(sortedGJets_occHand[k]->et()<40) continue; // fake jet meaningless                                                                      
+                  GdR=deltaR(*sortedGJets_occHand[k],gen);
+                  if (GdR<closestGJetdR) {
+                     closestGJetdR=GdR;
+                     closestGJetInd=k;
+		  }
+               }
+               if(closestGJetInd<0) occGENHandle_ = 0.0;
+	       else occGENHandle_ = sortedGJets_occHand[closestGJetInd]->et();
+            }
+
+
+	    hGenTrkPtEta->Fill(gen.eta(),gen.pt());
 	    hGenTrkPtEtaJetEt->Fill(gen.eta(),gen.pt(),occGENHandle_); 
 	    hGenTrkPtEtaJetEt_vbin->Fill(gen.eta(),gen.pt(),occGENHandle_);
 
@@ -489,17 +525,20 @@ HiTrackSpectraAnalyzer::beginJob()
 						  etaBins.size()-1, &etaBins[0],ptBins.size()-1, &ptBins[0],jetBins.size()-1, &jetBins[0]);
       }
       
-      if(doJet_) {
-	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
-	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
-	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
-	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0);
-	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet eta; #eta", 50,-6.0,6.0);
-	 hJet0Eta_occHand = fs->make<TH1F>("hJet0Eta_occHand","jet eta; #eta", 50,-6.0,6.0);
-	 for(unsigned i=0;i<hltNames_.size();i++){
-	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));
-	    hJet0Pt_Trig[i]->SetName(Form("hJet0Pt_%s",(char*) hltNames_[i].c_str()));
-	 }
+      if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
+      if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
+      hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
+      hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0);
+      hJet0Eta = fs->make<TH1F>("hJet0Eta","jet eta; #eta", 50,-6.0,6.0);
+      hJet0Eta_occHand = fs->make<TH1F>("hJet0Eta_occHand","jet eta; #eta", 50,-6.0,6.0);
+      if(closestJets_){
+	 hClosestJetInd = fs->make<TH1F>("hClosestJetInd","index of closest jet",20,0.0,20.);
+	 hClosestJetdR = fs->make<TH1F>("hClosestJetdR","dR of closest jet",100,0.0,3.15);
+	 hClosestJetEta = fs->make<TH1F>("hClosestJetEta","jet eta; #eta", 50,-6.0,6.0);
+      }
+      for(unsigned i=0;i<hltNames_.size();i++){
+	 hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));
+	 hJet0Pt_Trig[i]->SetName(Form("hJet0Pt_%s",(char*) hltNames_[i].c_str()));
       }
    } // end of pureGENmode
    
