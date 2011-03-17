@@ -10,7 +10,6 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           setQualityBit = cms.untracked.bool(False),
                           isGEN = cms.untracked.bool(False),
                           pureGENmode = cms.untracked.bool(False),
-                          doJet = cms.untracked.bool(False),
                           histOnly = cms.untracked.bool(True),
                           includeExtra = cms.untracked.bool(False),
                           etaMax = cms.untracked.double(2.5),
@@ -30,6 +29,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           triglabel = cms.untracked.InputTag('TriggerResults','','HLT'),
                           neededCentBins = cms.untracked.vint32(0,1,3,11,19,39), # 0~5% (0,1), 5~10% (2,3), 10~30% (4,11) etc..
                           pixelMultMode = cms.untracked.bool(False),
+                          closestJets = cms.untracked.bool(True), # use ET of jet closest in dR for a given track  
                           trkAcceptedJet = cms.untracked.bool(False),
                           useSubLeadingJet = cms.untracked.bool(False)
                           )
