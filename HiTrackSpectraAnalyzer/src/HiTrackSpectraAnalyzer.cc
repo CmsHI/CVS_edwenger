@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.19 2011/03/15 13:01:26 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.20 2011/03/17 21:11:55 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -122,7 +122,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 sortByEtRef (&sortedJets);
 	 
 	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-	    if(fabs(jet->eta())<1.9) {
+	    if(fabs(jet->eta())<2.0) {
 	       sortedJets_occHand.push_back(jet);
 	       sortByEtRef (&sortedJets_occHand);
 	    }
@@ -312,7 +312,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
          sortByEtRef (&sortedGJets);
 
 	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance 
-	    if(fabs(jet->eta())<1.9) {
+	    if(fabs(jet->eta())<2.0) {
 	       sortedGJets_occHand.push_back(jet);
 	       sortByEtRef (&sortedGJets_occHand);
 	    }
