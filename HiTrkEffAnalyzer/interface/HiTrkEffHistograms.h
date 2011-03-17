@@ -32,6 +32,9 @@ typedef struct
   Int_t algo;
   Float_t jetr;
   Int_t cbin;
+  Float_t jetar;
+  Float_t jrdr;
+  Int_t jrind;
 } SimTrack_t;
 
 typedef struct
@@ -55,6 +58,9 @@ typedef struct
   Float_t pts;
   Float_t jetr;
   Int_t cbin;
+  Float_t jetar;
+  Float_t jrdr;
+  Int_t jrind;
 } RecTrack_t;
 
 // define class to hold histograms and track trees

@@ -34,10 +34,12 @@ HiTrkEffHistograms::declareHistograms()
     
     trackTrees.push_back(f->make<TTree>("simTrackTree","simTrackTree"));
     leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:jetr/F:cbin/I";
+    leafStr += ":jetar/F:jrdr/F:jrind/I";
     trackTrees[0]->Branch("simTrackValues", &simTrackValues, leafStr.Data());
     
     trackTrees.push_back(f->make<TTree>("recTrackTree","recTrackTree"));
     leafStr = "charge/I:etar/F:ptr/F:phir/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:nsim/I:status/I:ids/I:parids/I:etas/F:pts/F:jetr/F:cbin/I";
+    leafStr += ":jetar/F:jrdr/F:jrind/I";
     trackTrees[1]->Branch("recTrackValues", &recTrackValues, leafStr.Data());
     
   }

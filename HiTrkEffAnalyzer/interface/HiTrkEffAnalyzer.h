@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.4 2011/03/14 20:47:29 sungho Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.5 2011/03/16 18:00:46 sungho Exp $
 //
 
 // user include files
@@ -33,8 +33,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob();
       
-      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int);
-      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int);
+      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int, std::vector<const reco::Candidate *> & sortedJets);
+      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int, std::vector<const reco::Candidate *> & sortedJets);
       bool testVertex(reco::Track&, double&, double&, double&, double&);
       std::pair<bool,bool> isAccepted(TrackingParticle&);
       int getLayerId(const PSimHit&);
@@ -54,7 +54,7 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool doAssociation_;
       bool hasSimInfo_;
       bool pixelMultMode_;
-      bool useJetEt_;
+      Int_t useJetEtMode_;
       bool trkAcceptedJet_;
       bool useSubLeadingJet_;
       bool jetTrkOnly_;
