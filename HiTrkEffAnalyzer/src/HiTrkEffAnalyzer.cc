@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.8 2011/03/16 18:00:38 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.9 2011/03/17 17:19:30 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -103,7 +103,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	const reco::Candidate* jet = &((*jets)[it]);
 
 	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-	   if(fabs(jet->eta())<1.9) {
+	   if(fabs(jet->eta())<2) {
 	      sortedJets.push_back(jet);
 	      sortByEtRef (&sortedJets);
 	   }
