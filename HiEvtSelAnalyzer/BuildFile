@@ -6,6 +6,7 @@
 <use name=DataFormats/HeavyIonEvent>
 <use name=DataFormats/Common>
 <use name=CondFormats/HIObjects>
+<use name=DataFormats/VertexReco>
 <use name=SimDataFormats/GeneratorProducts>
 <flags EDM_PLUGIN=1>
 <export>
@@ -15,5 +16,6 @@
    <use name=FWCore/ParameterSet>
    <use name=CommonTools/UtilAlgos>
    <use name=DataFormats/L1GlobalTrigger>
+   <use name=DataFormats/VertexReco>
    <use name=SimDataFormats/GeneratorProducts>
 </export>

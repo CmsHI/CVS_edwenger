@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id$
+// $Id: HiEvtSelAnalyzer.cc,v 1.2 2011/03/15 17:24:42 sungho Exp $
 //
 //
 
@@ -39,6 +39,10 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "edwenger/HiVertexAnalyzer/interface/HiVertexComparator.h"
 
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
@@ -71,6 +75,7 @@ class HiEvtSelAnalyzer : public edm::EDAnalyzer {
    edm::InputTag gtlabel_;
    edm::InputTag triglabel_;
    edm::InputTag trklabel_;
+   edm::InputTag vtxlabel_;
    edm::InputTag gtrklabel_;
    
    bool isGEN_;
@@ -85,6 +90,15 @@ class HiEvtSelAnalyzer : public edm::EDAnalyzer {
    TH1F *hL1TechBits;
    TH1F *hL1AlgoBits;
    TH1F *hHLTPaths;
+
+   TH1F *hVtxSize;
+   TH1F *hVtxTracks;
+   TH1F *hVtxZ;
+
+   // for M = 0 not so peripheral events (<70%)
+   TH1F *hVtxSizeZero;
+   TH1F *hVtxTracksZero;
+   TH1F *hVtxZZero;
 
    TH1F *hCentDist;
    TH1F *hPixelMultDst;
@@ -115,6 +129,7 @@ HiEvtSelAnalyzer::HiEvtSelAnalyzer(const edm::ParameterSet& iConfig)
    gtlabel_(iConfig.getUntrackedParameter<edm::InputTag>("gtlabel")),
    triglabel_(iConfig.getUntrackedParameter<edm::InputTag>("triglabel")),
    trklabel_(iConfig.getUntrackedParameter<edm::InputTag>("trklabel")),
+   vtxlabel_(iConfig.getUntrackedParameter<edm::InputTag>("vtxlabel")),
    gtrklabel_(iConfig.getUntrackedParameter<edm::InputTag>("gtrklabel")),
    isGEN_(iConfig.getUntrackedParameter<bool>("isGEN")),
    neededCentBins_(iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins")),
@@ -178,6 +193,18 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }
    }
 
+   //---------------- Vertex distribution -------------------
+   edm::Handle<reco::VertexCollection> vtxsH;
+   iEvent.getByLabel(vtxlabel_,vtxsH);
+
+   reco::VertexCollection vtxs = *vtxsH;
+   std::sort(vtxs.begin(),vtxs.end(),MoreTracksThenLowerChi2<reco::Vertex>());
+
+   hVtxSize->Fill(vtxs.size());
+   if(!vtxs.size()){
+      hVtxTracks->Fill(vtxs[0].tracksSize());
+      hVtxZ->Fill(vtxs[0].z());
+   }
 
    // -------------- Event centrality -----------------------
    if(!centrality_) centrality_ = new CentralityProvider(iSetup);
@@ -223,6 +250,15 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }else{
 	 if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1])
 	    hRecMult_Cent[i]->Fill(nREC_Cent[i]);
+      }
+   }
+
+   // invetigation plot
+   if(nREC==0 && cbin<28){
+      hVtxSizeZero->Fill(vtxs.size());
+      if(!vtxs.size()){
+	 hVtxTracksZero->Fill(vtxs[0].tracksSize());
+	 hVtxZZero->Fill(vtxs[0].z());
       }
    }
 
@@ -292,6 +328,14 @@ HiEvtSelAnalyzer::beginJob()
    hL1AlgoBits = f->make<TH1F>("hL1AlgoBits","L1 algorithm trigger bits before mask",128,-0.5,127.5);
    hHLTPaths = f->make<TH1F>("hHLTPaths","HLT Paths",5,0,5);
    hHLTPaths->SetBit(TH1::kCanRebin);
+
+   hVtxSize = f->make<TH1F>("hVtxSize","number of reconstructed vertices",10,-0.5,9.5);
+   hVtxTracks = f->make<TH1F>("hVtxTracks","number of tracks fitted to vertex",120,-0.5,119.5);
+   hVtxZ = f->make<TH1F>("hVtxZ","z position of best reconstructed vertex",120,-30.0,30.0);
+
+   hVtxSizeZero = f->make<TH1F>("hVtxSizeZero","number of reconstructed vertices",10,-0.5,9.5);
+   hVtxTracksZero = f->make<TH1F>("hVtxTracksZero","number of tracks fitted to vertex",120,-0.5,119.5);
+   hVtxZZero = f->make<TH1F>("hVtxZZero","z position of best reconstructed vertex",120,-30.0,30.0);
 
    hCentDist = f->make<TH1F>("hCentDist","Centrality bin distribution; centrality bin",40,-0.5,39.5);
    hPixelMultDst = f->make<TH1F>("hPixelMultDst","Pixel hit distribution; first layer pixel hits",600,0,1200);
