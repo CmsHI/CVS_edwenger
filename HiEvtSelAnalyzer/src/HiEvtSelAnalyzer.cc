@@ -201,7 +201,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    std::sort(vtxs.begin(),vtxs.end(),MoreTracksThenLowerChi2<reco::Vertex>());
 
    hVtxSize->Fill(vtxs.size());
-   if(!vtxs.size()){
+   if(vtxs.size()!=0){
       hVtxTracks->Fill(vtxs[0].tracksSize());
       hVtxZ->Fill(vtxs[0].z());
    }
@@ -256,7 +256,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    // invetigation plot
    if(nREC==0 && cbin<28){
       hVtxSizeZero->Fill(vtxs.size());
-      if(!vtxs.size()){
+      if(vtxs.size()!=0){
 	 hVtxTracksZero->Fill(vtxs[0].tracksSize());
 	 hVtxZZero->Fill(vtxs[0].z());
       }
