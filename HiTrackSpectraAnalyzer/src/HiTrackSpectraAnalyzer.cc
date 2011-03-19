@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.21 2011/03/17 22:53:22 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.22 2011/03/19 18:44:15 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -226,7 +226,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    if(closestJets_){
 	       float closestJetdR = 99, dR=99;
 	       int closestJetInd = -99;
-	       /*
+
 	       for(unsigned k=0;k<sortedJets_occHand.size();k++){
 		  if(sortedJets_occHand[k]->et()<40) continue; // fake jet meaningless
 		  dR=deltaR(*sortedJets_occHand[k],trk);
@@ -235,7 +235,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 		     closestJetInd=k;
 		  }
 	       }
-	       */
+
 	       if(closestJetInd<0) occHandle_ = 0.0;
 	       else occHandle_ = sortedJets_occHand[closestJetInd]->et();
 
@@ -363,7 +363,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    if(closestJets_){
 	       float closestGJetdR = 99, GdR=99;
                int closestGJetInd = -99;
-	       /*
+
                for(unsigned k=0;k<sortedGJets_occHand.size();k++){
                   if(sortedGJets_occHand[k]->et()<40) continue; // fake jet meaningless                                                                      
                   GdR=deltaR(*sortedGJets_occHand[k],gen);
@@ -372,7 +372,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
                      closestGJetInd=k;
 		  }
                }
-	       */
+
                if(closestGJetInd<0) occGENHandle_ = 0.0;
 	       else occGENHandle_ = sortedGJets_occHand[closestGJetInd]->et();
             }
