@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.23 2011/03/19 18:54:06 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.24 2011/03/19 18:58:54 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -539,7 +539,7 @@ HiTrackSpectraAnalyzer::beginJob()
       hJet0Eta_occHand = fs->make<TH1F>("hJet0Eta_occHand","jet eta; #eta", 50,-6.0,6.0);
       if(closestJets_){
 	 hClosestJetInd = fs->make<TH1F>("hClosestJetInd","index of closest jet",20,0.0,20.);
-	 hClosestJetdR = fs->make<TH1F>("hClosestJetdR","dR of closest jet",100,0.0,3.15);
+	 hClosestJetdR = fs->make<TH1F>("hClosestJetdR","dR of closest jet",100,0.0,6.6);
 	 hClosestJetEta = fs->make<TH1F>("hClosestJetEta","jet eta; #eta", 50,-6.0,6.0);
       }
       for(unsigned i=0;i<hltNames_.size();i++){
