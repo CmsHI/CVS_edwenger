@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.4 2011/03/18 16:40:21 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.5 2011/03/19 18:43:55 sungho Exp $
 //
 //
 
@@ -161,6 +161,8 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 {
    using namespace edm;
 
+   bool warningM = false;
+
    // -------------- L1 trigger bits -------------------------
    edm::Handle<L1GlobalTriggerReadoutRecord> gtH;
    iEvent.getByLabel(gtlabel_,gtH);
@@ -186,7 +188,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 if(index < trigH->size()) {
 	    if(trigH->accept(index)) hHLTPaths->Fill(trignames_[i].c_str(),1);  
 	 } else {
-	    edm::LogWarning("EvtSelAnalyzer") 
+	    edm::LogWarning(warningM) 
 	       << "Index returned by TriggerNames object for trigger '"
 	       << trignames_[i]
 	       << "' is out of range (" 
