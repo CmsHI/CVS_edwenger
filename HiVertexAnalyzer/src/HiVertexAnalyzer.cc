@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: HiVertexAnalyzer.cc,v 1.3 2011/03/13 17:09:34 sungho Exp $
+// $Id: HiVertexAnalyzer.cc,v 1.4 2011/03/13 22:06:29 sungho Exp $
 //
 
 #include "edwenger/HiVertexAnalyzer/interface/HiVertexAnalyzer.h"
@@ -24,6 +24,7 @@ HiVertexAnalyzer::HiVertexAnalyzer(const edm::ParameterSet& iConfig)
 void
 HiVertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
 
   //------ Centrality -------------------
   centrality_ = new CentralityProvider(iSetup);
@@ -52,7 +53,7 @@ HiVertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   hVtxXnZ->Fill(vtxs[0].x(),vtxs[0].z());
   hVtxYnZ->Fill(vtxs[0].y(),vtxs[0].z());
 
-  for(unsigned i=0;i<neededCentBins_.size();i++){
+  for(unsigned i=0;i<neededCentBins_.size()-1;i++){
      if(i==0){
         if(cbin<=neededCentBins_[i+1]){
            hVtxTracks_Cent[i]->Fill(vtxs[0].tracksSize());
@@ -70,6 +71,7 @@ HiVertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
   }
 
+
   for(unsigned i=0; i<vtxs.size(); i++)
      hAllVtxZ->Fill(vtxs[i].z());
 
@@ -81,7 +83,6 @@ HiVertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   for(unsigned i=0; i<vtxs.size(); i++)
     edm::LogVerbatim("HiVertexAnalyzer") << "vtx #" << i << " has " 
 		     << vtxs[i].tracksSize() << " tracks";
-  
 }
 
 

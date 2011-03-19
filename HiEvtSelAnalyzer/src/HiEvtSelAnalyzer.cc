@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.2 2011/03/15 17:24:42 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.4 2011/03/18 16:40:21 sungho Exp $
 //
 //
 
@@ -173,25 +173,28 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    const DecisionWord& word = gtH->decisionWord();
    for(int bit=0; bit<128; bit++) hL1AlgoBits->Fill(bit,word.at(bit));
 
-   
    // -------------- HLT -------------------------------------
    edm::Handle<edm::TriggerResults> trigH;
-   iEvent.getByLabel(triglabel_,trigH);
+   bool isTrigThere = iEvent.getByLabel(triglabel_,trigH);
     
    // jet triggers
-   const edm::TriggerNames names = iEvent.triggerNames(*trigH);
-   for(unsigned i=0; i<trignames_.size(); i++) {
-      unsigned index = names.triggerIndex(trignames_[i]);
-      if(index < trigH->size()) {
-	 if(trigH->accept(index)) hHLTPaths->Fill(trignames_[i].c_str(),1);  
-      } else {
-	 edm::LogWarning("EvtSelAnalyzer") 
-	    << "Index returned by TriggerNames object for trigger '"
-	    << trignames_[i]
-	    << "' is out of range (" 
-	    << index << " >= " << trigH->size() << ")";
+
+   if(isTrigThere){ // just a protection
+      const edm::TriggerNames names = iEvent.triggerNames(*trigH);
+      for(unsigned i=0; i<trignames_.size(); i++) {
+	 unsigned index = names.triggerIndex(trignames_[i]);
+	 if(index < trigH->size()) {
+	    if(trigH->accept(index)) hHLTPaths->Fill(trignames_[i].c_str(),1);  
+	 } else {
+	    edm::LogWarning("EvtSelAnalyzer") 
+	       << "Index returned by TriggerNames object for trigger '"
+	       << trignames_[i]
+	       << "' is out of range (" 
+	       << index << " >= " << trigH->size() << ")";
+	 }
       }
    }
+
 
    //---------------- Vertex distribution -------------------
    edm::Handle<reco::VertexCollection> vtxsH;
@@ -205,6 +208,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       hVtxTracks->Fill(vtxs[0].tracksSize());
       hVtxZ->Fill(vtxs[0].z());
    }
+
 
    // -------------- Event centrality -----------------------
    if(!centrality_) centrality_ = new CentralityProvider(iSetup);
@@ -226,6 +230,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    for(unsigned i=0;i<neededCentBins_.size()-1;i++)
       nREC_Cent[i]=0; // intialize
 
+
    for(unsigned it=0; it<tracks->size(); ++it){
       const reco::Track & trk = (*tracks)[it];
 
@@ -233,7 +238,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       nREC++;
       
       // centrality binned multiplicity
-      for(unsigned i=0;i<neededCentBins_.size();i++){
+      for(unsigned i=0;i<neededCentBins_.size()-1;i++){
 	 if(i==0){
 	    if(cbin<=neededCentBins_[i+1]) nREC_Cent[i]++;
 	 }else{
@@ -241,9 +246,10 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 }
       }
    }
-
+   
    hRecMult->Fill(nREC);
-   for(unsigned i=0;i<neededCentBins_.size();i++){
+
+   for(unsigned i=0;i<neededCentBins_.size()-1;i++){
       if(i==0){
 	 if(cbin<=neededCentBins_[i+1])
 	    hRecMult_Cent[i]->Fill(nREC_Cent[i]);
@@ -253,7 +259,9 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }
    }
 
+
    // invetigation plot
+
    if(nREC==0 && cbin<28){
       hVtxSizeZero->Fill(vtxs.size());
       if(vtxs.size()!=0){
@@ -284,7 +292,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	 nGEN++;
 	 // centrality binned multiplicity
-	 for(unsigned i=0;i<neededCentBins_.size();i++){
+	 for(unsigned i=0;i<neededCentBins_.size()-1;i++){
 	    if(i==0){
 	       if(cbin<=neededCentBins_[i+1]) nGEN_Cent[i]++;
 	    }else{
@@ -294,7 +302,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }
 
       hGenMult->Fill(nGEN);
-      for(unsigned i=0;i<neededCentBins_.size();i++){
+      for(unsigned i=0;i<neededCentBins_.size()-1;i++){
 	 if(i==0){
 	    if(cbin<=neededCentBins_[i+1])
 	       hGenMult_Cent[i]->Fill(nGEN_Cent[i]);
@@ -304,8 +312,7 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 }
       }
 
-
-   }
+}
 
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
    Handle<ExampleData> pIn;
