@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.5 2011/03/19 18:43:55 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.6 2011/03/19 18:49:58 sungho Exp $
 //
 //
 
@@ -185,10 +185,10 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       const edm::TriggerNames names = iEvent.triggerNames(*trigH);
       for(unsigned i=0; i<trignames_.size(); i++) {
 	 unsigned index = names.triggerIndex(trignames_[i]);
-	 if(index < trigH->size()) {
+	 if(index < trigH->size()){
 	    if(trigH->accept(index)) hHLTPaths->Fill(trignames_[i].c_str(),1);  
-	 } else {
-	    edm::LogWarning(warningM) 
+	 }else if(warningM){
+	    edm::LogWarning("HiEvtSelAnalyzer") 
 	       << "Index returned by TriggerNames object for trigger '"
 	       << trignames_[i]
 	       << "' is out of range (" 
