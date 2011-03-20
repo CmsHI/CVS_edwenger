@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.6 2011/03/19 18:49:58 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.7 2011/03/19 19:05:55 sungho Exp $
 //
 //
 
@@ -51,6 +51,7 @@
 
 
 #include <TH1.h>
+#include <TH2.h>
 #include "TF1.h"
 
 
@@ -106,6 +107,8 @@ class HiEvtSelAnalyzer : public edm::EDAnalyzer {
    TH1F *hRecMult;
    TH1F *hGenMult;
 
+   TH2F *hVtxZTrkEta;
+   
    std::vector<TH1F*> hRecMult_Cent;
    std::vector<TH1F*> hGenMult_Cent;
 
@@ -205,10 +208,13 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    reco::VertexCollection vtxs = *vtxsH;
    std::sort(vtxs.begin(),vtxs.end(),MoreTracksThenLowerChi2<reco::Vertex>());
 
+   float vtxz = -999;
+
    hVtxSize->Fill(vtxs.size());
    if(vtxs.size()!=0){
+      vtxz = vtxs[0].z();
       hVtxTracks->Fill(vtxs[0].tracksSize());
-      hVtxZ->Fill(vtxs[0].z());
+      hVtxZ->Fill(vtxz);
    }
 
 
@@ -235,6 +241,8 @@ HiEvtSelAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    for(unsigned it=0; it<tracks->size(); ++it){
       const reco::Track & trk = (*tracks)[it];
+
+      hVtxZTrkEta->Fill(vtxz,trk.eta()); // acceptance 
 
       if(fabs(trk.eta())>2.4) continue;
       nREC++;
@@ -351,6 +359,8 @@ HiEvtSelAnalyzer::beginJob()
 
    hRecMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
    hGenMult = f->make<TH1F>("hGenMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
+
+   hVtxZTrkEta = f->make<TH2F>("hVtxZTrkEta","vertex vz vs track eta",120,-30.0,30.0, 60,-2.65,2.65);
 
    // Centrality binned multiplicity
 
