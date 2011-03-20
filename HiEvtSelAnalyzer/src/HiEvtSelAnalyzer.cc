@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.7 2011/03/19 19:05:55 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.8 2011/03/20 11:15:14 sungho Exp $
 //
 //
 
@@ -360,7 +360,7 @@ HiEvtSelAnalyzer::beginJob()
    hRecMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
    hGenMult = f->make<TH1F>("hGenMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
 
-   hVtxZTrkEta = f->make<TH2F>("hVtxZTrkEta","vertex vz vs track eta",120,-30.0,30.0, 60,-2.65,2.65);
+   hVtxZTrkEta = f->make<TH2F>("hVtxZTrkEta","vertex vz vs track eta",120,-30.0,30.0, 80,-4.0,4.0);
 
    // Centrality binned multiplicity
 
