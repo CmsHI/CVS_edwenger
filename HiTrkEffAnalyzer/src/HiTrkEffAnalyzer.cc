@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.10 2011/03/17 18:08:08 frankma Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.11 2011/03/21 12:30:08 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -103,7 +103,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	const reco::Candidate* jet = &((*jets)[it]);
 
 	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-	   if(fabs(jet->eta())<2) {
+	   if(fabs(jet->eta())<2.) {
 	      sortedJets.push_back(jet);
 	      sortByEtRef (&sortedJets);
 	   }
@@ -286,16 +286,18 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
 
   s.nrec = nrec;
   s.jetr = jet;
-  // if do closest jet
+  // if do closest jet, equivalent to closestJet_ mode in spectra ana
   if (useJetEtMode_==2) {
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
-    for (UInt_t j=0; j<sortedJets.size(); ++j) {
+    unsigned int maxnjet
+       = (sortedJets.size()<2) ?  sortedJets.size() : 2;
+
+    for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
       if (sortedJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedJets[j],tp);
-      if (dR<bestJetDR) {
-	bestJetDR=dR;
-	bestJetInd=j;
+      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..                                                                             
+	 bestJetDR=dR, bestJetInd=j;
       }
     }
     if (bestJetInd<0) {
@@ -372,12 +374,13 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
   if (useJetEtMode_==2) {
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
-    for (UInt_t j=0; j<sortedJets.size(); ++j) {
+    unsigned int maxnjet
+       = (sortedJets.size()<2) ?  sortedJets.size() : 2;
+    for (UInt_t j=0; j<maxnjet; ++j) {
       if (sortedJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedJets[j],tr);
-      if (dR<bestJetDR) {
-	bestJetDR=dR;
-	bestJetInd=j;
+      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..
+         bestJetDR=dR, bestJetInd=j;
       }
     }
     if (bestJetInd<0) {

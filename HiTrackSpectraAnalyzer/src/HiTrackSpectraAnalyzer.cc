@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.24 2011/03/19 18:58:54 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.25 2011/03/19 21:43:33 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -211,6 +211,8 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 Handle<vector<Track> > tracks;
 	 iEvent.getByLabel(src_, tracks);
 	 
+	 int ntrk_none_jet_ass=0, ntrk_lead_jet_ass=0, ntrk_slead_jet_ass=0;
+	 
 	 for(unsigned it=0; it<tracks->size(); ++it){
 	    const reco::Track & trk = (*tracks)[it];
 	    
@@ -222,30 +224,44 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 				 hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 	    }
 
-	    // if closestJets, use ET of jet which is closest in dR for a given track
+	    // Classfy tracks by leading jet ET, sub-leading jet ET, non-jet 
+	    // by their proximity to a leading jet, sub-leading jet, and non of the two
 	    if(closestJets_){
 	       float closestJetdR = 99, dR=99;
 	       int closestJetInd = -99;
-
-	       for(unsigned k=0;k<sortedJets_occHand.size();k++){
+	       unsigned int maxnjet 
+		  = (sortedJets_occHand.size()<2) ?  sortedJets_occHand.size() : 2;
+		  
+	       for(unsigned k=0;k<maxnjet;k++){ // only leading and sub-leading
 		  if(sortedJets_occHand[k]->et()<40) continue; // fake jet meaningless
 		  dR=deltaR(*sortedJets_occHand[k],trk);
-		  if (dR<closestJetdR) {
-		     closestJetdR=dR;
-		     closestJetInd=k;
+		  if(dR<0.8 && dR<closestJetdR){ // dR>0.8, should not influence efficiency..
+		     closestJetdR=dR, closestJetInd=k;
 		  }
 	       }
 
 	       if(closestJetInd<0){
 		  occHandle_ = 0.0;
+		  hdNdPt_none_jet->Fill(trk.pt());
+		  ntrk_none_jet_ass++;
 	       }else {
 		  occHandle_ = sortedJets_occHand[closestJetInd]->et();
-		  hClosestJetdR->Fill(closestJetdR);
 		  hClosestJetInd->Fill(closestJetInd);
-		  hClosestJetEta->Fill(sortedJets_occHand[closestJetInd]->eta());
+		  if(closestJetInd==0){
+		     hClosestJetdR_lead->Fill(closestJetdR);
+		     hClosestJetEta_lead->Fill(sortedJets_occHand[closestJetInd]->eta());
+		     hdNdPt_lead_jet->Fill(trk.pt());
+		     ntrk_lead_jet_ass++;
+		     if(ntrk_lead_jet_ass==1) hdNdEt_leadjet->Fill(occHandle_); // fill once
+		  }else{
+		     hClosestJetdR_slead->Fill(closestJetdR);
+		     hClosestJetEta_slead->Fill(sortedJets_occHand[closestJetInd]->eta());
+		     hdNdPt_slead_jet->Fill(trk.pt());
+		     ntrk_slead_jet_ass++;
+		     if(ntrk_slead_jet_ass==1) hdNdEt_sleadjet->Fill(occHandle_);
+		  }
 	       }
-	    }
-
+	    } // end of if(closestJets_)
 
 	    hTrkPtEtaJetEt->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 	    hTrkPtEtaJetEt_vbin->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
@@ -277,12 +293,14 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	       hTrkPtEtaJetEtW->Fill(trk.eta(),trk.pt(),occHandle_,1./(evt_sel_eff*trk.pt())); // weighted by pT  
 	       hTrkPtEtaJetEtW_vbin->Fill(trk.eta(),trk.pt(),occHandle_,1./evt_sel_eff);
 	    }
-	 }
+	 } // end of track loop
 	 
+	 // jet-associated track multiplicity
+	 hNtrkNoneJet->Fill(ntrk_none_jet_ass);
+	 hNtrkLeadJet->Fill(ntrk_lead_jet_ass);
+	 hNtrkSLeadJet->Fill(ntrk_slead_jet_ass);
+
 	 hNevt->Fill(evt_sel_eff);
-	 if(mult==1) hNevt_mult1->Fill(evt_sel_eff);
-	 if(mult==2) hNevt_mult2->Fill(evt_sel_eff);
-	 if(mult==3) hNevt_mult3->Fill(evt_sel_eff);
 
 	 // centrality binned number of events
 	 for(unsigned i=0;i<neededCentBins_.size()-1;i++){
@@ -470,9 +488,6 @@ HiTrackSpectraAnalyzer::beginJob()
    if(!pureGENmode_){
 
       hNevt = fs->make<TH1F>("hNevt","evt sel eff", 102, -0.02, 2.02);
-      hNevt_mult1 = fs->make<TH1F>("hNevt_mult1","evt sel eff", 102, -0.02, 2.02);
-      hNevt_mult2 = fs->make<TH1F>("hNevt_mult2","evt sel eff", 102, -0.02, 2.02);
-      hNevt_mult3 = fs->make<TH1F>("hNevt_mult3","evt sel eff", 102, -0.02, 2.02);
 
       hCentJetEt = fs->make<TH2F>("hCentJetEt","Centrality vs Jet E_{T};centrality bin; E_{T}", centBins.size()-1,&centBins[0], jetBins.size()-1,&jetBins[0]);
 
@@ -539,8 +554,18 @@ HiTrackSpectraAnalyzer::beginJob()
       hJet0Eta_occHand = fs->make<TH1F>("hJet0Eta_occHand","jet eta; #eta", 50,-6.0,6.0);
       if(closestJets_){
 	 hClosestJetInd = fs->make<TH1F>("hClosestJetInd","index of closest jet",20,0.0,20.);
-	 hClosestJetdR = fs->make<TH1F>("hClosestJetdR","dR of closest jet",100,0.0,6.6);
-	 hClosestJetEta = fs->make<TH1F>("hClosestJetEta","jet eta; #eta", 50,-6.0,6.0);
+	 hClosestJetdR_lead = fs->make<TH1F>("hClosestJetdR_lead","dR of closest jet",60,0.0,1.0);
+	 hClosestJetdR_slead = fs->make<TH1F>("hClosestJetdR_slead","dR of closest jet",60,0.0,1.0);
+	 hClosestJetEta_lead = fs->make<TH1F>("hClosestJetEta_lead","jet eta; #eta", 50,-6.0,6.0);
+	 hClosestJetEta_slead = fs->make<TH1F>("hClosestJetEta_slead","jet eta; #eta", 50,-6.0,6.0);
+	 hdNdPt_none_jet = fs->make<TH1F>("hdNdPt_none_jet","no jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
+	 hdNdPt_lead_jet = fs->make<TH1F>("hdNdPt_lead_jet","leading jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
+	 hdNdPt_slead_jet = fs->make<TH1F>("hdNdPt_slead_jet","sub-leading jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
+	 hdNdEt_leadjet = fs->make<TH1F>("hdNdEt_leadjet","leading jet energy distribution; E_{T} [GeV]", 50,0.0,1000.0);
+	 hdNdEt_sleadjet = fs->make<TH1F>("hdNdEt_sleadjet","sub-leading jet energy distribution; E_{T} [GeV]", 50,0.0,1000.0);
+	 hNtrkNoneJet = fs->make<TH1F>("hNtrkNoneJet","track multiplicity",200,0.0,200);
+	 hNtrkLeadJet = fs->make<TH1F>("hNtrkLeadJet","track multiplicity",200,0.0,200);
+	 hNtrkSLeadJet = fs->make<TH1F>("hNtrkSLeadJet","track multiplicity",200,0.0,200);
       }
       for(unsigned i=0;i<hltNames_.size();i++){
 	 hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));
