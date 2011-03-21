@@ -1,6 +1,6 @@
 // Original Author:  Edward Allen Wenger,32 4-A06,+41227676980,
 //         Created:  Fri May  7 13:11:39 CEST 2010
-// $Id: HiVertexAnalyzer.cc,v 1.4 2011/03/13 22:06:29 sungho Exp $
+// $Id: HiVertexAnalyzer.cc,v 1.5 2011/03/19 18:44:05 sungho Exp $
 //
 
 #include "edwenger/HiVertexAnalyzer/interface/HiVertexAnalyzer.h"
@@ -95,12 +95,12 @@ HiVertexAnalyzer::beginJob()
   hVtxTracks = f->make<TH1F>("hVtxTracks","number of tracks fitted to vertex",nTracksBins_,-0.5,(float)nTracksBins_-0.5);
 
   hVtxZ = f->make<TH1F>("hVtxZ","z position of best reconstructed vertex",120,-30.0,30.0);
-  hVtxX = f->make<TH1F>("hVtxX","x position of best reconstructed vertex",120,-30.0,30.0);
-  hVtxY = f->make<TH1F>("hVtxY","y position of best reconstructed vertex",120,-30.0,30.0);
+  hVtxX = f->make<TH1F>("hVtxX","x position of best reconstructed vertex",120,-10.0,10.0);
+  hVtxY = f->make<TH1F>("hVtxY","y position of best reconstructed vertex",120,-10.0,10.0);
 
-  hVtxXnY = f->make<TH2F>("hVtxXnY","x vs y position", 120,-30.0,30.0, 120,-30.0,30.0);
-  hVtxXnZ = f->make<TH2F>("hVtxXnZ","x vs z position", 120,-30.0,30.0, 120,-30.0,30.0);
-  hVtxYnZ = f->make<TH2F>("hVtxYnZ","y vs z position", 120,-30.0,30.0, 120,-30.0,30.0);
+  hVtxXnY = f->make<TH2F>("hVtxXnY","x vs y position", 120,-10.0,10.0, 120,-10.0,10.0);
+  hVtxXnZ = f->make<TH2F>("hVtxXnZ","x vs z position", 120,-10.0,10.0, 120,-30.0,30.0);
+  hVtxYnZ = f->make<TH2F>("hVtxYnZ","y vs z position", 120,-10.0,10.0, 120,-30.0,30.0);
 
   hMultVtxTracks = f->make<TH2F>("hMultVtxTracks","number of tracks fitted to vertex; most populated; 2nd most populated",nTracksBins_,-0.5,(float)nTracksBins_-0.5,nTracksBins_,-0.5,(float)nTracksBins_-0.5);
   hMultVtxZ = f->make<TH2F>("hMultVtxZ","z position of reconstructed vertex; most populated; 2nd most populated",120,-30.0,30.0,120,-30.0,30.0);
@@ -110,8 +110,8 @@ HiVertexAnalyzer::beginJob()
   for(unsigned i=0;i<neededCentBins_.size()-1;i++){
 
      hVtxZ_Cent.push_back(f->make<TH1F>("","z position of best reconstructed vertex", 120,-30.0,30.0));
-     hVtxX_Cent.push_back(f->make<TH1F>("","x position of best reconstructed vertex", 120,-30.0,30.0));
-     hVtxY_Cent.push_back(f->make<TH1F>("","y position of best reconstructed vertex", 120,-30.0,30.0));
+     hVtxX_Cent.push_back(f->make<TH1F>("","x position of best reconstructed vertex", 120,-10.0,10.0));
+     hVtxY_Cent.push_back(f->make<TH1F>("","y position of best reconstructed vertex", 120,-10.0,10.0));
 
      hVtxTracks_Cent.push_back(f->make<TH1F>("","number of tracks fitted to vertex",nTracksBins_,-0.5,(float)nTracksBins_-0.5));
 
