@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.8 2011/03/20 11:15:14 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.9 2011/03/20 11:18:26 sungho Exp $
 //
 //
 
@@ -353,12 +353,15 @@ HiEvtSelAnalyzer::beginJob()
    hVtxSizeZero = f->make<TH1F>("hVtxSizeZero","number of reconstructed vertices",10,-0.5,9.5);
    hVtxTracksZero = f->make<TH1F>("hVtxTracksZero","number of tracks fitted to vertex",120,-0.5,119.5);
    hVtxZZero = f->make<TH1F>("hVtxZZero","z position of best reconstructed vertex",120,-30.0,30.0);
-
-   hCentDist = f->make<TH1F>("hCentDist","Centrality bin distribution; centrality bin",40,-0.5,39.5);
+   
    hPixelMultDst = f->make<TH1F>("hPixelMultDst","Pixel hit distribution; first layer pixel hits",600,0,1200);
-
    hRecMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
-   hGenMult = f->make<TH1F>("hGenMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
+
+   if(isGEN_) {
+      hCentDist = f->make<TH1F>("hCentDist","Centrality bin distribution; centrality bin",40,-0.5,39.5);
+      hGenMult = f->make<TH1F>("hGenMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
+   }
+
 
    hVtxZTrkEta = f->make<TH2F>("hVtxZTrkEta","vertex vz vs track eta",120,-30.0,30.0, 80,-4.0,4.0);
 
@@ -366,18 +369,24 @@ HiEvtSelAnalyzer::beginJob()
 
    for(unsigned i=0;i<neededCentBins_.size()-1;i++){
 
+      // REC
       nREC_Cent.push_back(0);
-      nGEN_Cent.push_back(0);
-
       hRecMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",600,-0.5,599.5));
-      hGenMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",600,-0.5,599.5));
-
       if(i==0){
 	 hRecMult_Cent[i]->SetName(Form("hRecMult_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
-	 hGenMult_Cent[i]->SetName(Form("hGenMult_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
       }else{
 	 hRecMult_Cent[i]->SetName(Form("hRecMult_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
-	 hGenMult_Cent[i]->SetName(Form("hGenMult_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+      }
+
+      // GEN
+      if(isGEN_){
+	 nGEN_Cent.push_back(0);
+	 hGenMult_Cent.push_back(f->make<TH1F>("","Charged mult. |#eta|<2.4)",600,-0.5,599.5));
+	 if(i==0){
+	    hGenMult_Cent[i]->SetName(Form("hGenMult_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+	 }else{
+	    hGenMult_Cent[i]->SetName(Form("hGenMult_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+	 }
       }
    }
 
