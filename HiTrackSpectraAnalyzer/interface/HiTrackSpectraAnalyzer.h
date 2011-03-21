@@ -63,9 +63,6 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TNtuple *nt_jettrack;
 
    TH1F *hNevt;
-   TH1F *hNevt_mult1;
-   TH1F *hNevt_mult2;
-   TH1F *hNevt_mult3;
 
    TH1F *hPxlMultDist;
 
@@ -109,9 +106,20 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH1F *hNumJets;
    TH1F *hJet0Pt, *hJet0Eta;
    TH1F *hJet0Eta_occHand;
-   TH1F *hClosestJetdR;
+   TH1F *hClosestJetdR_lead;
+   TH1F *hClosestJetdR_slead;
    TH1F *hClosestJetInd;
-   TH1F *hClosestJetEta;
+   TH1F *hClosestJetEta_lead;
+   TH1F *hClosestJetEta_slead;
+   TH1F *hdNdPt_none_jet;
+   TH1F *hdNdPt_lead_jet;
+   TH1F *hdNdPt_slead_jet;
+   TH1F *hdNdEt_leadjet;
+   TH1F *hdNdEt_sleadjet;
+   TH1F *hNtrkNoneJet;
+   TH1F *hNtrkLeadJet;
+   TH1F *hNtrkSLeadJet;
+
    std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;
