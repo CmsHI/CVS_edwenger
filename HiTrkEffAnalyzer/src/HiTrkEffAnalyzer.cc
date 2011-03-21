@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.9 2011/03/17 17:19:30 frankma Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.10 2011/03/17 18:08:08 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -291,7 +291,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
     for (UInt_t j=0; j<sortedJets.size(); ++j) {
-      if (sortedJets[j]->pt()<40) continue; // fake jet meaningless
+      if (sortedJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedJets[j],tp);
       if (dR<bestJetDR) {
 	bestJetDR=dR;
@@ -301,7 +301,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     if (bestJetInd<0) {
       s.jetr=0; s.jetar=-99;
     } else {
-      s.jetr = sortedJets[bestJetInd]->pt();
+      s.jetr = sortedJets[bestJetInd]->et();
       s.jetar = sortedJets[bestJetInd]->eta();
     }
     s.jrdr = bestJetDR;
@@ -373,7 +373,7 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
     for (UInt_t j=0; j<sortedJets.size(); ++j) {
-      if (sortedJets[j]->pt()<40) continue; // fake jet meaningless
+      if (sortedJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedJets[j],tr);
       if (dR<bestJetDR) {
 	bestJetDR=dR;
@@ -383,7 +383,7 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     if (bestJetInd<0) {
       r.jetr=0; r.jetar=-99;
     } else {
-      r.jetr = sortedJets[bestJetInd]->pt();
+      r.jetr = sortedJets[bestJetInd]->et();
       r.jetar = sortedJets[bestJetInd]->eta();
     }
     r.jrdr = bestJetDR;
