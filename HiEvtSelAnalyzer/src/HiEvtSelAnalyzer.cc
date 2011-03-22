@@ -14,7 +14,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Tue Mar 15 14:07:45 CET 2011
-// $Id: HiEvtSelAnalyzer.cc,v 1.9 2011/03/20 11:18:26 sungho Exp $
+// $Id: HiEvtSelAnalyzer.cc,v 1.10 2011/03/21 16:22:23 sungho Exp $
 //
 //
 
@@ -357,8 +357,9 @@ HiEvtSelAnalyzer::beginJob()
    hPixelMultDst = f->make<TH1F>("hPixelMultDst","Pixel hit distribution; first layer pixel hits",600,0,1200);
    hRecMult = f->make<TH1F>("hRecMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
 
+   hCentDist = f->make<TH1F>("hCentDist","Centrality bin distribution; centrality bin",40,-0.5,39.5);
+   
    if(isGEN_) {
-      hCentDist = f->make<TH1F>("hCentDist","Centrality bin distribution; centrality bin",40,-0.5,39.5);
       hGenMult = f->make<TH1F>("hGenMult","Charged mult. |#eta|<2.4)",600,-0.5,599.5);
    }
 
