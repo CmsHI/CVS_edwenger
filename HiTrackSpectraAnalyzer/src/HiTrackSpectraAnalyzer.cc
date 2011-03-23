@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.25 2011/03/19 21:43:33 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.26 2011/03/21 18:00:57 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -243,20 +243,27 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	       if(closestJetInd<0){
 		  occHandle_ = 0.0;
 		  hdNdPt_none_jet->Fill(trk.pt());
+		  if(fabs(trk.eta())<1.0) hdNdPt_none_jet_eta->Fill(trk.pt()); // eta restricted
 		  ntrk_none_jet_ass++;
 	       }else {
 		  occHandle_ = sortedJets_occHand[closestJetInd]->et();
 		  hClosestJetInd->Fill(closestJetInd);
 		  if(closestJetInd==0){
 		     hClosestJetdR_lead->Fill(closestJetdR);
+		     hClosestJetdRdPt_lead->Fill(closestJetdR,trk.pt());
 		     hClosestJetEta_lead->Fill(sortedJets_occHand[closestJetInd]->eta());
 		     hdNdPt_lead_jet->Fill(trk.pt());
+		     if(fabs(trk.eta())<1.0) 
+			hdNdPt_lead_jet_eta->Fill(trk.pt()), hClosestJetdRdPt_lead_eta->Fill(closestJetdR,trk.pt());
 		     ntrk_lead_jet_ass++;
 		     if(ntrk_lead_jet_ass==1) hdNdEt_leadjet->Fill(occHandle_); // fill once
 		  }else{
 		     hClosestJetdR_slead->Fill(closestJetdR);
+		     hClosestJetdRdPt_slead->Fill(closestJetdR,trk.pt());
 		     hClosestJetEta_slead->Fill(sortedJets_occHand[closestJetInd]->eta());
 		     hdNdPt_slead_jet->Fill(trk.pt());
+		     if(fabs(trk.eta())<1.0) 
+			hdNdPt_slead_jet_eta->Fill(trk.pt()), hClosestJetdRdPt_slead_eta->Fill(closestJetdR,trk.pt());
 		     ntrk_slead_jet_ass++;
 		     if(ntrk_slead_jet_ass==1) hdNdEt_sleadjet->Fill(occHandle_);
 		  }
@@ -561,11 +568,18 @@ HiTrackSpectraAnalyzer::beginJob()
 	 hdNdPt_none_jet = fs->make<TH1F>("hdNdPt_none_jet","no jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
 	 hdNdPt_lead_jet = fs->make<TH1F>("hdNdPt_lead_jet","leading jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
 	 hdNdPt_slead_jet = fs->make<TH1F>("hdNdPt_slead_jet","sub-leading jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
+	 hdNdPt_none_jet_eta = fs->make<TH1F>("hdNdPt_none_jet_eta","no jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
+         hdNdPt_lead_jet_eta = fs->make<TH1F>("hdNdPt_lead_jet_eta","leading jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
+         hdNdPt_slead_jet_eta = fs->make<TH1F>("hdNdPt_slead_jet_eta","sub-leading jet-associated track pT;p_{T} [GeV/c]", 400, 0.0, 200.0);
 	 hdNdEt_leadjet = fs->make<TH1F>("hdNdEt_leadjet","leading jet energy distribution; E_{T} [GeV]", 50,0.0,1000.0);
 	 hdNdEt_sleadjet = fs->make<TH1F>("hdNdEt_sleadjet","sub-leading jet energy distribution; E_{T} [GeV]", 50,0.0,1000.0);
 	 hNtrkNoneJet = fs->make<TH1F>("hNtrkNoneJet","track multiplicity",200,0.0,200);
 	 hNtrkLeadJet = fs->make<TH1F>("hNtrkLeadJet","track multiplicity",200,0.0,200);
 	 hNtrkSLeadJet = fs->make<TH1F>("hNtrkSLeadJet","track multiplicity",200,0.0,200);
+	 hClosestJetdRdPt_lead = fs->make<TH2F>("hClosestJetdRdPt_lead","dR of closest jet vs pt;dR;p_{T} [GeV/c]",60,0.0,1.0, 340,0.0,170.0);
+         hClosestJetdRdPt_slead = fs->make<TH2F>("hClosestJetdRdPt_slead","dR of closest jet vs pt;dR;p_{T} [GeV/c]",60,0.0,1.0, 340,0.0,170.0);
+	 hClosestJetdRdPt_lead_eta = fs->make<TH2F>("hClosestJetdRdPt_lead_eta","dR of closest jet vs pt;dR;p_{T} [GeV/c]",60,0.0,1.0, 340,0.0,170.0);
+         hClosestJetdRdPt_slead_eta = fs->make<TH2F>("hClosestJetdRdPt_slead_eta","dR of closest jet vs pt;dR;p_{T} [GeV/c]",60,0.0,1.0, 340,0.0,170.0);
       }
       for(unsigned i=0;i<hltNames_.size();i++){
 	 hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 550, 0.0, 1100.0));

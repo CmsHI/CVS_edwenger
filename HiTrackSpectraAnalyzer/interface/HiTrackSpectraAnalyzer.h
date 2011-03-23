@@ -114,11 +114,19 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH1F *hdNdPt_none_jet;
    TH1F *hdNdPt_lead_jet;
    TH1F *hdNdPt_slead_jet;
+   TH1F *hdNdPt_none_jet_eta; //eta cut
+   TH1F *hdNdPt_lead_jet_eta;
+   TH1F *hdNdPt_slead_jet_eta;
    TH1F *hdNdEt_leadjet;
    TH1F *hdNdEt_sleadjet;
    TH1F *hNtrkNoneJet;
    TH1F *hNtrkLeadJet;
    TH1F *hNtrkSLeadJet;
+
+   TH2F *hClosestJetdRdPt_lead;
+   TH2F *hClosestJetdRdPt_slead;
+   TH2F *hClosestJetdRdPt_lead_eta; // eta cut
+   TH2F *hClosestJetdRdPt_slead_eta;
 
    std::vector<TH1F*> hJet0Pt_Trig;
 
