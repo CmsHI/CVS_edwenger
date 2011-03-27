@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.27 2011/03/23 20:00:39 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.28 2011/03/27 14:56:36 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -180,9 +180,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       }
 
       // Placing jet Et cuts such that the events are reqiured to have jet ET:[low,high]
-      //if(jetEtCuts_.size()!=0)
-      //std::cout<<"leading jet et = "<<leadJetEt_<<" jet et cut min = "<<jetEtCuts_[0]<<" max = "<<jetEtCuts_[1]<<std::endl;
-      if(jetEtCuts_.size()!=0 && (leadJetEt_<jetEtCuts_[0] || leadJetEt_>jetEtCuts_[1])) skipEvt=true;
+      if(jetEtCuts_.size()!=0 && (leadJetEt_<jetEtCuts_[0] || leadJetEt_>=jetEtCuts_[1])) skipEvt=true;
       
       // Get multiplicity dist from track collection
       int mult = 0;
