@@ -105,7 +105,8 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    // Jets
    TH1F *hNumJets;
    TH1F *hJet0Pt, *hJet0Eta;
-   TH1F *hJet0Eta_occHand;
+   TH1F *hJet0Pt_jetCut, *hJet0Eta_jetCut;
+   TH1F *hJet0Pt_occHand, *hJet0Eta_occHand;
    TH1F *hClosestJetdR_lead;
    TH1F *hClosestJetdR_slead;
    TH1F *hClosestJetInd;
@@ -146,7 +147,8 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    double  etaMax_, ptMin_;
    double  pixelMult_;
-   double  leadJetEt_, leadJetEta_, leadGJetEt_, leadGJetEta_;
+   double  leadJetEt_, leadJetEta_, leadJetOccEt_, leadJetOccEta_;
+   double  leadGJetEt_, leadGJetEta_;
    double  occHandle_, occGENHandle_;
 
    std::vector<bool> hltAccept_;
@@ -163,6 +165,7 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    
    std::vector<int32_t> neededTrigSpectra_;
    std::vector<int32_t> neededCentBins_;
+   std::vector<double> jetEtCuts_;
    std::vector<double> etaBins, ptBins, jetBins, centBins;
 
    CentralityProvider * centrality_;
