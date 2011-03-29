@@ -21,5 +21,6 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     trkPtMin = cms.double(-1),
     trkAcceptedJet = cms.untracked.bool(True), # limit jets to |eta|<2.0 
     useSubLeadingJet = cms.untracked.bool(False),
-    jetTrkOnly = cms.untracked.bool(False)
+    jetTrkOnly = cms.untracked.bool(False),
+    fiducialCut = cms.untracked.bool(True) # fiducial cut for FPIX
 )
