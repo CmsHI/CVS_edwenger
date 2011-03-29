@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.5 2011/03/16 18:00:46 sungho Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.6 2011/03/17 17:19:30 frankma Exp $
 //
 
 // user include files
@@ -38,6 +38,7 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool testVertex(reco::Track&, double&, double&, double&, double&);
       std::pair<bool,bool> isAccepted(TrackingParticle&);
       int getLayerId(const PSimHit&);
+      bool hitDeadPXF(reco::Track&);
 
       // ----------member data ---------------------------
       edm::InputTag trackTags_; 
@@ -58,6 +59,7 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool trkAcceptedJet_;
       bool useSubLeadingJet_;
       bool jetTrkOnly_;
+      bool fiducialCut_;
       
       HiTrkEffHistograms *histograms;
       edm::Service<TFileService> f;

@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.11 2011/03/21 12:30:08 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.12 2011/03/21 18:00:58 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -16,6 +16,7 @@
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -45,6 +46,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
   jetTrkOnly_(iConfig.getUntrackedParameter<bool>("jetTrkOnly",false)),
+  fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
   centrality_(0)
 {
 
@@ -179,6 +181,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
       const reco::Track* mtr=0;
       size_t nrec=0;
+
       
       if(simRecColl.find(tpr) != simRecColl.end()){
 	rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
@@ -206,6 +209,8 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     edm::RefToBase<reco::Track> track(trackCollection, i);
     reco::Track* tr=const_cast<reco::Track*>(track.get());
     
+    if(fiducialCut_ && hitDeadPXF(*tr)) continue; // if track hits the dead region, igonore it;
+
     std::vector<std::pair<TrackingParticleRef, double> > tp;
     const TrackingParticle *mtp=0;
     size_t nsim=0;
@@ -266,7 +271,7 @@ HiTrkEffAnalyzer::endJob()
 SimTrack_t 
 HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet, int cent, std::vector<const reco::Candidate *> & sortedJets)
 {
-
+   
   SimTrack_t s;
   s.ids = tp.pdgId();
   s.etas = tp.eta();
@@ -284,8 +289,14 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     << " pdgId=" << s.ids;
 #endif
 
+  // remove the association if the track hits the bed region in FPIX
+  // nrec>0 since we don't need it for nrec=0 case 
+  if(fiducialCut_ && nrec>0 && hitDeadPXF(*const_cast<reco::Track*>(&mtr))) 
+     nrec=0;
+  
   s.nrec = nrec;
   s.jetr = jet;
+
   // if do closest jet, equivalent to closestJet_ mode in spectra ana
   if (useJetEtMode_==2) {
     Float_t bestJetDR=99, dR=99;
@@ -513,6 +524,47 @@ HiTrkEffAnalyzer::getLayerId(const PSimHit & simHit)
   // strip
   return -1;
 }
+
+// ---------------
+bool
+HiTrkEffAnalyzer::hitDeadPXF(reco::Track& tr){
+
+   //-----------------------------------------------
+   // For a given track, check whether this contains 
+   // hits on the dead region in the forward pixel 
+   //-----------------------------------------------
+
+   bool hitDeadRegion = false;
+
+   for(trackingRecHit_iterator recHit = tr.recHitsBegin();recHit!= tr.recHitsEnd(); recHit++){
+
+      if((*recHit)->isValid()){
+
+	 DetId detId = (*recHit)->geographicalId();
+	 if(!theTracker->idToDet(detId)) continue;
+
+	 Int_t diskLayerNum=0, bladeLayerNum=0, hcylLayerNum=0;
+	 
+	 unsigned int subdetId = static_cast<unsigned int>(detId.subdetId());
+
+	 if (subdetId == PixelSubdetector::PixelEndcap){
+	    
+	    PixelEndcapName pxfname(detId.rawId());
+	    diskLayerNum = pxfname.diskName();
+	    bladeLayerNum = pxfname.bladeName();
+	    hcylLayerNum = pxfname.halfCylinder();
+	    
+	    // hard-coded now based on /UserCode/Appeltel/PixelFiducialRemover/pixelfiducialremover_cfg.py
+	    if((bladeLayerNum==4 || bladeLayerNum==5 || bladeLayerNum==6) &&
+	       (diskLayerNum==2) && (hcylLayerNum==4)) hitDeadRegion = true;
+	 }
+	 
+      }// end of isValid
+   }
+
+   return hitDeadRegion;
+}
+
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(HiTrkEffAnalyzer);
