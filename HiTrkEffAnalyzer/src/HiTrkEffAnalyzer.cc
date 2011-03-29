@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.12 2011/03/21 18:00:58 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.13 2011/03/29 12:23:41 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -93,7 +93,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // PAT jet, to get leading jet ET
 
-  float jet_et = 0.0, jet_eta=0.0, jet_phi=0.0;
+  float jet_et = 0.0, jet_eta=-999.0, jet_phi=0.0;
   std::vector<const reco::Candidate *> sortedJets;         // jets for event classfication
 
   if(useJetEtMode_>0){
