@@ -200,6 +200,8 @@ HiTrkEffHistograms::declareHistograms()
                                ptBins.size()-1, &ptBins[0],
                                ptBins.size()-1, &ptBins[0]);
 
+    // eta vs phi
+    hetaphi = f->make<TH2F>("hetaphi","Track eta vs phi;#eta;#phi",40,-2.65,2.65, 80,-3.3,3.3);
 
     for(unsigned i=0;i<neededCentBins.size()-1;i++){
        vhsim3D.push_back(f->make<TH3F>("","Sim Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
@@ -301,6 +303,7 @@ HiTrkEffHistograms::fillRecHistograms(const RecTrack_t & r)
     hrec3D->Fill(r.etar, r.ptr, r.jetr);
     if(!r.nsim) hfak->Fill(r.etar, r.ptr), hfak3D->Fill(r.etar, r.ptr, r.jetr);
     if(r.nsim>0 && r.status<0) hsec->Fill(r.etar, r.ptr), hsec3D->Fill(r.etar, r.ptr, r.jetr); // nsim>0 redudant?
+    hetaphi->Fill(r.etar,r.phir);
 
     // filling histogram in vector
     for(unsigned i=0;i<neededCentBins.size()-1;i++){
