@@ -116,6 +116,8 @@ class HiTrkEffHistograms
    TH3F* hrec3D;
    TH3F* hfak3D;
    TH3F* hsec3D;
+   
+   TH2F* hetaphi;
 
 
    // vector of histograms
