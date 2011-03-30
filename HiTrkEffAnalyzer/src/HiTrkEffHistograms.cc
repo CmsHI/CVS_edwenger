@@ -79,7 +79,7 @@ HiTrkEffHistograms::declareHistograms()
     } else if(lowPtMode){
 
        static Double_t ptMin   =  0.0;
-       static Double_t ptMax   =  2.0;
+       static Double_t ptMax   =  6.0;
        static Double_t ptWidth =  0.02;
 
        for(Double_t pt = ptMin; pt < ptMax + ptWidth/2; pt += ptWidth)
