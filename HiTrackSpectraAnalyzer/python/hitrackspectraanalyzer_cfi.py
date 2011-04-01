@@ -32,6 +32,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           pixelMultMode = cms.untracked.bool(False),
                           closestJets = cms.untracked.bool(True), # use ET of jet closest in dR for a given track  
                           trkAcceptedJet = cms.untracked.bool(True), # # limit jets to |eta|<2.0
-                          useSubLeadingJet = cms.untracked.bool(False)
+                          useSubLeadingJet = cms.untracked.bool(False),
+                          fiducialCut = cms.untracked.bool(False) # fiducial cut for FPIX
                           )
 

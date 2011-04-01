@@ -8,6 +8,8 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -32,7 +34,16 @@
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
 #include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
 
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
+#include "SimTracker/Records/interface/TrackAssociatorRecord.h" // needed for TrackerDigiGeometryRecord
+
 #include "DataFormats/Math/interface/deltaR.h"
+
+
 
 // ROOT includes
 #include "TNtuple.h"
@@ -54,6 +65,8 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob(){} ;
+
+      bool hitDeadPXF(const reco::Track&);
 
    // ----------member data ---------------------------
 
@@ -142,6 +155,7 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool closestJets_;
    bool trkAcceptedJet_;
    bool useSubLeadingJet_;
+   bool fiducialCut_;
 
    int32_t evtEffCorrType_, evtMultCut_;
 
@@ -169,5 +183,6 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    std::vector<double> etaBins, ptBins, jetBins, centBins;
 
    CentralityProvider * centrality_;
-      
+
+   const TrackerGeometry * theTracker;
 };

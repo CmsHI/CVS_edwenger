@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.28 2011/03/27 14:56:36 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.29 2011/03/27 16:05:28 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -49,6 +49,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    closestJets_ = iConfig.getUntrackedParameter<bool>("closestJets",true);
    trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);
    useSubLeadingJet_ = iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false);
+   fiducialCut_ = iConfig.getUntrackedParameter<bool>("fiducialCut",false); 
 }
 
 // ------------ method called to for each event  ------------
@@ -72,6 +73,11 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
    else if(evtEffCorrType_==2)
       etaCut_evtSel = 0.8;
 
+   //------- Get tracker geometry -------------
+   edm::ESHandle<TrackerGeometry> tracker;
+   iSetup.get<TrackerDigiGeometryRecord>().get(tracker);
+   theTracker = tracker.product();
+   
    //----- intialization of variables ------------------
    pixelMult_ = 0.;
    leadJetEt_ = 0.,  leadJetEta_ = -999.; // so that if no jet present, put it outisde of scope
@@ -190,6 +196,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       
       for(unsigned it=0; it<etracks->size(); ++it){
 	 const reco::Track & etrk = (*etracks)[it];
+	 if(fiducialCut_ && hitDeadPXF(etrk)) continue; // if track hits the dead region, igonore it;
 	 if(setQualityBit_ && !etrk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 	 if(fabs(etrk.eta())<etaCut_evtSel && etrk.pt()>ptMin_) mult++;
       }
@@ -229,7 +236,8 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 
 	 for(unsigned it=0; it<tracks->size(); ++it){
 	    const reco::Track & trk = (*tracks)[it];
-	    
+
+	    if(fiducialCut_ && hitDeadPXF(trk)) continue; // if track hits the dead region, igonore it;
 	    if(setQualityBit_ && !trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
 	    
 	    if(!histOnly_){
@@ -640,6 +648,47 @@ HiTrackSpectraAnalyzer::beginJob()
       */
    }
     
+}
+
+
+//
+bool
+HiTrackSpectraAnalyzer::hitDeadPXF(const reco::Track& tr){
+
+   //-----------------------------------------------
+   // For a given track, check whether this contains 
+   // hits on the dead region in the forward pixel 
+   //-----------------------------------------------
+
+   
+   bool hitDeadRegion = false;
+
+   for(trackingRecHit_iterator recHit = tr.recHitsBegin();recHit!= tr.recHitsEnd(); recHit++){
+
+      if((*recHit)->isValid()){
+
+	 DetId detId = (*recHit)->geographicalId();
+	 if(!theTracker->idToDet(detId)) continue;
+
+	 Int_t diskLayerNum=0, bladeLayerNum=0, hcylLayerNum=0;
+	   
+	 unsigned int subdetId = static_cast<unsigned int>(detId.subdetId());
+
+	 if (subdetId == PixelSubdetector::PixelEndcap){
+	            
+	    PixelEndcapName pxfname(detId.rawId());
+	    diskLayerNum = pxfname.diskName();
+	    bladeLayerNum = pxfname.bladeName();
+	    hcylLayerNum = pxfname.halfCylinder();
+	            
+	    // hard-coded now based on /UserCode/Appeltel/PixelFiducialRemover/pixelfiducialremover_cfg.py
+	    if((bladeLayerNum==4 || bladeLayerNum==5 || bladeLayerNum==6) &&
+	       (diskLayerNum==2) && (hcylLayerNum==4)) hitDeadRegion = true;
+	 }
+	   
+      }// end of isValid
+   }
+   return hitDeadRegion;
 }
 
 

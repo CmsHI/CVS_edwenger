@@ -12,6 +12,7 @@
 <use name=CondFormats/HIObjects>
 <use name=SimDataFormats/GeneratorProducts>
 <use name=DataFormats/Math>
+<use name=SimTracker/TrackAssociation>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=edwengerHiTrackSpectraAnalyzer>
