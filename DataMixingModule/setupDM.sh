@@ -18,3 +18,10 @@ cp BuildFile.xml Gen*.cc $CMSSW_BASE/src/SimGeneral/MixingModule/plugins
 cp customise*.py $CMSSW_BASE/src/$dir2/python
 cp DataMixingSiStripRawWorker.* $CMSSW_BASE/src/$dir2/plugins
 
+
+# pedestal subtration fix for DATAonDATA mixer
+cd $CMSSW_BASE/src
+cvs co UserCode/EYKim/dataMixer/DataMixingHcalDigiWorker.cc
+mv UserCode/EYKim/dataMixer/DataMixingHcalDigiWorker.cc SimGeneral/DataMixingModule/plugins/
+rm -r UserCode/EYKim
+cd $dir
