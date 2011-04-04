@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.29 2011/03/27 16:05:28 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.30 2011/04/01 16:49:05 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -476,10 +476,12 @@ HiTrackSpectraAnalyzer::beginJob()
    for(ptb =   0  ; ptb <   1.2-small; ptb +=  0.05) ptBins.push_back(ptb); // 24 bins
    for(ptb =   1.2; ptb <   2.4-small; ptb +=  0.1 ) ptBins.push_back(ptb); // 12 bins
    for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.4 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =   7.2; ptb <  16.8-small; ptb +=  1.6 ) ptBins.push_back(ptb); // 6 bins
-   for(ptb =  16.8; ptb <  55.2-small; ptb +=  6.4 ) ptBins.push_back(ptb); // 6 bins
-   for(ptb =  55.2; ptb < 170.4-small; ptb +=  9.6 ) ptBins.push_back(ptb); // 12 bins
-   ptBins.push_back(170.4);
+   for(ptb =   7.2; ptb <  14.4-small; ptb +=  1.2 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  14.4; ptb <  28.8-small; ptb +=  2.4 ) ptBins.push_back(ptb); // 6 bins 
+   for(ptb =  28.8; ptb <  48.0-small; ptb +=  3.2 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  48.0; ptb <  86.4-small; ptb +=  6.4 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  86.4; ptb < 189.6-small; ptb +=  8.6 ) ptBins.push_back(ptb); // 6 bins
+   ptBins.push_back(189.6);
 
    // eta bins
    static double etaMin   = -2.6;
