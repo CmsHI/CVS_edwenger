@@ -35,6 +35,7 @@ typedef struct
   Float_t jetar;
   Float_t jrdr;
   Int_t jrind;
+  Int_t jrflavor;
 } SimTrack_t;
 
 typedef struct
@@ -61,6 +62,7 @@ typedef struct
   Float_t jetar;
   Float_t jrdr;
   Int_t jrind;
+  Int_t jrflavor;
 } RecTrack_t;
 
 // define class to hold histograms and track trees

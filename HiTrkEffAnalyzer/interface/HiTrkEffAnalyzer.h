@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.6 2011/03/17 17:19:30 frankma Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.7 2011/03/29 12:27:09 sungho Exp $
 //
 
 // user include files
@@ -33,8 +33,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob();
       
-      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int, std::vector<const reco::Candidate *> & sortedJets);
-      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int, std::vector<const reco::Candidate *> & sortedJets);
+      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int, std::vector<const pat::Jet *> & sortedJets);
+      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int, std::vector<const pat::Jet *> & sortedJets);
       bool testVertex(reco::Track&, double&, double&, double&, double&);
       std::pair<bool,bool> isAccepted(TrackingParticle&);
       int getLayerId(const PSimHit&);

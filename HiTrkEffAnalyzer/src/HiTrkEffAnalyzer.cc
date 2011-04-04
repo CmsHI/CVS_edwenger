@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.13 2011/03/29 12:23:41 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.14 2011/03/29 15:42:22 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -94,15 +94,15 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   // PAT jet, to get leading jet ET
 
   float jet_et = 0.0, jet_eta=-999.0, jet_phi=0.0;
-  std::vector<const reco::Candidate *> sortedJets;         // jets for event classfication
+  std::vector<const pat::Jet *> sortedJets;         // jets for event classfication
 
   if(useJetEtMode_>0){
-     edm::Handle<reco::CandidateView> jets;
+     edm::Handle<std::vector<pat::Jet> > jets;
      iEvent.getByLabel(jetTags_, jets);
      
 
      for(unsigned it=0; it<jets->size(); ++it){
-	const reco::Candidate* jet = &((*jets)[it]);
+	const pat::Jet* jet = &((*jets)[it]);
 
 	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
 	   if(fabs(jet->eta())<2.) {
@@ -269,7 +269,7 @@ HiTrkEffAnalyzer::endJob()
 
 // ------------
 SimTrack_t 
-HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet, int cent, std::vector<const reco::Candidate *> & sortedJets)
+HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet, int cent, std::vector<const pat::Jet *> & sortedJets)
 {
    
   SimTrack_t s;
@@ -316,6 +316,9 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     } else {
       s.jetr = sortedJets[bestJetInd]->et();
       s.jetar = sortedJets[bestJetInd]->eta();
+      if (sortedJets[bestJetInd]->genParton()) {
+	s.jrflavor = sortedJets[bestJetInd]->genParton()->pdgId();
+      }
     }
     s.jrdr = bestJetDR;
     s.jrind = bestJetInd;
@@ -351,7 +354,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
 
 // ------------
 RecTrack_t 
-HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet, int cent, std::vector<const reco::Candidate *> & sortedJets)
+HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet, int cent, std::vector<const pat::Jet *> & sortedJets)
 {
 
   RecTrack_t r;
@@ -399,6 +402,9 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     } else {
       r.jetr = sortedJets[bestJetInd]->et();
       r.jetar = sortedJets[bestJetInd]->eta();
+      if (sortedJets[bestJetInd]->genParton()) {
+	r.jrflavor = abs(sortedJets[bestJetInd]->genParton()->pdgId());
+      }
     }
     r.jrdr = bestJetDR;
     r.jrind = bestJetInd;
