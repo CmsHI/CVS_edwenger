@@ -8,6 +8,7 @@
 namespace edm { class ParameterSet ; }
 class TFile;
 class TTree;
+class TH1F;
 class TH2F;
 class TH3F;
 
@@ -109,6 +110,8 @@ class HiTrkEffHistograms
    TH3F* hresStoR3D_etaL;
    TH3F* hresStoR3D_v2;
 
+   TH1F* hsimSPt1D; // sim dn/dpt with sim pt for mom. res. closure
+   TH1F* hsimRPt1D; // sim dn/dpt with rec pt for mom. res. closure
 
    // RecTrack
    TH2F* hrec;

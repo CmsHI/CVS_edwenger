@@ -133,6 +133,13 @@ HiTrkEffHistograms::declareHistograms()
 		    etaBins.size()-1, &etaBins[0],
 		    ptBins.size()-1, &ptBins[0]);
 
+    hsimSPt1D = f->make<TH1F>("hsimSPt1D","Sim Tracks with sim pT;p_{T} (GeV/c)",
+			      ptBins.size()-1, &ptBins[0]);
+     
+    hsimRPt1D = f->make<TH1F>("hsimRPt1D","Sim Tracks with rec pT;p_{T} (GeV/c)",
+                              ptBins.size()-1, &ptBins[0]);
+			      
+
     // accepted
     hacc = f->make<TH2F>("hacc","Accepted Tracks;#eta;p_{T} (GeV/c)",
 		    etaBins.size()-1, &etaBins[0],
@@ -265,6 +272,8 @@ HiTrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
     hsim3D->Fill(s.etas, s.pts, s.jetr);
     if(s.acc)    hacc->Fill(s.etas, s.pts);
     if(s.nrec==1) {
+       hsimSPt1D->Fill(s.pts);
+       hsimRPt1D->Fill(s.ptr);
        hresStoR3D->Fill(s.etas, s.pts, s.ptr);
     }
     if(s.nrec>0) heff->Fill(s.etas, s.pts), heff3D->Fill(s.etas, s.pts, s.jetr);
