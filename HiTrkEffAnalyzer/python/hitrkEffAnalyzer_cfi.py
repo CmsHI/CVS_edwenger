@@ -11,7 +11,7 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     beamspot = cms.untracked.InputTag('offlineBeamSpot'),                         
     fillHistograms = cms.bool(True),
     fillNtuples = cms.bool(False),
-    ptBinScheme = cms.int32(3), # 1 = original, 2 = constant d(1/pt) binning, 3 = coarse, other then this, constant
+    ptBinScheme = cms.int32(1), # 1 = original, 2 = constant d(1/pt) binning, 3 = coarse, other then this, constant
     lowPtMode = cms.bool(False),
     doAssociation = cms.untracked.bool(True),
     hasSimInfo = cms.untracked.bool(False),
