@@ -272,8 +272,7 @@ HiTrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
     hsim3D->Fill(s.etas, s.pts, s.jetr);
     if(s.acc)    hacc->Fill(s.etas, s.pts);
     if(s.nrec==1) {
-       hsimSPt1D->Fill(s.pts);
-       hsimRPt1D->Fill(s.ptr);
+       if(fabs(s.etas)<1.0) hsimSPt1D->Fill(s.pts), hsimRPt1D->Fill(s.ptr);
        hresStoR3D->Fill(s.etas, s.pts, s.ptr);
     }
     if(s.nrec>0) heff->Fill(s.etas, s.pts), heff3D->Fill(s.etas, s.pts, s.jetr);
