@@ -78,8 +78,8 @@ HiTrkEffHistograms::declareHistograms()
 
     } else if(ptBinScheme==3){
       // coarse binning for jet analysis
-      const Int_t numPPtBins=18;
-      Float_t pptBins[numPPtBins+1] = {0.5,1,1.5,2,2.5,3,4,5,7.5,10,12,15,20,25,30,45,60,90,120};
+      const Int_t numPPtBins=20;
+      Float_t pptBins[numPPtBins+1] = {0.5,1,1.5,2,2.5,3,4,5,7.5,10,12,15,20,25,30,45,60,90,120,180,300};
       vector<Double_t> ptBinsB2(pptBins,pptBins+numPPtBins+1);
       ptBins = ptBinsB2;
 
@@ -127,6 +127,14 @@ HiTrkEffHistograms::declareHistograms()
 
     for(Double_t jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
        jetBins.push_back(jet);
+
+    if(ptBinScheme==3){
+      // coarse binning for jet analysis
+      const Int_t numJetBins=8;
+      Float_t jBins[numJetBins+1] = {0,40,80,120,160,200,250,500,1000};
+      vector<Double_t> jetBinsB2(jBins,jBins+numJetBins+1);
+      jetBins = jetBinsB2;
+    }
 
     // simulated
     hsim = f->make<TH2F>("hsim","Sim Tracks;#eta;p_{T} (GeV/c)",
