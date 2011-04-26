@@ -40,7 +40,8 @@ hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
     maxNumberLostLayers = cms.uint32(99999)
 )
 
-hiHighPtTracks = hiGoodTracks.clone(min_relpterr = cms.double(0.06),
+hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+                                    min_relpterr = cms.double(0.06),
                                     min_nhits = cms.uint32(12),
                                     min_pt_nhits = cms.vdouble(10.,13), # if pt>10, apply min_hit 13!
                                     d0_par2 =cms.vdouble(7.0, 0.0),
