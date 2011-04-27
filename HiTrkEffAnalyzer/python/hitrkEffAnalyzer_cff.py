@@ -8,7 +8,7 @@ from edwenger.HiTrkEffAnalyzer.HiTPCuts_cff import *
 from edwenger.HiTrkEffAnalyzer.hitrkEffAnalyzer_cfi import *
 
 ## full tracking
-hitrkEffAnalyzer.tracks = cms.untracked.InputTag('hiGoodTracks')
+hitrkEffAnalyzer.tracks = cms.untracked.InputTag('hiGoodTightTracks')
 hitrkEffAnalyzer.label_tp_effic = cms.untracked.InputTag("cutsTPForEff")
 hitrkEffAnalyzer.label_tp_fake = cms.untracked.InputTag("cutsTPForFak")
 hitrkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # without this no sim track info
@@ -20,12 +20,20 @@ hitrkEffAna = cms.Sequence(cutsTPForFak*
                            cutsTPForEff*
                            hitrkEffAnalyzer)
 
+higloosetrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiGoodLooseTracks'),
+                           fillNtuples = cms.bool(False)
+                         )
+
 hihightrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiHighPtTracks'),
                       fillNtuples = cms.bool(False)
                       )
 
+higloosetrkEffAna = cms.Sequence(cutsTPForFak*
+                                 cutsTPForEff*
+                                 higloosetrkEffAnalyzer)
+
 hihightrkEffAna = cms.Sequence(cutsTPForFak*
-                              cutsTPForEff*
+                               cutsTPForEff*
                                hihightrkEffAnalyzer)
 
 hicalotrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiCaloCompTracks'),
