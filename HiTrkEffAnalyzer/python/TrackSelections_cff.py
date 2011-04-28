@@ -57,8 +57,23 @@ hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
                                     d0_par2 =cms.vdouble(999.0, 0.0),
                                     dz_par2 = cms.vdouble(999.0, 0.0))
 
+## this is hiGoodTightTracks without vtx cut for systematics study
+hiPreD0GoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+                                          min_nhits = cms.uint32(13),
+                                          chi2n_par = cms.double(0.4),
+                                          d0_par2 =cms.vdouble(999.0, 0.0))
+
+hiPreDZGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+                                            min_nhits = cms.uint32(13),
+                                            chi2n_par = cms.double(0.4),
+                                            dz_par2 =cms.vdouble(999.0, 0.0))
+
 
 hiGoodTracksSelection = cms.Sequence(hiGoodTracks)
 hiGoodLooseTracksSelection = cms.Sequence(hiGoodLooseTracks)
 hiGoodTightTracksSelection = cms.Sequence(hiGoodTightTracks)
 hiHighPtTrackSelection = cms.Sequence(hiHighPtTracks)
+
+hiPreD0GoodTightTracksSelection = cms.Sequence(hiPreD0GoodTightTracks)
+hiPreDZGoodTightTracksSelection = cms.Sequence(hiPreDZGoodTightTracks)
+
