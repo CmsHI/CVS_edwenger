@@ -16,12 +16,9 @@ pfCandidateAnalyzer.Tracks = cms.InputTag("hiHighPtTracks")
 pfCandidateAnalyzer.isData = cms.untracked.bool(False)
 
 
-hipfCandAnalyzer = cms.Sequence(#myTrackAssociatorByHitsRecoDenom*
-                                cutsTPForFak*
-                                pfCandidateAnalyzer)
+hipfCandAnalyzer = cms.Sequence(pfCandidateAnalyzer)
 
 
 pfCandidateAnalyzer_test = pfCandidateAnalyzer.clone(Tracks = cms.InputTag("hiHighPtCaloTracks"))
 
-hipfCandAnalyzer_test = cms.Sequence(cutsTPForFak*
-                                     pfCandidateAnalyzer_test)
+hipfCandAnalyzer_test = cms.Sequence(pfCandidateAnalyzer_test)
