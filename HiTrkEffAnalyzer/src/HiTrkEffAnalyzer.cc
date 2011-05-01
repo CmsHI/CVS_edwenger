@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.14 2011/03/29 15:42:22 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.15 2011/04/04 22:03:56 frankma Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -47,6 +47,8 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
   jetTrkOnly_(iConfig.getUntrackedParameter<bool>("jetTrkOnly",false)),
   fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
+  useQaulityStr_(iConfig.getUntrackedParameter<bool>("useQaulityStr")),
+  qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
   centrality_(0)
 {
 
@@ -210,6 +212,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     reco::Track* tr=const_cast<reco::Track*>(track.get());
     
     if(fiducialCut_ && hitDeadPXF(*tr)) continue; // if track hits the dead region, igonore it;
+    if(useQaulityStr_ && !tr->quality(reco::TrackBase::qualityByName(qualityString_))) continue;
 
     std::vector<std::pair<TrackingParticleRef, double> > tp;
     const TrackingParticle *mtp=0;

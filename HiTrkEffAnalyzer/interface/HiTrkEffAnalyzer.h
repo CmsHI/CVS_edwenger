@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.7 2011/03/29 12:27:09 sungho Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.8 2011/04/04 22:04:09 frankma Exp $
 //
 
 // user include files
@@ -60,7 +60,9 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool useSubLeadingJet_;
       bool jetTrkOnly_;
       bool fiducialCut_;
-      
+      bool useQaulityStr_;
+      std::string qualityString_;
+
       HiTrkEffHistograms *histograms;
       edm::Service<TFileService> f;
       
