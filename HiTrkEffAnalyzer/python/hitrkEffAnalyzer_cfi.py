@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 # Track efficiency analyzer
 hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     tracks = cms.untracked.InputTag('hiSelectedTracks'),
-    jets = cms.untracked.InputTag('icPu5patJets'),
+    jets = cms.untracked.InputTag('patJets'),
     label_tp_effic = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),
     label_tp_fake = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),                 
     associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
@@ -22,5 +22,7 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     trkAcceptedJet = cms.untracked.bool(True), # limit jets to |eta|<2.0 
     useSubLeadingJet = cms.untracked.bool(False),
     jetTrkOnly = cms.untracked.bool(False),
-    fiducialCut = cms.untracked.bool(True) # fiducial cut for FPIX
+    fiducialCut = cms.untracked.bool(True), # fiducial cut for FPIX  
+    useQaulityStr=cms.untracked.bool(False),
+    qualityString=cms.untracked.string("highPurity")
 )
