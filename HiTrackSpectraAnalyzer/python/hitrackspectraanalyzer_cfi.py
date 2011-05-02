@@ -7,7 +7,7 @@ hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           gsrc = cms.untracked.InputTag("hiGenParticles"),
                           gjsrc = cms.untracked.InputTag("ak5HiGenJets"),
                           src_evtCorr = cms.untracked.InputTag("hiGoodTracks"),
-                          setQualityBit = cms.untracked.bool(False), # = useQualityBit
+                          setQualityBit = cms.untracked.bool(True), # = useQualityBit
                           qualityString = cms.untracked.string("highPurity"),
                           isGEN = cms.untracked.bool(False),
                           pureGENmode = cms.untracked.bool(False),
