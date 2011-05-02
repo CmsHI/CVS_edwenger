@@ -40,13 +40,13 @@ hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
     maxNumberLostLayers = cms.uint32(99999)
 )
 
-hiGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+hiGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                        keepAllTracks = cms.bool(True),
                                        qualityBit = cms.string('highPurity'),
                                        min_nhits = cms.uint32(13),
                                        chi2n_par = cms.double(0.4))
 
-hiGoodLooseTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+hiGoodLooseTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                        keepAllTracks = cms.bool(True),
                                        qualityBit = cms.string('loose'),
                                        min_nhits = cms.uint32(12),
@@ -54,7 +54,7 @@ hiGoodLooseTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
                                        d0_par2 = cms.vdouble(5.0, 0.0),
                                        dz_par2 = cms.vdouble(5.0, 0.0))
 
-hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                     keepAllTracks = cms.bool(True),
                                     qualityBit = cms.string('tight'),
                                     min_relpterr = cms.double(0.06),
@@ -64,18 +64,18 @@ hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
                                     dz_par2 = cms.vdouble(999.0, 0.0))
 
 ## this is hiGoodTightTracks without vtx cut for systematics study
-hiPreDTGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+hiPreDTGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                             min_nhits = cms.uint32(13),
                                             chi2n_par = cms.double(0.4),
                                             d0_par2 =cms.vdouble(999.0, 0.0))
 
-hiPreDZGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+hiPreDZGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                             min_nhits = cms.uint32(13),
                                             chi2n_par = cms.double(0.4),
                                             dz_par2 =cms.vdouble(999.0, 0.0))
 
-# this is a track collection that PF re-reco judegement is based on
-hiPFRerecoTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+# this is a track collection that PF re-reco judegement (and PF reco)  is based on
+hiPostGlobalPrimTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
                                       min_relpterr = cms.double(0.06),
                                       min_nhits = cms.uint32(12),
                                       chi2n_par = cms.double(0.4),
@@ -91,4 +91,4 @@ hiHighPtTrackSelection = cms.Sequence(hiHighPtTracks)
 hiPreDTGoodTightTracksSelection = cms.Sequence(hiPreDTGoodTightTracks)
 hiPreDZGoodTightTracksSelection = cms.Sequence(hiPreDZGoodTightTracks)
 
-hiPFRerecoTracksSelection = cms.Sequence(hiPFRerecoTracks)
+hiPostGlobalPrimTracksSelection = cms.Sequence(hiPostGlobalPrimTracks)

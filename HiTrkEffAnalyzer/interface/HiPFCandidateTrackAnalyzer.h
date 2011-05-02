@@ -26,6 +26,8 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+// centrality
+#include "DataFormats/HeavyIonEvent/interface/CentralityProvider.h"
 
 /**\class PFCandidateTrackAnalyzer 
 \brief produces IsolatedPFCandidates from PFCandidates
@@ -89,6 +91,13 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   double minHits_, maxPtErr_, maxD0_, maxDZ_, maxD0Norm_, maxDZNorm_;
   bool pixelSeedOnly_;
 
+  std::vector<int32_t> neededCentBins_;
+
+  CentralityProvider * centrality_;
+
+  bool useQaulityStr_;
+  std::string qualityString_;
+
   // ntuple
   TNtuple *nt;
 
@@ -108,6 +117,11 @@ class HiPFCandidateTrackAnalyzer : public edm::EDAnalyzer {
   TH2F *hDZErrEtaAccept, *hDZErrEtaReject; // quadratic sum of dz err and z err w.r.t vtx 
   TH2F *hD0PerErrEtaAccept, *hD0PerErrEtaReject;
   TH2F *hDZPerErrEtaAccept, *hDZPerErrEtaReject;
+
+  // TH2F binned in centrality
+  std::vector<TH2F*> hTrkPtEcalEtSum_Cent;
+  std::vector<TH2F*> hTrkPtHcalEtSum_Cent;
+  std::vector<TH2F*> hTrkPtCaloEtSum_Cent;
 
   // TH3F
   TH3F *hTrkPtEtaEcalEtSum, *hTrkPtEtaHcalEtSum, *hTrkPtEtaCaloEtSum;

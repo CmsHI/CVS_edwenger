@@ -20,5 +20,8 @@ pfCandidateAnalyzer = cms.EDAnalyzer("HiPFCandidateTrackAnalyzer",
                maxDZNorm = cms.untracked.double(99999.),
                pixelSeedOnly = cms.untracked.bool(False),
                prodNtuple = cms.untracked.bool(False),
-               isData = cms.untracked.bool(True)
-               )
+               isData = cms.untracked.bool(True),
+               neededCentBins = cms.untracked.vint32(0,1,3,11,19,39),
+               useQaulityStr=cms.untracked.bool(False),
+               qualityString=cms.untracked.string("highPurity")
+)

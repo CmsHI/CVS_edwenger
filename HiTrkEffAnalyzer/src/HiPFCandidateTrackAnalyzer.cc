@@ -40,8 +40,9 @@ using namespace edm;
 using namespace reco;
 
 
-HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& iConfig) {
-  
+HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& iConfig) :
+   centrality_(0)
+{
 
   inputTagPFCandidates_ = iConfig.getParameter<InputTag>("PFCandidates");
   inputTagVertices_ = iConfig.getParameter<InputTag>("Vertices");
@@ -65,6 +66,11 @@ HiPFCandidateTrackAnalyzer::HiPFCandidateTrackAnalyzer(const edm::ParameterSet& 
   
   prodNtuple_ = iConfig.getUntrackedParameter<bool>("prodNtuple");
   isData_ = iConfig.getUntrackedParameter<bool>("isData");
+
+  neededCentBins_ = iConfig.getUntrackedParameter<std::vector<int> >("neededCentBins");
+
+  useQaulityStr_ = iConfig.getUntrackedParameter<bool>("useQaulityStr");
+  qualityString_ = iConfig.getUntrackedParameter<std::string>("qualityString");
 
   fCaloComp = new TF1("fCaloComp",funcCaloComp_.c_str(),0,200); // a function that defines track-calo (in)compatible region
 
@@ -94,36 +100,44 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
   
   LogDebug("HiPFCandidateTrackAnalyzer")<<"START event: "<<iEvent.id().event()
 			 <<" in run "<<iEvent.id().run()<<endl;
+  
+  // get PF candidates
+  Handle<PFCandidateCollection> pfCandidates;
+  bool isPFThere = iEvent.getByLabel(inputTagPFCandidates_, pfCandidates);
+
+  if (!isPFThere) return;  // if no PFCand in an event, skip it 
+
+  // get centrality information
+  centrality_ = new CentralityProvider(iSetup);
+  centrality_->newEvent(iEvent,iSetup);
+  int cbin = centrality_->getBin();
 
   // get vertices
-
   edm::Handle<reco::VertexCollection> vtxsH;
   iEvent.getByLabel(inputTagVertices_,vtxsH);
   reco::VertexCollection vtxs = *vtxsH;
   
   // do reco-to-sim association
-
   edm::Handle<TrackingParticleCollection>  TPCollectionHfake;
   edm::Handle<edm::View<reco::Track> >  trackCollection;
   edm::ESHandle<TrackAssociatorBase> theAssociator;
   const TrackAssociatorByHits *theAssociatorByHits;
   reco::RecoToSimCollection recSimColl;
-  
+
+  // get track collection
+  Handle<edm::View<reco::Track> > trackCollectionH;
+  iEvent.getByLabel(inputTagTracks_,trackCollectionH);
+  const edm::View<reco::Track>  tC = *(trackCollectionH.product());
+  //size_t ntrk = tC.size();
+
   if(hasSimInfo_) {
     iEvent.getByLabel(inputTagSimTracks_,TPCollectionHfake);
-    iEvent.getByLabel(inputTagTracks_,trackCollection);
     iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
     theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();  
-    recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent); // to find fake
+    recSimColl= theAssociatorByHits->associateRecoToSim(trackCollectionH,TPCollectionHfake,&iEvent); // to find fake
   }
-
-  // get PFCandidates
-
-  Handle<PFCandidateCollection> pfCandidates;
-  bool isPFThere = iEvent.getByLabel(inputTagPFCandidates_, pfCandidates);
-
-  if (!isPFThere) return;  // if no PFCand in an event, skip it
   
+  // analyzer PF candidates
   if(verbose_) cout<<" # of pf cands: "<<pfCandidates->size()<<endl;
 
   for( unsigned i=0; i<pfCandidates->size(); i++ ) {
@@ -147,8 +161,31 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
     // Matt:  Look at only charged hardons for the moment, could be extended to study leptons
     if(!(cand_type == PFCandidate::h)) continue;
 
+    
+    // Andre: Look at only pf candidate that is associated with a track from input track collection 
     reco::TrackRef trackRef = cand.trackRef();
 
+    int index = 0;
+    bool isAssociatedTrk = false;
+    
+    for(edm::View<reco::Track>::size_type i=0; i<tC.size(); ++i) {
+       if(i==trackRef.key()) {
+	  isAssociatedTrk = true;
+	  index = i;
+	  break;
+       }
+    }
+
+    if(!isAssociatedTrk) continue;
+    
+    // get track reference
+    edm::RefToBase<reco::Track> track(trackCollectionH, index);
+    reco::Track* tr=const_cast<reco::Track*>(track.get());
+
+    if(useQaulityStr_ && !tr->quality(reco::TrackBase::qualityByName(qualityString_))) continue;
+
+    //std::cout<<"associated index = "<<index<<" with pt = "<<trackRef->pt()<<endl;
+    
     //----- track quality selections, MATT:  Already using high Purity hiSelectedTracks by default anyway
 
     double nhits = 0, relpterr = 0, algo = 0, d0 = 0, dz = 0, d0err = 0, dzerr = 0;
@@ -173,10 +210,12 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
 
     bool fake=false;
-    
-    if(hasSimInfo_)
-      if(recSimColl.find(edm::RefToBase<reco::Track>(trackRef)) == recSimColl.end())
-	fake=true;
+
+    if(hasSimInfo_ && recSimColl.find(track) != recSimColl.end()){
+       fake = false;
+    } else {
+       fake = true;
+    }
 
     //-----
     if(verbose_) if(fake==true) std::cout<<" fake! "<<std::endl;
@@ -256,7 +295,24 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
     // 2D hist
     hTrkPtEcalEtSum->Fill(cand_pt,sum_ecal), hTrkPtHcalEtSum->Fill(cand_pt,sum_hcal), hTrkPtCaloEtSum->Fill(cand_pt,sum_calo);
-
+    
+    // Centrality binned 2D hist
+    for(unsigned i=0;i<neededCentBins_.size();i++){
+       if(i==0){
+	  if(cbin<=neededCentBins_[i+1]){
+	     hTrkPtEcalEtSum_Cent[i]->Fill(cand_pt,sum_ecal);
+	     hTrkPtHcalEtSum_Cent[i]->Fill(cand_pt,sum_hcal);
+	     hTrkPtCaloEtSum_Cent[i]->Fill(cand_pt,sum_calo);
+	  }
+       }else{
+	  if(cbin>neededCentBins_[i] && cbin<=neededCentBins_[i+1]){
+	     hTrkPtEcalEtSum_Cent[i]->Fill(cand_pt,sum_ecal);
+             hTrkPtHcalEtSum_Cent[i]->Fill(cand_pt,sum_hcal);
+             hTrkPtCaloEtSum_Cent[i]->Fill(cand_pt,sum_calo);
+	  }
+       }
+    }
+       
     float compatible_calo = (fCaloComp->Eval(cand_pt)!=fCaloComp->Eval(cand_pt)) ? 0 : fCaloComp->Eval(cand_pt); // protect agains NaN
 
     if(compatible_calo < sum_calo){
@@ -286,6 +342,8 @@ HiPFCandidateTrackAnalyzer::analyze(const Event& iEvent,
 
   } // end of pfCandidates loop
   
+
+  //std::cout<<"Number of tracks = "<<ntrk<<std::endl;
  
   LogDebug("HiPFCandidateTrackAnalyzer")<<"STOP event: "<<iEvent.id().event()
 			 <<" in run "<<iEvent.id().run()<<endl;
@@ -369,6 +427,25 @@ HiPFCandidateTrackAnalyzer::beginJob() {
 
    hDZPerErrEtaAccept = fs->make<TH2F>("hDZPerErrEtaAccept","DZ/DZErr dist. for accepted tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],50,0,10);
    hDZPerErrEtaReject = fs->make<TH2F>("hDZPerErrEtaReject","DZ/DZErr dist. for rejected tracks;#eta;d_{0}/#sigma_{err}", etaBins.size()-1,&etaBins[0],50,0,10);
+
+   //centrality binned histograms
+   for(unsigned i=0;i<neededCentBins_.size()-1;i++){
+      hTrkPtEcalEtSum_Cent.push_back(fs->make<TH2F>("","pT vs ecal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], 
+						    cEtSumBins.size()-1, &cEtSumBins[0]));
+      hTrkPtHcalEtSum_Cent.push_back(fs->make<TH2F>("","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], 
+						    cEtSumBins.size()-1, &cEtSumBins[0]));
+      hTrkPtCaloEtSum_Cent.push_back(fs->make<TH2F>("","pT vs hcal et sum; p_{T} (GeV/c);E_{T} (GeV)",ptBins.size()-1, &ptBins[0], 
+						    cEtSumBins.size()-1, &cEtSumBins[0]));
+      if(i==0){
+	 hTrkPtEcalEtSum_Cent[i]->SetName(Form("hTrkPtEcalEtSum_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+	 hTrkPtHcalEtSum_Cent[i]->SetName(Form("hTrkPtHcalEtSum_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+	 hTrkPtCaloEtSum_Cent[i]->SetName(Form("hTrkPtCaloEtSum_cbin%dto%d",neededCentBins_[i],neededCentBins_[i+1]));
+      }else{
+	 hTrkPtEcalEtSum_Cent[i]->SetName(Form("hTrkPtEcalEtSum_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+	 hTrkPtHcalEtSum_Cent[i]->SetName(Form("hTrkPtHcalEtSum_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+	 hTrkPtCaloEtSum_Cent[i]->SetName(Form("hTrkPtCaloEtSum_cbin%dto%d",neededCentBins_[i]+1,neededCentBins_[i+1]));
+      }
+   }
 
 
    if(!isData_ && hasSimInfo_) { 
