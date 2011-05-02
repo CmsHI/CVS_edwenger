@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.30 2011/04/01 16:49:05 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.31 2011/04/04 21:25:20 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -29,6 +29,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    gjsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("gjsrc",edm::InputTag("ak5GenJets"));
    src_evtCorr_ = iConfig.getUntrackedParameter<edm::InputTag>("src_evtCorr",edm::InputTag("generalTracks"));
    setQualityBit_ = iConfig.getUntrackedParameter<bool>("setQualityBit", true);
+   qualityString_ = iConfig.getUntrackedParameter<std::string>("qualityString");
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
@@ -60,7 +61,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
    using namespace std;
    using namespace reco;
 
-   const string qualityString = "highPurity";
+   //const string qualityString = "highPurity";
 
    float etaCut_evtSel = 0.0;
    bool skipEvt = false;
@@ -197,7 +198,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       for(unsigned it=0; it<etracks->size(); ++it){
 	 const reco::Track & etrk = (*etracks)[it];
 	 if(fiducialCut_ && hitDeadPXF(etrk)) continue; // if track hits the dead region, igonore it;
-	 if(setQualityBit_ && !etrk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
+	 if(setQualityBit_ && !etrk.quality(reco::TrackBase::qualityByName(qualityString_))) continue;
 	 if(fabs(etrk.eta())<etaCut_evtSel && etrk.pt()>ptMin_) mult++;
       }
       
@@ -238,7 +239,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	    const reco::Track & trk = (*tracks)[it];
 
 	    if(fiducialCut_ && hitDeadPXF(trk)) continue; // if track hits the dead region, igonore it;
-	    if(setQualityBit_ && !trk.quality(reco::TrackBase::qualityByName(qualityString))) continue;
+	    if(setQualityBit_ && !trk.quality(reco::TrackBase::qualityByName(qualityString_))) continue;
 	    
 	    if(!histOnly_){
 	       nt_dndptdeta->Fill(trk.pt(),trk.eta()); 

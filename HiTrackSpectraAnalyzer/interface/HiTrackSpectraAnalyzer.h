@@ -150,6 +150,8 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool setQualityBit_;
+   std::string qualityString_;
+
    bool triggerNeeded_;
    bool pixelMultMode_;
    bool closestJets_;
