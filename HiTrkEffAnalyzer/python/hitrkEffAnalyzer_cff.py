@@ -15,17 +15,21 @@ hitrkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # without this no sim tra
 hitrkEffAnalyzer.doAssociation = cms.untracked.bool(True)
 hitrkEffAnalyzer.pixelMultMode =  cms.untracked.bool(False)
 hitrkEffAnalyzer.useJetEtMode = cms.int32(2)
+hitrkEffAnalyzer.useQaulityStr=cms.untracked.bool(True)
+hitrkEffAnalyzer.qualityString = cms.untracked.string("highPurity")
 
 hitrkEffAna = cms.Sequence(cutsTPForFak*
                            cutsTPForEff*
                            hitrkEffAnalyzer)
 
 higloosetrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiGoodLooseCaloTracks'),
-                           fillNtuples = cms.bool(False)
+                           fillNtuples = cms.bool(False),
+                           qualityString = cms.untracked.string("loose")                                                
                          )
 
 hihightrkEffAnalyzer = hitrkEffAnalyzer.clone(tracks = cms.untracked.InputTag('hiHighPtCaloTracks'),
-                      fillNtuples = cms.bool(False)
+                      fillNtuples = cms.bool(False),
+                      qualityString = cms.untracked.string("tight")                                              
                       )
 
 higloosetrkEffAna = cms.Sequence(cutsTPForFak*

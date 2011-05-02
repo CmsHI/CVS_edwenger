@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 # Track efficiency analyzer
 hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     tracks = cms.untracked.InputTag('hiSelectedTracks'),
-    jets = cms.untracked.InputTag('patJets'),
+    jets = cms.untracked.InputTag('icPu5patJets'),
     label_tp_effic = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),
     label_tp_fake = cms.untracked.InputTag('mergedtruth','MergedTrackTruth'),                 
     associatormap = cms.untracked.InputTag('trackingParticleRecoTrackAsssociation'),
