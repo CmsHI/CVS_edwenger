@@ -82,6 +82,7 @@ hiPostGlobalPrimTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTrac
                                             d0_par2 =cms.vdouble(999.0, 0.0),
                                             dz_par2 = cms.vdouble(999.0, 0.0))
 
+# this is just to avoid duplicate collection produced on the fly for PF
 hiPostGlobalPrimDumTracks = hiPostGlobalPrimTracks.clone()
 
 hiGoodTracksSelection = cms.Sequence(hiGoodTracks)
