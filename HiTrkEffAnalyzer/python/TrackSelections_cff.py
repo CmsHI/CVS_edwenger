@@ -65,17 +65,20 @@ hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks")
 
 ## this is hiGoodTightTracks without vtx cut for systematics study
 hiPreDTGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
+                                            qualityBit = cms.string(''),
                                             min_nhits = cms.uint32(13),
                                             chi2n_par = cms.double(0.4),
                                             d0_par2 =cms.vdouble(999.0, 0.0))
 
 hiPreDZGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
+                                            qualityBit = cms.string(''),
                                             min_nhits = cms.uint32(13),
                                             chi2n_par = cms.double(0.4),
                                             dz_par2 =cms.vdouble(999.0, 0.0))
 
 # this is a track collection that PF re-reco judegement (and PF reco)  is based on
 hiPostGlobalPrimTracks = hiGoodTracks.clone(src = cms.InputTag("hiGlobalPrimTracks"),
+                                            qualityBit = cms.string(''),
                                             min_relpterr = cms.double(0.06),
                                             min_nhits = cms.uint32(12),
                                             chi2n_par = cms.double(0.4),
