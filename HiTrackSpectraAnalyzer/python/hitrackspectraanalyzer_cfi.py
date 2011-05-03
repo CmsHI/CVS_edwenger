@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 hitrackAna = cms.EDAnalyzer('HiTrackSpectraAnalyzer',
                           src = cms.untracked.InputTag("hiGoodTracks"),
                           vsrc = cms.untracked.InputTag("hiSelectedVertex"),
-                          jsrc = cms.untracked.InputTag("patJets"),
+                          jsrc = cms.untracked.InputTag("icPu5patJets"),
                           gsrc = cms.untracked.InputTag("hiGenParticles"),
                           gjsrc = cms.untracked.InputTag("ak5HiGenJets"),
                           src_evtCorr = cms.untracked.InputTag("hiGoodTracks"),
