@@ -11,7 +11,7 @@ from edwenger.HiTrkEffAnalyzer.hitrkEffAnalyzer_cfi import *
 
 from edwenger.HiTrkEffAnalyzer.hipfCandAnalyzer_cfi import *
 pfCandidateAnalyzer.SimTracks = cms.InputTag("cutsTPForFak")
-pfCandidateAnalyzer.ptMin = cms.untracked.double(4.0)
+pfCandidateAnalyzer.ptMin = cms.untracked.double(1.0)
 pfCandidateAnalyzer.Tracks = cms.InputTag("hiHighPtTracks")
 pfCandidateAnalyzer.isData = cms.untracked.bool(False)
 pfCandidateAnalyzer.useQaulityStr = cms.untracked.bool(True)
