@@ -44,13 +44,13 @@ hiGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTrack
                                        keepAllTracks = cms.bool(True),
                                        qualityBit = cms.string('highPurity'),
                                        min_nhits = cms.uint32(13),
-                                       chi2n_par = cms.double(0.4))
+                                       chi2n_par = cms.double(0.15))
 
 hiGoodLooseTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                        keepAllTracks = cms.bool(True),
                                        qualityBit = cms.string('loose'),
                                        min_nhits = cms.uint32(12),
-                                       chi2n_par = cms.double(0.4),
+                                       chi2n_par = cms.double(0.15),
                                        d0_par2 = cms.vdouble(5.0, 0.0),
                                        dz_par2 = cms.vdouble(5.0, 0.0))
 
@@ -59,7 +59,7 @@ hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks")
                                     qualityBit = cms.string('tight'),
                                     min_relpterr = cms.double(0.06),
                                     min_nhits = cms.uint32(13),
-                                    chi2n_par = cms.double(0.4),
+                                    chi2n_par = cms.double(0.15),
                                     d0_par2 =cms.vdouble(999.0, 0.0),
                                     dz_par2 = cms.vdouble(999.0, 0.0))
 
@@ -67,13 +67,13 @@ hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks")
 hiPreDTGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                             qualityBit = cms.string(''),
                                             min_nhits = cms.uint32(13),
-                                            chi2n_par = cms.double(0.4),
+                                            chi2n_par = cms.double(0.15),
                                             d0_par2 =cms.vdouble(999.0, 0.0))
 
 hiPreDZGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
                                             qualityBit = cms.string(''),
                                             min_nhits = cms.uint32(13),
-                                            chi2n_par = cms.double(0.4),
+                                            chi2n_par = cms.double(0.15),
                                             dz_par2 =cms.vdouble(999.0, 0.0))
 
 # this is a track collection that PF re-reco judegement (and PF reco)  is based on
