@@ -41,13 +41,11 @@ hiGoodTracks = cms.EDProducer("HiHackedAnalyticalTrackSelector",
 )
 
 hiGoodTightTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
-                                       keepAllTracks = cms.bool(True),
                                        qualityBit = cms.string('highPurity'),
                                        min_nhits = cms.uint32(13),
                                        chi2n_par = cms.double(0.15))
 
 hiGoodLooseTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
-                                       keepAllTracks = cms.bool(True),
                                        qualityBit = cms.string('loose'),
                                        min_nhits = cms.uint32(12),
                                        chi2n_par = cms.double(0.15),
@@ -55,7 +53,6 @@ hiGoodLooseTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTrack
                                        dz_par2 = cms.vdouble(5.0, 0.0))
 
 hiHighPtTracks = hiGoodTracks.clone(src = cms.InputTag("hiPostGlobalPrimTracks"),
-                                    keepAllTracks = cms.bool(True),
                                     qualityBit = cms.string('tight'),
                                     min_relpterr = cms.double(0.06),
                                     min_nhits = cms.uint32(13),
