@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-selectTracks = cms.EDFilter("HackedAnalyticalTrackSelector",
+selectTracks = cms.EDProducer("HackedAnalyticalTrackSelector",
 
     src = cms.InputTag("generalTracks"),
     keepAllTracks = cms.bool(False), ## if set to true tracks failing this filter are kept in the output
