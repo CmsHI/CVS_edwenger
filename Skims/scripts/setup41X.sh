@@ -17,7 +17,8 @@ cvs co UserCode/ASYoon/MISC/src/DiJetAna.cc
 cp UserCode/ASYoon/MISC/src/DiJetAna.cc Saved//DiJetAna/src/
 
 # agglomerative vertex
-cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
+#cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
+cvs co -r 1.8 UserCode/FerencSiklerVertexing  # EDFilter to EDProducer fixed
 
 # vertex constraint for refitting
 cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
