@@ -30,18 +30,15 @@ options.parseArguments()
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-    '/store/data/Run2011A/AllPhysics2760/RECO/PromptReco-v2/000/161/450/AA4A07CD-775A-E011-990E-001617C3B6E2.root'))
-    #'file:/home/sungho/sctch101/mc/spectra/7TeV/test/MinBias_TuneD6T_GEN-SIM-RECODEBUG_362_1_1_BEp.root',
-    #'file:/home/sungho/sctch101/mc/spectra/7TeV/test/MinBias_TuneD6T_GEN-SIM-RECODEBUG_362_2_1_Apa.root'))
-    #'file:/home/sungho/sctch101/mc/spectra/7TeV/test/QCD_Pt80_GEN-SIM-RECODEBUG_362-02E7583C-847B-DF11-B1FB-00215E21D75C.root'))
+    'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_2_1_kAw.root'))
 
 # =============== Other Statements =====================
-
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(30))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+process.GlobalTag.globaltag = 'START311_V2A::All' # same as the one used in production
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
