@@ -21,18 +21,18 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
+    name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
 process.TFileService = cms.Service("TFileService", 
                                    fileName = cms.string('trkhists.root')
                                    )
-process.SimpleMemoryCheck = cms.Service('SimpleMemoryCheck',
-    ignoreTotal=cms.untracked.int32(0),
-    oncePerEventMode = cms.untracked.bool(False)
-    )
+#process.SimpleMemoryCheck = cms.Service('SimpleMemoryCheck',
+#    ignoreTotal=cms.untracked.int32(0),
+#    oncePerEventMode = cms.untracked.bool(False)
+#    )
 
 
 # =============== Import Sequences =====================
@@ -43,12 +43,13 @@ process.load("edwenger.Skims.Analysis_cff")
 
 from edwenger.Skims.customise_cfi import *
 #enableEitherHFEvtSel(process) # Replace HF coinc with the looser any HF hit evt selection
-enableHLTJet(process,"HLT_Jet50U")
+#enableHLTJet(process,"HLT_Jet20_v1")
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 enableDJetAna(process,"Data")
 setMaxNumberVertices(process,1)
 runWithsortedSumPtOrdVertices(process)
+run2760GeVmode(process)
 #process = enableAOD(process)
 
 # =============== Final Paths =====================

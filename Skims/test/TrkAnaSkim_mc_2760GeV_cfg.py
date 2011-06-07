@@ -17,7 +17,7 @@ options = VarParsing.VarParsing ('standard')
 
 # my own variable
 options.register('inputType',
-                 "QCDPtX_REDIGI36X",
+                 "MC_41X",
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
                  "Input file type - MB or QCDPtX")
@@ -33,13 +33,12 @@ process.source = cms.Source("PoolSource",
     'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_2_1_kAw.root'))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-process.GlobalTag.globaltag = 'START311_V2A::All' # same as the one used in production
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_2760GeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.4 $'),
+    name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
@@ -58,10 +57,11 @@ enableSIM(process)    # activate isGEN in analyzers
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 enableDJetAna(process,"MC","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
-replaceMinBiasHLTPath(process) # replace MB hlt path for MC
+replaceMinBiasHLTPath41X(process) # replace MB hlt path for MC
 removeDijetAna(process) # remove dijetAna_seq
 setMaxNumberVertices(process,1)
 runWithsortedSumPtOrdVertices(process)
+
 
 # =============== Final Paths =====================
 
