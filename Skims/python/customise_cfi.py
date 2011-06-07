@@ -165,6 +165,18 @@ def replaceMinBiasHLTPath(process):
     process.postTrkVtxAna.trignames=cms.untracked.vstring(list)
     return process
 
+def replaceMinBiasHLTPath41X(process):
+    list = ['HLT_L1_BptxXOR_BscMinBiasOR','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U_v3','HLT_Jet30U_v3','HLT_Jet50U_v3']
+    print "hlt list for event selection analyzer = ", list
+    process.evtselanalyzer.trignames=cms.untracked.vstring(list)
+    process.preTrgAna.trignames=cms.untracked.vstring(list)
+    process.postTrgAna.trignames=cms.untracked.vstring(list)
+    process.postEvtSelAna.trignames=cms.untracked.vstring(list)
+    process.postVtxAna.trignames=cms.untracked.vstring(list)
+    process.postTrkVtxAna.trignames=cms.untracked.vstring(list)
+    return process
+
+
 # this is to update hlt names for 900 GeV sample
 def run900GeVmode(process):
     process.preTrgAna.trignames=cms.untracked.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus','HLT_MinBiasPixel_SingleTrack','HLT_L1Jet6U','HLT_Jet15U','HLT_Jet30U','HLT_Jet50U')
@@ -185,6 +197,28 @@ def run900GeVmode(process):
     process.refitTrackAna.mode900GeV=cms.untracked.bool(True)
     process.trkEffAnalyzer.mode900GeV=cms.bool(True)
     process.loosetrkEffAnalyzer.mode900GeV=cms.bool(True)
+    return process
+
+
+def run2760GeVmode(process):
+    process.preTrgAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    process.postTrgAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    process.postEvtSelAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    process.postVtxAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    process.postTrkVtxAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    process.preTrackAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    process.trackAna.hltNames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    #process.trackAna.mode900GeV=cms.untracked.bool(True)
+    process.looseTrackAna.hltNames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    #process.looseTrackAna.mode900GeV=cms.untracked.bool(True)
+    process.trackAna_STD.hltNames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    #process.trackAna_STD.mode900GeV=cms.untracked.bool(True)
+    process.looseTrackAna_STD.hltNames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    #process.looseTrackAna_STD.mode900GeV=cms.untracked.bool(True)
+    process.refitTrackAna.hltNames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
+    #process.refitTrackAna.mode900GeV=cms.untracked.bool(True)
+    #process.trkEffAnalyzer.mode900GeV=cms.bool(True)
+    #process.loosetrkEffAnalyzer.mode900GeV=cms.bool(True)
     return process
 
 # this is for choosing a right global tag and regid name for an input sample
