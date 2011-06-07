@@ -33,11 +33,11 @@ process.source = cms.Source("PoolSource",
     'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_2_1_kAw.root'))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -53,7 +53,7 @@ process.load("edwenger.Skims.Analysis_cff")
 
 from edwenger.Skims.customise_cfi import *
 enableSIM(process)    # activate isGEN in analyzers
-#setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
+setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 enableDJetAna(process,"MC","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
