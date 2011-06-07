@@ -201,6 +201,10 @@ def run900GeVmode(process):
 
 
 def run2760GeVmode(process):
+    print 'bscOr is removed (TEMPORARILY)'
+    process.minBiasBscFilter.remove(process.bscOr)
+    process.bscOrBptxOr.algorithms=['L1_BscMinBiasOR_BptxPlusANDMinus']
+    process.hltMinBias.HLTPaths=cms.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1')
     process.preTrgAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
     process.postTrgAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
     process.postEvtSelAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
