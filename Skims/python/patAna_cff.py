@@ -3,7 +3,11 @@ import FWCore.ParameterSet.Config as cms
 # Build the Objects from AOD (Jets, Muons, Electrons, METs, Taus)
 from PhysicsTools.PatAlgos.patSequences_cff import *
 
+# jec
+patJetCorrFactors.levels = ['L2Relative','L3Absolute']
+
 # turn off btagging related
+patJets.addJetCharge = False
 patJets.addBTagInfo = cms.bool(False)
 patJets.addDiscriminators = cms.bool(False)
 patJets.addGenPartonMatch   = False
