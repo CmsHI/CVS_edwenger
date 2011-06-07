@@ -41,18 +41,21 @@ cvs co Configuration/Generator/python/PythiaUEP0Settings_cfi.py
 cvs co Configuration/Generator/python/PythiaUEProQ20Settings_cfi.py
 cvs co Configuration/Generator/python/MinBias_7TeV_pythia8_cff.py
 
-
 # cleanup
 mv UserCode/ASYoon/PPTrackingTools/ .
 rm -r UserCode/ASYoon
 
 # further clean up to keep it light
-#rm edwenger/TrackSpectraAnalyzer/macros/ -r
-#rm edwenger/TrkEffAnalyzer/macros/ -r
+rm edwenger/TrackSpectraAnalyzer/macros/ -r
+rm edwenger/TrkEffAnalyzer/macros/ -r
 
 # FW update for 36X
 sed -i 's/DEFINE_SEAL_MODULE();//' UserCode/FerencSiklerVertexing/plugins/module.cc
 sed -i 's/DEFINE_ANOTHER_FWK_MODULE/DEFINE_FWK_MODULE/' UserCode/FerencSiklerVertexing/plugins/module.cc
+
+# ======== IMPORTANT ===========
+# Running PixelTrackProducer require Ferenc's package (not in CVS)
+# ~sikler/public/CMSSW_4_1_2_patch1/src/RecoPixelVertexing/PixelLowPtUtilities/
 
 # To convert to XML format
 scram build -c
