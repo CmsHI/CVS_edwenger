@@ -21,7 +21,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -48,8 +48,8 @@ updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
 #enableDJetAna(process,"Data")
 removeDijetAna(process) # remove dijetAna_seq 
-setMaxNumberVertices(process,1)
-runWithsortedSumPtOrdVertices(process)
+#setMaxNumberVertices(process,1)
+#runWithsortedSumPtOrdVertices(process)
 run2760GeVmode(process)
 #process = enableAOD(process)
 
