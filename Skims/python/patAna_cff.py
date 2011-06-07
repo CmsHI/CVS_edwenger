@@ -6,7 +6,15 @@ from PhysicsTools.PatAlgos.patSequences_cff import *
 # turn off btagging related
 patJets.addBTagInfo = cms.bool(False)
 patJets.addDiscriminators = cms.bool(False)
-
+patJets.addGenPartonMatch   = False
+patJets.embedGenPartonMatch = False
+patJets.genPartonMatch      = ''
+patJets.addGenJetMatch      = False
+patJets.genJetMatch         = ''
+patJets.getJetMCFlavour     = False
+patJets.JetPartonMapSource  = ''
+patJets.embedCaloTowers			= False
+								
 # Select jets
 selectedPatJets.cut = cms.string('pt > 10')
 
@@ -18,6 +26,7 @@ cleanedPatJets = selectedPatJets.clone(
 
 # Define Sequence
 patAnaSequence = cms.Sequence(
-   makePatJets *
+   patJetCorrections *
+	 patJets *
    selectedPatJets
 )

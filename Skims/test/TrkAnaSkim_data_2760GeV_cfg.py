@@ -21,8 +21,8 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.23 $'),
-    name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_7TeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
@@ -40,12 +40,6 @@ process.SimpleMemoryCheck = cms.Service('SimpleMemoryCheck',
 process.load("edwenger.Skims.EventFilter_cff")
 process.load("edwenger.Skims.ExtraReco_cff")
 process.load("edwenger.Skims.Analysis_cff")
-
-from PhysicsTools.PatAlgos.tools.jetTools import *
-#switchJECSet( process, "Summer09_7TeV_ReReco332") # if not explicit then takes from Relesae default
-
-from PhysicsTools.PatAlgos.tools.coreTools import *
-removeMCMatching(process, ['All']) # turn off MC matching for data
 
 from edwenger.Skims.customise_cfi import *
 #enableEitherHFEvtSel(process) # Replace HF coinc with the looser any HF hit evt selection
