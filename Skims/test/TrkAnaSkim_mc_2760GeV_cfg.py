@@ -30,14 +30,15 @@ options.parseArguments()
 
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-    'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_2_1_kAw.root'))
+    'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_2_1_kAw.root',
+    'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_1_1_vow.root'))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(200))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.5 $'),
+    version = cms.untracked.string('$Revision: 1.6 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
