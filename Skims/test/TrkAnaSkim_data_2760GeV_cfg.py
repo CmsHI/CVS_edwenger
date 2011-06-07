@@ -16,12 +16,12 @@ process.source = cms.Source("PoolSource",
       ))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(20))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -46,7 +46,8 @@ from edwenger.Skims.customise_cfi import *
 #enableHLTJet(process,"HLT_Jet20_v1")
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_PixVtx")
-enableDJetAna(process,"Data")
+#enableDJetAna(process,"Data")
+removeDijetAna(process) # remove dijetAna_seq 
 setMaxNumberVertices(process,1)
 runWithsortedSumPtOrdVertices(process)
 run2760GeVmode(process)
