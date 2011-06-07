@@ -19,10 +19,10 @@ cvs co UserCode/ASYoon/MISC/src/DiJetAna.cc
 cp UserCode/ASYoon/MISC/src/DiJetAna.cc Saved//DiJetAna/src/
 
 # option to remove TrackerGeomtry dependency
-cvs co UserCode/ASYoon/MISC/python/ExtraVertex_cff.py
-cp UserCode/ASYoon/MISC/python/ExtraVertex_cff.py edwenger/Skims/python/
-cvs co UserCode/ASYoon/MISC/src/TrkEffAnalyzer.cc
-cp UserCode/ASYoon/MISC/src/TrkEffAnalyzer.cc edwenger/TrkEffAnalyzer/src/
+#cvs co UserCode/ASYoon/MISC/python/ExtraVertex_cff.py
+#cp UserCode/ASYoon/MISC/python/ExtraVertex_cff.py edwenger/Skims/python/
+#cvs co UserCode/ASYoon/MISC/src/TrkEffAnalyzer.cc
+#cp UserCode/ASYoon/MISC/src/TrkEffAnalyzer.cc edwenger/TrkEffAnalyzer/src/
 
 # agglomerative vertex
 cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
