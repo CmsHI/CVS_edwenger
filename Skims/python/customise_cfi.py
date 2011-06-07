@@ -48,6 +48,23 @@ def removeTPAssociation(process):
 def removeDijetAna(process):
     process.analysisSeq.remove(process.djcalo)
     return process
+
+def enable41X(process):
+    process.preTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.postTrgAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.postEvtSelAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.postVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.postTrkVtxAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.preTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.trackAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.looseTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
+    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','HLT')
+    process.eventFilter.remove(process.hltMinBias)     #
+    return process
+                                                     
     
 # this is for Summer 09 samples where the HLT has been re-run during Spring 10 production
 def enableREDIGI(process):
@@ -194,6 +211,10 @@ def setGlobTagAndRedigi(process,inputFileType):
         print "Notice: QCDPtX with REDIGI36X"
         process.GlobalTag.globaltag = 'START36_V9::All'
         process = enableREDIGI36X(process)
+    if inputFileType=='MC_41X':
+        print "Notice: MB and QCDPtX in 41X"
+        process.GlobalTag.globaltag = 'START311_V2A::All'
+        process = enable41X(process)
     print ("Notice: GlobalTag = " + str(process.GlobalTag.globaltag))
     return process
 
