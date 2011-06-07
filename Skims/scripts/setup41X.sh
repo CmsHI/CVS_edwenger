@@ -12,9 +12,17 @@ cvs co UserCode/edwenger/TrackSpectraAnalyzer
 cvs co UserCode/edwenger/TrkEffAnalyzer
 cvs co -r Y1JAna_0_1_4  -d Saved UserCode/SavedFMa/Saved
 
-# update dijet ana
+mv UserCode/edwenger .
+
+# update dijet (for >39X) ana
 cvs co UserCode/ASYoon/MISC/src/DiJetAna.cc
 cp UserCode/ASYoon/MISC/src/DiJetAna.cc Saved//DiJetAna/src/
+
+# option to remove TrackerGeomtry dependency
+cvs co UserCode/ASYoon/MISC/python/ExtraVertex_cff.py
+cp UserCode/ASYoon/MISC/python/ExtraVertex_cff.py edwenger/Skims/python/
+cvs co UserCode/ASYoon/MISC/src/TrkEffAnalyzer.cc
+cp UserCode/ASYoon/MISC/src/TrkEffAnalyzer.cc edwenger/TrkEffAnalyzer/src/
 
 # agglomerative vertex
 cvs co -r V00-00-07 UserCode/FerencSiklerVertexing
@@ -24,18 +32,17 @@ cvs co -r 1.8 UserCode/FerencSiklerVertexing/python  # EDFilter to EDProducer fi
 cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
 
 # for GEN spectra production
-#cvs co UserCode/ASYoon/MCGeneration
-#mv UserCode/ASYoon/MCGeneration .
-#cvs co Configuration/Generator/python/PythiaUEZ2Settings_cfi.py
-#cvs co Configuration/Generator/python/PythiaUECW900ASettings_cfi.py
-#cvs co Configuration/Generator/python/PythiaUED6TSettings_cfi.py
-#cvs co Configuration/Generator/python/PythiaUEP0Settings_cfi.py
-#cvs co Configuration/Generator/python/PythiaUEProQ20Settings_cfi.py
-#cvs co Configuration/Generator/python/MinBias_7TeV_pythia8_cff.py
+cvs co UserCode/ASYoon/MCGeneration
+mv UserCode/ASYoon/MCGeneration .
+cvs co Configuration/Generator/python/PythiaUEZ2Settings_cfi.py
+cvs co Configuration/Generator/python/PythiaUECW900ASettings_cfi.py
+cvs co Configuration/Generator/python/PythiaUED6TSettings_cfi.py
+cvs co Configuration/Generator/python/PythiaUEP0Settings_cfi.py
+cvs co Configuration/Generator/python/PythiaUEProQ20Settings_cfi.py
+cvs co Configuration/Generator/python/MinBias_7TeV_pythia8_cff.py
 
 
 # cleanup
-mv UserCode/edwenger .
 mv UserCode/ASYoon/PPTrackingTools/ .
 rm -r UserCode/ASYoon
 
