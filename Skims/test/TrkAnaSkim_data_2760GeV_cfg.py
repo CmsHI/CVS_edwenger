@@ -16,12 +16,12 @@ process.source = cms.Source("PoolSource",
       ))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2000))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.4 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -61,17 +61,17 @@ process.ana_step         = cms.Path(process.eventFilter * process.analysisSeq)
 
 # =============== Output ================================
 
-process.load("edwenger.Skims.analysisSkimContent_cff")
-process.output = cms.OutputModule("PoolOutputModule",
-    process.analysisSkimContent,
-    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('eventFilter_step')),
-    dataset = cms.untracked.PSet(
-      dataTier = cms.untracked.string('AOD'),
-      filterName = cms.untracked.string('TrkAnaFilter')),
-    fileName = cms.untracked.string('trkAnaSkimAOD.root')
-    )
+#process.load("edwenger.Skims.analysisSkimContent_cff")
+#process.output = cms.OutputModule("PoolOutputModule",
+#    process.analysisSkimContent,
+#    SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('eventFilter_step')),
+#    dataset = cms.untracked.PSet(
+#      dataTier = cms.untracked.string('AOD'),
+#      filterName = cms.untracked.string('TrkAnaFilter')),
+#    fileName = cms.untracked.string('trkAnaSkimAOD.root')
+#    )
 
-process.output_step = cms.EndPath(process.output)
+#process.output_step = cms.EndPath(process.output)
 
 # =============== Schedule =====================
 
