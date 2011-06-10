@@ -1,4 +1,5 @@
 #!/bin/sh
+## This setup is for 2.76 analysis
 
 cd $CMSSW_BASE/src
 
