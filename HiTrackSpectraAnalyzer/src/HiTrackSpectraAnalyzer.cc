@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.31 2011/04/04 21:25:20 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.32 2011/05/02 00:19:18 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -150,7 +150,7 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	 if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
 				     hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
 
-	 if(fabs(sortedJets[it]->eta())>6.5) continue; // should be same as eta cut in jet trigger
+	 if(fabs(sortedJets[it]->eta())>2.0) continue; // updated to 2.0 to remove those fake jets in HF
 
 	 // leading jet en only!, (break statement below)
 	 leadJetEt_  = sortedJets[it]->et(), leadJetEta_ = sortedJets[it]->eta();
