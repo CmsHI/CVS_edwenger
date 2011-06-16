@@ -201,9 +201,10 @@ def run900GeVmode(process):
 
 
 def run2760GeVmode(process):
-    #print 'bscOr is removed (TEMPORARILY)'
-    #process.minBiasBscFilter.remove(process.bscOr)
-    process.bscOrBptxOr.algorithms=['L1_BscMinBiasOR_BptxPlusANDMinus']
+    print 'bscOr and bscOrBptxOr are removed'
+    process.minBiasBscFilter.remove(process.bscOr)
+    process.minBiasBscFilter.remove(process.bscOrBptxOr)
+    #process.bscOrBptxOr.algorithms=['L1_BscMinBiasOR_BptxPlusANDMinus']
     process.hltMinBias.HLTPaths=cms.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1')
     process.preTrgAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
     process.postTrgAna.trignames=cms.untracked.vstring('HLT_L1BscMinBiasORBptxPlusANDMinus_v1','HLT_ZeroBiasPixel_SingleTrack_v1','HLT_Jet20_v1','HLT_Jet40_v1','HLT_Jet60_v1')
@@ -223,6 +224,14 @@ def run2760GeVmode(process):
     #process.refitTrackAna.mode900GeV=cms.untracked.bool(True)
     #process.trkEffAnalyzer.mode900GeV=cms.bool(True)
     #process.loosetrkEffAnalyzer.mode900GeV=cms.bool(True)
+    return process
+
+def run2760GeVmodeMC(process):
+    print 'bscOr and bscOrBptxOr are removed'
+    process.eventFilter.remove(process.bscOr)
+    process.eventFilter.remove(process.bscOrBptxOr)
+    #process.minBiasBscFilter.remove(process.bscOr)
+    #process.minBiasBscFilter.remove(process.bscOrBptxOr)
     return process
 
 # this is for choosing a right global tag and regid name for an input sample
