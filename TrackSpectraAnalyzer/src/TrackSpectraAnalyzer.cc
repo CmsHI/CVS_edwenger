@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.66 2011/01/21 13:09:48 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.67 2011/02/03 18:13:00 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -279,16 +279,16 @@ TrackSpectraAnalyzer::beginJob()
    const double small = 1e-3;
    double ptb;
 
-   // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
+   // simple rebinning possible with a rebinning facto n = 2, 3, 6 !
    for(ptb =   0  ; ptb <   1.2-small; ptb +=  0.05) ptBins.push_back(ptb); // 24 bins
    for(ptb =   1.2; ptb <   2.4-small; ptb +=  0.1 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.2 ) ptBins.push_back(ptb); // 24 bins
-   for(ptb =   7.2; ptb <  13.2-small; ptb +=  0.5 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  13.2; ptb <  25.2-small; ptb +=  1.0 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  25.2; ptb <  61.2-small; ptb +=  3.0 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb =  61.2; ptb < 121.2-small; ptb +=  5.0 ) ptBins.push_back(ptb); // 12 bins
-   for(ptb = 121.2; ptb < 361.2-small; ptb += 10.0 ) ptBins.push_back(ptb); // 24 bins
-   ptBins.push_back(361.2);
+   for(ptb =   2.4; ptb <   7.2-small; ptb +=  0.4 ) ptBins.push_back(ptb); // 12 bins
+   for(ptb =   7.2; ptb <  14.4-small; ptb +=  1.2 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  14.4; ptb <  28.8-small; ptb +=  2.4 ) ptBins.push_back(ptb); // 6 bins 
+   for(ptb =  28.8; ptb <  48.0-small; ptb +=  3.2 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  48.0; ptb <  86.4-small; ptb +=  6.4 ) ptBins.push_back(ptb); // 6 bins
+   for(ptb =  86.4; ptb < 189.6-small; ptb +=  8.6 ) ptBins.push_back(ptb); // 6 bins
+   ptBins.push_back(189.6);
 
    // eta bins
    static float etaMin   = -2.4;
@@ -303,16 +303,21 @@ TrackSpectraAnalyzer::beginJob()
    static float jetMax; // good to be matched with ana
    static float jetWidth;
 
+   /*
    if(!mode900GeV_){
       jetMin = 0, jetMax = 2400, jetWidth = 20;
    }else{
       jetMin = 0, jetMax = 300, jetWidth = 5;
    }
-   
 
    for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
       jetBins.push_back(jet);
+   */
 
+   double jet;
+   for(jet =    0; jet <   10-small; jet +=  10 ) jetBins.push_back(jet);
+   for(jet =   10; jet <   1000-small; jet +=  20 ) jetBins.push_back(jet);
+   jetBins.push_back(1010);
 
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
@@ -369,7 +374,7 @@ TrackSpectraAnalyzer::beginJob()
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
 	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
 	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
-	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 700, 0.0, 1400.0);
+	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0); //700, 0.0, 1400.0
 	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet #eta; #eta", 300, -6.0, 6.0);
 	 for(unsigned i=0;i<hltNames_.size();i++){
 	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0));
