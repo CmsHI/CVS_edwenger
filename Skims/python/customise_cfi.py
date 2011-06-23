@@ -420,3 +420,28 @@ def enableDJetAna(process,mode="MC",output="FF"):
   if mode=="Data":
     from Saved.DiJetAna.customise_cfi import enableData
     enableData(process)
+
+def enableOpenHlt(process,seq):
+	process.load("HLTrigger.HLTanalyzers.HLTAnalyser_cfi")
+	process.hltanalysis.RunParameters.Debug = cms.bool(False)
+	process.hltanalysis.RunParameters.UseTFileService = cms.untracked.bool(True)
+	process.hltanalysis.RunParameters.Monte = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoMC = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoAlCa = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoTracks = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoVertex = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoJets = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoMuons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoL1Muons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoL2Muons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoL3Muons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoOfflineMuons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoQuarkonias = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoPhotons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoSuperClusters = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoElectrons = cms.untracked.bool(False)
+	process.hltanalysis.RunParameters.DoBJets = cms.untracked.bool(False)
+	process.hltanalysis.l1GtReadoutRecord = "gtDigis"
+	# add to seq
+	seq*=process.hltanalysis
+	print "Added openhlt"

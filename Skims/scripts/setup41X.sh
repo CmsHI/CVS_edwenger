@@ -11,13 +11,16 @@ cvs co UserCode/edwenger/EvtSelAnalyzer
 cvs co UserCode/edwenger/VertexAnalyzer
 cvs co UserCode/edwenger/TrackSpectraAnalyzer
 cvs co UserCode/edwenger/TrkEffAnalyzer
-cvs co -r Y1JAna_0_1_4  -d Saved UserCode/SavedFMa/Saved
-
 mv UserCode/edwenger .
 
-# update dijet (for >39X) ana
-cvs co UserCode/ASYoon/MISC/src/DiJetAna.cc
-cp UserCode/ASYoon/MISC/src/DiJetAna.cc Saved//DiJetAna/src/
+# jet analyzers
+cvs co -d       MNguyen/InclusiveJetAnalyzer UserCode/MNguyen/InclusiveJetAnalyzer
+
+# trigger analyzers
+cvs co -r CMSSW_4_1_2_patch2 HLTrigger/HLTanalyzers
+# some output cleanup
+sed -i 's|std::cout << " Beginning HLTAnalyzer Analysis|//std::cout << " Beginning HLTAnalyzer Analysis|' HLTrigger/HLTanalyzers/src/HLTAnalyzer.cc
+sed -i 's|errMax(){return 100;}|errMax(){return 0;}|' HLTrigger/HLTanalyzers/interface/HLTAnalyzer.h
 
 # option to remove TrackerGeomtry dependency
 #cvs co UserCode/ASYoon/MISC/python/ExtraVertex_cff.py

@@ -16,13 +16,13 @@ process.source = cms.Source("PoolSource",
       ))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(200))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.5 $'),
-    name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
+    version = cms.untracked.string('$Revision: 1.6 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_data_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
@@ -52,6 +52,14 @@ removeDijetAna(process) # remove dijetAna_seq
 #runWithsortedSumPtOrdVertices(process)
 run2760GeVmode(process)
 #process = enableAOD(process)
+enableOpenHlt(process,process.analysisSeq)
+
+# === jet ana ===
+process.load('MNguyen.InclusiveJetAnalyzer.inclusiveJetAnalyzer_cff')
+process.ak5JetAnalyzer = process.inclusiveJetAnalyzer.clone(
+	jetTag = 'cleanedPatJets', vtxTag=cms.untracked.InputTag('sortedGoodVertices'),
+	isMC=False,useCentrality=False)
+process.analysisSeq*=process.ak5JetAnalyzer
 
 # =============== Final Paths =====================
 
