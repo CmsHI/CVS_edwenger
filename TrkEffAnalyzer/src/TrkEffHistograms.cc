@@ -48,16 +48,16 @@ TrkEffHistograms::declareHistograms()
        const double small = 1e-3;
        double pt;
 
-       // simple rebinning possible with a rebinning factor n = 2, 3, 4 !
+       // simple rebinning possible with a rebinning facto n = 2, 3, 6 !
        for(pt =   0  ; pt <   1.2-small; pt +=  0.05) ptBins.push_back(pt); // 24 bins
        for(pt =   1.2; pt <   2.4-small; pt +=  0.1 ) ptBins.push_back(pt); // 12 bins
-       for(pt =   2.4; pt <   7.2-small; pt +=  0.2 ) ptBins.push_back(pt); // 24 bins
-       for(pt =   7.2; pt <  13.2-small; pt +=  0.5 ) ptBins.push_back(pt); // 12 bins
-       for(pt =  13.2; pt <  25.2-small; pt +=  1.0 ) ptBins.push_back(pt); // 12 bins
-       for(pt =  25.2; pt <  61.2-small; pt +=  3.0 ) ptBins.push_back(pt); // 12 bins
-       for(pt =  61.2; pt < 121.2-small; pt +=  5.0 ) ptBins.push_back(pt); // 12 bins
-       for(pt = 121.2; pt < 361.2-small; pt += 10.0 ) ptBins.push_back(pt); // 12 bins
-       ptBins.push_back(361.2);
+       for(pt =   2.4; pt <   7.2-small; pt +=  0.4 ) ptBins.push_back(pt); // 12 bins
+       for(pt =   7.2; pt <  14.4-small; pt +=  1.2 ) ptBins.push_back(pt); // 6 bins
+       for(pt =  14.4; pt <  28.8-small; pt +=  2.4 ) ptBins.push_back(pt); // 6 bins 
+       for(pt =  28.8; pt <  48.0-small; pt +=  3.2 ) ptBins.push_back(pt); // 6 bins
+       for(pt =  48.0; pt <  86.4-small; pt +=  6.4 ) ptBins.push_back(pt); // 6 bins
+       for(pt =  86.4; pt < 189.6-small; pt +=  8.6 ) ptBins.push_back(pt); // 6 bins
+       ptBins.push_back(189.6);
 
     }else if(lowPtMode){
 
@@ -103,6 +103,19 @@ TrkEffHistograms::declareHistograms()
     for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
        jetBins.push_back(jet);
 
+
+    /*
+    double jet;
+    const double small = 1e-3;
+    for(jet =    0; jet <   10-small; jet +=  10 ) jetBins.push_back(jet);
+    for(jet =   10; jet <   1000-small; jet +=  20 ) jetBins.push_back(jet);
+    jetBins.push_back(1010);
+    */
+
+    // generated
+    hgen = f->make<TH2F>("hgen","Gen Tracks;#eta;p_{T} (GeV/c)",
+			 etaBins.size()-1, &etaBins[0],
+			 ptBins.size()-1, &ptBins[0]);
 
     // simulated
     hsim = f->make<TH2F>("hsim","Sim Tracks;#eta;p_{T} (GeV/c)",
@@ -204,6 +217,12 @@ TrkEffHistograms::declareHistograms()
 
   }
 
+}
+
+void
+TrkEffHistograms::fillGenHistograms(const GenTrack_t & g)
+{
+   hgen->Fill(g.etag, g.ptg);
 }
 
 void 

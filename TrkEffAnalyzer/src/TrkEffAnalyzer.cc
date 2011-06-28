@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.14 2010/06/02 14:20:07 edwenger Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.15 2010/07/07 14:32:46 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -22,6 +22,11 @@
 #include "RecoJets/JetAlgorithms/interface/JetAlgoHelper.h"
 #include "edwenger/TrkEffAnalyzer/interface/TrkEffAnalyzer.h"
 
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 #include <stdio.h>
 #include <math.h>
 
@@ -30,6 +35,7 @@
 TrkEffAnalyzer::TrkEffAnalyzer(const edm::ParameterSet& iConfig)
 :
   trackTags_(iConfig.getUntrackedParameter<edm::InputTag>("tracks")),
+  gsrc_(iConfig.getUntrackedParameter<edm::InputTag>("gsrc")),
   jetTags_(iConfig.getUntrackedParameter<edm::InputTag>("jets")),
   label_tp_effic_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_effic")),
   label_tp_fake_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_fake")),
@@ -79,8 +85,10 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(unsigned it=0; it<jets->size(); ++it){
      const pat::Jet* jts = &((*jets)[it]);
-     sortedJets.push_back( & *jts);
-     sortByEtRef (&sortedJets);
+     if(fabs(jts->eta())<6.5) { // jet is restircted |eta|<2.0  or 6.5 for both normalization and occupancy
+	sortedJets.push_back( & *jts);
+	sortByEtRef (&sortedJets);
+     }
   }
 
   for(unsigned it=0; it<sortedJets.size(); ++it){
@@ -113,6 +121,25 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       iEvent.getByLabel(associatorMap_,recotosimCollectionH);
       recSimColl= *(recotosimCollectionH.product());
     }
+
+    // -------------------- GEN loop ----------------------------------------
+    edm::Handle<reco::GenParticleCollection> genParticles;
+    iEvent.getByLabel(gsrc_, genParticles);
+    const reco::GenParticleCollection *genCollect = genParticles.product();
+
+
+    for(unsigned i=0; i<genCollect->size();i++){
+       const reco::GenParticle & gen = (*genCollect)[i];
+       if(gen.status() != 1) continue;
+       if(gen.charge() == 0) continue;
+
+       GenTrack_t g;
+       g.etag = gen.eta();
+       g.ptg = gen.pt();
+       histograms->fillGenHistograms(g);
+
+    }
+
     
     // -------------------- SIM loop ----------------------------------------
     

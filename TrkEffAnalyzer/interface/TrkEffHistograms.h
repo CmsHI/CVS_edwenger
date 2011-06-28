@@ -12,6 +12,11 @@ class TH2F;
 class TH3F;
 
 // define matched track structs
+typedef struct
+{
+   float etag;
+   float ptg;
+} GenTrack_t;
 
 typedef struct
 {
@@ -65,6 +70,7 @@ class TrkEffHistograms
   ~TrkEffHistograms();
 
   void declareHistograms();
+  void fillGenHistograms(const GenTrack_t & g);
   void fillSimHistograms(const SimTrack_t & s);
   void fillRecHistograms(const RecTrack_t & r);
   void writeHistograms();
@@ -83,6 +89,7 @@ class TrkEffHistograms
    std::vector<double> etaBins, ptBins, jetBins;
 
    // SimTrack
+   TH2F* hgen;
    TH2F* hsim;
    TH2F* hacc;
    TH2F* heff;
