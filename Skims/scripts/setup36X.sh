@@ -4,6 +4,7 @@ cd $CMSSW_BASE/src
 
 # skiming code
 cvs co UserCode/edwenger/Skims
+cvs co -r 1.4 UserCode/edwenger/Skims/python/patAna_cff.py
 
 # analyzers
 cvs co UserCode/edwenger/EvtSelAnalyzer
