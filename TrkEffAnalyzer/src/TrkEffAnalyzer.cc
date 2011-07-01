@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.15 2010/07/07 14:32:46 sungho Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.16 2011/06/28 14:57:23 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -147,8 +147,10 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       TrackingParticleRef tpr(TPCollectionHeff, i);
       TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
-      
-      if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
+
+      // notes: we found some tracks with status = 2, which is not preset in GEN (status = 1)
+      // so status>0 is not enough condition. 
+      if(tp->status() == 1 || tp->charge()==0) continue; //only charged primaries (matched with GEN status = 1)
       
       std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
       const reco::Track* mtr=0;
