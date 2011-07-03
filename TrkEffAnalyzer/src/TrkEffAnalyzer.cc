@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.16 2011/06/28 14:57:23 sungho Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.17 2011/07/01 12:57:23 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -150,7 +150,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // notes: we found some tracks with status = 2, which is not preset in GEN (status = 1)
       // so status>0 is not enough condition. 
-      if(tp->status() == 1 || tp->charge()==0) continue; //only charged primaries (matched with GEN status = 1)
+      if(tp->status() != 1 || tp->charge()==0) continue; //only charged primaries (matched with GEN status = 1)
       
       std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
       const reco::Track* mtr=0;
