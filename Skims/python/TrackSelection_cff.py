@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 highPurityTracks = cms.EDFilter("TrackSelector",
     src = cms.InputTag("generalTracks"),
     cut = cms.string(
-    'quality("highPurity") && (ptError/pt)<0.05 && algo<=7 && numberOfValidHits>=5')
+    'quality("highPurity") && (ptError/pt)<0.35 && algo<=7 && numberOfValidHits>=5')
 )
 
 from edwenger.TrkEffAnalyzer.selectTracks_cfi import *
@@ -13,6 +13,7 @@ selectTracks.dz_par2 = cms.vdouble(3, 0.0)
 selectTracks.max_d0 = cms.double(0.2)
 selectTracks.max_z0 = cms.double(0.2)
 selectTracks.vertices = cms.InputTag("sortedGoodVertices")
+selectTracks.chi2n_par = cms.double(0.25) # added cuts!  
 
 preSelectTracks = selectTracks.clone(
     vertices = cms.InputTag("sortedPreGoodVertices")
