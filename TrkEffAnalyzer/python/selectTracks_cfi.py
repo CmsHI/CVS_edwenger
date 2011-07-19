@@ -16,7 +16,9 @@ selectTracks = cms.EDProducer("HackedAnalyticalTrackSelector",
     qualityBit = cms.string(''), ## set to '' or comment out if you don't want to set the bit
 
     # parameters for adapted optimal cuts on chi2 and primary vertex compatibility
-    chi2n_par = cms.double(99999.),
+    chi2n_par = cms.double(99999.), # no longer in use
+    chi2n_par_pt = cms.vdouble(0.52, 0.414, 0.0293, -2.05), # "0.522 - 0.414/(1.0+exp(-0.0293*(x+2.5))) + 2.3/pow((x+3.5),2)"
+    chi2n_par_pt2 = cms.vdouble(0.52, 0.414, 0.055, -20.5), # "0.522 - 0.414/(1.0+exp(-0.055*(x+20.5))) + 1.65/pow((x+3.5),1.4)"  
     res_par = cms.vdouble(99999., 99999.),
     d0_par1 = cms.vdouble(99999., 0.0),
     dz_par1 = cms.vdouble(99999., 0.0),

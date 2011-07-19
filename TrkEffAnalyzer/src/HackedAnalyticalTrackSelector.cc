@@ -22,6 +22,8 @@ HackedAnalyticalTrackSelector::HackedAnalyticalTrackSelector( const edm::Paramet
 	//  parameters for adapted optimal cuts on chi2 and primary vertex compatibility
     res_par_(cfg.getParameter< std::vector<double> >("res_par") ),
     chi2n_par_( cfg.getParameter<double>("chi2n_par") ),
+    chi2n_par_pt_(cfg.getParameter< std::vector<double> >("chi2n_par_pt")),
+    chi2n_par_pt2_(cfg.getParameter< std::vector<double> >("chi2n_par_pt2")),
     d0_par1_(cfg.getParameter< std::vector<double> >("d0_par1")),
     dz_par1_(cfg.getParameter< std::vector<double> >("dz_par1")),
     d0_par2_(cfg.getParameter< std::vector<double> >("d0_par2")),
@@ -190,9 +192,21 @@ bool HackedAnalyticalTrackSelector::select(const reco::BeamSpot &vertexBeamSpot,
 
    // optimized cuts adapted to the track nlayers, pt, eta:
    // cut on chiquare/ndof 
-   if (chi2n > chi2n_par_*nlayers) return false;
+   //if (chi2n > chi2n_par_*nlayers) return false;
 
-
+   // pt dependent
+    double chi2n_par_pt_cut
+       = chi2n_par_pt_[0] - chi2n_par_pt_[1]/(1.0 + TMath::Exp(-chi2n_par_pt_[2]*(pt-chi2n_par_pt_[3]))) + 2.3/pow((pt+3.5),2);
+    
+    double chi2n_par_pt_cut2
+       = chi2n_par_pt2_[0] - chi2n_par_pt2_[1]/(1.0 + TMath::Exp(-chi2n_par_pt2_[2]*(pt-chi2n_par_pt2_[3]))) + 1.65/pow((pt+3.5),1.4);
+    
+    if(fabs(eta)>0.8){ // for |eta|>0.8, chi2n has to be less then both of the cuts 
+       if( !((chi2n <= chi2n_par_pt_cut2*nlayers) && (chi2n <= chi2n_par_pt_cut*nlayers)) ) return false;
+    }else{
+       if (chi2n > chi2n_par_pt_cut*nlayers) return false;
+    }
+    
    // parametrized d0 resolution for the track pt
    double nomd0E = sqrt(res_par_[0]*res_par_[0]+(res_par_[1]/max(pt,1e-9))*(res_par_[1]/max(pt,1e-9)));
    // parametrized z0 resolution for the track pt and eta

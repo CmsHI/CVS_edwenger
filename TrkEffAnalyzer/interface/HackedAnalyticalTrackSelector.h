@@ -8,9 +8,9 @@
  * 
  * \author Paolo Azzurri, Giovanni Petrucciani 
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: HackedAnalyticalTrackSelector.h,v 1.1 2010/05/13 11:50:46 edwenger Exp $
+ * $Id: HackedAnalyticalTrackSelector.h,v 1.2 2010/07/12 10:38:46 edwenger Exp $
  *
  */
 
@@ -74,6 +74,9 @@ namespace reco { namespace modules {
 			//  parameters for adapted optimal cuts on chi2 and primary vertex compatibility
 			std::vector<double> res_par_;
             double  chi2n_par_;
+	    std::vector<double> chi2n_par_pt_;
+	    std::vector<double> chi2n_par_pt2_; // harder cut for |eta|>0.8
+
 			std::vector<double> d0_par1_;
 			std::vector<double> dz_par1_;
 			std::vector<double> d0_par2_;
