@@ -199,7 +199,7 @@ bool HackedAnalyticalTrackSelector::select(const reco::BeamSpot &vertexBeamSpot,
        = chi2n_par_pt_[0] - chi2n_par_pt_[1]/(1.0 + TMath::Exp(-chi2n_par_pt_[2]*(pt-chi2n_par_pt_[3]))) + 2.3/pow((pt+3.5),2);
     
     double chi2n_par_pt_cut2
-       = chi2n_par_pt2_[0] - chi2n_par_pt2_[1]/(1.0 + TMath::Exp(-chi2n_par_pt2_[2]*(pt-chi2n_par_pt2_[3]))) + 1.65/pow((pt+3.5),1.4);
+       = chi2n_par_pt2_[0] - chi2n_par_pt2_[1]/(1.0 + TMath::Exp(-chi2n_par_pt2_[2]*(pt-chi2n_par_pt2_[3]))) + 1.73/pow((pt+3.5),1.4);
     
     if(fabs(eta)>0.8){ // for |eta|>0.8, chi2n has to be less then both of the cuts 
        if( !((chi2n <= chi2n_par_pt_cut2*nlayers) && (chi2n <= chi2n_par_pt_cut*nlayers)) ) return false;
