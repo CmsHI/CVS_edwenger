@@ -99,6 +99,8 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    TH1F *hNumJets;
    TH1F *hJet0Pt;
    TH1F *hJet0Eta;
+   //TH2F *hJet0EtaPt;
+   TH3F *hJet0EtaPhiEt;
    std::vector<TH1F*> hJet0Pt_Trig;
 
    edm::Service<TFileService> fs;
@@ -108,6 +110,7 @@ class TrackSpectraAnalyzer : public edm::EDAnalyzer {
    bool applyEvtEffCorr_;
    bool setQualityBit_;
    bool mode900GeV_;
+   bool trkAcceptedJet_;
    double pthatCut_;
 
    int32_t evtEffCorrType_, efit_type_, evtMultCut_;
