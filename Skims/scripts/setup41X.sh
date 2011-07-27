@@ -11,13 +11,8 @@ cvs co UserCode/edwenger/EvtSelAnalyzer
 cvs co UserCode/edwenger/VertexAnalyzer
 cvs co UserCode/edwenger/TrackSpectraAnalyzer
 cvs co UserCode/edwenger/TrkEffAnalyzer
-cvs co -r Y1JAna_0_1_4  -d Saved UserCode/SavedFMa/Saved
 
 mv UserCode/edwenger .
-
-# update dijet (for >39X) ana 
-cvs co UserCode/ASYoon/MISC/src/DiJetAna.cc
-cp UserCode/ASYoon/MISC/src/DiJetAna.cc Saved//DiJetAna/src/
 
 # jet analyzers
 cvs co -d       MNguyen/InclusiveJetAnalyzer UserCode/MNguyen/InclusiveJetAnalyzer
