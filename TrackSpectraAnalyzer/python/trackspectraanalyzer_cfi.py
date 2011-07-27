@@ -31,6 +31,7 @@ trackAna = cms.EDAnalyzer('TrackSpectraAnalyzer',
                                                            'HLT_Jet30U',
                                                            'HLT_Jet50U'),
                           neededTrigSpectra = cms.untracked.vint32(0,0,1,0,1), # 1st, 3rd, in the hltNames list 
-                          triglabel = cms.untracked.InputTag('TriggerResults','','HLT')
+                          triglabel = cms.untracked.InputTag('TriggerResults','','HLT'),
+                          trkAcceptedJet = cms.untracked.bool(True), # # limit jets to |eta|<1.5
                           )
 
