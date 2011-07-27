@@ -35,6 +35,9 @@ cvs co -r 1.8 UserCode/FerencSiklerVertexing/python  # EDFilter to EDProducer fi
 # vertex constraint for refitting
 cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
 
+# event selector with specified jet eta-phi
+cvs co UserCode/ASYoon/SpectraAna/JetEtaPhiFilter
+
 # for GEN spectra production
 cvs co UserCode/ASYoon/MCGeneration
 mv UserCode/ASYoon/MCGeneration .
@@ -46,7 +49,7 @@ cvs co Configuration/Generator/python/PythiaUEProQ20Settings_cfi.py
 cvs co Configuration/Generator/python/MinBias_7TeV_pythia8_cff.py
 
 # cleanup
-mv UserCode/ASYoon/PPTrackingTools/ .
+mv UserCode/ASYoon/* .
 rm -r UserCode/ASYoon
 
 # further clean up to keep it light
