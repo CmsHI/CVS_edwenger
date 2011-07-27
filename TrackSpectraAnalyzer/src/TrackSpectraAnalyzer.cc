@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.67 2011/02/03 18:13:00 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.68 2011/06/17 14:20:38 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -42,6 +42,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<int> >("neededTrigSpectra");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
+   trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);;
 }
 
 // ------------ method called to for each event  ------------
@@ -96,17 +97,20 @@ TrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       
       for(unsigned it=0; it<jets->size(); ++it){
 	 const reco::Candidate* jet = &((*jets)[it]);
-	 sortedJets.push_back(jet);
-	 sortByEtRef (&sortedJets);
+	 if(fabs(jet->eta())<6.5) { // jet is restircted |eta|<2.0 or 6.5 for both normalization and occupancy
+	    sortedJets.push_back(jet);
+	    sortByEtRef (&sortedJets);
+	 }
       }
       
       if(doJet_){ 
 	 for(unsigned it=0; it<sortedJets.size(); ++it){
 	    if(!histOnly_) nt_jet->Fill(sortedJets[it]->et(),sortedJets[it]->eta(),sortedJets[it]->phi(),
 					hltAccept_[0],hltAccept_[1],hltAccept_[2],hltAccept_[3],hltAccept_[4]); 
-	    if(fabs(sortedJets[it]->eta())>6.5) continue;
+	    if(fabs(sortedJets[it]->eta())>6.5) continue;  // see above |eta|<2.0 
 	    hJet0Pt->Fill(sortedJets[it]->et());
 	    hJet0Eta->Fill(sortedJets[it]->eta());
+	    hJet0EtaPhiEt->Fill(sortedJets[it]->eta(),sortedJets[it]->phi(),sortedJets[it]->et());  
 	    for(unsigned i=0;i<hltNames_.size();i++){
 	       if(hltAccept_[i]) hJet0Pt_Trig[i]->Fill(sortedJets[it]->et());
 	    }
@@ -303,7 +307,6 @@ TrackSpectraAnalyzer::beginJob()
    static float jetMax; // good to be matched with ana
    static float jetWidth;
 
-   /*
    if(!mode900GeV_){
       jetMin = 0, jetMax = 2400, jetWidth = 20;
    }else{
@@ -312,12 +315,13 @@ TrackSpectraAnalyzer::beginJob()
 
    for(double jet = jetMin; jet < jetMax + jetWidth/2; jet += jetWidth)
       jetBins.push_back(jet);
-   */
 
+   /*
    double jet;
    for(jet =    0; jet <   10-small; jet +=  10 ) jetBins.push_back(jet);
    for(jet =   10; jet <   1000-small; jet +=  20 ) jetBins.push_back(jet);
    jetBins.push_back(1010);
+   */
 
    // Defin Histograms
    TFileDirectory subDir = fs->mkdir( "threeDHist" );
@@ -374,8 +378,10 @@ TrackSpectraAnalyzer::beginJob()
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
 	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
 	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
-	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0); //700, 0.0, 1400.0
+	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 700, 0.0, 1400.0); //700, 0.0, 1400.0
 	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet #eta; #eta", 300, -6.0, 6.0);
+	 hJet0EtaPhiEt = fs->make<TH3F>("hJet0EtaPhiEt","jet #eta vs phi vs p_{T}; #eta;#phi; p_{T} (GeV/c)", 200, -6.0, 6.0, 100, -3.2, 3.2
+					,300, 0.0, 300.0);
 	 for(unsigned i=0;i<hltNames_.size();i++){
 	    hJet0Pt_Trig.push_back(fs->make<TH1F>("","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 600, 0.0, 300.0));
 	    hJet0Pt_Trig[i]->SetName(Form("hJet0Pt_%s",(char*) hltNames_[i].c_str()));
