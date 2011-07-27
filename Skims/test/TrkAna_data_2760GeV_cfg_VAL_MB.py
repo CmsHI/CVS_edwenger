@@ -5,7 +5,7 @@ import os
 #============= variable parsing ========================
 ivars = VarParsing.VarParsing('standard')
 ivars.register('initialEvent',mult=ivars.multiplicity.singleton,info="for testing")
-ivars.files = "dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/sungho/AllPhysics2760/AP2760-R11A-PR-V2-MB-test/031f8ef44b07449c8e28398436c1afc1/trkAnaSkimAOD_5_1_Lxp.root"
+ivars.files = "dcache:/pnfs/cmsaf.mit.edu/t2bat/cms/store/user/sungho/AllPhysics2760/AP2760-R11A-PR-V2-J20-test/e319fd43fb4c03aa88369e0a89dc71db/trkAnaSkimAOD_1_1_dLO.root"
 ivars.output = 'trkhists.root'
 ivars.maxEvents = 10
 ivars.initialEvent = 1
@@ -26,9 +26,10 @@ process.load('Configuration/EventContent/EventContent_cff')
 # =============== 2760 GeV Collision Data =====================
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    'file:/home/sungho/sctch101/data/spectra/2760GeV/trkAnaSkimAOD.root'
-      ))
+    #fileNames = cms.untracked.vstring(
+    #'file:/home/sungho/sctch101/data/spectra/2760GeV/trkAnaSkimAOD.root'
+    #  ))
+    fileNames = cms.untracked.vstring(ivars.files))
 
 # =============== Other Statements =====================
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(ivars.maxEvents))
@@ -37,7 +38,7 @@ process.GlobalTag.globaltag = 'GR_P_V17::All'
 
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.1 $'),
-    name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAna_data_2760GeV_cfg.py,v $'),
+    name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAna_data_2760GeV_cfg_VAL_MB.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
 
@@ -62,7 +63,7 @@ from edwenger.Skims.customise_cfi import *
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_2760GeV_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_2760GeV_PixVtx")
 #enableDJetAna(process,"Data")
-removeDijetAna(process) # remove dijetAna_seq 
+#removeDijetAna(process) # remove dijetAna_seq 
 #setMaxNumberVertices(process,1)
 #runWithsortedSumPtOrdVertices(process)
 run2760GeVmode(process)
