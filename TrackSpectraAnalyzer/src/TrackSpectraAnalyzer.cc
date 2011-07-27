@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.68 2011/06/17 14:20:38 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.69 2011/07/27 16:14:53 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -42,7 +42,7 @@ TrackSpectraAnalyzer::TrackSpectraAnalyzer(const edm::ParameterSet& iConfig) :
    hltNames_ = iConfig.getUntrackedParameter<std::vector <std::string> >("hltNames");
    neededTrigSpectra_ = iConfig.getUntrackedParameter<std::vector<int> >("neededTrigSpectra");
    triglabel_ = iConfig.getUntrackedParameter<edm::InputTag>("triglabel");
-   trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);;
+   trkAcceptedJet_ = iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false);
 }
 
 // ------------ method called to for each event  ------------
