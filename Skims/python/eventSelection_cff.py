@@ -72,3 +72,14 @@ from edwenger.VertexAnalyzer.GoodVertices_cff import *
 
 minBiasBscFilter = cms.Sequence(physDeclFilter * bscOrBptxOr * hltMinBias * bptxAnd * bscOr * bscNoHalo)
 minBiasBscFilterMC = cms.Sequence(bscOrBptxOr * bscOr * bscNoHalo)
+
+
+# =========== Jet Eta and Phi selector ===================
+from SpectraAna.JetEtaPhiFilter.jetetaphifilter_cfi import *
+jetcut = jetfilter.clone(minEta = cms.untracked.double(-1.5),
+                         maxEta = cms.untracked.double(0.0),
+                         minPhi = cms.untracked.double(0.2),
+                         maxPhi = cms.untracked.double(0.8)
+                         )
+jetEvtFilter = cms.Sequence(jetcut)
+
