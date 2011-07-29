@@ -360,7 +360,6 @@ def runWithsortedSumPtOrdVertices(process):
     process.refitTrackAna.vsrc=cms.untracked.InputTag("sortedSumPtOrdVertices")
     process.trackAna_STD.vsrc=cms.untracked.InputTag("sortedSumPtOrdVertices")
     process.trkEffAnalyzer.vertices=cms.untracked.InputTag("sortedSumPtOrdVertices")
-    process.djcalo.vtxsrc=cms.InputTag("sortedSumPtOrdVertices")
     return process
 
 ## this is to change the number of max vertices in event
