@@ -24,5 +24,6 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     jetTrkOnly = cms.untracked.bool(False),
     fiducialCut = cms.untracked.bool(True), # fiducial cut for FPIX  
     useQaulityStr=cms.untracked.bool(False),
-    qualityString=cms.untracked.string("highPurity")
+    qualityString=cms.untracked.string("highPurity"),
+    usePxlPair = cms.untracked.bool(False) # include pixel pair in acceptance definition!
 )

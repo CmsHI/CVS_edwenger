@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.15 2011/04/04 22:03:56 frankma Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.16 2011/05/01 23:47:38 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -49,6 +49,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
   useQaulityStr_(iConfig.getUntrackedParameter<bool>("useQaulityStr")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
+  usePxlPair_(iConfig.getUntrackedParameter<bool>("usePxlPair",false)),
   centrality_(0)
 {
 
@@ -282,7 +283,8 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
   s.hits = tp.matchedHit();
   s.status = tp.status();
   std::pair<bool,bool> acc = isAccepted(tp);
-  s.acc = acc.first; // for HI tracking, only triplet should be taken 
+  if(usePxlPair_) s.acc = acc.first || acc.second; // If pixel pair seeding is sued
+  else s.acc = acc.first; // for HI tracking, only triplet should be taken 
 
 #ifdef DEBUG
   edm::LogVerbatim("HiTrkEffAnalyzer")  
