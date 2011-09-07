@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: TrackSpectraAnalyzer.cc,v 1.69 2011/07/27 16:14:53 sungho Exp $
+// $Id: TrackSpectraAnalyzer.cc,v 1.70 2011/07/27 16:23:57 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -378,7 +378,7 @@ TrackSpectraAnalyzer::beginJob()
 	 if(!histOnly_) nt_jet = fs->make<TNtuple>("nt_jet","jet spectra ntuple","jet:jeta:jphi:mb:jet6:jet15:jet30:jet50");
 	 if(!histOnly_) nt_jettrack = fs->make<TNtuple>("nt_jettrack","jet tracks correlation ntuple","pt:eta:jet:mb:jet6:jet15:jet30:jet50");
 	 hNumJets = fs->make<TH1F>("hNumJets",";# jets in evt;# evts", 100, 0, 100);
-	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 700, 0.0, 1400.0); //700, 0.0, 1400.0
+	 hJet0Pt = fs->make<TH1F>("hJet0Pt","jet p_{T}; p_{T}^{corr jet} [GeV/c]", 700, 0.0, 700.0); //700, 0.0, 1400.0
 	 hJet0Eta = fs->make<TH1F>("hJet0Eta","jet #eta; #eta", 300, -6.0, 6.0);
 	 hJet0EtaPhiEt = fs->make<TH3F>("hJet0EtaPhiEt","jet #eta vs phi vs p_{T}; #eta;#phi; p_{T} (GeV/c)", 200, -6.0, 6.0, 100, -3.2, 3.2
 					,300, 0.0, 300.0);
