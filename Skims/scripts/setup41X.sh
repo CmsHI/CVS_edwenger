@@ -57,6 +57,9 @@ rm -r UserCode/ASYoon
 rm edwenger/TrackSpectraAnalyzer/macros/ -r
 rm edwenger/TrkEffAnalyzer/macros/ -r
 
+# needed to re-reconstruct jet excluding calo-cell
+cvs co -d Saved/CaloTools UserCode/SavedFMa/Saved/CaloTools
+
 # FW update for 36X
 sed -i 's/DEFINE_SEAL_MODULE();//' UserCode/FerencSiklerVertexing/plugins/module.cc
 sed -i 's/DEFINE_ANOTHER_FWK_MODULE/DEFINE_FWK_MODULE/' UserCode/FerencSiklerVertexing/plugins/module.cc
