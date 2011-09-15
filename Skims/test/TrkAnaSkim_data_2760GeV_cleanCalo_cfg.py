@@ -12,8 +12,8 @@ process.load('Configuration/EventContent/EventContent_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-      #'file:/home/sungho/sctch101/data/spectra/2760GeV/AA4A07CD-775A-E011-990E-001617C3B6E2.root'
-      'file:/home/sungho/sctch101/data/spectra/2760GeV/trkAnaSkimAOD.root'
+      'file:/home/sungho/sctch101/data/spectra/2760GeV/AA4A07CD-775A-E011-990E-001617C3B6E2.root'
+      #'file:/home/sungho/sctch101/data/spectra/2760GeV/trkAnaSkimAOD.root'
       ))
 
 # =============== Other Statements =====================
@@ -69,16 +69,18 @@ process.cleanedTowers.excludePhiMax = cms.double(0.8)
 
 process.load('RecoJets.Configuration.RecoJets_cff')
 process.ak5CaloJets = process.ak5CaloJets.clone(src = cms.InputTag("cleanedTowers"))
-process.patJets.addJetID = cms.bool(False)
+#process.patJets.addJetID = cms.bool(False) # uncomment if running on skim
 process.patJets.embedPFCandidates = cms.bool(False)
 process.patJets.embedGenJetMatch = cms.bool(False)
 process.patJets.addAssociatedTracks = cms.bool(False)
 process.patJets.trackAssociationSource = ""
 
+process.load('RecoJets.Configuration.JetIDProducers_cff')
+
 # =============== Final Paths =====================
 
 process.eventFilter_step = cms.Path(process.eventFilter)
-process.cleanReco_step = cms.Path(process.cleanedTowers * process.ak5CaloJets)
+process.cleanReco_step = cms.Path(process.cleanedTowers * process.ak5CaloJets * process.ak5JetID)
 process.extraReco_step   = cms.Path(process.eventFilter * process.extraReco)
 process.ana_step         = cms.Path(process.eventFilter * process.analysisSeq)
 
