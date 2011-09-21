@@ -8,6 +8,7 @@
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/JetReco>
 <use name=DataFormats/Common>
+<use name=DataFormats/PatCandidates>
 <use name=SimDataFormats/GeneratorProducts>
 <use name=Geometry/Records>
 <use name=Geometry/TrackerGeometryBuilder>
