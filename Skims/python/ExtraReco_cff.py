@@ -18,6 +18,6 @@ extraReco = cms.Sequence(extraVertex *         ## agglomerative pixel vertexing
                          postVtxTest *
                          preTrkVtxTest *
                          primaryVertexFilter * ## non-fake, ndof>4, abs(z)<15
-                         trackRefit * 
+                         #trackRefit * 
                          postTrkVtxTest)
 
