@@ -20,7 +20,9 @@ cvs co -d       MNguyen/InclusiveJetAnalyzer UserCode/MNguyen/InclusiveJetAnalyz
 # trigger analyzers
 cvs co -r CMSSW_4_1_2_patch2 HLTrigger/HLTanalyzers
 # some output cleanup
-sed -i 's|std::cout << " Beginning HLTAnalyzer Analysis|//std::cout << " Beginning HLTAnalyzer Analysis|' HLTrigger/HLTanalyzers/src/HLTAnalyzer.cc
+sed -i 's|std::cout <<EOF
+ " Beginning HLTAnalyzer Analysis|//std::cout <<EOF
+ " Beginning HLTAnalyzer Analysis|' HLTrigger/HLTanalyzers/src/HLTAnalyzer.cc
 sed -i 's|errMax(){return 100;}|errMax(){return 0;}|' HLTrigger/HLTanalyzers/interface/HLTAnalyzer.h
 
 # option to remove TrackerGeomtry dependency
@@ -38,6 +40,11 @@ cvs co UserCode/ASYoon/PPTrackingTools/VertexConstraintProducer
 
 # event selector with specified jet eta-phi
 cvs co UserCode/ASYoon/SpectraAna/JetEtaPhiFilter
+
+# jet sorting based on raw jet energy
+cvs co RecoJets/JetAlgorithms/interface
+cvs co UserCode/ASYoon/MISC/src/JetAlgoHelper.h
+cp UserCode/ASYoon/MISC/src/JetAlgoHelper.h RecoJets/JetAlgorithms/interface
 
 # for GEN spectra production
 cvs co UserCode/ASYoon/MCGeneration
