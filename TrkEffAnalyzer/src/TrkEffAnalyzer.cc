@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.18 2011/07/03 11:30:34 sungho Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.19 2011/09/30 11:35:35 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -88,6 +88,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      if(fabs(jts->eta())<6.5) { // jet is restircted |eta|<2.0  or 6.5 for both normalization and occupancy
 	sortedJets.push_back( & *jts);
 	sortByEtRef (&sortedJets);
+	//sortByRawEtRef (&sortedpJets);
      }
   }
 
