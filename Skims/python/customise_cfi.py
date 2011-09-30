@@ -46,7 +46,7 @@ def removeTPAssociation(process):
     return process
 
 def removeDijetAna(process):
-    process.analysisSeq.remove(process.djcalo)
+    #process.analysisSeq.remove(process.djcalo)
     return process
 
 def enable41X(process):
@@ -61,7 +61,7 @@ def enable41X(process):
     process.trackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
     process.looseTrackAna_STD.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
     process.refitTrackAna.triglabel=cms.untracked.InputTag('TriggerResults','','HLT')
-    process.djcalo.hltsrc=cms.InputTag('TriggerResults','','HLT')
+    #process.djcalo.hltsrc=cms.InputTag('TriggerResults','','HLT')
     process.eventFilter.remove(process.hltMinBias)     #
     return process
                                                      
