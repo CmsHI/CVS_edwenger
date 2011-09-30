@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: TrkEffAnalyzer.cc,v 1.17 2011/07/01 12:57:23 sungho Exp $
+// $Id: TrkEffAnalyzer.cc,v 1.18 2011/07/03 11:30:34 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -93,6 +93,7 @@ TrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(unsigned it=0; it<sortedJets.size(); ++it){
      jet_et = sortedJets[it]->et();
+     //jet_et = sortedJets[it]->correctedJet("Uncorrected").et(); // raw energy
      break;
   }
 
