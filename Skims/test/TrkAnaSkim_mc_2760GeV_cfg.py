@@ -34,11 +34,11 @@ process.source = cms.Source("PoolSource",
     'file:/home/sungho/sctch101/mc/spectra/test/fullContent2760GeV_1_1_vow.root'))
 
 # =============== Other Statements =====================
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(30))
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     name = cms.untracked.string('$Source: /cvs/CMSSW/UserCode/edwenger/Skims/test/TrkAnaSkim_mc_2760GeV_cfg.py,v $'),
     annotation = cms.untracked.string('BPTX_AND + BSC_OR + !BSCHALO')
 )
@@ -57,9 +57,7 @@ enableSIM(process)    # activate isGEN in analyzers
 setGlobTagAndRedigi(process,options.inputType) # this sets glob. tag and redigi name
 updateEvtSelEff(process.trackAna_STD,"STD_NSD_2760GeV_TrkVtx")
 updateEvtSelEff(process.looseTrackAna_STD,"STD_NSD_2760GeV_PixVtx")
-enableDJetAna(process,"MC","LIGHT") # anaModes: "MC","Data", outLevels: "LIGHT","FF","FULL"
 replaceMinBiasHLTPath41X(process) # replace MB hlt path for MC
-removeDijetAna(process) # remove dijetAna_seq
 setMaxNumberVertices(process,1)
 runWithsortedSumPtOrdVertices(process)
 run2760GeVmodeMC(process)
