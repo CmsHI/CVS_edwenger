@@ -1,9 +1,0 @@
-<use   name="clhep"/>
-<use   name="rootmath"/>
-<use   name="boost"/>
-<use   name="root"/>
-<use   name="FWCore/ServiceRegistry"/>
-<use   name="CommonTools/UtilAlgos"/>
-<export>
-  <lib   name="1"/>
-</export>
