@@ -146,7 +146,7 @@ class HiTrackSpectraAnalyzer : public edm::EDAnalyzer {
 
    edm::Service<TFileService> fs;
    
-   bool isGEN_, pureGENmode_;
+   bool isGEN_, pureGENmode_, doJet_;
    bool histOnly_, includeExtra_;
    bool applyEvtEffCorr_;
    bool setQualityBit_;

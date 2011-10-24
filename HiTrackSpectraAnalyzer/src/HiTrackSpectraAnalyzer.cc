@@ -1,7 +1,7 @@
 //
 // Original Author:  Andre Yoon,32 4-A06,+41227676980,
 //         Created:  Wed Apr 28 16:18:39 CEST 2010
-// $Id: HiTrackSpectraAnalyzer.cc,v 1.32 2011/05/02 00:19:18 sungho Exp $
+// $Id: HiTrackSpectraAnalyzer.cc,v 1.33 2011/06/13 15:07:17 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -32,6 +32,7 @@ HiTrackSpectraAnalyzer::HiTrackSpectraAnalyzer(const edm::ParameterSet& iConfig)
    qualityString_ = iConfig.getUntrackedParameter<std::string>("qualityString");
    isGEN_ = iConfig.getUntrackedParameter<bool>("isGEN", true);
    pureGENmode_ = iConfig.getUntrackedParameter<bool>("pureGENmode", false);
+   doJet_ = iConfig.getUntrackedParameter<bool>("doJet", true);
    histOnly_ = iConfig.getUntrackedParameter<bool>("histOnly", false);
    includeExtra_ = iConfig.getUntrackedParameter<bool>("includeExtra",false);
    etaMax_ = iConfig.getUntrackedParameter<double>("etaMax", 5.0);
@@ -119,29 +120,30 @@ HiTrackSpectraAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup&
       }
 
       //----- loop over pat jets and store in a vector -----
-      edm::Handle<reco::CandidateView> jets;
-      iEvent.getByLabel(jsrc_,jets);
-      hNumJets->Fill(jets->size()); // check # of jets found in event
-      
-      vector<const reco::Candidate *> sortedJets;         // jets for event normalization
-      vector<const reco::Candidate *> sortedJets_occHand; // jets for event classfication (i.e. occupancy handle)
-      
-      for(unsigned it=0; it<jets->size(); ++it){
-	 const reco::Candidate* jet = &((*jets)[it]);
+      vector<const reco::Candidate *> sortedJets;         // jets for event normalization                                                                                 
+      vector<const reco::Candidate *> sortedJets_occHand; // jets for event classfication (i.e. occupancy handle)        
+
+      if(doJet_){ 
+	 edm::Handle<reco::CandidateView> jets;
+	 iEvent.getByLabel(jsrc_,jets);
+	 hNumJets->Fill(jets->size()); // check # of jets found in event
 	 
-	 sortedJets.push_back(jet);
-	 sortByEtRef (&sortedJets);
-	 
-	 if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-	    if(fabs(jet->eta())<2.0) {
+	 for(unsigned it=0; it<jets->size(); ++it){
+	    const reco::Candidate* jet = &((*jets)[it]);
+	    
+	    sortedJets.push_back(jet);
+	    sortByEtRef (&sortedJets);
+	    
+	    if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
+	       if(fabs(jet->eta())<2.0) {
+		  sortedJets_occHand.push_back(jet);
+		  sortByEtRef (&sortedJets_occHand);
+	       }
+	    }else{
 	       sortedJets_occHand.push_back(jet);
 	       sortByEtRef (&sortedJets_occHand);
 	    }
-	 }else{
-	    sortedJets_occHand.push_back(jet);
-	    sortByEtRef (&sortedJets_occHand);
 	 }
-	 
       }
       
       for(unsigned it=0; it<sortedJets.size(); ++it){
