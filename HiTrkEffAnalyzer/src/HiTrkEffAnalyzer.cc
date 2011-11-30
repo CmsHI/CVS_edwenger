@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.16 2011/05/01 23:47:38 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.17 2011/08/06 13:12:30 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -189,6 +189,15 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       if(simRecColl.find(tpr) != simRecColl.end()){
 	rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
 	nrec=rt.size();   
+
+	if(useQaulityStr_){ // if true, re-calculate nrec 
+	   nrec = 0; // set it to 0
+	   for (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >::const_iterator rtit = rt.begin(); rtit != rt.end(); ++rtit){
+	      const reco::Track* tmtr = rtit->first.get();
+	      if(tmtr->quality(reco::TrackBase::qualityByName(qualityString_))) nrec++;
+	   }
+	}
+
 	if(nrec) mtr = rt.begin()->first.get();      
       }
       
@@ -298,7 +307,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
   // nrec>0 since we don't need it for nrec=0 case 
   if(fiducialCut_ && nrec>0 && hitDeadPXF(*const_cast<reco::Track*>(&mtr))) 
      nrec=0;
-  
+
   s.nrec = nrec;
   s.jetr = jet;
 
