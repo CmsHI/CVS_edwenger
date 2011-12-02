@@ -15,7 +15,7 @@ hitrkEffAnalyzer.hasSimInfo = cms.untracked.bool(True) # without this no sim tra
 hitrkEffAnalyzer.doAssociation = cms.untracked.bool(True)
 hitrkEffAnalyzer.pixelMultMode =  cms.untracked.bool(False)
 hitrkEffAnalyzer.useJetEtMode = cms.int32(2)
-hitrkEffAnalyzer.useQaulityStr=cms.untracked.bool(True)
+hitrkEffAnalyzer.useQaulityStr=cms.untracked.bool(False)
 hitrkEffAnalyzer.qualityString = cms.untracked.string("highPurity")
 
 hitrkEffAna = cms.Sequence(cutsTPForFak*
