@@ -78,8 +78,8 @@ HiTrkEffHistograms::declareHistograms()
 
     } else if(ptBinScheme==3){
       // coarse binning for jet analysis
-      const Int_t numPPtBins=20;
-      Float_t pptBins[numPPtBins+1] = {0.5,1,1.5,2,2.5,3,4,5,7.5,10,12,15,20,25,30,45,60,90,120,180,300};
+      const Int_t numPPtBins=24;
+      Float_t pptBins[numPPtBins+1] = {0,0.25,0.5,0.75,1,1.5,2,2.5,3,4,5,7.5,10,12,15,20,25,30,45,60,90,120,180,300,500};
       vector<Double_t> ptBinsB2(pptBins,pptBins+numPPtBins+1);
       ptBins = ptBinsB2;
 
