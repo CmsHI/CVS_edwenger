@@ -104,8 +104,8 @@ HiTrkEffHistograms::declareHistograms()
     }
     
     // eta bins
-    static Double_t etaMin   = -2.6;
-    static Double_t etaMax   =  2.6;
+    static Double_t etaMin   = -2.4;
+    static Double_t etaMax   =  2.4;
     static Double_t etaWidth =  0.4;
 
     for(Double_t eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
