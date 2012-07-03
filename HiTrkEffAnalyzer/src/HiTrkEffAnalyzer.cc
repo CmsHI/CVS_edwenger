@@ -375,12 +375,12 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
       s.jetar = sortedGenJets[bestJetInd]->eta();
     }
     // matched genjet mode
-    s.jetr=0; s.jetar=-99;
     if (bestJetInd>=0 && useJetEtMode_==13) {
+      s.jetr=0; s.jetar=-99;
       for (UInt_t k=0; k<sortedJets.size(); ++k) {
          if (!sortedJets[k]->genJet()) continue;
-         if ( fabs(sortedJets[k]->genJet()->et() - s.jetr) < 0.01 &&
-              fabs(sortedJets[k]->genJet()->eta() - s.jetar) < 0.01) {
+         if ( fabs(sortedJets[k]->genJet()->et() - sortedGenJets[bestJetInd]->et()) < 0.01 &&
+              fabs(sortedJets[k]->genJet()->phi() - sortedGenJets[bestJetInd]->phi()) < 0.01) {
             s.jetr = sortedJets[k]->et();
             s.jetar = sortedJets[k]->eta();
             break;
@@ -491,12 +491,12 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
       r.jetar = sortedGenJets[bestJetInd]->eta();
     }
     // matched genjet mode
-    r.jetr=0; r.jetar=-99;
     if (bestJetInd>=0 && useJetEtMode_==13) {
+      r.jetr=0; r.jetar=-99;
       for (UInt_t k=0; k<sortedJets.size(); ++k) {
          if (!sortedJets[k]->genJet()) continue;
-         if ( fabs(sortedJets[k]->genJet()->et() - r.jetr) < 0.01 &&
-              fabs(sortedJets[k]->genJet()->eta() - r.jetar) < 0.01) {
+         if ( fabs(sortedJets[k]->genJet()->et() - sortedGenJets[bestJetInd]->et()) < 0.01 &&
+              fabs(sortedJets[k]->genJet()->phi() - sortedGenJets[bestJetInd]->phi()) < 0.01) {
             r.jetr = sortedJets[k]->et();
             r.jetar = sortedJets[k]->eta();
             break;
