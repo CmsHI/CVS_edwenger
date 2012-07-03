@@ -358,7 +358,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     }
     s.jrdr = bestJetDR;
     s.jrind = bestJetInd;
-  } else if (useJetEtMode_==12) {
+  } else if (useJetEtMode_==12||useJetEtMode_==13) {
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
     unsigned int maxnjet = (sortedGenJets.size()<2) ?  sortedJets.size() : 2;
@@ -376,7 +376,19 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
       s.jetr = sortedGenJets[bestJetInd]->et();
       s.jetar = sortedGenJets[bestJetInd]->eta();
     }
+    // matched genjet mode
+    if (bestJetInd>=0 && useJetEtMode_==13) {
+      for (UInt_t k=0; k<sortedJets.size(); ++k) {
+         if ( fabs(sortedJets[k]->genJet()->et() - s.jetr) < 0.01 &&
+              fabs(sortedJets[k]->genJet()->eta() - s.jetar) < 0.01) {
+            s.jetr = sortedJets[k]->et();
+            s.jetar = sortedJets[k]->eta();
+            break;
+         }
+      }
+    }
   }
+//   std::cout << "simloop: jet pt: " << s.jetr << std::endl;
   
   if(nrec > 0) {
     double dxy=0.0, dz=0.0, d0err=0.0, dzerr=0.0;
@@ -462,7 +474,7 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     }
     r.jrdr = bestJetDR;
     r.jrind = bestJetInd;
-  } else if (useJetEtMode_==12) {
+  } else if (useJetEtMode_==12||useJetEtMode_==13) {
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
     unsigned int maxnjet = (sortedGenJets.size()<2) ?  sortedJets.size() : 2;
@@ -480,7 +492,20 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
       r.jetr = sortedGenJets[bestJetInd]->et();
       r.jetar = sortedGenJets[bestJetInd]->eta();
     }
+    // matched genjet mode
+    if (bestJetInd>=0 && useJetEtMode_==13) {
+      for (UInt_t k=0; k<sortedJets.size(); ++k) {
+         if ( fabs(sortedJets[k]->genJet()->et() - r.jetr) < 0.01 &&
+              fabs(sortedJets[k]->genJet()->eta() - r.jetar) < 0.01) {
+//             std::cout << "genjet et: " << r.jetr << " recjet et: " << sortedJets[k]->et() << std::endl;
+            r.jetr = sortedJets[k]->et();
+            r.jetar = sortedJets[k]->eta();
+            break;
+         }
+      }
+    }
   }
+//   std::cout << "recloop: jet pt: " << r.jetr << std::endl;
 
   if(nsim>0) {
     r.status = tp.status();
