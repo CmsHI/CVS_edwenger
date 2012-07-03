@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.cc,v 1.17 2011/08/06 13:12:30 sungho Exp $
+// $Id: HiTrkEffAnalyzer.cc,v 1.18 2011/11/30 18:06:17 sungho Exp $
 //
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -34,6 +34,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
 :
   trackTags_(iConfig.getUntrackedParameter<edm::InputTag>("tracks")),
   jetTags_(iConfig.getUntrackedParameter<edm::InputTag>("jets")),
+  genjetTags_(iConfig.getUntrackedParameter<edm::InputTag>("genjets")),
   label_tp_effic_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_effic")),
   label_tp_fake_(iConfig.getUntrackedParameter<edm::InputTag>("label_tp_fake")),
   associatorMap_(iConfig.getUntrackedParameter<edm::InputTag>("associatormap")),
@@ -130,6 +131,27 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
   }
 
+  // Gen jet
+  std::vector<const reco::Candidate *> sortedGenJets; ;         // jets for event classfication
+  if(useJetEtMode_>9){
+     edm::Handle<reco::CandidateView> genjets;
+     iEvent.getByLabel(genjetTags_, genjets);
+
+     for(unsigned it=0; it<genjets->size(); ++it){
+        const reco::Candidate* genjet = &((*genjets)[it]);
+   
+        if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
+          if(fabs(genjet->eta())<2.) {
+            sortedGenJets.push_back(genjet);
+            sortByEtRef (&sortedGenJets);
+          }
+        }else{
+          sortedGenJets.push_back(genjet);
+          sortByEtRef (&sortedGenJets);
+        }
+     }     
+  }
+
   // sim track collections
   float occHandle = 0.0;
 
@@ -201,7 +223,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	if(nrec) mtr = rt.begin()->first.get();      
       }
       
-      SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle, cbin, sortedJets);
+      SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle, cbin, sortedJets, sortedGenJets);
       histograms->fillSimHistograms(s);  
       
 #ifdef DEBUG
@@ -237,7 +259,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       if(nsim) mtp = tp.begin()->first.get();       
     }
 
-    RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle, cbin,sortedJets);
+    RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle, cbin,sortedJets, sortedGenJets);
     histograms->fillRecHistograms(r); 
 
 #ifdef DEBUG
@@ -282,7 +304,7 @@ HiTrkEffAnalyzer::endJob()
 
 // ------------
 SimTrack_t 
-HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet, int cent, std::vector<const pat::Jet *> & sortedJets)
+HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size_t nrec, float jet, int cent, std::vector<const pat::Jet *> & sortedJets, std::vector<const reco::Candidate *> & sortedGenJets)
 {
    
   SimTrack_t s;
@@ -331,11 +353,29 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
       s.jetr = sortedJets[bestJetInd]->et();
       s.jetar = sortedJets[bestJetInd]->eta();
       if (sortedJets[bestJetInd]->genParton()) {
-	s.jrflavor = sortedJets[bestJetInd]->genParton()->pdgId();
+    s.jrflavor = sortedJets[bestJetInd]->genParton()->pdgId();
       }
     }
     s.jrdr = bestJetDR;
     s.jrind = bestJetInd;
+  } else if (useJetEtMode_==12) {
+    Float_t bestJetDR=99, dR=99;
+    Int_t bestJetInd=-99;
+    unsigned int maxnjet = (sortedGenJets.size()<2) ?  sortedJets.size() : 2;
+
+    for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
+      if (sortedGenJets[j]->et()<40) continue; // fake jet meaningless
+      dR=deltaR(*sortedGenJets[j],tp);
+      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..                                                                             
+	     bestJetDR=dR, bestJetInd=j;
+      }
+    }
+    if (bestJetInd<0) {
+      s.jetr=0; s.jetar=-99;
+    } else {
+      s.jetr = sortedGenJets[bestJetInd]->et();
+      s.jetar = sortedGenJets[bestJetInd]->eta();
+    }
   }
   
   if(nrec > 0) {
@@ -368,7 +408,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
 
 // ------------
 RecTrack_t 
-HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet, int cent, std::vector<const pat::Jet *> & sortedJets)
+HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_t nsim, float jet, int cent, std::vector<const pat::Jet *> & sortedJets, std::vector<const reco::Candidate *> & sortedGenJets)
 {
 
   RecTrack_t r;
@@ -422,6 +462,24 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     }
     r.jrdr = bestJetDR;
     r.jrind = bestJetInd;
+  } else if (useJetEtMode_==12) {
+    Float_t bestJetDR=99, dR=99;
+    Int_t bestJetInd=-99;
+    unsigned int maxnjet = (sortedGenJets.size()<2) ?  sortedJets.size() : 2;
+
+    for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
+      if (sortedGenJets[j]->et()<40) continue; // fake jet meaningless
+      dR=deltaR(*sortedGenJets[j],tp);
+      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..                                                                             
+	     bestJetDR=dR, bestJetInd=j;
+      }
+    }
+    if (bestJetInd<0) {
+      r.jetr=0; r.jetar=-99;
+    } else {
+      r.jetr = sortedGenJets[bestJetInd]->et();
+      r.jetar = sortedGenJets[bestJetInd]->eta();
+    }
   }
 
   if(nsim>0) {

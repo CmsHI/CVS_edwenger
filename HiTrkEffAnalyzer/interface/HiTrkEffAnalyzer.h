@@ -1,7 +1,7 @@
 //
 // Original Author:  Edward Wenger
 //         Created:  Thu Apr 29 14:31:47 CEST 2010
-// $Id: HiTrkEffAnalyzer.h,v 1.9 2011/05/01 23:47:58 sungho Exp $
+// $Id: HiTrkEffAnalyzer.h,v 1.10 2011/08/06 13:13:16 sungho Exp $
 //
 
 // user include files
@@ -33,8 +33,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob();
       
-      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int, std::vector<const pat::Jet *> & sortedJets);
-      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int, std::vector<const pat::Jet *> & sortedJets);
+      SimTrack_t setSimTrack(TrackingParticle&, const reco::Track&, size_t, float, int, std::vector<const pat::Jet *> & sortedJets, std::vector<const reco::Candidate *> & sortedGenJets);
+      RecTrack_t setRecTrack(reco::Track&, const TrackingParticle&, size_t, float, int, std::vector<const pat::Jet *> & sortedJets, std::vector<const reco::Candidate *> & sortedGenJets);
       bool testVertex(reco::Track&, double&, double&, double&, double&);
       std::pair<bool,bool> isAccepted(TrackingParticle&);
       int getLayerId(const PSimHit&);
@@ -43,6 +43,7 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       edm::InputTag trackTags_; 
       edm::InputTag jetTags_;
+      edm::InputTag genjetTags_;
       edm::InputTag label_tp_effic_;
       edm::InputTag label_tp_fake_;
       edm::InputTag associatorMap_;
