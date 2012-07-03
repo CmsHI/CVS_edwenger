@@ -77,12 +77,17 @@ HiTrkEffHistograms::declareHistograms()
        ptBins.push_back(400); // total: 72 bins
 
     } else if(ptBinScheme==3){
+       Double_t pt;
+       for(pt =   0  ; pt <   1.2-small; pt +=  0.05) ptBins.push_back(pt); // 24 bins 
+       for(pt =   1.2; pt <   2.4-small; pt +=  0.1 ) ptBins.push_back(pt); // 12 bins
+       for(pt =   2.4; pt <   7.2-small; pt +=  0.4 ) ptBins.push_back(pt); // 12 bins
+       for(pt =   7.2; pt <  20.0-small; pt +=  1.6 ) ptBins.push_back(pt); // 8 bins 
+       for(pt =  20.0; pt <  24-small;	 pt +=  2.0 ) ptBins.push_back(pt); // 2 bins
+       for(pt =  24.0; pt <  30-small;	 pt +=  3.0 ) ptBins.push_back(pt); // 2 bins
       // coarse binning for jet analysis
-      const Int_t numPPtBins=24;
-      Float_t pptBins[numPPtBins+1] = {0,0.25,0.5,0.75,1,1.5,2,2.5,3,4,5,7.5,10,12,15,20,25,30,45,60,90,120,180,300,500};
-      vector<Double_t> ptBinsB2(pptBins,pptBins+numPPtBins+1);
-      ptBins = ptBinsB2;
-
+      const Int_t numHigtPtBins=6;
+      Float_t highPtBins[numHigtPtBins+1] = {30,45,60,90,120,180,300};
+      ptBins.insert(ptBins.end(),highPtBins,highPtBins+numHigtPtBins+1);
     } else if(lowPtMode){
 
        static Double_t ptMin   =  0.0;
