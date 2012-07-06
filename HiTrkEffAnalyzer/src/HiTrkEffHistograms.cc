@@ -5,6 +5,7 @@
 #include "TFile.h"
 #include "TH2F.h"
 #include "TH3F.h"
+#include "TMath.h"
 
 #include <iostream>
 #include <cmath>
@@ -16,6 +17,7 @@ HiTrkEffHistograms::HiTrkEffHistograms(const edm::ParameterSet& pset)
   fillNtuples            = pset.getParameter<bool>("fillNtuples");
   ptBinScheme            = pset.getParameter<Int_t>("ptBinScheme");
   lowPtMode              = pset.getParameter<bool>("lowPtMode");
+  trkPhiMode              = pset.getParameter<bool>("trkPhiMode");
   trkPtMin		 = pset.getParameter<Double_t>("trkPtMin");
   neededCentBins         = pset.getUntrackedParameter<std::vector<Int_t> >("neededCentBins");
 }
@@ -33,7 +35,7 @@ HiTrkEffHistograms::declareHistograms()
     TString leafStr;
     
     trackTrees.push_back(f->make<TTree>("simTrackTree","simTrackTree"));
-    leafStr = "ids/I:etas/F:pts/F:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:jetr/F:cbin/I";
+    leafStr = "ids/I:etas/F:pts/F:phis:hits/I:status/I:acc/I:nrec/I:ptr/F:dz/F:d0/F:pterr/F:d0err/F:dzerr/F:hitr/I:algo/I:jetr/F:cbin/I";
     leafStr += ":jetar/F:jrdr/F:jrind/I:jrflavor/I";
     trackTrees[0]->Branch("simTrackValues", &simTrackValues, leafStr.Data());
     
@@ -116,16 +118,7 @@ HiTrkEffHistograms::declareHistograms()
     for(Double_t eta = etaMin; eta < etaMax + etaWidth/2; eta += etaWidth)
       etaBins.push_back(eta);
 
-
     // jet et bins
-    /*
-    Double_t jet;
-    for(jet =    0; jet <   50-small; jet +=  50 ) jetBins.push_back(jet);
-    for(jet =   50; jet <   80-small; jet +=  30 ) jetBins.push_back(jet); 
-    for(jet =   80; jet < 1000-small; jet +=  25 ) jetBins.push_back(jet);
-    jetBins.push_back(1005);
-    */
-
     static Float_t jetMin = 0.0;
     static Float_t jetMax = 1000; // good to be matched with ana 
     static Float_t jetWidth = 20;
@@ -139,6 +132,17 @@ HiTrkEffHistograms::declareHistograms()
       Float_t jBins[numJetBins+1] = {0,20,40,60,80,120,160,200,250,500,1000};
       vector<Double_t> jetBinsB2(jBins,jBins+numJetBins+1);
       jetBins = jetBinsB2;
+    }
+
+    // phi bins as the third variable
+    if (trkPhiMode) {
+       jetBins.clear();
+       static Double_t phiMin   = -TMath::Pi();
+       static Double_t phiMax   =  TMath::Pi();
+       static Double_t phiWidth =  (phiMax - phiMin)/15;
+   
+       for(Double_t phi = phiMin; phi < phiMax + phiWidth/2; phi += phiWidth)
+         jetBins.push_back(phi);
     }
 
     // simulated
@@ -272,7 +276,6 @@ HiTrkEffHistograms::declareHistograms()
 void 
 HiTrkEffHistograms::fillSimHistograms(const SimTrack_t & s)
 {
-
   if(fillNtuples && s.status>0){
     if (trkPtMin>0&&s.pts>=trkPtMin) {
       simTrackValues = s;

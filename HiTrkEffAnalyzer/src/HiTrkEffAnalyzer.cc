@@ -43,6 +43,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true)),
   hasSimInfo_(iConfig.getUntrackedParameter<bool>("hasSimInfo",false)),
   pixelMultMode_(iConfig.getUntrackedParameter<bool>("pixelMultMode",false)),
+  trkPhiMode_(iConfig.getUntrackedParameter<bool>("trkPhiMode",false)),
   useJetEtMode_(iConfig.getParameter<Int_t>("useJetEtMode")),
   trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
@@ -226,7 +227,10 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	if(nrec) mtr = rt.begin()->first.get();      
       }
+//       std::cout << "simtrk " << i << "/" << TPCollectionHeff->size() << std::endl;
       SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle, cbin, sortedJets, sortedGenJets);
+      if (trkPhiMode_) s.jetr = s.phis;
+//       std::cout << "fill simtrk " << std::endl;
       histograms->fillSimHistograms(s);  
       
 #ifdef DEBUG
@@ -262,7 +266,10 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       if(nsim) mtp = tp.begin()->first.get();       
     }
 
+//     std::cout << "rectrk " << i << "/" << trackCollection->size() << std::endl;
     RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle, cbin,sortedJets, sortedGenJets);
+    if (trkPhiMode_) r.jetr = r.phir;
+//     std::cout << "fill rectrk " << std::endl;
     histograms->fillRecHistograms(r); 
 
 #ifdef DEBUG
@@ -314,6 +321,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
   s.ids = tp.pdgId();
   s.etas = tp.eta();
   s.pts = tp.pt();
+  s.phis = tp.phi();
   s.hits = tp.matchedHit();
   s.status = tp.status();
   std::pair<bool,bool> acc = isAccepted(tp);
