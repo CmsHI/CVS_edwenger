@@ -47,6 +47,8 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
   jetTrkOnly_(iConfig.getUntrackedParameter<bool>("jetTrkOnly",false)),
+  coneRadius_(iConfig.getUntrackedParameter<double>("coneRadius",0.5)),
+  minJetPt_(iConfig.getUntrackedParameter<double>("minJetPt",50)),
   fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
   useQaulityStr_(iConfig.getUntrackedParameter<bool>("useQaulityStr")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
@@ -107,6 +109,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      for(unsigned it=0; it<jets->size(); ++it){
 	const pat::Jet* jet = &((*jets)[it]);
+	if (jet->pt()<minJetPt_) continue;
 
 	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
 	   if(fabs(jet->eta())<2.) {
@@ -139,6 +142,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      for(unsigned it=0; it<genjets->size(); ++it){
         const reco::Candidate* genjet = &((*genjets)[it]);
+        if (genjet->pt()<minJetPt_) continue;
    
         if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
           if(fabs(genjet->eta())<2.) {
@@ -201,7 +205,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
 
       double drs = deltaR(jet_eta,jet_phi,tp->eta(),tp->phi());
-      if(jetTrkOnly_ && drs>0.8) continue; // if jetTrkOnly_, only those within dR = 0.8;
+      if(jetTrkOnly_ && drs>coneRadius_) continue; // if jetTrkOnly_, only those within dR = coneRadius_;
       
       std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
       const reco::Track* mtr=0;
@@ -250,7 +254,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     size_t nsim=0;
 
     double drr = deltaR(jet_eta,jet_phi,track->eta(),track->phi());
-    if(jetTrkOnly_ && drr>0.8) continue; // if jetTrkOnly_, only those within dR = 0.8;  
+    if(jetTrkOnly_ && drr>coneRadius_) continue; // if jetTrkOnly_, only those within dR = coneRadius_;  
 
     if(hasSimInfo_ && recSimColl.find(track) != recSimColl.end()){
       tp = recSimColl[track];
@@ -340,9 +344,8 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
        = (sortedJets.size()<2) ?  sortedJets.size() : 2;
 
     for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
-      if (sortedJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedJets[j],tp);
-      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..                                                                             
+      if(dR<coneRadius_ && dR<bestJetDR){ // dR>coneRadius_, should not influence efficiency..                                                                             
 	 bestJetDR=dR, bestJetInd=j;
       }
     }
@@ -363,9 +366,8 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     unsigned int maxnjet = (sortedGenJets.size()<2) ?  sortedGenJets.size() : 2;
 
     for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
-      if (sortedGenJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedGenJets[j],tp);
-      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..                                                                             
+      if(dR<coneRadius_ && dR<bestJetDR){ // dR>coneRadius_, should not influence efficiency..                                                                             
 	     bestJetDR=dR, bestJetInd=j;
       }
     }
@@ -456,9 +458,8 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     unsigned int maxnjet
        = (sortedJets.size()<2) ?  sortedJets.size() : 2;
     for (UInt_t j=0; j<maxnjet; ++j) {
-      if (sortedJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedJets[j],tr);
-      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..
+      if(dR<coneRadius_ && dR<bestJetDR){ // dR>coneRadius_, should not influence efficiency..
          bestJetDR=dR, bestJetInd=j;
       }
     }
@@ -479,9 +480,8 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     unsigned int maxnjet = (sortedGenJets.size()<2) ?  sortedGenJets.size() : 2;
 
     for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
-      if (sortedGenJets[j]->et()<40) continue; // fake jet meaningless
       dR=deltaR(*sortedGenJets[j],tr);
-      if(dR<0.8 && dR<bestJetDR){ // dR>0.8, should not influence efficiency..                                                                             
+      if(dR<coneRadius_ && dR<bestJetDR){ // dR>coneRadius_, should not influence efficiency..                                                                             
 	     bestJetDR=dR, bestJetInd=j;
       }
     }

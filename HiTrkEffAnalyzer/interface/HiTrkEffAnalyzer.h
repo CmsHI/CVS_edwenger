@@ -60,6 +60,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool trkAcceptedJet_;
       bool useSubLeadingJet_;
       bool jetTrkOnly_;
+      double coneRadius_;
+      double minJetPt_;
       bool fiducialCut_;
       bool useQaulityStr_;
       std::string qualityString_;
