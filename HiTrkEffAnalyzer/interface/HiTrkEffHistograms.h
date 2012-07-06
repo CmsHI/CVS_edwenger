@@ -19,6 +19,7 @@ typedef struct
   Int_t ids;
   Float_t etas;
   Float_t pts;
+  Float_t phis;
   Int_t hits;
   Int_t status;
   Int_t acc;
@@ -88,6 +89,7 @@ class HiTrkEffHistograms
    bool fillNtuples;
    Int_t ptBinScheme;
    bool lowPtMode;
+   bool trkPhiMode;
    Double_t trkPtMin;
    edm::Service<TFileService> f;
 

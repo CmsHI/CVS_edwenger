@@ -56,6 +56,7 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       bool doAssociation_;
       bool hasSimInfo_;
       bool pixelMultMode_;
+      bool trkPhiMode_;
       Int_t useJetEtMode_;
       bool trkAcceptedJet_;
       bool useSubLeadingJet_;

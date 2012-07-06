@@ -43,7 +43,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   doAssociation_(iConfig.getUntrackedParameter<bool>("doAssociation",true)),
   hasSimInfo_(iConfig.getUntrackedParameter<bool>("hasSimInfo",false)),
   pixelMultMode_(iConfig.getUntrackedParameter<bool>("pixelMultMode",false)),
-  trkPhiMode_(iConfig.getUntrackedParameter<bool>("trkPhiMode",false)),
+  trkPhiMode_(iConfig.getParameter<bool>("trkPhiMode")),
   useJetEtMode_(iConfig.getParameter<Int_t>("useJetEtMode")),
   trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
