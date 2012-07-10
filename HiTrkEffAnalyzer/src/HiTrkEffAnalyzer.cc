@@ -115,11 +115,11 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
 	   if(fabs(jet->eta())<2.) {
 	      sortedJets.push_back(jet);
-	      sortByEtRef (&sortedJets);
+	      sortByPtRef (&sortedJets);
 	   }
 	}else{
 	   sortedJets.push_back(jet);
-	   sortByEtRef (&sortedJets);
+	   sortByPtRef (&sortedJets);
 	}
      }
      
@@ -128,7 +128,7 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   if(sortedJets.size()>1) it++;
 	   else break; // if not sub-leading jet, break
 	}
-	jet_et = sortedJets[it]->et();
+	jet_et = sortedJets[it]->pt();
 	jet_eta = sortedJets[it]->eta();
 	jet_phi= sortedJets[it]->phi();
 	break;
@@ -148,11 +148,11 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
           if(fabs(genjet->eta())<2.) {
             sortedGenJets.push_back(genjet);
-            sortByEtRef (&sortedGenJets);
+            sortByPtRef (&sortedGenJets);
           }
         }else{
           sortedGenJets.push_back(genjet);
-          sortByEtRef (&sortedGenJets);
+          sortByPtRef (&sortedGenJets);
         }
      }     
   }
@@ -360,7 +360,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     if (bestJetInd<0) {
       s.jetr=0; s.jetar=-99;
     } else {
-      s.jetr = sortedJets[bestJetInd]->et();
+      s.jetr = sortedJets[bestJetInd]->pt();
       s.jetar = sortedJets[bestJetInd]->eta();
       if (sortedJets[bestJetInd]->genParton()) {
     s.jrflavor = sortedJets[bestJetInd]->genParton()->pdgId();
@@ -381,7 +381,7 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
     }
     s.jetr=0; s.jetar=-99;
     if (bestJetInd>=0) {
-      s.jetr = sortedGenJets[bestJetInd]->et();
+      s.jetr = sortedGenJets[bestJetInd]->pt();
       s.jetar = sortedGenJets[bestJetInd]->eta();
     }
     // matched genjet mode
@@ -389,9 +389,9 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
       s.jetr=0; s.jetar=-99;
       for (UInt_t k=0; k<sortedJets.size(); ++k) {
          if (!sortedJets[k]->genJet()) continue;
-         if ( fabs(sortedJets[k]->genJet()->et() - sortedGenJets[bestJetInd]->et()) < 0.01 &&
+         if ( fabs(sortedJets[k]->genJet()->pt() - sortedGenJets[bestJetInd]->pt()) < 0.01 &&
               fabs(sortedJets[k]->genJet()->phi() - sortedGenJets[bestJetInd]->phi()) < 0.01) {
-            s.jetr = sortedJets[k]->et();
+            s.jetr = sortedJets[k]->pt();
             s.jetar = sortedJets[k]->eta();
             break;
          }
@@ -474,7 +474,7 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     if (bestJetInd<0) {
       r.jetr=0; r.jetar=-99;
     } else {
-      r.jetr = sortedJets[bestJetInd]->et();
+      r.jetr = sortedJets[bestJetInd]->pt();
       r.jetar = sortedJets[bestJetInd]->eta();
       if (sortedJets[bestJetInd]->genParton()) {
 	r.jrflavor = abs(sortedJets[bestJetInd]->genParton()->pdgId());
@@ -495,7 +495,7 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
     }
     r.jetr=0; r.jetar=-99;
     if (bestJetInd>=0) {
-      r.jetr = sortedGenJets[bestJetInd]->et();
+      r.jetr = sortedGenJets[bestJetInd]->pt();
       r.jetar = sortedGenJets[bestJetInd]->eta();
     }
     // matched genjet mode
@@ -503,9 +503,9 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
       r.jetr=0; r.jetar=-99;
       for (UInt_t k=0; k<sortedJets.size(); ++k) {
          if (!sortedJets[k]->genJet()) continue;
-         if ( fabs(sortedJets[k]->genJet()->et() - sortedGenJets[bestJetInd]->et()) < 0.01 &&
+         if ( fabs(sortedJets[k]->genJet()->pt() - sortedGenJets[bestJetInd]->pt()) < 0.01 &&
               fabs(sortedJets[k]->genJet()->phi() - sortedGenJets[bestJetInd]->phi()) < 0.01) {
-            r.jetr = sortedJets[k]->et();
+            r.jetr = sortedJets[k]->pt();
             r.jetar = sortedJets[k]->eta();
             break;
          }
