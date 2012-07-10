@@ -23,7 +23,6 @@ hitrkEffAnalyzer = cms.EDAnalyzer('HiTrkEffAnalyzer',
     useJetEtMode = cms.int32(2), # 0 = no jet, 1 = leading jet, 2 = closest jets
     trkPtMin = cms.double(-1),
     trkAcceptedJet = cms.untracked.bool(True), # limit jets to |eta|<2.0 
-    useSubLeadingJet = cms.untracked.bool(False),
     jetTrkAssoc = cms.untracked.int32(-1), # -1 all tracks, 0 out of cone, 1 in j1 cone, 2 in j2 cone
     minJetPt = cms.untracked.double(50),
     maxJetPt = cms.untracked.double(999),
