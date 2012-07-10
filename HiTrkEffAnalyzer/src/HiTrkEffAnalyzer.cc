@@ -48,13 +48,13 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   useJetEtMode_(iConfig.getParameter<Int_t>("useJetEtMode")),
   trkAcceptedJet_(iConfig.getUntrackedParameter<bool>("trkAcceptedJet",false)),
   useSubLeadingJet_(iConfig.getUntrackedParameter<bool>("useSubLeadingJet",false)),
-  jetTrkOnly_(iConfig.getUntrackedParameter<bool>("jetTrkOnly",false)),
+  jetTrkAssoc_(iConfig.getUntrackedParameter<int>("jetTrkAssoc",-1)),
   coneRadius_(iConfig.getUntrackedParameter<double>("coneRadius",0.5)),
   minJetPt_(iConfig.getUntrackedParameter<double>("minJetPt",50)),
   maxJetPt_(iConfig.getUntrackedParameter<double>("maxJetPt",9999)),
   eventInfoTag_(iConfig.getParameter<edm::InputTag>("eventInfoTag")),
-  ptHatMin_(iConfig.getUntrackedParameter<double>("ptHatMin_",-1)),
-  ptHatMax_(iConfig.getUntrackedParameter<double>("ptHatMax_",9999)),
+  ptHatMin_(iConfig.getUntrackedParameter<double>("ptHatMin",-1)),
+  ptHatMax_(iConfig.getUntrackedParameter<double>("ptHatMax",9999)),
   fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
   useQaulityStr_(iConfig.getUntrackedParameter<bool>("useQaulityStr")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
@@ -63,6 +63,8 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
 {
 
   histograms = new HiTrkEffHistograms(iConfig);
+  std::cout << "pthat from: " << ptHatMin_ << " to " << ptHatMax_ << std::endl;
+  std::cout << "jet from: " << minJetPt_ << " to " << maxJetPt_ << std::endl;
 
 }
 
@@ -104,75 +106,53 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   } 
 
   // PAT jet, to get leading jet ET
-
-  float jet_et = 0.0, jet_eta=-999.0, jet_phi=0.0;
   std::vector<const pat::Jet *> sortedJets;         // jets for event classfication
 
-  if(useJetEtMode_>0){
-     edm::Handle<std::vector<pat::Jet> > jets;
-     iEvent.getByLabel(jetTags_, jets);
+   if(useJetEtMode_>0){
+      edm::Handle<std::vector<pat::Jet> > jets;
+      iEvent.getByLabel(jetTags_, jets);
      
-
-     for(unsigned it=0; it<jets->size(); ++it){
-	const pat::Jet* jet = &((*jets)[it]);
-	if (jet->pt()<minJetPt_) continue;
-
-	if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-	   if(fabs(jet->eta())<2.) {
-	      sortedJets.push_back(jet);
-	      sortByPtRef (&sortedJets);
-	   }
-	}else{
-	   sortedJets.push_back(jet);
-	   sortByPtRef (&sortedJets);
-	}
-     }
-     
-     for(unsigned it=0; it<sortedJets.size(); ++it){
-	if(useSubLeadingJet_){ // use sub-leading jet
-	   if(sortedJets.size()>1) it++;
-	   else break; // if not sub-leading jet, break
-	}
-	jet_et = sortedJets[it]->pt();
-	jet_eta = sortedJets[it]->eta();
-	jet_phi= sortedJets[it]->phi();
-	break;
-     }
-  }
+      for(unsigned it=0; it<jets->size(); ++it){
+         const pat::Jet* jet = &((*jets)[it]);
+         if (jet->pt()<minJetPt_) continue;
+         if(trkAcceptedJet_&&fabs(jet->eta())>=2.) continue; // fill the jet pull only when the jet axes are within trk acceptance
+         sortedJets.push_back(jet);
+      }
+      sortByPtRef(&sortedJets);
+      if (sortedJets.size()>2) sortedJets.resize(2);
+   }
 
   // Gen jet
-  std::vector<const reco::Candidate *> sortedGenJets; ;         // jets for event classfication
-  if(useJetEtMode_>9){
-     edm::Handle<reco::CandidateView> genjets;
-     iEvent.getByLabel(genjetTags_, genjets);
+   std::vector<const reco::Candidate *> sortedGenJets; ;         // jets for event classfication
+   if(useJetEtMode_>9){
+      edm::Handle<reco::CandidateView> genjets;
+      iEvent.getByLabel(genjetTags_, genjets);
+      
+      for(unsigned it=0; it<genjets->size(); ++it){
+         const reco::Candidate* genjet = &((*genjets)[it]);
+         if (genjet->pt()<minJetPt_) continue;         
+         if(trkAcceptedJet_&&fabs(genjet->eta())>=2.) continue; // fill the jet pull only when the jet axes are within trk acceptance
+         sortedGenJets.push_back(genjet);
+      }
+      sortByPtRef(&sortedGenJets);
+      if (sortedGenJets.size()>2) sortedGenJets.resize(2);
+   }
 
-     for(unsigned it=0; it<genjets->size(); ++it){
-        const reco::Candidate* genjet = &((*genjets)[it]);
-        if (genjet->pt()<minJetPt_) continue;
-   
-        if(trkAcceptedJet_) { // fill the jet pull only when the jet axes are within trk acceptance
-          if(fabs(genjet->eta())<2.) {
-            sortedGenJets.push_back(genjet);
-            sortByPtRef (&sortedGenJets);
-          }
-        }else{
-          sortedGenJets.push_back(genjet);
-          sortByPtRef (&sortedGenJets);
-        }
-     }     
-  }
+   float occHandle = 0.0;
 
-  // sim track collections
-  float occHandle = 0.0;
-
-  if(pixelMultMode_) occHandle = (float) pixelMult;
-  else occHandle = jet_et;
+   if(pixelMultMode_) occHandle = (float) pixelMult;
+   else {
+      if (useJetEtMode_>0&&sortedJets.size()>0) {
+         occHandle = sortedJets[0]->pt();
+         if (jetTrkAssoc_==2&&sortedJets.size()>1) occHandle = sortedJets[1]->pt();
+      }
+   }
 
   //////////////////////////////////////////////////////////////////////
   // Jet Event Selection
   //////////////////////////////////////////////////////////////////////
   if (useJetEtMode_==1) {
-    if (jet_et<minJetPt_ || jet_et>=maxJetPt_) {
+    if (occHandle<minJetPt_ || occHandle>=maxJetPt_) {
       return;
     }
   }
@@ -188,131 +168,134 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   //////////////////////////////////////////////////////////////////////
   // Track Efficiency Analysis
   //////////////////////////////////////////////////////////////////////
-  if(hasSimInfo_) {
-    // Event info
-    histograms->hPtHat->Fill(pthat);
-    for(unsigned i=0;i<histograms->neededCentBins.size()-1;i++){
-       if(i==0){
-         if (cbin<=histograms->neededCentBins[i+1]) histograms->vhPtHat[i]->Fill(pthat);
-       } else {
-         if (cbin>histograms->neededCentBins[i]&&cbin<=histograms->neededCentBins[i+1]) histograms->vhPtHat[i]->Fill(pthat);
-       }
-    }
-
-    // sim track collections
-    
-    iEvent.getByLabel(label_tp_effic_,TPCollectionHeff);
-    iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
-
-    LogDebug("HiTrkEffAnalyzer") <<" number of sim tracks (for eff) = "<<TPCollectionHeff->size()
-				 <<" number of sim tracks (for fake) = "<<TPCollectionHfake->size()<<std::endl;
-    
-    
-    // association map generated on-the-fly or read from file
-    
-    if(doAssociation_){
-      iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
-      theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();
-      
-      simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
-      recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
-      LogDebug("HiTrkEffAnalyzer") <<" association is done on the fly! \n"
-				   <<" sim for eff = ["<<label_tp_effic_<<" ] \n"
-				   <<" sim for fake = ["<<label_tp_fake_<<" ] \n";
-    }else{
-      iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
-      simRecColl= *(simtorecoCollectionH.product());
-      
-      iEvent.getByLabel(associatorMap_,recotosimCollectionH);
-      recSimColl= *(recotosimCollectionH.product());
-      LogDebug("HiTrkEffAnalyzer") <<" association is from the following association map \n"
-                                   <<" map = ["<<associatorMap_<<" ] \n";
-    }
-    
-    // -------------------- SIM loop ----------------------------------------
-    
-    for(TrackingParticleCollection::size_type i=0; i<TPCollectionHeff->size(); i++) {
-      
-      TrackingParticleRef tpr(TPCollectionHeff, i);
-      TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
-      
-      if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
-
-      double drs = deltaR(jet_eta,jet_phi,tp->eta(),tp->phi());
-      if(jetTrkOnly_ && drs>coneRadius_) continue; // if jetTrkOnly_, only those within dR = coneRadius_;
-      
-      std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
-      const reco::Track* mtr=0;
-      size_t nrec=0;
-
-      
-      if(simRecColl.find(tpr) != simRecColl.end()){
-	rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
-	nrec=rt.size();   
-
-	if(useQaulityStr_){ // if true, re-calculate nrec 
-	   nrec = 0; // set it to 0
-	   for (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >::const_iterator rtit = rt.begin(); rtit != rt.end(); ++rtit){
-	      const reco::Track* tmtr = rtit->first.get();
-	      if(tmtr->quality(reco::TrackBase::qualityByName(qualityString_))) nrec++;
-	   }
-	}
-
-	if(nrec) mtr = rt.begin()->first.get();      
+   if(hasSimInfo_) {
+      // Event info
+      histograms->hPtHat->Fill(pthat);
+      histograms->hJetPt->Fill(occHandle);
+      histograms->hCent->Fill(cbin);
+      for(unsigned i=0;i<histograms->neededCentBins.size()-1;i++){
+         if(i==0){
+            if (cbin<=histograms->neededCentBins[i+1]) histograms->vhPtHat[i]->Fill(pthat);
+         } else {
+            if (cbin>histograms->neededCentBins[i]&&cbin<=histograms->neededCentBins[i+1]) histograms->vhPtHat[i]->Fill(pthat);
+         }
       }
-//       std::cout << "simtrk " << i << "/" << TPCollectionHeff->size() << std::endl;
-      SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle, cbin, sortedJets, sortedGenJets);
-      if (trkPhiMode_) s.jetr = s.phis;
-//       std::cout << "fill simtrk " << std::endl;
-      histograms->fillSimHistograms(s);  
       
-#ifdef DEBUG
-      if(nrec) edm::LogVerbatim("HiTrkEffAnalyzer") 
-	<< "TrackingParticle #" << i << " with pt=" << tp->pt() 
-	<< " associated with quality:" << rt.begin()->second;
-#endif
-    }
+      // sim track collections
+      iEvent.getByLabel(label_tp_effic_,TPCollectionHeff);
+      iEvent.getByLabel(label_tp_fake_,TPCollectionHfake);
+      LogDebug("HiTrkEffAnalyzer") <<" number of sim tracks (for eff) = "<<TPCollectionHeff->size()
+             <<" number of sim tracks (for fake) = "<<TPCollectionHfake->size()<<std::endl;
+      
+      // association map generated on-the-fly or read from file   
+      if(doAssociation_){
+         iSetup.get<TrackAssociatorRecord>().get("TrackAssociatorByHits",theAssociator);
+         theAssociatorByHits = (const TrackAssociatorByHits*) theAssociator.product();
+         
+         simRecColl= theAssociatorByHits->associateSimToReco(trackCollection,TPCollectionHeff,&iEvent);
+         recSimColl= theAssociatorByHits->associateRecoToSim(trackCollection,TPCollectionHfake,&iEvent);
+         LogDebug("HiTrkEffAnalyzer") <<" association is done on the fly! \n"
+                  <<" sim for eff = ["<<label_tp_effic_<<" ] \n"
+                  <<" sim for fake = ["<<label_tp_fake_<<" ] \n";
+      }else{
+         iEvent.getByLabel(associatorMap_,simtorecoCollectionH);
+         simRecColl= *(simtorecoCollectionH.product());
+         
+         iEvent.getByLabel(associatorMap_,recotosimCollectionH);
+         recSimColl= *(recotosimCollectionH.product());
+         LogDebug("HiTrkEffAnalyzer") <<" association is from the following association map \n"
+                                      <<" map = ["<<associatorMap_<<" ] \n";
+      }
     
-
-  } //end if(hasSimInfo_)
+       // -------------------- SIM loop ----------------------------------------
+      for(TrackingParticleCollection::size_type i=0; i<TPCollectionHeff->size(); i++) {      
+         TrackingParticleRef tpr(TPCollectionHeff, i);
+         TrackingParticle* tp=const_cast<TrackingParticle*>(tpr.get());
+         
+         if(tp->status() < 0 || tp->charge()==0) continue; //only charged primaries
+      
+         // jet radius cut
+         double drs[2] = {99,99};
+         for (unsigned int j=0; j<sortedJets.size(); ++j) {
+            drs[j] = deltaR(sortedJets[j]->eta(),sortedJets[j]->phi(),tp->eta(),tp->phi());
+         }
+         if (jetTrkAssoc_==0 && (drs[0]<coneRadius_||drs[1]<coneRadius_)) continue; // if outcone, only those within dR = coneRadius_;
+         if (jetTrkAssoc_==1 && drs[0]>=coneRadius_) continue; // if incone, only those within dR = coneRadius_;
+         if (jetTrkAssoc_==2 && drs[1]>=coneRadius_) continue; // if incone, only those within dR = coneRadius_;
+         for (unsigned int j=0; j<sortedJets.size(); ++j) {
+            histograms->vhTrkJetDr[j]->Fill(drs[j]);
+         }
+      
+         std::vector<std::pair<edm::RefToBase<reco::Track>, double> > rt;
+         const reco::Track* mtr=0;
+         size_t nrec=0;
+         
+         if(simRecColl.find(tpr) != simRecColl.end()){
+            rt = (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >) simRecColl[tpr];
+            nrec=rt.size();   
+      
+            if(useQaulityStr_){ // if true, re-calculate nrec 
+               nrec = 0; // set it to 0
+               for (std::vector<std::pair<edm::RefToBase<reco::Track>, double> >::const_iterator rtit = rt.begin(); rtit != rt.end(); ++rtit){
+                  const reco::Track* tmtr = rtit->first.get();
+                  if(tmtr->quality(reco::TrackBase::qualityByName(qualityString_))) nrec++;
+               }
+            }
+            if(nrec) mtr = rt.begin()->first.get();
+         }
+      //       std::cout << "simtrk " << i << "/" << TPCollectionHeff->size() << std::endl;
+         SimTrack_t s = setSimTrack(*tp, *mtr, nrec, occHandle, cbin, sortedJets, sortedGenJets);
+         if (trkPhiMode_) s.jetr = s.phis;
+      //       std::cout << "fill simtrk " << std::endl;
+         histograms->fillSimHistograms(s);  
+         
+         #ifdef DEBUG
+         if (nrec) edm::LogVerbatim("HiTrkEffAnalyzer")  << "TrackingParticle #" << i << " with pt=" << tp->pt() 
+            << " associated with quality:" << rt.begin()->second;
+         #endif
+      }
+   } //end if(hasSimInfo_)
     
-  // -------------------- RECO loop ----------------------------------------
+   // -------------------- RECO loop ----------------------------------------
+   for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i){
+      edm::RefToBase<reco::Track> track(trackCollection, i);
+      reco::Track* tr=const_cast<reco::Track*>(track.get());
+      
+      if(fiducialCut_ && hitDeadPXF(*tr)) continue; // if track hits the dead region, igonore it;
+      if(useQaulityStr_ && !tr->quality(reco::TrackBase::qualityByName(qualityString_))) continue;
+      
+      std::vector<std::pair<TrackingParticleRef, double> > tp;
+      const TrackingParticle *mtp=0;
+      size_t nsim=0;
+      
+      // jet radius cut
+      double drr[2] = {99,99};
+      for (unsigned int j=0; j<sortedJets.size(); ++j) {
+         drr[j] = deltaR(sortedJets[j]->eta(),sortedJets[j]->phi(),track->eta(),track->phi());
+      }
+      if (jetTrkAssoc_==0 && (drr[0]<coneRadius_||drr[1]<coneRadius_)) continue; // if outcone, only those within dR = coneRadius_;
+      if (jetTrkAssoc_==1 && drr[0]>=coneRadius_) continue; // if incone, only those within dR = coneRadius_;
+      if (jetTrkAssoc_==2 && drr[1]>=coneRadius_) continue; // if incone, only those within dR = coneRadius_;
+      
+      if(hasSimInfo_ && recSimColl.find(track) != recSimColl.end()){
+         tp = recSimColl[track];
+         nsim=tp.size();
+         if(nsim) mtp = tp.begin()->first.get();       
+      }
 
-  for(edm::View<reco::Track>::size_type i=0; i<trackCollection->size(); ++i){
-    
-    edm::RefToBase<reco::Track> track(trackCollection, i);
-    reco::Track* tr=const_cast<reco::Track*>(track.get());
-    
-    if(fiducialCut_ && hitDeadPXF(*tr)) continue; // if track hits the dead region, igonore it;
-    if(useQaulityStr_ && !tr->quality(reco::TrackBase::qualityByName(qualityString_))) continue;
-
-    std::vector<std::pair<TrackingParticleRef, double> > tp;
-    const TrackingParticle *mtp=0;
-    size_t nsim=0;
-
-    double drr = deltaR(jet_eta,jet_phi,track->eta(),track->phi());
-    if(jetTrkOnly_ && drr>coneRadius_) continue; // if jetTrkOnly_, only those within dR = coneRadius_;  
-
-    if(hasSimInfo_ && recSimColl.find(track) != recSimColl.end()){
-      tp = recSimColl[track];
-      nsim=tp.size();
-      if(nsim) mtp = tp.begin()->first.get();       
-    }
-
-//     std::cout << "rectrk " << i << "/" << trackCollection->size() << std::endl;
-    RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle, cbin,sortedJets, sortedGenJets);
-    if (trkPhiMode_) r.jetr = r.phir;
-//     std::cout << "fill rectrk " << std::endl;
-    histograms->fillRecHistograms(r); 
-
-#ifdef DEBUG
-    if(nsim) edm::LogVerbatim("HiTrkEffAnalyzer") 
+      //     std::cout << "rectrk " << i << "/" << trackCollection->size() << std::endl;
+      RecTrack_t r = setRecTrack(*tr, *mtp, nsim, occHandle, cbin,sortedJets, sortedGenJets);
+      if (trkPhiMode_) r.jetr = r.phir;
+      //     std::cout << "fill rectrk " << std::endl;
+      histograms->fillRecHistograms(r); 
+      
+      #ifdef DEBUG
+      if(nsim) edm::LogVerbatim("HiTrkEffAnalyzer") 
       << "reco::Track #" << i << " with pt=" << track->pt() 
       << " associated with quality:" << tp.begin()->second;
-#endif
-  }
-
-}
+      #endif
+   }
+} // end of analyze
 
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -378,11 +361,10 @@ HiTrkEffAnalyzer::setSimTrack(TrackingParticle& tp, const reco::Track& mtr, size
   s.jetr = jet;
 
   // if do closest jet, equivalent to closestJet_ mode in spectra ana
-  if (useJetEtMode_==2) {
+  if (useJetEtMode_==2&&jetTrkAssoc_<0) {
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
-    unsigned int maxnjet
-       = (sortedJets.size()<2) ?  sortedJets.size() : 2;
+    unsigned int maxnjet = (sortedJets.size()<2) ?  sortedJets.size() : 2;
 
     for (UInt_t j=0; j<maxnjet; ++j) { // leading, sub-leading only, if there's any
       dR=deltaR(*sortedJets[j],tp);
@@ -493,7 +475,7 @@ HiTrkEffAnalyzer::setRecTrack(reco::Track& tr, const TrackingParticle& tp, size_
   r.nsim = nsim;
   r.jetr = jet;
   // if do closest jet
-  if (useJetEtMode_==2) {
+  if (useJetEtMode_==2&&jetTrkAssoc_<0) {
     Float_t bestJetDR=99, dR=99;
     Int_t bestJetInd=-99;
     unsigned int maxnjet
