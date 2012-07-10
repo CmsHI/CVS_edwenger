@@ -49,7 +49,8 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       edm::InputTag associatorMap_;
       edm::InputTag vtxTags_;
       edm::InputTag bsTags_;
-  
+      edm::InputTag eventInfoTag_;
+      
       const TrackerGeometry * theTracker;
       edm::Handle<reco::VertexCollection> vertexCollectionH;
       edm::Handle<reco::BeamSpot> beamSpotH;
@@ -60,9 +61,10 @@ class HiTrkEffAnalyzer : public edm::EDAnalyzer {
       Int_t useJetEtMode_;
       bool trkAcceptedJet_;
       bool useSubLeadingJet_;
-      bool jetTrkOnly_;
+      int jetTrkAssoc_;
       double coneRadius_;
-      double minJetPt_;
+      double minJetPt_,maxJetPt_;
+      double ptHatMin_, ptHatMax_;
       bool fiducialCut_;
       bool useQaulityStr_;
       std::string qualityString_;

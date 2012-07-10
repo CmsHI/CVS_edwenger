@@ -76,12 +76,11 @@ class HiTrkEffHistograms
    HiTrkEffHistograms(const edm::ParameterSet& pset);
    ~HiTrkEffHistograms();
 
-  void declareHistograms();
-  void fillSimHistograms(const SimTrack_t & s);
-  void fillRecHistograms(const RecTrack_t & r);
-  void writeHistograms();
+   void declareHistograms();
+   void fillSimHistograms(const SimTrack_t & s);
+   void fillRecHistograms(const RecTrack_t & r);
+   void writeHistograms();
 
- private: 
    std::vector<TTree*> trackTrees;
    SimTrack_t simTrackValues;
    RecTrack_t recTrackValues;
@@ -126,6 +125,12 @@ class HiTrkEffHistograms
    
    TH2F* hetaphi;
 
+   std::vector<TH1D*> vhTrkJetDr;
+   
+   // Event
+   TH1D * hPtHat;
+   TH1D * hJetPt;
+   TH1D * hCent;
 
    // vector of histograms
    std::vector<TH3F*> vhsim3D;
@@ -138,6 +143,7 @@ class HiTrkEffHistograms
    
    std::vector<TH3F*> vhresStoR3D;
 
+   std::vector<TH1D*> vhPtHat;
 
 
 

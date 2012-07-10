@@ -234,6 +234,14 @@ HiTrkEffHistograms::declareHistograms()
     // eta vs phi
     hetaphi = f->make<TH2F>("hetaphi","Track eta vs phi;#eta;#phi",40,-2.65,2.65, 80,-3.3,3.3);
 
+    // Monitor
+    for (int j=0; j<2; ++j) vhTrkJetDr.push_back(f->make<TH1D>(Form("hTrkJet%dDr",j+1),Form(";#DeltaR(trk,jet%d);",j+1),100,0,10));
+
+    // Event
+    hPtHat = f->make<TH1D>("hPtHat",";#hat{p}_{T} (GeV/c);",1000,0,1000);
+    hJetPt = f->make<TH1D>("hJetPt",";Jet p_{T} (GeV/c);",500,0,1000);
+    hCent = f->make<TH1D>("hCent",";Centrality Bin;",40,0,40);
+    
     for(unsigned i=0;i<neededCentBins.size()-1;i++){
        vhsim3D.push_back(f->make<TH3F>("","Sim Tracks;#eta;p_{T} (GeV/c);jet E_{T} (GeV/c)",
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
@@ -249,22 +257,27 @@ HiTrkEffHistograms::declareHistograms()
 				       etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], jetBins.size()-1, &jetBins[0]) );
        vhresStoR3D.push_back(f->make<TH3F>("","Momentum resolution (sim to rec);#eta;sim p_{T} (GeV/c);rec p_{T} (GeV/c)",
 					   etaBins.size()-1, &etaBins[0], ptBins.size()-1, &ptBins[0], ptBins.size()-1, &ptBins[0]) );
+       // Event
+       vhPtHat.push_back(f->make<TH1D>("",";#hat{p}_{T} (GeV/c);",1000,0,1000));
+
        if(i==0) {
-	  vhsim3D[i]->SetName(Form("hsim3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-	  vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-	  vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-	  vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-	  vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-	  vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
-	  vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhsim3D[i]->SetName(Form("hsim3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
+         vhPtHat[i]->SetName(Form("hPtHat_cbin%dto%d",neededCentBins[i],neededCentBins[i+1]));
        }else{
-	  vhsim3D[i]->SetName(Form("hsim3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-	  vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-          vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-          vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-	  vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-          vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
-          vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhsim3D[i]->SetName(Form("hsim3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vheff3D[i]->SetName(Form("heff3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhrec3D[i]->SetName(Form("hrec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhfak3D[i]->SetName(Form("hfak3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhmul3D[i]->SetName(Form("hmul3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhsec3D[i]->SetName(Form("hsec3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhresStoR3D[i]->SetName(Form("hresStoR3D_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
+         vhPtHat[i]->SetName(Form("hPtHat_cbin%dto%d",neededCentBins[i]+1,neededCentBins[i+1]));
        }
 
     }

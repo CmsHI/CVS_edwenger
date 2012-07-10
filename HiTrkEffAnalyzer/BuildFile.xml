@@ -3,6 +3,7 @@
 <use   name="FWCore/ParameterSet"/>
 <use   name="DataFormats/TrackReco"/>
 <use   name="SimDataFormats/TrackingAnalysis"/>
+<use   name="SimDataFormats/GeneratorProducts"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="FWCore/ServiceRegistry"/>
 <use   name="SimTracker/Records"/>
