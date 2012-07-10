@@ -50,6 +50,7 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   jetTrkOnly_(iConfig.getUntrackedParameter<bool>("jetTrkOnly",false)),
   coneRadius_(iConfig.getUntrackedParameter<double>("coneRadius",0.5)),
   minJetPt_(iConfig.getUntrackedParameter<double>("minJetPt",50)),
+  maxJetPt_(iConfig.getUntrackedParameter<double>("maxJetPt",9999)),
   fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
   useQaulityStr_(iConfig.getUntrackedParameter<bool>("useQaulityStr")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
@@ -163,6 +164,14 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(pixelMultMode_) occHandle = (float) pixelMult;
   else occHandle = jet_et;
 
+  //////////////////////////////////////////////////////////////////////
+  // Jet Event Selection
+  //////////////////////////////////////////////////////////////////////
+  if (useJetEtMode_==1) {
+    if (jet_et<minJetPt_ || jet_et>=maxJetPt_) {
+      return;
+    }
+  }
 
   if(hasSimInfo_) {
 
