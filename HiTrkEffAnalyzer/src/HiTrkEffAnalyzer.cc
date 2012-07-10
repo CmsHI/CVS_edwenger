@@ -142,8 +142,8 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    if(pixelMultMode_) occHandle = (float) pixelMult;
    else {
-      if (useJetEtMode_>0&&sortedJets.size()>0) {
-         occHandle = sortedJets[0]->pt();
+      if (useJetEtMode_==1) {
+         if (jetTrkAssoc_==1&&sortedJets.size()>0) occHandle = sortedJets[0]->pt();
          if (jetTrkAssoc_==2&&sortedJets.size()>1) occHandle = sortedJets[1]->pt();
       }
    }
