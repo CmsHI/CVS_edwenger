@@ -24,6 +24,7 @@
 #include "edwenger/HiTrkEffAnalyzer/interface/HiTrkEffAnalyzer.h"
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -51,6 +52,9 @@ HiTrkEffAnalyzer::HiTrkEffAnalyzer(const edm::ParameterSet& iConfig)
   coneRadius_(iConfig.getUntrackedParameter<double>("coneRadius",0.5)),
   minJetPt_(iConfig.getUntrackedParameter<double>("minJetPt",50)),
   maxJetPt_(iConfig.getUntrackedParameter<double>("maxJetPt",9999)),
+  eventInfoTag_(iConfig.getParameter<edm::InputTag>("eventInfoTag")),
+  ptHatMin_(iConfig.getUntrackedParameter<double>("ptHatMin_",-1)),
+  ptHatMax_(iConfig.getUntrackedParameter<double>("ptHatMax_",9999)),
   fiducialCut_(iConfig.getUntrackedParameter<bool>("fiducialCut",false)),
   useQaulityStr_(iConfig.getUntrackedParameter<bool>("useQaulityStr")),
   qualityString_(iConfig.getUntrackedParameter<std::string>("qualityString")),
@@ -172,8 +176,28 @@ HiTrkEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       return;
     }
   }
+  
+  float pthat = 0;
+  if (hasSimInfo_) {
+    edm::Handle<GenEventInfoProduct> hEventInfo;
+    iEvent.getByLabel(eventInfoTag_,hEventInfo);
+    pthat = hEventInfo->qScale();
+  }
+  if (pthat<ptHatMin_||pthat>=ptHatMax_) return;
 
+  //////////////////////////////////////////////////////////////////////
+  // Track Efficiency Analysis
+  //////////////////////////////////////////////////////////////////////
   if(hasSimInfo_) {
+    // Event info
+    histograms->hPtHat->Fill(pthat);
+    for(unsigned i=0;i<histograms->neededCentBins.size()-1;i++){
+       if(i==0){
+         if (cbin<=histograms->neededCentBins[i+1]) histograms->vhPtHat[i]->Fill(pthat);
+       } else {
+         if (cbin>histograms->neededCentBins[i]&&cbin<=histograms->neededCentBins[i+1]) histograms->vhPtHat[i]->Fill(pthat);
+       }
+    }
 
     // sim track collections
     
